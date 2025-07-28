@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,6 +6,7 @@ import { Grape, LogOut, Building2, Users, BarChart3 } from 'lucide-react';
 
 const Index = () => {
   const { user, userRole, signOut, loading } = useAuth();
+  const navigate = useNavigate();
 
   // Redirect to auth if not authenticated
   if (!user && !loading) {
@@ -146,7 +147,11 @@ const Index = () => {
                   <CardDescription>Explore available whisky casks for investment</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button className="w-full" variant="outline">
+                  <Button 
+                    className="w-full" 
+                    variant="outline"
+                    onClick={() => navigate('/marketplace')}
+                  >
                     Browse Marketplace
                   </Button>
                 </CardContent>
