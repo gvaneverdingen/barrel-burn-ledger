@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +35,7 @@ interface Cask {
 
 const Marketplace = () => {
   const { user, userRole, signOut, loading } = useAuth();
+  const navigate = useNavigate();
   const [casks, setCasks] = useState<Cask[]>([]);
   const [filteredCasks, setFilteredCasks] = useState<Cask[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -261,7 +262,7 @@ const Marketplace = () => {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCasks.map((cask) => (
-              <Card key={cask.id} className="hover:shadow-lg transition-shadow">
+              <Card key={cask.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate(`/cask/${cask.id}`)}>
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
