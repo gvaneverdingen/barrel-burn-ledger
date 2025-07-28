@@ -7,8 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, Filter, MapPin, Calendar, BarChart3, Grape, LogOut } from 'lucide-react';
+import { Search, Filter, MapPin, Calendar, BarChart3, LogOut, Home, Package } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import arigiLogo from '@/assets/arigi-logo.png';
 
 interface Cask {
   id: string;
@@ -43,16 +44,11 @@ const Marketplace = () => {
   const [sortBy, setSortBy] = useState('price');
   const [filterByDistillery, setFilterByDistillery] = useState('all');
 
-  // Redirect to auth if not authenticated
-  if (!user && !loading) {
-    return <Navigate to="/auth" replace />;
-  }
+  // Allow access without authentication
 
   useEffect(() => {
-    if (user) {
-      fetchCasks();
-    }
-  }, [user]);
+    fetchCasks();
+  }, []);
 
   useEffect(() => {
     filterAndSortCasks();
@@ -149,7 +145,7 @@ const Marketplace = () => {
     return years;
   };
 
-  if (loading || isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -162,22 +158,38 @@ const Marketplace = () => {
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Grape className="h-8 w-8 text-primary" />
+          <div className="flex items-center space-x-3">
+            <img src={arigiLogo} alt="ARIGI Logo" className="h-10 w-10 object-contain" />
             <h1 className="text-2xl font-bold text-foreground">ARIGI</h1>
             <span className="text-muted-foreground">|</span>
             <h2 className="text-lg font-medium text-foreground">Marketplace</h2>
           </div>
           
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm">
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Dashboard
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate('/')}
+            >
+              <Home className="h-4 w-4 mr-2" />
+              Home
             </Button>
-            <Button onClick={signOut} variant="outline" size="sm">
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
+            {user ? (
+              <>
+                <Button variant="ghost" size="sm">
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Button>
+                <Button onClick={signOut} variant="outline" size="sm">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Button onClick={() => navigate('/auth')} variant="default" size="sm">
+                Sign In
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -250,7 +262,7 @@ const Marketplace = () => {
         {filteredCasks.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
-              <Grape className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h4 className="text-lg font-medium text-foreground mb-2">No casks found</h4>
               <p className="text-muted-foreground">
                 {casks.length === 0 
@@ -313,15 +325,28 @@ const Marketplace = () => {
                       {formatCurrency(cask.price_per_liter)} per liter
                     </div>
                     
-                    {(userRole === 'consumer' || userRole === 'investor') && (
+                    {user && (userRole === 'consumer' || userRole === 'investor') && (
                       <Button className="w-full">
                         View Details & Purchase
                       </Button>
                     )}
                     
-                    {userRole === 'distillery' && (
+                    {user && userRole === 'distillery' && (
                       <Button variant="outline" className="w-full" disabled>
                         Contact Seller
+                      </Button>
+                    )}
+                    
+                    {!user && (
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate('/auth');
+                        }}
+                      >
+                        Sign In to Purchase
                       </Button>
                     )}
                   </div>

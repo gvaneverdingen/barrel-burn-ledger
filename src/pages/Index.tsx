@@ -100,6 +100,17 @@ const Index = () => {
           <p className="text-xl text-muted-foreground mb-8">
             The blockchain-enhanced premium whisky cask investment platform
           </p>
+          
+          {/* Marketplace CTA */}
+          <div className="flex justify-center mb-12">
+            <Button 
+              size="lg"
+              onClick={() => navigate('/marketplace')}
+              className="text-lg px-8 py-3"
+            >
+              Explore Marketplace
+            </Button>
+          </div>
         </div>
 
         {/* Role-based Dashboard Preview */}
@@ -167,7 +178,6 @@ const Index = () => {
                 <CardContent>
                   <Button 
                     className="w-full" 
-                    variant="outline"
                     onClick={() => navigate('/marketplace')}
                   >
                     Browse Marketplace
