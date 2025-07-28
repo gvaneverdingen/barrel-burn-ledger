@@ -53,7 +53,7 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Grape className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">Unicask</h1>
+            <h1 className="text-2xl font-bold text-foreground">ARIGI</h1>
           </div>
           
           <div className="flex items-center space-x-4">
@@ -89,7 +89,7 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-foreground mb-4">
-            Welcome to Unicask
+            Welcome to ARIGI
           </h2>
           <p className="text-xl text-muted-foreground mb-8">
             The blockchain-enhanced premium whisky cask investment platform
