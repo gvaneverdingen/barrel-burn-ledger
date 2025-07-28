@@ -2,7 +2,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { Grape, LogOut, Building2, Users, BarChart3 } from 'lucide-react';
+import { Grape, LogOut, Building2, Users, BarChart3, User } from 'lucide-react';
 
 const Index = () => {
   const { user, userRole, signOut, loading } = useAuth();
@@ -66,10 +66,21 @@ const Index = () => {
                 </div>
               )}
             </div>
-            <Button onClick={signOut} variant="outline" size="sm">
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
+            <div className="flex items-center space-x-2">
+              <Button 
+                onClick={() => navigate('/profile')} 
+                variant="ghost" 
+                size="sm"
+                className="gap-2"
+              >
+                <User className="h-4 w-4" />
+                Profile
+              </Button>
+              <Button onClick={signOut} variant="outline" size="sm">
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         </div>
       </header>
