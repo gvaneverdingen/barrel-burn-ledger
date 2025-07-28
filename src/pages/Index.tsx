@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, Building2, Users, BarChart3, User } from 'lucide-react';
+import { AppSidebar } from '@/components/AppSidebar';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import arigiLogo from '@/assets/arigi-logo.png';
 import warehouseHero from '@/assets/warehouse-hero.jpg';
 
@@ -46,223 +48,233 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <img src={arigiLogo} alt="ARIGI Logo" className="h-10 w-10 object-contain" />
-            <h1 className="text-2xl font-bold text-foreground">ARIGI</h1>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            {user ? (
-              <>
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <span>Welcome, {user?.email}</span>
-                  {userRole && (
-                    <div className={`flex items-center space-x-1 ${getRoleColor(userRole)}`}>
-                      {getRoleIcon(userRole)}
-                      <span className="capitalize font-medium">{userRole}</span>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <main className="flex-1">
+          {/* Header */}
+          <header className="h-16 border-b border-border bg-card">
+            <div className="container mx-auto px-4 h-full flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <SidebarTrigger />
+                <img src={arigiLogo} alt="ARIGI Logo" className="h-8 w-8 object-contain" />
+                <h1 className="text-xl font-bold text-foreground">ARIGI</h1>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                {user ? (
+                  <>
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                      <span>Welcome, {user?.email}</span>
+                      {userRole && (
+                        <div className={`flex items-center space-x-1 ${getRoleColor(userRole)}`}>
+                          {getRoleIcon(userRole)}
+                          <span className="capitalize font-medium">{userRole}</span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Button 
-                    onClick={() => navigate('/profile')} 
-                    variant="ghost" 
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <User className="h-4 w-4" />
-                    Profile
+                    <div className="flex items-center space-x-2">
+                      <Button 
+                        onClick={() => navigate('/profile')} 
+                        variant="ghost" 
+                        size="sm"
+                        className="gap-2"
+                      >
+                        <User className="h-4 w-4" />
+                        Profile
+                      </Button>
+                      <Button onClick={signOut} variant="outline" size="sm">
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <Button onClick={() => navigate('/auth')} variant="default" size="sm">
+                    Sign In
                   </Button>
-                  <Button onClick={signOut} variant="outline" size="sm">
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <Button onClick={() => navigate('/auth')} variant="default" size="sm">
-                Sign In
-              </Button>
+                )}
+              </div>
+            </div>
+          </header>
+
+          {/* Main Content */}
+          <div className="container mx-auto px-4 py-8">
+            {/* Hero Section with Background */}
+            <div className="relative rounded-xl overflow-hidden mb-12">
+              <div className="absolute inset-0">
+                <img 
+                  src={warehouseHero} 
+                  alt="Whisky barrel warehouse" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/60"></div>
+              </div>
+              <div className="relative text-center py-24 px-8 text-white">
+                <h2 className="text-5xl font-bold mb-4">
+                  Welcome to ARIGI
+                </h2>
+                <p className="text-xl mb-8 max-w-2xl mx-auto">
+                  The blockchain-enhanced premium whisky cask investment platform
+                </p>
+                
+                {/* Marketplace CTA */}
+                <Button 
+                  size="lg"
+                  onClick={() => navigate('/marketplace')}
+                  className="text-lg px-8 py-3 bg-white text-black hover:bg-white/90"
+                >
+                  Explore Marketplace
+                </Button>
+              </div>
+            </div>
+
+            {/* Role-based Dashboard Preview */}
+            {user && (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                {userRole === 'distillery' && (
+                <>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <Building2 className="h-5 w-5" />
+                        <span>My Distillery</span>
+                      </CardTitle>
+                      <CardDescription>Manage your distillery profile and verification</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button className="w-full" variant="outline">
+                        Setup Distillery Profile
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <BarChart3 className="h-5 w-5" />
+                        <span>Cask Management</span>
+                      </CardTitle>
+                      <CardDescription>Add and manage your casks on the blockchain</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button className="w-full" variant="outline">
+                        Add Casks
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <BarChart3 className="h-5 w-5" />
+                        <span>Transaction History</span>
+                      </CardTitle>
+                      <CardDescription>View sales and transaction fees</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button className="w-full" variant="outline">
+                        View Transactions
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
+
+              {(userRole === 'consumer' || userRole === 'investor') && (
+                <>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <BarChart3 className="h-5 w-5" />
+                        <span>Browse Casks</span>
+                      </CardTitle>
+                      <CardDescription>Explore available whisky casks for investment</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        className="w-full" 
+                        onClick={() => navigate('/marketplace')}
+                      >
+                        Browse Marketplace
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <Users className="h-5 w-5" />
+                        <span>My Portfolio</span>
+                      </CardTitle>
+                      <CardDescription>Track your cask investments and ownership</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        className="w-full" 
+                        variant="outline"
+                        onClick={() => navigate('/portfolio')}
+                      >
+                        View Portfolio
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <BarChart3 className="h-5 w-5" />
+                        <span>Investment History</span>
+                      </CardTitle>
+                      <CardDescription>Review your transaction history and returns</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button className="w-full" variant="outline">
+                        View History
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </>
+                )}
+              </div>
             )}
+
+            {/* Platform Features */}
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-foreground mb-6">Platform Features</h3>
+              <div className="grid md:grid-cols-3 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Blockchain Security</CardTitle>
+                    <CardDescription>
+                      Every cask is coded into the blockchain for transparent ownership and provenance
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Fair Fee Structure</CardTitle>
+                    <CardDescription>
+                      Transparent transaction, distillery, and platform fees for all participants
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Premium Casks</CardTitle>
+                    <CardDescription>
+                      Curated selection of premium whisky casks from verified distilleries
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </div>
+            </div>
           </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Hero Section with Background */}
-        <div className="relative rounded-xl overflow-hidden mb-12">
-          <div className="absolute inset-0">
-            <img 
-              src={warehouseHero} 
-              alt="Whisky barrel warehouse" 
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black/60"></div>
-          </div>
-          <div className="relative text-center py-24 px-8 text-white">
-            <h2 className="text-5xl font-bold mb-4">
-              Welcome to ARIGI
-            </h2>
-            <p className="text-xl mb-8 max-w-2xl mx-auto">
-              The blockchain-enhanced premium whisky cask investment platform
-            </p>
-            
-            {/* Marketplace CTA */}
-            <Button 
-              size="lg"
-              onClick={() => navigate('/marketplace')}
-              className="text-lg px-8 py-3 bg-white text-black hover:bg-white/90"
-            >
-              Explore Marketplace
-            </Button>
-          </div>
-        </div>
-
-        {/* Role-based Dashboard Preview */}
-        {user && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {userRole === 'distillery' && (
-            <>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Building2 className="h-5 w-5" />
-                    <span>My Distillery</span>
-                  </CardTitle>
-                  <CardDescription>Manage your distillery profile and verification</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full" variant="outline">
-                    Setup Distillery Profile
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <BarChart3 className="h-5 w-5" />
-                    <span>Cask Management</span>
-                  </CardTitle>
-                  <CardDescription>Add and manage your casks on the blockchain</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full" variant="outline">
-                    Add Casks
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <BarChart3 className="h-5 w-5" />
-                    <span>Transaction History</span>
-                  </CardTitle>
-                  <CardDescription>View sales and transaction fees</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full" variant="outline">
-                    View Transactions
-                  </Button>
-                </CardContent>
-              </Card>
-            </>
-          )}
-
-          {(userRole === 'consumer' || userRole === 'investor') && (
-            <>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <BarChart3 className="h-5 w-5" />
-                    <span>Browse Casks</span>
-                  </CardTitle>
-                  <CardDescription>Explore available whisky casks for investment</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button 
-                    className="w-full" 
-                    onClick={() => navigate('/marketplace')}
-                  >
-                    Browse Marketplace
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Users className="h-5 w-5" />
-                    <span>My Portfolio</span>
-                  </CardTitle>
-                  <CardDescription>Track your cask investments and ownership</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full" variant="outline">
-                    View Portfolio
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <BarChart3 className="h-5 w-5" />
-                    <span>Investment History</span>
-                  </CardTitle>
-                  <CardDescription>Review your transaction history and returns</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full" variant="outline">
-                    View History
-                  </Button>
-                </CardContent>
-              </Card>
-            </>
-            )}
-          </div>
-        )}
-
-        {/* Platform Features */}
-        <div className="text-center">
-          <h3 className="text-2xl font-bold text-foreground mb-6">Platform Features</h3>
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Blockchain Security</CardTitle>
-                <CardDescription>
-                  Every cask is coded into the blockchain for transparent ownership and provenance
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Fair Fee Structure</CardTitle>
-                <CardDescription>
-                  Transparent transaction, distillery, and platform fees for all participants
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Premium Casks</CardTitle>
-                <CardDescription>
-                  Curated selection of premium whisky casks from verified distilleries
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </SidebarProvider>
   );
 };
 
