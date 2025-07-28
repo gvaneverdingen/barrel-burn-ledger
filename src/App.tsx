@@ -10,6 +10,7 @@ import Marketplace from "./pages/Marketplace";
 import CaskDetails from "./pages/CaskDetails";
 import Profile from "./pages/Profile";
 import Portfolio from "./pages/Portfolio";
+import Admin from "./pages/Admin";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/cask/:id" element={<CaskDetails />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

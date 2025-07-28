@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp } from "lucide-react"
+import { Home, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 
@@ -20,6 +20,7 @@ import arigiLogo from '@/assets/arigi-logo.png'
 const publicItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Marketplace", url: "/marketplace", icon: Package },
+  { title: "Admin View", url: "/admin", icon: Users },
 ]
 
 const userItems = [
