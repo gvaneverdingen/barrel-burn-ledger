@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, MapPin, Calendar, Droplets, Gauge, DollarSign, Wine, Building, Hash, Shield } from "lucide-react";
+import caskDetailImage from "@/assets/cask-detail.jpg";
+import singleCask from "@/assets/single-cask.jpg";
 
 interface CaskDetails {
   id: string;
@@ -202,6 +204,25 @@ const CaskDetails = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Cask Image */}
+            <Card>
+              <CardContent className="p-0">
+                <div className="relative h-64 rounded-t-lg overflow-hidden">
+                  <img 
+                    src={caskDetailImage} 
+                    alt="Whisky casks" 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 text-white">
+                    <Badge variant="secondary" className="mb-2 bg-white/20 text-white border-white/30">
+                      #{cask.cask_number}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Header Card */}
             <Card>
               <CardHeader>
@@ -219,9 +240,6 @@ const CaskDetails = () => {
                     </CardDescription>
                   </div>
                   <div className="text-right">
-                    <Badge variant="secondary" className="mb-2">
-                      #{cask.cask_number}
-                    </Badge>
                     <div className="text-2xl font-bold text-primary">
                       {formatCurrency(cask.total_price)}
                     </div>
@@ -355,6 +373,19 @@ const CaskDetails = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Cask Image Card */}
+            <Card>
+              <CardContent className="p-0">
+                <div className="relative h-48 rounded-lg overflow-hidden">
+                  <img 
+                    src={singleCask} 
+                    alt="Single whisky cask" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Purchase Card */}
             <Card>
               <CardHeader>

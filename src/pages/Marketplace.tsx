@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Search, Filter, MapPin, Calendar, BarChart3, LogOut, Home, Package } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import arigiLogo from '@/assets/arigi-logo.png';
+import marketplaceBg from '@/assets/marketplace-bg.jpg';
 
 interface Cask {
   id: string;
@@ -196,14 +197,24 @@ const Marketplace = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-8">
-          <h3 className="text-3xl font-bold text-foreground mb-4">
-            Premium Whisky Cask Marketplace
-          </h3>
-          <p className="text-lg text-muted-foreground">
-            Discover and invest in authenticated whisky casks from verified distilleries
-          </p>
+        {/* Hero Section with Background */}
+        <div className="relative rounded-xl overflow-hidden mb-8">
+          <div className="absolute inset-0">
+            <img 
+              src={marketplaceBg} 
+              alt="Distillery warehouse" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/50"></div>
+          </div>
+          <div className="relative text-center py-16 px-8 text-white">
+            <h3 className="text-4xl font-bold mb-4">
+              Premium Whisky Cask Marketplace
+            </h3>
+            <p className="text-lg max-w-2xl mx-auto">
+              Discover and invest in authenticated whisky casks from verified distilleries
+            </p>
+          </div>
         </div>
 
         {/* Filters and Search */}

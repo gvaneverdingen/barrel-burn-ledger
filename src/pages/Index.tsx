@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, Building2, Users, BarChart3, User } from 'lucide-react';
 import arigiLogo from '@/assets/arigi-logo.png';
+import warehouseHero from '@/assets/warehouse-hero.jpg';
 
 const Index = () => {
   const { user, userRole, signOut, loading } = useAuth();
@@ -93,20 +94,29 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-foreground mb-4">
-            Welcome to ARIGI
-          </h2>
-          <p className="text-xl text-muted-foreground mb-8">
-            The blockchain-enhanced premium whisky cask investment platform
-          </p>
-          
-          {/* Marketplace CTA */}
-          <div className="flex justify-center mb-12">
+        {/* Hero Section with Background */}
+        <div className="relative rounded-xl overflow-hidden mb-12">
+          <div className="absolute inset-0">
+            <img 
+              src={warehouseHero} 
+              alt="Whisky barrel warehouse" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/60"></div>
+          </div>
+          <div className="relative text-center py-24 px-8 text-white">
+            <h2 className="text-5xl font-bold mb-4">
+              Welcome to ARIGI
+            </h2>
+            <p className="text-xl mb-8 max-w-2xl mx-auto">
+              The blockchain-enhanced premium whisky cask investment platform
+            </p>
+            
+            {/* Marketplace CTA */}
             <Button 
               size="lg"
               onClick={() => navigate('/marketplace')}
-              className="text-lg px-8 py-3"
+              className="text-lg px-8 py-3 bg-white text-black hover:bg-white/90"
             >
               Explore Marketplace
             </Button>
