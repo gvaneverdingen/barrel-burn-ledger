@@ -1,0 +1,112 @@
+-- Insert sample cask types
+INSERT INTO public.cask_types (name, capacity_liters, description) VALUES
+('American Oak Barrel', 200, 'Traditional American oak barrels providing vanilla and caramel notes'),
+('Sherry Butt', 500, 'Ex-sherry casks imparting rich fruit and nutty flavors'),
+('Port Pipe', 650, 'Portuguese port wine casks adding sweetness and complexity'),
+('Bourbon Barrel', 180, 'Ex-bourbon barrels with sweet vanilla and spice characteristics'),
+('Madeira Drum', 650, 'Madeira wine casks providing unique fortified wine influence');
+
+-- Insert sample distilleries
+INSERT INTO public.distilleries (name, location, description, verified, established_year, license_number) VALUES
+('Highland Heritage Distillery', 'Speyside, Scotland', 'Award-winning single malt Scotch whisky distillery established in 1887', true, 1887, 'SWA-001234'),
+('Emerald Isle Distillers', 'County Cork, Ireland', 'Traditional Irish whiskey distillery known for smooth, triple-distilled spirits', true, 1825, 'IWA-005678'),
+('Mountain Peak Distillery', 'Kentucky, USA', 'Craft bourbon distillery using traditional copper pot stills', true, 1954, 'TTB-987654'),
+('Coastal Winds Distillery', 'Tasmania, Australia', 'Innovative distillery producing world-class single malt whisky', true, 1999, 'ATO-112233');
+
+-- Insert sample casks (using the IDs from the inserted data)
+INSERT INTO public.casks (
+  distillery_id, 
+  cask_type_id, 
+  spirit_name, 
+  cask_number, 
+  distillation_date, 
+  expected_maturation_years, 
+  current_volume_liters, 
+  alcohol_percentage, 
+  price_per_liter, 
+  total_price, 
+  warehouse_location, 
+  tasting_notes, 
+  blockchain_id,
+  available_for_sale
+) VALUES
+(
+  (SELECT id FROM public.distilleries WHERE name = 'Highland Heritage Distillery' LIMIT 1),
+  (SELECT id FROM public.cask_types WHERE name = 'Sherry Butt' LIMIT 1),
+  'Highland Reserve 15',
+  'HHD-2009-001',
+  '2009-03-15',
+  18,
+  485.5,
+  63.2,
+  125.00,
+  60687.50,
+  'Warehouse A, Block 3',
+  'Rich sherry influence with notes of dried fruits, dark chocolate, and warming spices. Long, complex finish.',
+  'ARG-HHD-001-BLOCKCHAIN',
+  true
+),
+(
+  (SELECT id FROM public.distilleries WHERE name = 'Emerald Isle Distillers' LIMIT 1),
+  (SELECT id FROM public.cask_types WHERE name = 'Bourbon Barrel' LIMIT 1),
+  'Irish Gold Single Malt',
+  'EID-2012-047',
+  '2012-09-22',
+  12,
+  165.8,
+  58.7,
+  95.00,
+  15751.00,
+  'Warehouse B, Row 12',
+  'Smooth and honeyed with vanilla, green apple, and a hint of cinnamon. Clean, crisp finish.',
+  'ARG-EID-047-BLOCKCHAIN',
+  true
+),
+(
+  (SELECT id FROM public.distilleries WHERE name = 'Mountain Peak Distillery' LIMIT 1),
+  (SELECT id FROM public.cask_types WHERE name = 'American Oak Barrel' LIMIT 1),
+  'Mountain Peak Bourbon',
+  'MPD-2015-089',
+  '2015-06-10',
+  8,
+  190.2,
+  62.5,
+  85.00,
+  16167.00,
+  'Rickhouse 4, Level 3',
+  'Bold bourbon with caramel, oak, and pepper. Notes of brown sugar and toasted nuts.',
+  'ARG-MPD-089-BLOCKCHAIN',
+  true
+),
+(
+  (SELECT id FROM public.distilleries WHERE name = 'Coastal Winds Distillery' LIMIT 1),
+  (SELECT id FROM public.cask_types WHERE name = 'Port Pipe' LIMIT 1),
+  'Tasmanian Single Malt',
+  'CWD-2010-156',
+  '2010-11-30',
+  15,
+  620.0,
+  59.8,
+  140.00,
+  86800.00,
+  'Warehouse C, Section 7',
+  'Complex and fruity with port wine influence. Dark berries, chocolate, and maritime salinity.',
+  'ARG-CWD-156-BLOCKCHAIN',
+  true
+),
+(
+  (SELECT id FROM public.distilleries WHERE name = 'Highland Heritage Distillery' LIMIT 1),
+  (SELECT id FROM public.cask_types WHERE name = 'Madeira Drum' LIMIT 1),
+  'Highland Reserve 21',
+  'HHD-2003-025',
+  '2003-12-08',
+  25,
+  590.5,
+  56.4,
+  180.00,
+  106290.00,
+  'Warehouse A, Block 1',
+  'Exceptional maturity with Madeira wine complexity. Tropical fruits, nuts, and elegant oak.',
+  'ARG-HHD-025-BLOCKCHAIN',
+  true
+);
