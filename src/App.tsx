@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import Marketplace from "./pages/Marketplace";
 import CaskDetails from "./pages/CaskDetails";
 import Profile from "./pages/Profile";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/cask/:id" element={<CaskDetails />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -50,15 +50,10 @@ const CaskDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-
     if (id) {
       fetchCaskDetails(id);
     }
-  }, [id, user, navigate]);
+  }, [id]);
 
   const fetchCaskDetails = async (caskId: string) => {
     try {
@@ -108,25 +103,49 @@ const CaskDetails = () => {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("ja-JP", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "JPY",
+      currency: "USD",
     }).format(amount);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("ja-JP", {
+    return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
   };
 
-  const handlePurchaseInquiry = () => {
-    toast({
-      title: "Purchase Inquiry Sent",
-      description: "We'll contact you shortly with purchase details.",
-    });
+  const handlePurchaseClick = async () => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('create-payment', {
+        body: {
+          caskId: cask?.id,
+          amount: Math.round((cask?.total_price || 0) * 100), // Convert to cents
+          currency: 'usd',
+          caskName: cask?.spirit_name,
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error: any) {
+      console.error('Payment error:', error);
+      toast({
+        title: "Payment Error",
+        description: "Failed to start payment process. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (loading) {
@@ -363,13 +382,34 @@ const CaskDetails = () => {
                   </div>
                 </div>
 
-                {userRole !== "distillery" && (
+                {user && userRole !== "distillery" && (
                   <Button 
                     className="w-full" 
-                    onClick={handlePurchaseInquiry}
+                    onClick={handlePurchaseClick}
                     size="lg"
                   >
-                    Inquire About Purchase
+                    Purchase Cask
+                  </Button>
+                )}
+                
+                {!user && (
+                  <Button 
+                    className="w-full" 
+                    onClick={() => navigate('/auth')}
+                    size="lg"
+                  >
+                    Sign In to Purchase
+                  </Button>
+                )}
+                
+                {user && userRole === "distillery" && (
+                  <Button 
+                    className="w-full" 
+                    variant="outline"
+                    disabled
+                    size="lg"
+                  >
+                    Contact Seller
                   </Button>
                 )}
                 

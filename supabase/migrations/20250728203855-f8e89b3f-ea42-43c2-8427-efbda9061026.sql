@@ -1,0 +1,111 @@
+-- Create sample user profiles for distillery owners
+INSERT INTO public.profiles (id, email, role, first_name, last_name, company_name, verification_status) VALUES
+('00000000-0000-0000-0000-000000000001', 'highland@heritage-distillery.com', 'distillery', 'James', 'MacLeod', 'Highland Heritage Distillery', 'verified'),
+('00000000-0000-0000-0000-000000000002', 'contact@emeraldisle.ie', 'distillery', 'Seamus', 'O''Connor', 'Emerald Isle Distillers', 'verified'),
+('00000000-0000-0000-0000-000000000003', 'info@mountainpeak.com', 'distillery', 'Jack', 'Danielson', 'Mountain Peak Distillery', 'verified'),
+('00000000-0000-0000-0000-000000000004', 'hello@coastalwinds.com.au', 'distillery', 'Sarah', 'Thompson', 'Coastal Winds Distillery', 'verified');
+
+-- Insert sample distilleries with profile_id references
+INSERT INTO public.distilleries (profile_id, name, location, description, verified, established_year, license_number) VALUES
+('00000000-0000-0000-0000-000000000001', 'Highland Heritage Distillery', 'Speyside, Scotland', 'Award-winning single malt Scotch whisky distillery established in 1887', true, 1887, 'SWA-001234'),
+('00000000-0000-0000-0000-000000000002', 'Emerald Isle Distillers', 'County Cork, Ireland', 'Traditional Irish whiskey distillery known for smooth, triple-distilled spirits', true, 1825, 'IWA-005678'),
+('00000000-0000-0000-0000-000000000003', 'Mountain Peak Distillery', 'Kentucky, USA', 'Craft bourbon distillery using traditional copper pot stills', true, 1954, 'TTB-987654'),
+('00000000-0000-0000-0000-000000000004', 'Coastal Winds Distillery', 'Tasmania, Australia', 'Innovative distillery producing world-class single malt whisky', true, 1999, 'ATO-112233');
+
+-- Insert sample casks
+INSERT INTO public.casks (
+  distillery_id, 
+  cask_type_id, 
+  spirit_name, 
+  cask_number, 
+  distillation_date, 
+  expected_maturation_years, 
+  current_volume_liters, 
+  alcohol_percentage, 
+  price_per_liter, 
+  total_price, 
+  warehouse_location, 
+  tasting_notes, 
+  blockchain_id,
+  available_for_sale
+) VALUES
+(
+  (SELECT id FROM public.distilleries WHERE name = 'Highland Heritage Distillery' LIMIT 1),
+  (SELECT id FROM public.cask_types WHERE name = 'Sherry Butt' LIMIT 1),
+  'Highland Reserve 15',
+  'HHD-2009-001',
+  '2009-03-15',
+  18,
+  485.5,
+  63.2,
+  125.00,
+  60687.50,
+  'Warehouse A, Block 3',
+  'Rich sherry influence with notes of dried fruits, dark chocolate, and warming spices. Long, complex finish.',
+  'ARG-HHD-001-BLOCKCHAIN',
+  true
+),
+(
+  (SELECT id FROM public.distilleries WHERE name = 'Emerald Isle Distillers' LIMIT 1),
+  (SELECT id FROM public.cask_types WHERE name = 'Bourbon Barrel' LIMIT 1),
+  'Irish Gold Single Malt',
+  'EID-2012-047',
+  '2012-09-22',
+  12,
+  165.8,
+  58.7,
+  95.00,
+  15751.00,
+  'Warehouse B, Row 12',
+  'Smooth and honeyed with vanilla, green apple, and a hint of cinnamon. Clean, crisp finish.',
+  'ARG-EID-047-BLOCKCHAIN',
+  true
+),
+(
+  (SELECT id FROM public.distilleries WHERE name = 'Mountain Peak Distillery' LIMIT 1),
+  (SELECT id FROM public.cask_types WHERE name = 'Bourbon Barrel' LIMIT 1),
+  'Mountain Peak Bourbon',
+  'MPD-2015-089',
+  '2015-06-10',
+  8,
+  190.2,
+  62.5,
+  85.00,
+  16167.00,
+  'Rickhouse 4, Level 3',
+  'Bold bourbon with caramel, oak, and pepper. Notes of brown sugar and toasted nuts.',
+  'ARG-MPD-089-BLOCKCHAIN',
+  true
+),
+(
+  (SELECT id FROM public.distilleries WHERE name = 'Coastal Winds Distillery' LIMIT 1),
+  (SELECT id FROM public.cask_types WHERE name = 'Port Pipe' LIMIT 1),
+  'Tasmanian Single Malt',
+  'CWD-2010-156',
+  '2010-11-30',
+  15,
+  620.0,
+  59.8,
+  140.00,
+  86800.00,
+  'Warehouse C, Section 7',
+  'Complex and fruity with port wine influence. Dark berries, chocolate, and maritime salinity.',
+  'ARG-CWD-156-BLOCKCHAIN',
+  true
+),
+(
+  (SELECT id FROM public.distilleries WHERE name = 'Highland Heritage Distillery' LIMIT 1),
+  (SELECT id FROM public.cask_types WHERE name = 'Hogshead' LIMIT 1),
+  'Highland Reserve 21',
+  'HHD-2003-025',
+  '2003-12-08',
+  25,
+  240.5,
+  56.4,
+  180.00,
+  43290.00,
+  'Warehouse A, Block 1',
+  'Exceptional maturity with complex oak and fruit. Tropical fruits, nuts, and elegant spice.',
+  'ARG-HHD-025-BLOCKCHAIN',
+  true
+);
