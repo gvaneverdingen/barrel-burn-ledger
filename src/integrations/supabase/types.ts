@@ -14,7 +14,357 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cask_ownership: {
+        Row: {
+          acquired_date: string
+          acquisition_price: number | null
+          cask_id: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          owner_id: string
+          ownership_percentage: number
+          updated_at: string
+          volume_liters: number
+        }
+        Insert: {
+          acquired_date?: string
+          acquisition_price?: number | null
+          cask_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          owner_id: string
+          ownership_percentage: number
+          updated_at?: string
+          volume_liters: number
+        }
+        Update: {
+          acquired_date?: string
+          acquisition_price?: number | null
+          cask_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          owner_id?: string
+          ownership_percentage?: number
+          updated_at?: string
+          volume_liters?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cask_ownership_cask_id_fkey"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cask_ownership_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cask_types: {
+        Row: {
+          capacity_liters: number
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          capacity_liters: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          capacity_liters?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      casks: {
+        Row: {
+          alcohol_percentage: number | null
+          available_for_sale: boolean | null
+          blockchain_hash: string | null
+          blockchain_id: string
+          cask_number: string
+          cask_type_id: string
+          created_at: string
+          current_volume_liters: number | null
+          distillation_date: string
+          distillery_id: string
+          expected_maturation_years: number | null
+          id: string
+          price_per_liter: number | null
+          spirit_name: string
+          tasting_notes: string | null
+          total_price: number | null
+          updated_at: string
+          warehouse_location: string | null
+        }
+        Insert: {
+          alcohol_percentage?: number | null
+          available_for_sale?: boolean | null
+          blockchain_hash?: string | null
+          blockchain_id: string
+          cask_number: string
+          cask_type_id: string
+          created_at?: string
+          current_volume_liters?: number | null
+          distillation_date: string
+          distillery_id: string
+          expected_maturation_years?: number | null
+          id?: string
+          price_per_liter?: number | null
+          spirit_name: string
+          tasting_notes?: string | null
+          total_price?: number | null
+          updated_at?: string
+          warehouse_location?: string | null
+        }
+        Update: {
+          alcohol_percentage?: number | null
+          available_for_sale?: boolean | null
+          blockchain_hash?: string | null
+          blockchain_id?: string
+          cask_number?: string
+          cask_type_id?: string
+          created_at?: string
+          current_volume_liters?: number | null
+          distillation_date?: string
+          distillery_id?: string
+          expected_maturation_years?: number | null
+          id?: string
+          price_per_liter?: number | null
+          spirit_name?: string
+          tasting_notes?: string | null
+          total_price?: number | null
+          updated_at?: string
+          warehouse_location?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "casks_cask_type_id_fkey"
+            columns: ["cask_type_id"]
+            isOneToOne: false
+            referencedRelation: "cask_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "casks_distillery_id_fkey"
+            columns: ["distillery_id"]
+            isOneToOne: false
+            referencedRelation: "distilleries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      distilleries: {
+        Row: {
+          created_at: string
+          description: string | null
+          established_year: number | null
+          id: string
+          license_number: string | null
+          location: string | null
+          logo_url: string | null
+          name: string
+          profile_id: string
+          updated_at: string
+          verified: boolean | null
+          website: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          established_year?: number | null
+          id?: string
+          license_number?: string | null
+          location?: string | null
+          logo_url?: string | null
+          name: string
+          profile_id: string
+          updated_at?: string
+          verified?: boolean | null
+          website?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          established_year?: number | null
+          id?: string
+          license_number?: string | null
+          location?: string | null
+          logo_url?: string | null
+          name?: string
+          profile_id?: string
+          updated_at?: string
+          verified?: boolean | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "distilleries_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fee_structure: {
+        Row: {
+          created_at: string
+          description: string | null
+          fee_type: string
+          fixed_amount: number | null
+          id: string
+          is_active: boolean | null
+          percentage: number | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          fee_type: string
+          fixed_amount?: number | null
+          id?: string
+          is_active?: boolean | null
+          percentage?: number | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          fee_type?: string
+          fixed_amount?: number | null
+          id?: string
+          is_active?: boolean | null
+          percentage?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          company_name: string | null
+          created_at: string
+          email: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string
+          verification_status: string | null
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string
+          email: string
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+          verification_status?: string | null
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string
+          email?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+          verification_status?: string | null
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          blockchain_transaction_hash: string | null
+          buyer_id: string
+          cask_id: string
+          completed_at: string | null
+          created_at: string
+          distillery_fee: number
+          id: string
+          platform_fee: number
+          price_per_liter: number
+          seller_id: string
+          status: string | null
+          total_amount: number
+          transaction_fee: number
+          transaction_type: string
+          volume_liters: number
+        }
+        Insert: {
+          blockchain_transaction_hash?: string | null
+          buyer_id: string
+          cask_id: string
+          completed_at?: string | null
+          created_at?: string
+          distillery_fee: number
+          id?: string
+          platform_fee: number
+          price_per_liter: number
+          seller_id: string
+          status?: string | null
+          total_amount: number
+          transaction_fee: number
+          transaction_type: string
+          volume_liters: number
+        }
+        Update: {
+          blockchain_transaction_hash?: string | null
+          buyer_id?: string
+          cask_id?: string
+          completed_at?: string | null
+          created_at?: string
+          distillery_fee?: number
+          id?: string
+          platform_fee?: number
+          price_per_liter?: number
+          seller_id?: string
+          status?: string | null
+          total_amount?: number
+          transaction_fee?: number
+          transaction_type?: string
+          volume_liters?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_cask_id_fkey"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +373,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      user_role: "distillery" | "consumer" | "investor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +500,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["distillery", "consumer", "investor"],
+    },
   },
 } as const
