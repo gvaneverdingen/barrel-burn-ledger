@@ -11,6 +11,7 @@ import CaskDetails from "./pages/CaskDetails";
 import Profile from "./pages/Profile";
 import Portfolio from "./pages/Portfolio";
 import Admin from "./pages/Admin";
+import TestData from "./pages/TestData";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/test-data" element={<TestData />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
