@@ -2,7 +2,8 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { Grape, LogOut, Building2, Users, BarChart3, User } from 'lucide-react';
+import { LogOut, Building2, Users, BarChart3, User } from 'lucide-react';
+import arigiLogo from '@/assets/arigi-logo.png';
 
 const Index = () => {
   const { user, userRole, signOut, loading } = useAuth();
@@ -48,8 +49,8 @@ const Index = () => {
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Grape className="h-8 w-8 text-primary" />
+          <div className="flex items-center space-x-3">
+            <img src={arigiLogo} alt="ARIGI Logo" className="h-10 w-10 object-contain" />
             <h1 className="text-2xl font-bold text-foreground">ARIGI</h1>
           </div>
           
