@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, Package, User, Building2, BarChart3, CreditCard } from "lucide-react"
+import { Home, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 
@@ -26,12 +26,21 @@ const userItems = [
   { title: "Profile", url: "/profile", icon: User },
   { title: "Portfolio", url: "/portfolio", icon: BarChart3 },
   { title: "Transactions", url: "/transactions", icon: CreditCard },
+  { title: "Market Insights", url: "/insights", icon: TrendingUp },
+  { title: "Notifications", url: "/notifications", icon: Bell },
 ]
 
 const distilleryItems = [
   { title: "My Distillery", url: "/distillery", icon: Building2 },
   { title: "Manage Casks", url: "/distillery/casks", icon: Package },
-  { title: "Analytics", url: "/distillery/analytics", icon: BarChart3 },
+  { title: "Sales Analytics", url: "/distillery/analytics", icon: BarChart3 },
+  { title: "Verification", url: "/distillery/verification", icon: Shield },
+]
+
+const supportItems = [
+  { title: "Documentation", url: "/docs", icon: FileText },
+  { title: "Help Center", url: "/help", icon: HelpCircle },
+  { title: "Settings", url: "/settings", icon: Settings },
 ]
 
 export function AppSidebar() {
@@ -46,6 +55,7 @@ export function AppSidebar() {
   const isPublicExpanded = publicItems.some((i) => isActive(i.url))
   const isUserExpanded = user && userItems.some((i) => isActive(i.url))
   const isDistilleryExpanded = user && userRole === 'distillery' && distilleryItems.some((i) => isActive(i.url))
+  const isSupportExpanded = supportItems.some((i) => isActive(i.url))
   
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
     isActive ? "bg-muted text-primary font-medium" : "hover:bg-muted/50"
@@ -124,6 +134,25 @@ export function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         )}
+
+        {/* Support & Settings */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Support</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {supportItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} className={getNavCls}>
+                      <item.icon className="mr-2 h-4 w-4" />
+                      {!collapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
     </Sidebar>
   )
