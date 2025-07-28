@@ -8,10 +8,7 @@ const Index = () => {
   const { user, userRole, signOut, loading } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect to auth if not authenticated
-  if (!user && !loading) {
-    return <Navigate to="/auth" replace />;
-  }
+  // Allow access without authentication
 
   if (loading) {
     return (
@@ -57,30 +54,38 @@ const Index = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <span>Welcome, {user?.email}</span>
-              {userRole && (
-                <div className={`flex items-center space-x-1 ${getRoleColor(userRole)}`}>
-                  {getRoleIcon(userRole)}
-                  <span className="capitalize font-medium">{userRole}</span>
+            {user ? (
+              <>
+                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                  <span>Welcome, {user?.email}</span>
+                  {userRole && (
+                    <div className={`flex items-center space-x-1 ${getRoleColor(userRole)}`}>
+                      {getRoleIcon(userRole)}
+                      <span className="capitalize font-medium">{userRole}</span>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button 
-                onClick={() => navigate('/profile')} 
-                variant="ghost" 
-                size="sm"
-                className="gap-2"
-              >
-                <User className="h-4 w-4" />
-                Profile
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    onClick={() => navigate('/profile')} 
+                    variant="ghost" 
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <User className="h-4 w-4" />
+                    Profile
+                  </Button>
+                  <Button onClick={signOut} variant="outline" size="sm">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <Button onClick={() => navigate('/auth')} variant="default" size="sm">
+                Sign In
               </Button>
-              <Button onClick={signOut} variant="outline" size="sm">
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
+            )}
           </div>
         </div>
       </header>
@@ -97,8 +102,9 @@ const Index = () => {
         </div>
 
         {/* Role-based Dashboard Preview */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {userRole === 'distillery' && (
+        {user && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {userRole === 'distillery' && (
             <>
               <Card>
                 <CardHeader>
@@ -198,8 +204,9 @@ const Index = () => {
                 </CardContent>
               </Card>
             </>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* Platform Features */}
         <div className="text-center">
