@@ -55,15 +55,35 @@ serve(async (req) => {
       }
     ];
 
-    // Insert distilleries
-    const { data: distilleries, error: distilleryError } = await supabaseServiceRole
+    // Insert distilleries (check if they exist first)
+    const { data: existingDistilleries } = await supabaseServiceRole
       .from("distilleries")
-      .upsert(testDistilleries, { onConflict: "name" })
-      .select();
+      .select("name");
 
-    if (distilleryError) {
-      console.log("Distillery error:", distilleryError);
-      throw distilleryError;
+    const existingNames = existingDistilleries?.map(d => d.name) || [];
+    const newDistilleries = testDistilleries.filter(d => !existingNames.includes(d.name));
+
+    let distilleries = existingDistilleries || [];
+    
+    if (newDistilleries.length > 0) {
+      const { data: insertedDistilleries, error: distilleryError } = await supabaseServiceRole
+        .from("distilleries")
+        .insert(newDistilleries)
+        .select();
+
+      if (distilleryError) {
+        console.log("Distillery error:", distilleryError);
+        throw distilleryError;
+      }
+      
+      distilleries = [...distilleries, ...insertedDistilleries];
+    } else {
+      // Get existing distilleries with full data
+      const { data: fullDistilleries } = await supabaseServiceRole
+        .from("distilleries")
+        .select("*")
+        .in("name", testDistilleries.map(d => d.name));
+      distilleries = fullDistilleries || [];
     }
 
     // Get cask types
@@ -206,15 +226,28 @@ serve(async (req) => {
       }
     ];
 
-    // Insert test casks
-    const { data: casks, error: casksError } = await supabaseServiceRole
+    // Insert test casks (check if they exist first)
+    const { data: existingCasks } = await supabaseServiceRole
       .from("casks")
-      .upsert(testCasks, { onConflict: "cask_number" })
-      .select();
+      .select("cask_number");
 
-    if (casksError) {
-      console.log("Casks error:", casksError);
-      throw casksError;
+    const existingCaskNumbers = existingCasks?.map(c => c.cask_number) || [];
+    const newCasks = testCasks.filter(c => !existingCaskNumbers.includes(c.cask_number));
+
+    let casks = existingCasks || [];
+    
+    if (newCasks.length > 0) {
+      const { data: insertedCasks, error: casksError } = await supabaseServiceRole
+        .from("casks")
+        .insert(newCasks)
+        .select();
+
+      if (casksError) {
+        console.log("Casks error:", casksError);
+        throw casksError;
+      }
+      
+      casks = [...casks, ...insertedCasks];
     }
 
     return new Response(JSON.stringify({ 
