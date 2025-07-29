@@ -55,24 +55,41 @@ serve(async (req) => {
       throw new Error("Cask not found");
     }
 
+    // Calculate fees based on transaction type
+    const totalAmount = amount / 100; // Convert to dollars
+    const arigiPlatformFee = Math.round(totalAmount * 0.10 * 100) / 100; // 10%
+    
+    let distilleryFee, sellerAmount, transactionFee;
+    
+    // Check if this is primary sale (distillery selling) or secondary (investor to investor)
+    const isPrimarySale = cask.distillery.profile_id === user.id;
+    
+    if (isPrimarySale) {
+      // Primary market: Distillery → Investor
+      distilleryFee = Math.round(totalAmount * 0.885 * 100) / 100; // 88.5% to distillery
+      sellerAmount = distilleryFee;
+      transactionFee = Math.round(totalAmount * 0.015 * 100) / 100; // 1.5% transaction fee
+    } else {
+      // Secondary market: Investor → Investor  
+      sellerAmount = Math.round(totalAmount * 0.885 * 100) / 100; // 88.5% to seller
+      distilleryFee = Math.round(totalAmount * 0.015 * 100) / 100; // 1.5% to distillery
+      transactionFee = Math.round(totalAmount * 0.015 * 100) / 100; // 1.5% transaction fee
+    }
+
     const { data: transaction, error: transactionError } = await supabaseService.from("transactions").insert({
       buyer_id: user.id,
-      seller_id: cask.distillery.profile_id,
+      seller_id: isPrimarySale ? cask.distillery.profile_id : user.id, // Set seller appropriately
       cask_id: caskId,
-      transaction_type: "purchase",
-      total_amount: amount / 100, // Convert back to dollars
+      transaction_type: isPrimarySale ? "primary_purchase" : "secondary_purchase",
+      total_amount: totalAmount,
       volume_liters: cask.current_volume_liters || 0,
       price_per_liter: cask.price_per_liter || 0,
-      transaction_fee: Math.round(amount * 0.029), // 2.9% Stripe fee
-      platform_fee: Math.round(amount * 0.02), // 2% platform fee
-      distillery_fee: Math.round(amount * 0.01), // 1% distillery fee
-      status: "pending",
+      transaction_fee: transactionFee,
+      platform_fee: arigiPlatformFee,
+      distillery_fee: distilleryFee,
+      status: "payment_pending", // Will require manual approval
+      seller_amount: sellerAmount,
     }).select().single();
-
-    if (transactionError) {
-      console.error("Error creating transaction:", transactionError);
-      throw transactionError;
-    }
 
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
