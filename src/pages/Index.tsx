@@ -2,7 +2,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, Building2, Users, BarChart3, User, Crown, Shield, Gem, Star, Sparkles } from 'lucide-react';
+import { LogOut, Building2, Users, BarChart3, User, Crown, Shield, Gem, Star, Sparkles, Link2, FileText, TrendingUp, Eye } from 'lucide-react';
 import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import arigiLogo from '@/assets/arigi-logo.png';
@@ -143,6 +143,163 @@ const Index = () => {
                       </Button>
                     )}
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Platform Concept & Vision */}
+            <div className="mb-20">
+              <div className="text-center mb-16">
+                <h3 className="text-5xl font-bold luxury-text-gradient mb-6">Revolutionizing Whisky Investment</h3>
+                <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+                  ARIGI bridges the gap between traditional whisky craftsmanship and modern blockchain technology, 
+                  creating the world's first comprehensive platform for single malt cask investment and ownership verification.
+                </p>
+              </div>
+
+              <div className="grid lg:grid-cols-2 gap-12 mb-16">
+                {/* Left Column - Our Vision */}
+                <div className="space-y-8">
+                  <Card className="luxury-card animate-fade-in">
+                    <CardHeader>
+                      <CardTitle className="text-2xl text-primary flex items-center gap-3 mb-4">
+                        <TrendingUp className="h-8 w-8" />
+                        Our Vision
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
+                      <p>
+                        We envision a world where whisky cask investment is accessible, transparent, and secure for both 
+                        seasoned collectors and newcomers to the market. Our platform democratizes access to premium single 
+                        malt investments while maintaining the highest standards of authenticity and provenance.
+                      </p>
+                      <p>
+                        By leveraging blockchain technology, we ensure that every barrel's existence is verified, 
+                        ownership is crystal clear, and the complete history of each cask is immutably preserved 
+                        for future generations of whisky enthusiasts.
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="luxury-card animate-fade-in" style={{animationDelay: '0.1s'}}>
+                    <CardHeader>
+                      <CardTitle className="text-2xl text-accent flex items-center gap-3 mb-4">
+                        <Link2 className="h-8 w-8" />
+                        Connecting Investors & Distilleries
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
+                      <p>
+                        ARIGI serves as the premium bridge connecting passionate investors with world-renowned distilleries. 
+                        Our platform enables distilleries to showcase their finest casks while providing investors with 
+                        unprecedented access to exceptional single malt opportunities.
+                      </p>
+                      <p>
+                        Through our verification system, distilleries gain complete visibility into cask ownership, 
+                        enabling better relationships with their investors and enhanced tracking of their premium products 
+                        throughout the maturation and investment lifecycle.
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Right Column - Key Features */}
+                <div className="space-y-8">
+                  <Card className="luxury-card animate-fade-in" style={{animationDelay: '0.2s'}}>
+                    <CardHeader>
+                      <CardTitle className="text-2xl text-secondary flex items-center gap-3 mb-4">
+                        <Shield className="h-8 w-8" />
+                        Blockchain-Verified Ownership
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
+                      <p>
+                        Every cask on our platform is backed by blockchain technology, ensuring that all barrels 
+                        genuinely exist and are properly documented. This revolutionary approach eliminates fraud 
+                        and provides investors with complete confidence in their acquisitions.
+                      </p>
+                      <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg p-4 border border-primary/20">
+                        <h4 className="font-semibold text-primary mb-2">Ownership Benefits:</h4>
+                        <ul className="space-y-1 text-sm">
+                          <li>• Immutable ownership records</li>
+                          <li>• Clear title verification</li>
+                          <li>• Transparent transaction history</li>
+                          <li>• Instant ownership transfers</li>
+                        </ul>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="luxury-card animate-fade-in" style={{animationDelay: '0.3s'}}>
+                    <CardHeader>
+                      <CardTitle className="text-2xl text-primary flex items-center gap-3 mb-4">
+                        <FileText className="h-8 w-8" />
+                        Complete Cask History & Details
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
+                      <p>
+                        Access comprehensive information about each cask including its complete ownership history, 
+                        distillation details, maturation progress, and tasting notes. Our platform maintains 
+                        detailed records that enhance both investment decisions and collecting experiences.
+                      </p>
+                      <div className="bg-gradient-to-r from-accent/10 to-secondary/10 rounded-lg p-4 border border-accent/20">
+                        <h4 className="font-semibold text-accent mb-2">Detailed Information:</h4>
+                        <ul className="space-y-1 text-sm">
+                          <li>• Previous ownership chain</li>
+                          <li>• Distillation & maturation data</li>
+                          <li>• Current volume & alcohol content</li>
+                          <li>• Professional tasting notes</li>
+                          <li>• Investment performance metrics</li>
+                        </ul>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+
+              {/* How It Works Section */}
+              <div className="text-center mb-12">
+                <h4 className="text-3xl font-bold luxury-text-gradient mb-8">How ARIGI Works</h4>
+                <div className="grid md:grid-cols-3 gap-8">
+                  <Card className="luxury-card animate-fade-in group hover:scale-105 transition-all duration-300">
+                    <CardHeader className="text-center">
+                      <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-primary to-primary/80 rounded-full w-16 h-16 flex items-center justify-center">
+                        <Building2 className="h-8 w-8 text-primary-foreground" />
+                      </div>
+                      <CardTitle className="text-lg text-primary mb-2">1. Distillery Verification</CardTitle>
+                      <CardDescription className="text-muted-foreground">
+                        Premium distilleries register and verify their credentials, ensuring only authentic producers 
+                        can list casks on our platform.
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+
+                  <Card className="luxury-card animate-fade-in group hover:scale-105 transition-all duration-300" style={{animationDelay: '0.1s'}}>
+                    <CardHeader className="text-center">
+                      <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-accent to-accent/80 rounded-full w-16 h-16 flex items-center justify-center">
+                        <Link2 className="h-8 w-8 text-accent-foreground" />
+                      </div>
+                      <CardTitle className="text-lg text-accent mb-2">2. Blockchain Registration</CardTitle>
+                      <CardDescription className="text-muted-foreground">
+                        Each cask is registered on the blockchain with comprehensive details, creating an 
+                        immutable record of its existence and characteristics.
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+
+                  <Card className="luxury-card animate-fade-in group hover:scale-105 transition-all duration-300" style={{animationDelay: '0.2s'}}>
+                    <CardHeader className="text-center">
+                      <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-secondary to-secondary/80 rounded-full w-16 h-16 flex items-center justify-center">
+                        <Eye className="h-8 w-8 text-secondary-foreground" />
+                      </div>
+                      <CardTitle className="text-lg text-secondary mb-2">3. Transparent Investment</CardTitle>
+                      <CardDescription className="text-muted-foreground">
+                        Investors can browse, analyze, and purchase cask shares with complete visibility into 
+                        ownership history, cask details, and investment potential.
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
                 </div>
               </div>
             </div>
