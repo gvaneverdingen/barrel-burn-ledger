@@ -37,6 +37,43 @@ serve(async (req) => {
       throw new Error("Missing required parameters: caskId, amount, or caskName");
     }
 
+    // Create transaction record in Supabase first
+    const supabaseService = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
+
+    // Get cask details for transaction
+    const { data: cask, error: caskError } = await supabaseService
+      .from("casks")
+      .select("*, distillery:distilleries(profile_id)")
+      .eq("id", caskId)
+      .single();
+
+    if (caskError || !cask) {
+      throw new Error("Cask not found");
+    }
+
+    const { data: transaction, error: transactionError } = await supabaseService.from("transactions").insert({
+      buyer_id: user.id,
+      seller_id: cask.distillery.profile_id,
+      cask_id: caskId,
+      transaction_type: "purchase",
+      total_amount: amount / 100, // Convert back to dollars
+      volume_liters: cask.current_volume_liters || 0,
+      price_per_liter: cask.price_per_liter || 0,
+      transaction_fee: Math.round(amount * 0.029), // 2.9% Stripe fee
+      platform_fee: Math.round(amount * 0.02), // 2% platform fee
+      distillery_fee: Math.round(amount * 0.01), // 1% distillery fee
+      status: "pending",
+    }).select().single();
+
+    if (transactionError) {
+      console.error("Error creating transaction:", transactionError);
+      throw transactionError;
+    }
+
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
@@ -72,29 +109,10 @@ serve(async (req) => {
       metadata: {
         caskId: caskId,
         userId: user.id,
+        transactionId: transaction.id,
       }
     });
 
-    // Optional: Create transaction record in Supabase
-    const supabaseService = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-      { auth: { persistSession: false } }
-    );
-
-    await supabaseService.from("transactions").insert({
-      buyer_id: user.id,
-      seller_id: null, // Will be filled from cask data
-      cask_id: caskId,
-      transaction_type: "purchase",
-      total_amount: amount / 100, // Convert back to dollars
-      volume_liters: 0, // Will be updated from cask data
-      price_per_liter: 0, // Will be updated from cask data
-      transaction_fee: Math.round(amount * 0.029), // 2.9% Stripe fee
-      platform_fee: Math.round(amount * 0.02), // 2% platform fee
-      distillery_fee: Math.round(amount * 0.01), // 1% distillery fee
-      status: "pending",
-    });
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
