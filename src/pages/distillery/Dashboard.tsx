@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Package, BarChart3, Shield, Plus } from "lucide-react";
+import { Building2, Package, BarChart3, Shield, Plus, Home } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -70,9 +70,20 @@ const DistilleryDashboard = () => {
   return (
     <div className="container mx-auto p-6">
       <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold luxury-text-gradient">{distillery.name}</h1>
-          <p className="text-muted-foreground">{distillery.location}</p>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2"
+          >
+            <Home className="h-4 w-4" />
+            Home
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold luxury-text-gradient">{distillery.name}</h1>
+            <p className="text-muted-foreground">{distillery.location}</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {distillery.verified ? (
