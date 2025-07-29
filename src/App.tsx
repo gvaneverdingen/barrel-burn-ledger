@@ -15,6 +15,12 @@ import TestData from "./pages/TestData";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 
+// Distillery pages
+import DistilleryDashboard from "./pages/distillery/Dashboard";
+import DistilleryCasks from "./pages/distillery/Casks";
+import DistilleryAnalytics from "./pages/distillery/Analytics";
+import DistilleryVerification from "./pages/distillery/Verification";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -34,6 +40,13 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/test-data" element={<TestData />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
+            
+            {/* Distillery Routes */}
+            <Route path="/distillery" element={<DistilleryDashboard />} />
+            <Route path="/distillery/casks" element={<DistilleryCasks />} />
+            <Route path="/distillery/analytics" element={<DistilleryAnalytics />} />
+            <Route path="/distillery/verification" element={<DistilleryVerification />} />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
