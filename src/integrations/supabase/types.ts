@@ -105,7 +105,12 @@ export type Database = {
           distillation_date: string
           distillery_id: string
           expected_maturation_years: number | null
+          finishing_cask_type: string | null
+          finishing_duration_months: number | null
+          finishing_notes: string | null
+          has_been_finished: boolean | null
           id: string
+          original_cask_type: string | null
           price_per_liter: number | null
           spirit_name: string
           tasting_notes: string | null
@@ -125,7 +130,12 @@ export type Database = {
           distillation_date: string
           distillery_id: string
           expected_maturation_years?: number | null
+          finishing_cask_type?: string | null
+          finishing_duration_months?: number | null
+          finishing_notes?: string | null
+          has_been_finished?: boolean | null
           id?: string
+          original_cask_type?: string | null
           price_per_liter?: number | null
           spirit_name: string
           tasting_notes?: string | null
@@ -145,7 +155,12 @@ export type Database = {
           distillation_date?: string
           distillery_id?: string
           expected_maturation_years?: number | null
+          finishing_cask_type?: string | null
+          finishing_duration_months?: number | null
+          finishing_notes?: string | null
+          has_been_finished?: boolean | null
           id?: string
+          original_cask_type?: string | null
           price_per_liter?: number | null
           spirit_name?: string
           tasting_notes?: string | null
