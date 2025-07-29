@@ -30,35 +30,31 @@ serve(async (req) => {
 
     console.log("Found cask types:", caskTypes?.length);
 
-    // Create a test profile first
-    const testProfileId = crypto.randomUUID();
-    const testProfile = {
-      id: testProfileId,
-      email: "test@example.com",
-      first_name: "Test",
-      last_name: "User",
-      role: "distillery",
-      company_name: "Highland Test Distillery Ltd"
-    };
-
-    // Insert the test profile
-    const { data: profile, error: profileError } = await supabaseServiceRole
+    // Use existing user instead of creating a new profile
+    const { data: existingUsers, error: usersError } = await supabaseServiceRole
       .from("profiles")
-      .insert([testProfile])
-      .select()
-      .single();
+      .select("id, email")
+      .limit(1);
 
-    if (profileError) {
-      console.log("Profile insert error:", profileError);
-      throw profileError;
+    if (usersError) {
+      console.log("Users fetch error:", usersError);
+      throw usersError;
     }
 
-    console.log("Created profile:", profile.email);
+    let profileId;
+    if (existingUsers && existingUsers.length > 0) {
+      profileId = existingUsers[0].id;
+      console.log("Using existing profile:", existingUsers[0].email);
+    } else {
+      // If no profiles exist, use the auth user ID directly
+      profileId = "99e289e8-cf01-4277-bbe2-b99b088a4166";
+      console.log("Using auth user ID directly");
+    }
 
-    // Create a simple test distillery using the test profile
+    // Create a simple test distillery using the existing profile
     const testDistillery = {
       id: crypto.randomUUID(),
-      profile_id: testProfileId,
+      profile_id: profileId,
       name: "Highland Test Distillery",
       location: "Speyside, Scotland",
       description: "A test distillery for demonstration purposes.",
