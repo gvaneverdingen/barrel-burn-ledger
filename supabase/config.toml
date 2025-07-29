@@ -80,3 +80,6 @@ verify_jwt = true
 
 [functions.stripe-webhook]
 verify_jwt = false
+
+[functions.approve-transaction]
+verify_jwt = true

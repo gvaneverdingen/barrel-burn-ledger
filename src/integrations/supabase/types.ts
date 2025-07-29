@@ -253,6 +253,56 @@ export type Database = {
         }
         Relationships: []
       }
+      payouts: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          fee_type: string
+          id: string
+          processed_at: string | null
+          recipient_id: string | null
+          recipient_type: string
+          status: string
+          transaction_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          fee_type: string
+          id?: string
+          processed_at?: string | null
+          recipient_id?: string | null
+          recipient_type: string
+          status?: string
+          transaction_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          fee_type?: string
+          id?: string
+          processed_at?: string | null
+          recipient_id?: string | null
+          recipient_type?: string
+          status?: string
+          transaction_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payouts_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           company_name: string | null
@@ -291,6 +341,7 @@ export type Database = {
       }
       transactions: {
         Row: {
+          admin_notes: string | null
           blockchain_transaction_hash: string | null
           buyer_id: string
           cask_id: string
@@ -309,6 +360,7 @@ export type Database = {
           volume_liters: number
         }
         Insert: {
+          admin_notes?: string | null
           blockchain_transaction_hash?: string | null
           buyer_id: string
           cask_id: string
@@ -327,6 +379,7 @@ export type Database = {
           volume_liters: number
         }
         Update: {
+          admin_notes?: string | null
           blockchain_transaction_hash?: string | null
           buyer_id?: string
           cask_id?: string
