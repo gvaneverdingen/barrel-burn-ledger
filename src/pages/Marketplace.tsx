@@ -25,6 +25,11 @@ interface Cask {
   warehouse_location: string;
   tasting_notes: string;
   blockchain_id: string;
+  original_cask_type: string;
+  finishing_cask_type: string;
+  finishing_duration_months: number;
+  finishing_notes: string;
+  has_been_finished: boolean;
   distillery: {
     name: string;
     location: string;
@@ -144,6 +149,12 @@ const Marketplace = () => {
   const calculateAge = (distillationDate: string) => {
     const years = new Date().getFullYear() - new Date(distillationDate).getFullYear();
     return years;
+  };
+
+  // Calculate price per liter at 100% alcohol strength (ASL)
+  const calculatePricePerLiterASL = (pricePerLiter: number, alcoholPercentage: number) => {
+    if (!alcoholPercentage || alcoholPercentage === 0) return pricePerLiter;
+    return pricePerLiter / (alcoholPercentage / 100);
   };
 
   if (loading) {
@@ -313,10 +324,25 @@ const Marketplace = () => {
                       <p className="font-medium">{cask.alcohol_percentage}%</p>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Type:</span>
-                      <p className="font-medium">{cask.cask_type?.name}</p>
+                      <span className="text-muted-foreground">Cask Type:</span>
+                      <p className="font-medium">{cask.original_cask_type || cask.cask_type?.name}</p>
                     </div>
                   </div>
+
+                  {/* Cask Finishing Information */}
+                  {cask.has_been_finished && (
+                    <div className="p-3 bg-muted/50 rounded-md">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                          Finished
+                        </Badge>
+                      </div>
+                      <div className="text-sm space-y-1">
+                        <p><span className="text-muted-foreground">Finishing:</span> {cask.finishing_cask_type}</p>
+                        <p><span className="text-muted-foreground">Duration:</span> {cask.finishing_duration_months} months</p>
+                      </div>
+                    </div>
+                  )}
 
                   {cask.tasting_notes && (
                     <div>
@@ -332,8 +358,17 @@ const Marketplace = () => {
                         {formatCurrency(cask.total_price)}
                       </span>
                     </div>
-                    <div className="text-sm text-muted-foreground mb-4">
-                      {formatCurrency(cask.price_per_liter)} per liter
+                    <div className="text-sm space-y-1">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Per liter:</span>
+                        <span>{formatCurrency(cask.price_per_liter)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Per liter (100% ASL):</span>
+                        <span className="font-medium text-primary">
+                          {formatCurrency(calculatePricePerLiterASL(cask.price_per_liter, cask.alcohol_percentage))}
+                        </span>
+                      </div>
                     </div>
                     
                     {user && (userRole === 'consumer' || userRole === 'investor') && (

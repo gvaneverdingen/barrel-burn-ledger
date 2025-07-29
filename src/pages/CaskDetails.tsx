@@ -27,6 +27,11 @@ interface CaskDetails {
   blockchain_hash: string;
   expected_maturation_years: number;
   created_at: string;
+  original_cask_type: string;
+  finishing_cask_type: string;
+  finishing_duration_months: number;
+  finishing_notes: string;
+  has_been_finished: boolean;
   distillery: {
     id: string;
     name: string;
@@ -111,6 +116,12 @@ const CaskDetails = () => {
     }).format(amount);
   };
 
+  // Calculate price per liter at 100% alcohol strength (ASL)
+  const calculatePricePerLiterASL = (pricePerLiter: number, alcoholPercentage: number) => {
+    if (!alcoholPercentage || alcoholPercentage === 0) return pricePerLiter;
+    return pricePerLiter / (alcoholPercentage / 100);
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -118,6 +129,7 @@ const CaskDetails = () => {
       day: "numeric",
     });
   };
+
 
   const handlePurchaseClick = async () => {
     if (!user) {
@@ -408,8 +420,17 @@ const CaskDetails = () => {
                     <span className="font-medium">{formatCurrency(cask.price_per_liter)}</span>
                   </div>
                   <div className="flex justify-between">
+                    <span>Price per Liter (100% ASL):</span>
+                    <span className="font-bold text-primary">
+                      {formatCurrency(calculatePricePerLiterASL(cask.price_per_liter, cask.alcohol_percentage))}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
                     <span>Volume:</span>
                     <span className="font-medium">{cask.current_volume_liters}L</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground pt-2 border-t">
+                    <p>ASL = Alcohol Strength by Liter</p>
                   </div>
                 </div>
 
