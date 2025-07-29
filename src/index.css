@@ -143,8 +143,7 @@ All colors MUST be HSL.
     opacity: 0.1;
     pointer-events: none;
   }
-}
-}
+  }
 
 @layer base {
   * {
