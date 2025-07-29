@@ -37,12 +37,14 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    if (user) {
+    console.log('Profile useEffect - user:', user, 'loading:', loading);
+    if (user && !loading) {
       fetchProfile();
     }
-  }, [user]);
+  }, [user, loading]);
 
   const fetchProfile = async () => {
+    console.log('fetchProfile called - user:', user);
     if (!user) return;
 
     try {
@@ -62,12 +64,15 @@ const Profile = () => {
         return;
       }
 
+      console.log('Profile data:', data);
       setProfile(data);
-      setFormData({
-        first_name: data.first_name || '',
-        last_name: data.last_name || '',
-        company_name: data.company_name || '',
-      });
+      if (data) {
+        setFormData({
+          first_name: data.first_name || '',
+          last_name: data.last_name || '',
+          company_name: data.company_name || '',
+        });
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
     } finally {
