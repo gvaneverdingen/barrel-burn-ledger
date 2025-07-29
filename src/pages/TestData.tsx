@@ -68,16 +68,17 @@ const TestDataCreator = () => {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <h4 className="font-medium">Distilleries:</h4>
+                    <h4 className="font-medium">Test Distillery:</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Highland Heritage Distillery (Speyside)</li>
-                      <li>• Speyside Crown Distillery</li>
-                      <li>• Islay Storm Distillery</li>
+                      <li>• Highland Heritage Single Malt Distillery</li>
+                      <li>• Located in Speyside, Scotland</li>
+                      <li>• Established 1876, Verified Distillery</li>
+                      <li>• Specializes in premium single malt whisky</li>
                     </ul>
                   </div>
                   
                   <div className="space-y-2">
-                    <h4 className="font-medium">Cask Types:</h4>
+                    <h4 className="font-medium">Cask Varieties:</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• American Oak Bourbon Barrels</li>
                       <li>• European Oak Sherry Butts</li>
@@ -85,20 +86,20 @@ const TestDataCreator = () => {
                       <li>• Port Wine Casks</li>
                       <li>• Japanese Mizunara Oak</li>
                       <li>• Virgin American Oak</li>
-                      <li>• And more...</li>
                     </ul>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <h4 className="font-medium">Test Casks:</h4>
+                  <h4 className="font-medium">30 Premium Single Malt Casks:</h4>
                   <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• Highland Heritage 18 Year Single Malt (Bourbon Barrel) - $83,475</li>
-                    <li>• Highland Heritage 25 Year Reserve (Sherry Butt) - $395,420</li>
-                    <li>• Speyside Crown 16 Year Port Finish - $122,564</li>
-                    <li>• Islay Storm 15 Year Peated (Bourbon Barrel) - $109,562</li>
-                    <li>• Islay Storm Mizunara Limited Edition - $198,480</li>
-                    <li>• And more premium casks with realistic pricing...</li>
+                    <li>• Highland Heritage Single Malt 12-21 Year aged expressions</li>
+                    <li>• Volume range: 190-209 liters per cask</li>
+                    <li>• ABV range: 58-62% cask strength</li>
+                    <li>• Price range: £76,000 - £220,000 per cask</li>
+                    <li>• Realistic tasting notes based on cask type and age</li>
+                    <li>• Stored across 3 Highland warehouses</li>
+                    <li>• All casks available for purchase with blockchain verification</li>
                   </ul>
                 </div>
 
