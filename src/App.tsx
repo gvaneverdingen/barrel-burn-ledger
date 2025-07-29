@@ -15,6 +15,11 @@ import TestData from "./pages/TestData";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 import Insights from "./pages/Insights";
+import Notifications from "./pages/Notifications";
+import Transactions from "./pages/Transactions";
+import Documentation from "./pages/Documentation";
+import Help from "./pages/Help";
+import Settings from "./pages/Settings";
 
 // Distillery pages
 import DistilleryDashboard from "./pages/distillery/Dashboard";
@@ -39,6 +44,11 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/insights" element={<Insights />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/transactions" element={<Transactions />} />
+            <Route path="/docs" element={<Documentation />} />
+            <Route path="/help" element={<Help />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/test-data" element={<TestData />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
