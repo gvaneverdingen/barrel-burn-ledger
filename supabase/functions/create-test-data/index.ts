@@ -30,10 +30,35 @@ serve(async (req) => {
 
     console.log("Found cask types:", caskTypes?.length);
 
-    // Create a simple test distillery
+    // Create a test profile first
+    const testProfileId = crypto.randomUUID();
+    const testProfile = {
+      id: testProfileId,
+      email: "test@example.com",
+      first_name: "Test",
+      last_name: "User",
+      role: "distillery_owner",
+      company_name: "Highland Test Distillery Ltd"
+    };
+
+    // Insert the test profile
+    const { data: profile, error: profileError } = await supabaseServiceRole
+      .from("profiles")
+      .insert([testProfile])
+      .select()
+      .single();
+
+    if (profileError) {
+      console.log("Profile insert error:", profileError);
+      throw profileError;
+    }
+
+    console.log("Created profile:", profile.email);
+
+    // Create a simple test distillery using the test profile
     const testDistillery = {
       id: crypto.randomUUID(),
-      profile_id: crypto.randomUUID(), // Use a random UUID instead of all zeros
+      profile_id: testProfileId,
       name: "Highland Test Distillery",
       location: "Speyside, Scotland",
       description: "A test distillery for demonstration purposes.",
