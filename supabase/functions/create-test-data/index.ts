@@ -37,7 +37,7 @@ serve(async (req) => {
       email: "test@example.com",
       first_name: "Test",
       last_name: "User",
-      role: "distillery_owner",
+      role: "distillery",
       company_name: "Highland Test Distillery Ltd"
     };
 
