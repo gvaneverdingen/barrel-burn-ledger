@@ -14,6 +14,7 @@ import Admin from "./pages/Admin";
 import TestData from "./pages/TestData";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
+import Insights from "./pages/Insights";
 
 // Distillery pages
 import DistilleryDashboard from "./pages/distillery/Dashboard";
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/cask/:id" element={<CaskDetails />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/insights" element={<Insights />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/test-data" element={<TestData />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
