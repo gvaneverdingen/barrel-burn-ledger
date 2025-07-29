@@ -91,6 +91,11 @@ serve(async (req) => {
       seller_amount: sellerAmount,
     }).select().single();
 
+    if (transactionError) {
+      console.error("Error creating transaction:", transactionError);
+      throw transactionError;
+    }
+
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
@@ -113,7 +118,7 @@ serve(async (req) => {
             currency: currency,
             product_data: { 
               name: `Whisky Cask Investment: ${caskName}`,
-              description: `Purchase of premium whisky cask ${caskName} via ARIGI platform`
+              description: `Purchase of premium whisky cask ${caskName} via ARIGI platform (Subject to manual approval)`
             },
             unit_amount: amount, // Amount in cents
           },

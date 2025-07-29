@@ -72,50 +72,24 @@ serve(async (req) => {
         throw new Error("Transaction not found");
       }
 
-      // Log transaction to blockchain
-      try {
-        console.log("Logging transaction to blockchain...");
-        
-        const blockchainResponse = await supabaseService.functions.invoke('blockchain-logger', {
-          body: {
-            caskId: caskId,
-            buyerId: userId,
-            sellerId: transaction.seller_id,
-            transactionType: 'purchase',
-            volume: transaction.volume_liters,
-            price: transaction.total_amount,
-            timestamp: Date.now()
-          }
-        });
+      // Update transaction status to indicate payment received but awaiting approval
+      const { error: updateError } = await supabaseService
+        .from('transactions')
+        .update({
+          status: 'payment_received_awaiting_approval',
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', transactionId);
 
-        if (blockchainResponse.error) {
-          console.error("Blockchain logging failed:", blockchainResponse.error);
-          
-          // Mark transaction as completed but with blockchain pending
-          await supabaseService
-            .from('transactions')
-            .update({
-              status: 'blockchain_pending',
-              completed_at: new Date().toISOString()
-            })
-            .eq('id', transactionId);
-        } else {
-          console.log("Transaction successfully logged to blockchain:", blockchainResponse.data);
-        }
-      } catch (blockchainError) {
-        console.error("Error during blockchain logging:", blockchainError);
-        
-        // Still mark payment as completed even if blockchain fails
-        await supabaseService
-          .from('transactions')
-          .update({
-            status: 'blockchain_pending',
-            completed_at: new Date().toISOString()
-          })
-          .eq('id', transactionId);
+      if (updateError) {
+        console.error("Error updating transaction status:", updateError);
+        throw updateError;
       }
 
-      console.log("Payment processing completed");
+      console.log("Payment received and marked for manual approval");
+
+      // Note: Blockchain logging and ownership transfer will happen 
+      // only after manual approval in the admin panel
     }
 
     return new Response(JSON.stringify({ received: true }), {

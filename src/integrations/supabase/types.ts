@@ -300,6 +300,7 @@ export type Database = {
           id: string
           platform_fee: number
           price_per_liter: number
+          seller_amount: number | null
           seller_id: string
           status: string | null
           total_amount: number
@@ -317,6 +318,7 @@ export type Database = {
           id?: string
           platform_fee: number
           price_per_liter: number
+          seller_amount?: number | null
           seller_id: string
           status?: string | null
           total_amount: number
@@ -334,6 +336,7 @@ export type Database = {
           id?: string
           platform_fee?: number
           price_per_liter?: number
+          seller_amount?: number | null
           seller_id?: string
           status?: string | null
           total_amount?: number
