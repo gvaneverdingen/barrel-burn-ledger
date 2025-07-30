@@ -10,6 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, MapPin, Calendar, Droplets, Gauge, DollarSign, Wine, Building, Hash, Shield } from "lucide-react";
 import caskDetailImage from "@/assets/cask-detail.jpg";
 import singleCask from "@/assets/single-cask.jpg";
+import { CaskImageGallery } from "@/components/CaskImageGallery";
+import { CaskImageUpload } from "@/components/CaskImageUpload";
 
 interface CaskDetails {
   id: string;
@@ -55,12 +57,44 @@ const CaskDetails = () => {
   const { toast } = useToast();
   const [cask, setCask] = useState<CaskDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const [imageRefreshTrigger, setImageRefreshTrigger] = useState(0);
+  const [canManageImages, setCanManageImages] = useState(false);
 
   useEffect(() => {
     if (id) {
       fetchCaskDetails(id);
     }
   }, [id]);
+
+  useEffect(() => {
+    if (cask && user) {
+      checkImageManagementPermissions();
+    }
+  }, [cask, user]);
+
+  const checkImageManagementPermissions = async () => {
+    if (!cask || !user) return;
+
+    try {
+      // Check if the user owns this cask through their distillery
+      const { data, error } = await supabase
+        .from('distilleries')
+        .select('id')
+        .eq('profile_id', user.id)
+        .eq('id', cask.distillery.id)
+        .single();
+
+      if (!error && data) {
+        setCanManageImages(true);
+      }
+    } catch (error) {
+      console.error('Error checking permissions:', error);
+    }
+  };
+
+  const handleImageUploaded = () => {
+    setImageRefreshTrigger(prev => prev + 1);
+  };
 
   const fetchCaskDetails = async (caskId: string) => {
     try {
@@ -381,6 +415,22 @@ const CaskDetails = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Real Barrel Photos */}
+            <CaskImageGallery 
+              caskId={cask.id} 
+              canManage={canManageImages}
+              refreshTrigger={imageRefreshTrigger}
+            />
+
+            {/* Image Upload for Distillery Owners */}
+            {canManageImages && (
+              <CaskImageUpload 
+                caskId={cask.id}
+                onImageUploaded={handleImageUploaded}
+                canUpload={canManageImages}
+              />
+            )}
           </div>
 
           {/* Sidebar */}

@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      cask_images: {
+        Row: {
+          cask_id: string
+          created_at: string
+          description: string | null
+          id: string
+          image_type: string | null
+          image_url: string
+          is_primary: boolean | null
+          updated_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          cask_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_type?: string | null
+          image_url: string
+          is_primary?: boolean | null
+          updated_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          cask_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_type?: string | null
+          image_url?: string
+          is_primary?: boolean | null
+          updated_at?: string
+          uploaded_by?: string
+        }
+        Relationships: []
+      }
       cask_ownership: {
         Row: {
           acquired_date: string
