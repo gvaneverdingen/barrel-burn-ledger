@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { ethers } from "https://esm.sh/ethers@6.8.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -66,9 +67,8 @@ serve(async (req) => {
 
     console.log("Processing blockchain transaction:", transaction);
 
-    // Simulate blockchain interaction
-    // In a real implementation, this would interact with a blockchain network
-    const blockchainResult = await simulateBlockchainTransaction(transaction);
+    // Execute blockchain transaction on Polygon
+    const blockchainResult = await executePolygonTransaction(transaction);
     
     console.log("Blockchain transaction result:", blockchainResult);
 
@@ -160,33 +160,74 @@ serve(async (req) => {
   }
 });
 
-// Simulate blockchain transaction
-// In production, this would use Web3.js or ethers.js to interact with Ethereum
-async function simulateBlockchainTransaction(transaction: BlockchainTransaction): Promise<BlockchainResponse> {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
-  
-  // Generate a realistic-looking transaction hash
-  const hashBytes = new Uint8Array(32);
-  crypto.getRandomValues(hashBytes);
-  const transactionHash = '0x' + Array.from(hashBytes)
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
-  
-  // Simulate occasional failures (5% chance)
-  const success = Math.random() > 0.05;
-  
-  if (!success) {
+// Execute actual blockchain transaction on Polygon
+async function executePolygonTransaction(transaction: BlockchainTransaction): Promise<BlockchainResponse> {
+  try {
+    console.log("Connecting to Polygon network...");
+    
+    // Get environment variables
+    const polygonRpcUrl = Deno.env.get("POLYGON_RPC_URL");
+    const privateKey = Deno.env.get("POLYGON_PRIVATE_KEY");
+    
+    if (!polygonRpcUrl || !privateKey) {
+      throw new Error("Missing Polygon configuration");
+    }
+    
+    // Create provider and wallet
+    const provider = new ethers.JsonRpcProvider(polygonRpcUrl);
+    const wallet = new ethers.Wallet(privateKey, provider);
+    
+    console.log("Wallet address:", wallet.address);
+    
+    // Simple contract ABI for logging transactions
+    const contractABI = [
+      "function logTransaction(string memory caskId, address buyer, string memory txType, uint256 volume, uint256 price) public returns (bytes32)",
+      "event TransactionLogged(bytes32 indexed txId, string caskId, address buyer, string txType, uint256 volume, uint256 price, uint256 timestamp)"
+    ];
+    
+    // Deploy a simple logging contract or use existing one
+    // For this implementation, we'll create a simple transaction with metadata
+    const transactionData = JSON.stringify({
+      caskId: transaction.caskId,
+      buyerId: transaction.buyerId,
+      sellerId: transaction.sellerId,
+      type: transaction.transactionType,
+      volume: transaction.volume,
+      price: transaction.price,
+      timestamp: transaction.timestamp
+    });
+    
+    // Create a simple transaction to log the cask transaction
+    const tx = await wallet.sendTransaction({
+      to: wallet.address, // Self-transaction for logging
+      value: ethers.parseEther("0"), // No value transfer
+      data: ethers.hexlify(ethers.toUtf8Bytes(transactionData)),
+      gasLimit: 100000
+    });
+    
+    console.log("Transaction sent:", tx.hash);
+    
+    // Wait for confirmation
+    const receipt = await tx.wait();
+    
+    if (!receipt) {
+      throw new Error("Transaction receipt not available");
+    }
+    
+    console.log("Transaction confirmed in block:", receipt.blockNumber);
+    
+    return {
+      transactionHash: tx.hash,
+      blockNumber: receipt.blockNumber,
+      gasUsed: Number(receipt.gasUsed),
+      success: true
+    };
+    
+  } catch (error) {
+    console.error("Polygon transaction error:", error);
     return {
       transactionHash: '',
       success: false
     };
   }
-  
-  return {
-    transactionHash,
-    blockNumber: Math.floor(Math.random() * 1000000) + 18000000,
-    gasUsed: Math.floor(Math.random() * 50000) + 21000,
-    success: true
-  };
 }
