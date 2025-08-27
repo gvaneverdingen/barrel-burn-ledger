@@ -1,11 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, TrendingUp, DollarSign, Package } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BarChart3, TrendingUp, DollarSign, Package, Home } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const DistilleryAnalytics = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const { data: distillery } = useQuery({
     queryKey: ['distillery', user?.id],
@@ -56,8 +59,20 @@ const DistilleryAnalytics = () => {
   return (
     <div className="container mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold luxury-text-gradient">Sales Analytics</h1>
-        <p className="text-muted-foreground">Track your sales performance and revenue</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold luxury-text-gradient">Sales Analytics</h1>
+            <p className="text-muted-foreground">Track your sales performance and revenue</p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2"
+          >
+            <Home className="h-4 w-4" />
+            Home
+          </Button>
+        </div>
       </div>
 
       {/* Analytics Cards */}
