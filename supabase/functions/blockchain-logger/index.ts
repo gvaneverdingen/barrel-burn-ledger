@@ -163,15 +163,26 @@ serve(async (req) => {
 // Execute actual blockchain transaction on Polygon
 async function executePolygonTransaction(transaction: BlockchainTransaction): Promise<BlockchainResponse> {
   try {
-    console.log("Connecting to Polygon network...");
+    console.log("Connecting to Polygon network...", {
+      caskId: transaction.caskId,
+      transactionType: transaction.transactionType
+    });
     
     // Get environment variables
     const polygonRpcUrl = Deno.env.get("POLYGON_RPC_URL");
     const privateKey = Deno.env.get("POLYGON_PRIVATE_KEY");
     
-    if (!polygonRpcUrl || !privateKey) {
-      throw new Error("Missing Polygon configuration");
+    if (!polygonRpcUrl) {
+      console.error("POLYGON_RPC_URL is missing");
+      throw new Error("Missing Polygon RPC URL configuration");
     }
+    
+    if (!privateKey) {
+      console.error("POLYGON_PRIVATE_KEY is missing");
+      throw new Error("Missing Polygon private key configuration");
+    }
+    
+    console.log("Creating provider with RPC URL:", polygonRpcUrl.substring(0, 50) + "...");
     
     // Create provider and wallet
     const provider = new ethers.JsonRpcProvider(polygonRpcUrl);
@@ -179,42 +190,70 @@ async function executePolygonTransaction(transaction: BlockchainTransaction): Pr
     
     console.log("Wallet address:", wallet.address);
     
-    // Simple contract ABI for logging transactions
-    const contractABI = [
-      "function logTransaction(string memory caskId, address buyer, string memory txType, uint256 volume, uint256 price) public returns (bytes32)",
-      "event TransactionLogged(bytes32 indexed txId, string caskId, address buyer, string txType, uint256 volume, uint256 price, uint256 timestamp)"
-    ];
+    // Check wallet balance first
+    const balance = await provider.getBalance(wallet.address);
+    console.log("Wallet balance (MATIC):", ethers.formatEther(balance));
     
-    // Deploy a simple logging contract or use existing one
-    // For this implementation, we'll create a simple transaction with metadata
-    const transactionData = JSON.stringify({
+    if (balance === 0n) {
+      console.warn("Wallet has no MATIC for gas fees");
+    }
+    
+    // Get current gas price
+    const gasPrice = await provider.getFeeData();
+    console.log("Current gas price:", gasPrice.gasPrice?.toString());
+    
+    // Create transaction data with cask information
+    const transactionData = {
       caskId: transaction.caskId,
       buyerId: transaction.buyerId,
-      sellerId: transaction.sellerId,
+      sellerId: transaction.sellerId || "system",
       type: transaction.transactionType,
-      volume: transaction.volume,
-      price: transaction.price,
+      volume: transaction.volume.toString(),
+      price: transaction.price.toString(),
       timestamp: transaction.timestamp
-    });
+    };
     
-    // Create a simple transaction to log the cask transaction
+    console.log("Preparing transaction data:", transactionData);
+    
+    // Create transaction to log on Polygon
+    const txData = ethers.hexlify(ethers.toUtf8Bytes(JSON.stringify(transactionData)));
+    
     const tx = await wallet.sendTransaction({
-      to: wallet.address, // Self-transaction for logging
+      to: wallet.address, // Self-transaction for data logging
       value: ethers.parseEther("0"), // No value transfer
-      data: ethers.hexlify(ethers.toUtf8Bytes(transactionData)),
-      gasLimit: 100000
+      data: txData,
+      gasLimit: 100000,
+      gasPrice: gasPrice.gasPrice || ethers.parseUnits("30", "gwei")
     });
     
-    console.log("Transaction sent:", tx.hash);
+    console.log("Transaction sent to Polygon:", {
+      hash: tx.hash,
+      to: tx.to,
+      gasLimit: tx.gasLimit?.toString(),
+      gasPrice: tx.gasPrice?.toString()
+    });
     
-    // Wait for confirmation
-    const receipt = await tx.wait();
+    // Wait for confirmation (with timeout)
+    const receipt = await Promise.race([
+      tx.wait(),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Transaction timeout after 60 seconds")), 60000)
+      )
+    ]) as ethers.TransactionReceipt;
     
     if (!receipt) {
       throw new Error("Transaction receipt not available");
     }
     
-    console.log("Transaction confirmed in block:", receipt.blockNumber);
+    console.log("Transaction confirmed on Polygon:", {
+      blockNumber: receipt.blockNumber,
+      gasUsed: receipt.gasUsed.toString(),
+      status: receipt.status
+    });
+    
+    if (receipt.status !== 1) {
+      throw new Error("Transaction failed on blockchain");
+    }
     
     return {
       transactionHash: tx.hash,
@@ -224,7 +263,14 @@ async function executePolygonTransaction(transaction: BlockchainTransaction): Pr
     };
     
   } catch (error) {
-    console.error("Polygon transaction error:", error);
+    console.error("Polygon transaction error:", {
+      message: error.message,
+      stack: error.stack,
+      caskId: transaction.caskId,
+      transactionType: transaction.transactionType
+    });
+    
+    // Return detailed error information
     return {
       transactionHash: '',
       success: false
