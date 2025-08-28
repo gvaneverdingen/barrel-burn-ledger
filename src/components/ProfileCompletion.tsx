@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,7 @@ import { User, ArrowRight } from 'lucide-react';
 
 const ProfileCompletion = () => {
   const { user, userRole, refreshUserData } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     first_name: '',
@@ -142,6 +144,9 @@ const ProfileCompletion = () => {
 
       // Refresh user data to update profile completion status
       await refreshUserData();
+      
+      // Redirect to homepage after successful completion
+      navigate('/');
     } catch (error) {
       console.error('ProfileCompletion: Unexpected error completing profile:', error);
       toast({
