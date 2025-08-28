@@ -168,7 +168,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Create mock user for Magic wallet
         const magicUser = await createMagicUser(magicUserMetadata.email, walletAddress);
         setUser(magicUser);
-        setUserRole('consumer');
+        
+        // Fetch the role from the database profile
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', magicUser.id)
+            .maybeSingle();
+          
+          setUserRole(profile?.role as UserRole || 'consumer');
+        } catch (error) {
+          console.error('Error fetching Magic user role:', error);
+          setUserRole('consumer');
+        }
+        
         setLoading(false);
         
         toast({
