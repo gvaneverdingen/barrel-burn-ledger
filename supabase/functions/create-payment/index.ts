@@ -74,8 +74,9 @@ serve(async (req) => {
     
     let distilleryFee, sellerAmount, transactionFee, sellerId;
     
-    // Check if this is primary sale (distillery selling) or secondary (investor to investor)
-    const isPrimarySale = cask.distillery.profile_id === user.id;
+    // For now, all sales are treated as primary sales (distillery to investor)
+    // In the future, we'll check ownership table to determine if it's secondary market
+    const isPrimarySale = true;
     
     console.log("Sale type analysis:", { 
       isPrimarySale, 
@@ -83,18 +84,11 @@ serve(async (req) => {
       buyerId: user.id 
     });
     
-    if (isPrimarySale) {
-      // Primary market: Distillery → Investor
-      distilleryFee = Math.round(totalAmount * 0.885 * 100) / 100; // 88.5% to distillery
-      sellerAmount = distilleryFee;
-      transactionFee = Math.round(totalAmount * 0.015 * 100) / 100; // 1.5% transaction fee
-      sellerId = cask.distillery.profile_id; // The distillery owner is the seller
-    } else {
-      // Secondary market: Investor → Investor
-      // For now, assume it's a primary sale since we don't have ownership tracking yet
-      // This would need ownership table to determine actual seller
-      throw new Error("Secondary market transactions not yet supported - ownership tracking needed");
-    }
+    // Primary market: Distillery → Investor
+    distilleryFee = Math.round(totalAmount * 0.885 * 100) / 100; // 88.5% to distillery
+    sellerAmount = distilleryFee;
+    transactionFee = Math.round(totalAmount * 0.015 * 100) / 100; // 1.5% transaction fee
+    sellerId = cask.distillery.profile_id; // The distillery owner is the seller
 
     console.log("Creating transaction with data:", {
       buyer_id: user.id,
