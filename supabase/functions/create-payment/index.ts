@@ -1,4 +1,4 @@
-// Payment processing v2.0 - Fixed primary sale logic
+// Payment processing v3.0 - Added comprehensive error handling and logging
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -15,16 +15,18 @@ serve(async (req) => {
   }
 
   try {
-    console.log("Payment creation started");
+    console.log("=== PAYMENT CREATION STARTED v3.0 ===");
     
     // Parse request body first to get user info
     const requestBody = await req.json();
     const { caskId, amount, currency = "usd", caskName, userId, userEmail } = requestBody;
     
-    console.log("Request data:", { caskId, amount, currency, caskName, userId, userEmail });
+    console.log("Request data received:", { caskId, amount, currency, caskName, userId, userEmail });
 
     if (!caskId || !amount || !caskName || !userId || !userEmail) {
-      throw new Error("Missing required parameters: caskId, amount, caskName, userId, or userEmail");
+      const errorMsg = "Missing required parameters: caskId, amount, caskName, userId, or userEmail";
+      console.error("Validation error:", errorMsg);
+      throw new Error(errorMsg);
     }
 
     // Create Supabase service client for database operations
@@ -33,6 +35,8 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
       { auth: { persistSession: false } }
     );
+
+    console.log("Supabase service client created successfully");
 
     // Use user info from request body (works for both regular and Magic wallet users)
     const user = {
@@ -64,16 +68,21 @@ serve(async (req) => {
     }
     
     if (!cask) {
+      console.error("Cask not found - no data returned");
       throw new Error("Cask not found");
     }
     
-    console.log("Cask data retrieved:", { caskId: cask.id, distilleryProfileId: cask.distillery.profile_id });
+    console.log("Cask data retrieved successfully:", { 
+      caskId: cask.id, 
+      distilleryProfileId: cask.distillery.profile_id,
+      distilleryName: cask.distillery.name 
+    });
 
     // Calculate fees based on transaction type
     const totalAmount = amount / 100; // Convert to dollars
     const arigiPlatformFee = Math.round(totalAmount * 0.10 * 100) / 100; // 10%
     
-    let distilleryFee, sellerAmount, transactionFee, sellerId;
+    console.log("Fee calculations:", { totalAmount, arigiPlatformFee });
     
     // For now, all sales are treated as primary sales (distillery to investor)
     // In the future, we'll check ownership table to determine if it's secondary market
@@ -86,52 +95,72 @@ serve(async (req) => {
     });
     
     // Primary market: Distillery → Investor
-    distilleryFee = Math.round(totalAmount * 0.885 * 100) / 100; // 88.5% to distillery
-    sellerAmount = distilleryFee;
-    transactionFee = Math.round(totalAmount * 0.015 * 100) / 100; // 1.5% transaction fee
-    sellerId = cask.distillery.profile_id; // The distillery owner is the seller
+    const distilleryFee = Math.round(totalAmount * 0.885 * 100) / 100; // 88.5% to distillery
+    const sellerAmount = distilleryFee;
+    const transactionFee = Math.round(totalAmount * 0.015 * 100) / 100; // 1.5% transaction fee
+    const sellerId = cask.distillery.profile_id; // The distillery owner is the seller
 
-    console.log("Creating transaction with data:", {
-      buyer_id: user.id,
-      seller_id: sellerId,
-      cask_id: caskId,
-      transaction_type: "purchase",
-      total_amount: totalAmount
+    console.log("Transaction calculations completed:", {
+      distilleryFee,
+      sellerAmount,
+      transactionFee,
+      sellerId
     });
 
-    const { data: transaction, error: transactionError } = await supabaseService.from("transactions").insert({
+    const transactionData = {
       buyer_id: user.id,
       seller_id: sellerId,
       cask_id: caskId,
-      transaction_type: "purchase", // Use correct enum value
+      transaction_type: "purchase", // Valid enum value: purchase, transfer, or sale
       total_amount: totalAmount,
       volume_liters: cask.current_volume_liters || 0,
       price_per_liter: cask.price_per_liter || 0,
       transaction_fee: transactionFee,
       platform_fee: arigiPlatformFee,
       distillery_fee: distilleryFee,
-      status: "pending", // Use the correct status value
+      status: "pending", // Valid enum value: pending, completed, failed, cancelled
       seller_amount: sellerAmount,
-    }).select().single();
+    };
+
+    console.log("Creating transaction with data:", transactionData);
+
+    const { data: transaction, error: transactionError } = await supabaseService
+      .from("transactions")
+      .insert(transactionData)
+      .select()
+      .single();
 
     if (transactionError) {
-      console.error("Error creating transaction:", transactionError);
-      throw transactionError;
+      console.error("Transaction creation error details:", {
+        message: transactionError.message,
+        details: transactionError.details,
+        hint: transactionError.hint,
+        code: transactionError.code
+      });
+      throw new Error(`Failed to create transaction: ${transactionError.message}`);
     }
 
+    console.log("Transaction created successfully:", { transactionId: transaction.id });
+
     // Initialize Stripe
+    console.log("Initializing Stripe...");
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
     });
 
     // Check if a Stripe customer record exists for this user
+    console.log("Checking for existing Stripe customer:", user.email);
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
+      console.log("Found existing Stripe customer:", customerId);
+    } else {
+      console.log("No existing Stripe customer found");
     }
 
     // Create a one-time payment session
+    console.log("Creating Stripe checkout session...");
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -158,13 +187,24 @@ serve(async (req) => {
       }
     });
 
+    console.log("Stripe checkout session created successfully:", { 
+      sessionId: session.id, 
+      url: session.url 
+    });
+
+    console.log("=== PAYMENT CREATION COMPLETED SUCCESSFULLY ===");
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
-    console.error("Payment creation error:", error);
+    console.error("=== PAYMENT CREATION ERROR ===");
+    console.error("Error details:", {
+      message: error.message,
+      name: error.name,
+      stack: error.stack
+    });
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
