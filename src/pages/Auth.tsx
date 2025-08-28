@@ -8,7 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/hooks/use-toast';
 import { Grape, Building2, Users } from 'lucide-react';
+import WalletConnect from '@/components/WalletConnect';
 
 const Auth = () => {
   const { user, signUp, signIn, loading } = useAuth();
@@ -72,9 +74,10 @@ const Auth = () => {
         </div>
 
         <Tabs defaultValue="signin" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="signin">Sign In</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <TabsTrigger value="wallet">Magic Wallet</TabsTrigger>
           </TabsList>
 
           <TabsContent value="signin">
@@ -214,6 +217,17 @@ const Auth = () => {
                 </CardFooter>
               </form>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="wallet">
+            <WalletConnect 
+              onConnect={(walletAddress, email) => {
+                toast({
+                  title: "Wallet Connected",
+                  description: "Magic wallet connected successfully! You can now use blockchain features.",
+                });
+              }}
+            />
           </TabsContent>
         </Tabs>
       </div>

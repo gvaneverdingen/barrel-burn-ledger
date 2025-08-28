@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 interface UserProfile {
   id: string;
   email: string;
-  role: 'distillery' | 'consumer' | 'investor';
+  role: 'distillery' | 'consumer' | 'investor' | 'administrator' | 'facilitator';
   first_name: string | null;
   last_name: string | null;
   company_name: string | null;
