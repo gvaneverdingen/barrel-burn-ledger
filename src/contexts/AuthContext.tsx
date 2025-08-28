@@ -221,11 +221,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUserRole(null);
         setProfileComplete(false);
         setLoading(false);
+      } else if (!isMagicLoggedIn && !user) {
+        // No authentication active - ensure loading is false
+        setLoading(false);
       }
     };
 
     handleMagicAuth();
-  }, [isMagicLoggedIn, magicUserMetadata, walletAddress]);
+  }, [isMagicLoggedIn, magicUserMetadata, walletAddress, user]);
 
   const signUp = async (email: string, password: string, role: UserRole, additionalData?: any) => {
     console.log('SignUp attempt for:', email, 'with role:', role);
