@@ -11,6 +11,7 @@ interface AuthContextType {
   session: Session | null;
   userRole: UserRole | null;
   loading: boolean;
+  profileComplete: boolean;
   signUp: (email: string, password: string, role: UserRole, additionalData?: any) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -31,10 +32,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [profileComplete, setProfileComplete] = useState(false);
   const [loading, setLoading] = useState(true);
   
   // Get Magic context
   const { isLoggedIn: isMagicLoggedIn, userMetadata: magicUserMetadata, walletAddress, logout: magicLogout } = useMagic();
+
+  const checkProfileComplete = async (userId: string) => {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('first_name, last_name')
+        .eq('id', userId)
+        .maybeSingle();
+      
+      const isComplete = !!(profile?.first_name && profile?.last_name);
+      setProfileComplete(isComplete);
+      return isComplete;
+    } catch (error) {
+      console.error('Error checking profile completeness:', error);
+      setProfileComplete(false);
+      return false;
+    }
+  };
 
   const refreshUserData = async () => {
     if (!user) return;
@@ -42,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('role')
+        .select('role, first_name, last_name')
         .eq('id', user.id)
         .maybeSingle();
       
@@ -53,6 +73,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (profile) {
         setUserRole(profile.role as UserRole);
+        const isComplete = !!(profile.first_name && profile.last_name);
+        setProfileComplete(isComplete);
       }
     } catch (error) {
       console.error('Error refreshing user data:', error);
@@ -135,6 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }, 0);
         } else {
           setUserRole(null);
+          setProfileComplete(false);
         }
         
         setLoading(false);
@@ -169,18 +192,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const magicUser = await createMagicUser(magicUserMetadata.email, walletAddress);
         setUser(magicUser);
         
-        // Fetch the role from the database profile
+        // Fetch the role and profile completeness from the database
         try {
           const { data: profile } = await supabase
             .from('profiles')
-            .select('role')
+            .select('role, first_name, last_name')
             .eq('id', magicUser.id)
             .maybeSingle();
           
           setUserRole(profile?.role as UserRole || 'consumer');
+          const isComplete = !!(profile?.first_name && profile?.last_name);
+          setProfileComplete(isComplete);
         } catch (error) {
-          console.error('Error fetching Magic user role:', error);
+          console.error('Error fetching Magic user profile:', error);
           setUserRole('consumer');
+          setProfileComplete(false);
         }
         
         setLoading(false);
@@ -193,6 +219,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Magic user logged out
         setUser(null);
         setUserRole(null);
+        setProfileComplete(false);
         setLoading(false);
       }
     };
@@ -282,6 +309,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await magicLogout();
       setUser(null);
       setUserRole(null);
+      setProfileComplete(false);
       toast({
         title: "Signed Out",
         description: "You've been signed out successfully.",
@@ -310,6 +338,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     session,
     userRole,
     loading,
+    profileComplete,
     signUp,
     signIn,
     signOut,
