@@ -7,11 +7,110 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Settings as SettingsIcon, User, Bell, Shield, CreditCard, Smartphone } from "lucide-react";
+import { Settings as SettingsIcon, User, Bell, Shield, CreditCard, Smartphone, AlertCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+import { useState } from "react";
+import PasswordStrengthIndicator from "@/components/PasswordStrengthIndicator";
+import { validatePasswordStrength } from "@/utils/passwordValidation";
+import { passwordChangeRateLimiter } from "@/utils/rateLimiting";
 
 const Settings = () => {
   const { user } = useAuth();
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [passwordTouched, setPasswordTouched] = useState(false);
+
+  const handlePasswordUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to change your password.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Rate limiting check for password changes
+    if (!passwordChangeRateLimiter.isAllowed(user.id)) {
+      const remaining = passwordChangeRateLimiter.getRemainingTime(user.id);
+      const minutes = Math.ceil(remaining / (1000 * 60));
+      
+      toast({
+        title: "Too Many Password Change Attempts",
+        description: `Please wait ${minutes} minute(s) before trying again.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate new password strength
+    const passwordStrength = validatePasswordStrength(passwordForm.newPassword);
+    if (!passwordStrength.isValid) {
+      toast({
+        title: "Password Too Weak",
+        description: "Please create a stronger password following the guidelines.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if passwords match
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast({
+        title: "Passwords Don't Match",
+        description: "Please ensure both password fields match.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUpdatingPassword(true);
+
+    try {
+      // Update password in Supabase Auth
+      const { error } = await supabase.auth.updateUser({
+        password: passwordForm.newPassword
+      });
+
+      if (error) {
+        toast({
+          title: "Password Update Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Password Updated",
+          description: "Your password has been updated successfully. Enhanced security measures are now active.",
+        });
+        
+        // Clear form and reset rate limit on success
+        setPasswordForm({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+        setPasswordTouched(false);
+        passwordChangeRateLimiter.reset(user.id);
+      }
+    } catch (error) {
+      toast({
+        title: "Update Error",
+        description: "An unexpected error occurred while updating your password.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
 
   return (
     <SidebarProvider>
@@ -130,24 +229,62 @@ const Settings = () => {
                   <CardTitle>Security Settings</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div>
+                  <form onSubmit={handlePasswordUpdate}>
                     <h4 className="font-medium mb-2">Change Password</h4>
                     <div className="space-y-3">
                       <div>
                         <Label htmlFor="currentPassword">Current Password</Label>
-                        <Input id="currentPassword" type="password" />
+                        <Input 
+                          id="currentPassword" 
+                          type="password" 
+                          value={passwordForm.currentPassword}
+                          onChange={(e) => setPasswordForm({...passwordForm, currentPassword: e.target.value})}
+                          required
+                        />
                       </div>
                       <div>
                         <Label htmlFor="newPassword">New Password</Label>
-                        <Input id="newPassword" type="password" />
+                        <Input 
+                          id="newPassword" 
+                          type="password" 
+                          value={passwordForm.newPassword}
+                          onChange={(e) => {
+                            setPasswordForm({...passwordForm, newPassword: e.target.value});
+                            if (!passwordTouched) setPasswordTouched(true);
+                          }}
+                          minLength={8}
+                          required
+                        />
+                        {passwordTouched && passwordForm.newPassword && (
+                          <div className="mt-2">
+                            <PasswordStrengthIndicator 
+                              password={passwordForm.newPassword}
+                              showFeedback={true}
+                            />
+                          </div>
+                        )}
                       </div>
                       <div>
                         <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                        <Input id="confirmPassword" type="password" />
+                        <Input 
+                          id="confirmPassword" 
+                          type="password" 
+                          value={passwordForm.confirmPassword}
+                          onChange={(e) => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                          required
+                        />
+                        {passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword && (
+                          <p className="text-sm text-destructive mt-1 flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />
+                            Passwords don't match
+                          </p>
+                        )}
                       </div>
-                      <Button>Update Password</Button>
+                      <Button type="submit" disabled={isUpdatingPassword}>
+                        {isUpdatingPassword ? 'Updating Password...' : 'Update Password'}
+                      </Button>
                     </div>
-                  </div>
+                  </form>
                   <Separator />
                   <div className="flex items-center justify-between">
                     <div>

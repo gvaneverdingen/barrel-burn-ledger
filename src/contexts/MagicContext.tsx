@@ -35,8 +35,8 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     const initializeMagic = async () => {
       try {
-        // Get Magic publishable key from environment
-        const magicKey = 'pk_live_18128E74207D08B6'; // Replace with your actual key
+        // Magic publishable key - this is safe to expose as it's designed to be public
+        const magicKey = 'pk_live_18128E74207D08B6';
         
         const magicInstance = new Magic(magicKey, {
           extensions: [new ConnectExtension()],

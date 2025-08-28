@@ -9,12 +9,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
-import { Grape, Building2, Users } from 'lucide-react';
+import { Grape, Building2, Users, AlertCircle } from 'lucide-react';
 import WalletConnect from '@/components/WalletConnect';
+import PasswordStrengthIndicator from '@/components/PasswordStrengthIndicator';
+import { validatePasswordStrength } from '@/utils/passwordValidation';
+import { authRateLimiter } from '@/utils/rateLimiting';
 
 const Auth = () => {
   const { user, signUp, signIn, loading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [signUpPassword, setSignUpPassword] = useState('');
+  const [passwordTouched, setPasswordTouched] = useState(false);
 
   // Redirect if already authenticated
   if (user && !loading) {
@@ -33,6 +38,18 @@ const Auth = () => {
     const lastName = formData.get('lastName') as string;
     const companyName = formData.get('companyName') as string;
 
+    // Validate password strength
+    const passwordStrength = validatePasswordStrength(password);
+    if (!passwordStrength.isValid) {
+      toast({
+        title: "Password Too Weak",
+        description: "Please create a stronger password following the guidelines below.",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     await signUp(email, password, role, {
       firstName,
       lastName,
@@ -50,7 +67,27 @@ const Auth = () => {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    await signIn(email, password);
+    // Rate limiting check
+    if (!authRateLimiter.isAllowed(email)) {
+      const remaining = authRateLimiter.getRemainingTime(email);
+      const minutes = Math.ceil(remaining / (1000 * 60));
+      
+      toast({
+        title: "Too Many Attempts", 
+        description: `Please wait ${minutes} minute(s) before trying again.`,
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    const result = await signIn(email, password);
+    
+    // Reset rate limit on successful login
+    if (!result?.error) {
+      authRateLimiter.reset(email);
+    }
+    
     setIsSubmitting(false);
   };
 
@@ -206,8 +243,19 @@ const Auth = () => {
                       type="password"
                       required
                       placeholder="••••••••"
-                      minLength={6}
+                      minLength={8}
+                      value={signUpPassword}
+                      onChange={(e) => {
+                        setSignUpPassword(e.target.value);
+                        if (!passwordTouched) setPasswordTouched(true);
+                      }}
                     />
+                    {passwordTouched && (
+                      <PasswordStrengthIndicator 
+                        password={signUpPassword}
+                        showFeedback={true}
+                      />
+                    )}
                   </div>
                 </CardContent>
                 <CardFooter>
