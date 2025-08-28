@@ -67,7 +67,7 @@ vector_port = 54328
 gw_port = 54329
 
 [functions.create-payment]
-verify_jwt = true
+verify_jwt = false
 
 [functions.create-test-data]
 verify_jwt = false
