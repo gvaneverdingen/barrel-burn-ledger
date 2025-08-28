@@ -39,11 +39,11 @@ const ProfileCompletion = () => {
       if (user.user_metadata?.wallet_address) {
         console.log('ProfileCompletion: Magic wallet user detected, using upsert');
         
-        // First check if profile exists
+        // Check if profile exists by ID or email
         const { data: existingProfile, error: checkError } = await supabase
           .from('profiles')
-          .select('id')
-          .eq('id', user.id)
+          .select('id, email')
+          .or(`id.eq.${user.id},email.eq.${user.email}`)
           .maybeSingle();
 
         if (checkError) {
@@ -65,7 +65,7 @@ const ProfileCompletion = () => {
               last_name: formData.last_name.trim(),
               company_name: formData.company_name.trim() || null,
             })
-            .eq('id', user.id);
+            .eq('id', existingProfile.id);
 
           if (error) {
             console.error('ProfileCompletion: Error updating Magic user profile:', error);
