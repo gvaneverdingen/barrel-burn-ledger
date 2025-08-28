@@ -88,7 +88,7 @@ serve(async (req) => {
       distilleryFee = Math.round(totalAmount * 0.885 * 100) / 100; // 88.5% to distillery
       sellerAmount = distilleryFee;
       transactionFee = Math.round(totalAmount * 0.015 * 100) / 100; // 1.5% transaction fee
-      sellerId = user.id; // The distillery is the seller
+      sellerId = cask.distillery.profile_id; // The distillery owner is the seller
     } else {
       // Secondary market: Investor → Investor
       // For now, assume it's a primary sale since we don't have ownership tracking yet
@@ -115,7 +115,7 @@ serve(async (req) => {
       transaction_fee: transactionFee,
       platform_fee: arigiPlatformFee,
       distillery_fee: distilleryFee,
-      status: "payment_pending", // Will require manual approval
+      status: "pending", // Use the correct status value
       seller_amount: sellerAmount,
     }).select().single();
 
