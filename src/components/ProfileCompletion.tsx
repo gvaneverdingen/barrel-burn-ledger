@@ -39,25 +39,65 @@ const ProfileCompletion = () => {
       if (user.id.startsWith('magic_')) {
         console.log('ProfileCompletion: Magic wallet user detected, using upsert');
         
-        const { error } = await supabase
+        // First check if profile exists
+        const { data: existingProfile, error: checkError } = await supabase
           .from('profiles')
-          .upsert({
-            id: user.id,
-            email: user.email,
-            first_name: formData.first_name.trim(),
-            last_name: formData.last_name.trim(),
-            company_name: formData.company_name.trim() || null,
-            role: userRole || 'consumer',
-          });
+          .select('id')
+          .eq('id', user.id)
+          .maybeSingle();
 
-        if (error) {
-          console.error('ProfileCompletion: Error upserting Magic user profile:', error);
+        if (checkError) {
+          console.error('ProfileCompletion: Error checking existing profile:', checkError);
           toast({
             title: "Error",
-            description: `Failed to complete profile: ${error.message}`,
+            description: `Error checking profile: ${checkError.message}`,
             variant: "destructive",
           });
           return;
+        }
+
+        if (existingProfile) {
+          // Profile exists, update it
+          const { error } = await supabase
+            .from('profiles')
+            .update({
+              first_name: formData.first_name.trim(),
+              last_name: formData.last_name.trim(),
+              company_name: formData.company_name.trim() || null,
+            })
+            .eq('id', user.id);
+
+          if (error) {
+            console.error('ProfileCompletion: Error updating Magic user profile:', error);
+            toast({
+              title: "Error",
+              description: `Failed to complete profile: ${error.message}`,
+              variant: "destructive",
+            });
+            return;
+          }
+        } else {
+          // Profile doesn't exist, create it
+          const { error } = await supabase
+            .from('profiles')
+            .insert({
+              id: user.id,
+              email: user.email || '',
+              first_name: formData.first_name.trim(),
+              last_name: formData.last_name.trim(),
+              company_name: formData.company_name.trim() || null,
+              role: 'consumer',
+            });
+
+          if (error) {
+            console.error('ProfileCompletion: Error creating Magic user profile:', error);
+            toast({
+              title: "Error",
+              description: `Failed to complete profile: ${error.message}`,
+              variant: "destructive",
+            });
+            return;
+          }
         }
       } else {
         // Regular Supabase auth users
