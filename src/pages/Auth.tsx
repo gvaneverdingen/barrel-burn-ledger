@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
-import { Grape, Building2, Users, AlertCircle } from 'lucide-react';
+import { Grape, Building2, Users, AlertCircle, ArrowLeft } from 'lucide-react';
 import WalletConnect from '@/components/WalletConnect';
 import PasswordStrengthIndicator from '@/components/PasswordStrengthIndicator';
 import { validatePasswordStrength } from '@/utils/passwordValidation';
@@ -102,6 +102,20 @@ const Auth = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
+        {/* Navigation Header */}
+        <div className="flex items-center justify-between mb-6">
+          <Link to="/" className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Link>
+          <Link 
+            to="/marketplace" 
+            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+          >
+            Browse Marketplace
+          </Link>
+        </div>
+
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
             <Grape className="h-8 w-8 text-primary mr-2" />
