@@ -48,13 +48,46 @@ const Profile = () => {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      console.log('Fetching profile with user ID:', user.id);
+      console.log('User email:', user.email);
+      
+      // First try to find by ID
+      let { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .maybeSingle();
 
-      if (error) {
+      // If not found by ID, try to find by email (for Magic wallet users)
+      if (!data && user.email) {
+        console.log('Profile not found by ID, trying by email...');
+        const { data: emailData, error: emailError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('email', user.email)
+          .maybeSingle();
+        
+        if (emailData && !emailError) {
+          console.log('Found profile by email, updating ID to match Magic user...');
+          // Update the profile ID to match the Magic wallet user ID
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ id: user.id })
+            .eq('email', user.email);
+          
+          if (!updateError) {
+            data = { ...emailData, id: user.id };
+            console.log('Successfully updated profile ID');
+          } else {
+            console.error('Error updating profile ID:', updateError);
+            data = emailData;
+          }
+        } else {
+          error = emailError;
+        }
+      }
+
+      if (error && !data) {
         console.error('Error fetching profile:', error);
         toast({
           title: "Error",
