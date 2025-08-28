@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useMagic } from './MagicContext';
 
 type UserRole = 'distillery' | 'consumer' | 'investor' | 'administrator' | 'facilitator';
 
@@ -31,6 +32,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Get Magic context
+  const { isLoggedIn: isMagicLoggedIn, userMetadata: magicUserMetadata, walletAddress, logout: magicLogout } = useMagic();
 
   const refreshUserData = async () => {
     if (!user) return;
@@ -53,6 +57,65 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error('Error refreshing user data:', error);
     }
+  };
+
+  const createMagicUser = async (email: string, walletAddress: string): Promise<User> => {
+    // Create a synthetic User object for Magic wallet users
+    const magicUserId = `magic_${walletAddress}`;
+    
+    const mockUser: User = {
+      id: magicUserId,
+      app_metadata: {},
+      user_metadata: { wallet_address: walletAddress },
+      aud: 'authenticated',
+      confirmation_sent_at: undefined,
+      recovery_sent_at: undefined,
+      email_change_sent_at: undefined,
+      new_email: undefined,
+      new_phone: undefined,
+      invited_at: undefined,
+      action_link: undefined,
+      email: email,
+      phone: undefined,
+      created_at: new Date().toISOString(),
+      confirmed_at: new Date().toISOString(),
+      email_confirmed_at: new Date().toISOString(),
+      phone_confirmed_at: undefined,
+      last_sign_in_at: new Date().toISOString(),
+      role: 'authenticated',
+      updated_at: new Date().toISOString(),
+      identities: [],
+      factors: undefined,
+      is_anonymous: false
+    };
+
+    // Try to create or update profile in Supabase
+    try {
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', magicUserId)
+        .maybeSingle();
+
+      if (!existingProfile) {
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: magicUserId,
+            email: email,
+            role: 'investor' as UserRole,
+            first_name: email.split('@')[0],
+          });
+
+        if (insertError) {
+          console.error('Error creating Magic user profile:', insertError);
+        }
+      }
+    } catch (error) {
+      console.error('Error handling Magic user profile:', error);
+    }
+
+    return mockUser;
   };
 
   useEffect(() => {
@@ -95,6 +158,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Monitor Magic authentication state
+  useEffect(() => {
+    const handleMagicAuth = async () => {
+      console.log('Magic auth state:', { isMagicLoggedIn, magicUserMetadata, walletAddress });
+      
+      if (isMagicLoggedIn && magicUserMetadata?.email && walletAddress) {
+        // Create mock user for Magic wallet
+        const magicUser = await createMagicUser(magicUserMetadata.email, walletAddress);
+        setUser(magicUser);
+        setUserRole('investor');
+        setLoading(false);
+        
+        toast({
+          title: "Magic Wallet Connected",
+          description: "Successfully connected with Magic wallet.",
+        });
+      } else if (!isMagicLoggedIn && user?.id?.startsWith('magic_')) {
+        // Magic user logged out
+        setUser(null);
+        setUserRole(null);
+        setLoading(false);
+      }
+    };
+
+    handleMagicAuth();
+  }, [isMagicLoggedIn, magicUserMetadata, walletAddress]);
 
   const signUp = async (email: string, password: string, role: UserRole, additionalData?: any) => {
     console.log('SignUp attempt for:', email, 'with role:', role);
@@ -173,6 +263,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
+    // Handle Magic wallet logout
+    if (user?.id?.startsWith('magic_')) {
+      await magicLogout();
+      setUser(null);
+      setUserRole(null);
+      toast({
+        title: "Signed Out",
+        description: "You've been signed out successfully.",
+      });
+      return;
+    }
+    
+    // Handle Supabase logout
     const { error } = await supabase.auth.signOut();
     if (error) {
       toast({
