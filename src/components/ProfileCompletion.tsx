@@ -57,21 +57,32 @@ const ProfileCompletion = () => {
         }
 
         if (existingProfile) {
-          // Profile exists, update it
-          const { error } = await supabase
-            .from('profiles')
-            .update({
-              first_name: formData.first_name.trim(),
-              last_name: formData.last_name.trim(),
-              company_name: formData.company_name.trim() || null,
-            })
-            .eq('id', existingProfile.id);
+          // Check if this is the same user or a different user with same email
+          if (existingProfile.id === user.id) {
+            // Profile exists for this Magic wallet user, update it
+            const { error } = await supabase
+              .from('profiles')
+              .update({
+                first_name: formData.first_name.trim(),
+                last_name: formData.last_name.trim(),
+                company_name: formData.company_name.trim() || null,
+              })
+              .eq('id', user.id);
 
-          if (error) {
-            console.error('ProfileCompletion: Error updating Magic user profile:', error);
+            if (error) {
+              console.error('ProfileCompletion: Error updating Magic user profile:', error);
+              toast({
+                title: "Error",
+                description: `Failed to complete profile: ${error.message}`,
+                variant: "destructive",
+              });
+              return;
+            }
+          } else {
+            // Email already exists for a different user
             toast({
-              title: "Error",
-              description: `Failed to complete profile: ${error.message}`,
+              title: "Email Already Taken",
+              description: "This email address is already associated with another account. Please use a different email address with your Magic wallet.",
               variant: "destructive",
             });
             return;

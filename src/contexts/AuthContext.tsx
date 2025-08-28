@@ -126,31 +126,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       is_anonymous: false
     };
 
-    // Try to create or update profile in Supabase
-    try {
-      const { data: existingProfile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', magicUserId)
-        .maybeSingle();
-
-      if (!existingProfile) {
-        const { error: insertError } = await supabase
-          .from('profiles')
-          .insert({
-            id: magicUserId,
-            email: email,
-            role: 'consumer' as any,
-            first_name: email.split('@')[0],
-          });
-
-        if (insertError) {
-          console.error('Error creating Magic user profile:', insertError);
-        }
-      }
-    } catch (error) {
-      console.error('Error handling Magic user profile:', error);
-    }
+    // Note: We don't create profiles here anymore - that's handled in ProfileCompletion
+    // This keeps the logic simpler and avoids duplicate email conflicts
 
     return mockUser;
   };
