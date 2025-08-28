@@ -83,7 +83,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const createMagicUser = async (email: string, walletAddress: string): Promise<User> => {
     // Create a synthetic User object for Magic wallet users
-    const magicUserId = `magic_${walletAddress}`;
+    // Generate a deterministic UUID from the wallet address
+    const crypto = window.crypto || (window as any).msCrypto;
+    const encoder = new TextEncoder();
+    const data = encoder.encode(`magic_${walletAddress}`);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    // Format as UUID (8-4-4-4-12)
+    const magicUserId = [
+      hashHex.slice(0, 8),
+      hashHex.slice(8, 12),
+      hashHex.slice(12, 16),
+      hashHex.slice(16, 20),
+      hashHex.slice(20, 32)
+    ].join('-');
     
     const mockUser: User = {
       id: magicUserId,
@@ -215,7 +230,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           title: "Magic Wallet Connected",
           description: "Successfully connected with Magic wallet.",
         });
-      } else if (!isMagicLoggedIn && user?.id?.startsWith('magic_')) {
+      } else if (!isMagicLoggedIn && user?.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(user.id) && user.user_metadata?.wallet_address) {
         // Magic user logged out
         setUser(null);
         setUserRole(null);
@@ -307,8 +322,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    // Handle Magic wallet logout
-    if (user?.id?.startsWith('magic_')) {
+    // Handle Magic wallet logout  
+    if (user?.user_metadata?.wallet_address) {
       await magicLogout();
       setUser(null);
       setUserRole(null);

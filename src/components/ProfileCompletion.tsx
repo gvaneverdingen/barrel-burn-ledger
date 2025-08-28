@@ -36,7 +36,7 @@ const ProfileCompletion = () => {
       console.log('ProfileCompletion: Form data:', formData);
       
       // For Magic wallet users, we need to handle profile creation/update differently
-      if (user.id.startsWith('magic_')) {
+      if (user.user_metadata?.wallet_address) {
         console.log('ProfileCompletion: Magic wallet user detected, using upsert');
         
         // First check if profile exists
