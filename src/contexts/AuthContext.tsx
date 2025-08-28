@@ -200,29 +200,60 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const magicUser = await createMagicUser(magicUserMetadata.email, walletAddress);
         setUser(magicUser);
         
-        // Fetch the role and profile completeness from the database
-        try {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('role, first_name, last_name')
-            .eq('id', magicUser.id)
-            .maybeSingle();
-          
-          console.log('Magic auth profile fetch:', { 
-            magicUserId: magicUser.id, 
-            profile,
-            profileExists: !!profile,
-            isComplete: !!(profile?.first_name && profile?.last_name)
-          });
-          
-          if (profile) {
-            setUserRole(profile.role as UserRole);
-            const isComplete = !!(profile.first_name && profile.last_name);
-            setProfileComplete(isComplete);
-          } else {
-            setUserRole('consumer');
-            setProfileComplete(false);
-          }
+         // Fetch the role and profile completeness from the database
+         try {
+           console.log('Magic auth: Looking for profile with ID:', magicUser.id);
+           console.log('Magic auth: User email:', magicUser.email);
+           
+           // First try to find by ID
+           let { data: profile } = await supabase
+             .from('profiles')
+             .select('role, first_name, last_name, id, email')
+             .eq('id', magicUser.id)
+             .maybeSingle();
+           
+           // If not found by ID, try to find by email and update the ID
+           if (!profile && magicUser.email) {
+             console.log('Magic auth: No profile found by ID, searching by email...');
+             const { data: emailProfile } = await supabase
+               .from('profiles')
+               .select('role, first_name, last_name, id, email')
+               .eq('email', magicUser.email)
+               .maybeSingle();
+             
+             if (emailProfile) {
+               console.log('Magic auth: Found profile by email, updating ID to match Magic user...');
+               // Update the profile ID to match the Magic wallet user ID
+               const { error: updateError } = await supabase
+                 .from('profiles')
+                 .update({ id: magicUser.id })
+                 .eq('email', magicUser.email);
+               
+               if (!updateError) {
+                 profile = { ...emailProfile, id: magicUser.id };
+                 console.log('Magic auth: Successfully updated profile ID');
+               } else {
+                 console.error('Magic auth: Error updating profile ID:', updateError);
+                 profile = emailProfile; // Use the original profile
+               }
+             }
+           }
+           
+           console.log('Magic auth profile fetch:', { 
+             magicUserId: magicUser.id, 
+             profile,
+             profileExists: !!profile,
+             isComplete: !!(profile?.first_name && profile?.last_name)
+           });
+           
+           if (profile) {
+             setUserRole(profile.role as UserRole);
+             const isComplete = !!(profile.first_name && profile.last_name);
+             setProfileComplete(isComplete);
+           } else {
+             setUserRole('consumer');
+             setProfileComplete(false);
+           }
         } catch (error) {
           console.error('Error fetching Magic user profile:', error);
           setUserRole('consumer');
