@@ -32,25 +32,58 @@ const ProfileCompletion = () => {
     setLoading(true);
     
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          first_name: formData.first_name.trim(),
-          last_name: formData.last_name.trim(),
-          company_name: formData.company_name.trim() || null,
-        })
-        .eq('id', user.id);
+      console.log('ProfileCompletion: Attempting to update profile for user:', user.id);
+      console.log('ProfileCompletion: Form data:', formData);
+      
+      // For Magic wallet users, we need to handle profile creation/update differently
+      if (user.id.startsWith('magic_')) {
+        console.log('ProfileCompletion: Magic wallet user detected, using upsert');
+        
+        const { error } = await supabase
+          .from('profiles')
+          .upsert({
+            id: user.id,
+            email: user.email,
+            first_name: formData.first_name.trim(),
+            last_name: formData.last_name.trim(),
+            company_name: formData.company_name.trim() || null,
+            role: userRole || 'consumer',
+          });
 
-      if (error) {
-        console.error('Error updating profile:', error);
-        toast({
-          title: "Error",
-          description: "Failed to complete profile. Please try again.",
-          variant: "destructive",
-        });
-        return;
+        if (error) {
+          console.error('ProfileCompletion: Error upserting Magic user profile:', error);
+          toast({
+            title: "Error",
+            description: `Failed to complete profile: ${error.message}`,
+            variant: "destructive",
+          });
+          return;
+        }
+      } else {
+        // Regular Supabase auth users
+        console.log('ProfileCompletion: Regular Supabase user, using update');
+        
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            first_name: formData.first_name.trim(),
+            last_name: formData.last_name.trim(),
+            company_name: formData.company_name.trim() || null,
+          })
+          .eq('id', user.id);
+
+        if (error) {
+          console.error('ProfileCompletion: Error updating profile:', error);
+          toast({
+            title: "Error",
+            description: `Failed to complete profile: ${error.message}`,
+            variant: "destructive",
+          });
+          return;
+        }
       }
 
+      console.log('ProfileCompletion: Profile update successful');
       toast({
         title: "Profile Complete!",
         description: "Welcome to ARIGI. Your profile has been completed successfully.",
@@ -59,7 +92,7 @@ const ProfileCompletion = () => {
       // Refresh user data to update profile completion status
       await refreshUserData();
     } catch (error) {
-      console.error('Error completing profile:', error);
+      console.error('ProfileCompletion: Unexpected error completing profile:', error);
       toast({
         title: "Error",
         description: "An unexpected error occurred.",
