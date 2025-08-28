@@ -145,8 +145,10 @@ const ProfileCompletion = () => {
       // Refresh user data to update profile completion status
       await refreshUserData();
       
-      // Redirect to homepage after successful completion
-      navigate('/');
+      // Small delay to ensure state propagation
+      setTimeout(() => {
+        navigate('/');
+      }, 100);
     } catch (error) {
       console.error('ProfileCompletion: Unexpected error completing profile:', error);
       toast({

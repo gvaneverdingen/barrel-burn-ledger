@@ -60,6 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) return;
     
     try {
+      // For Magic wallet users, we need to check by their generated UUID
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('role, first_name, last_name')
@@ -74,7 +75,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (profile) {
         setUserRole(profile.role as UserRole);
         const isComplete = !!(profile.first_name && profile.last_name);
+        console.log('AuthContext refreshUserData:', { 
+          userId: user.id, 
+          profile, 
+          isComplete,
+          isMagicUser: !!user.user_metadata?.wallet_address 
+        });
         setProfileComplete(isComplete);
+      } else {
+        // No profile found - profile is incomplete
+        console.log('AuthContext refreshUserData: No profile found for user', user.id);
+        setUserRole('consumer');
+        setProfileComplete(false);
       }
     } catch (error) {
       console.error('Error refreshing user data:', error);
