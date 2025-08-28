@@ -95,7 +95,7 @@ serve(async (req) => {
       buyer_id: user.id,
       seller_id: sellerId,
       cask_id: caskId,
-      transaction_type: "primary_purchase",
+      transaction_type: "purchase",
       total_amount: totalAmount
     });
 
@@ -103,7 +103,7 @@ serve(async (req) => {
       buyer_id: user.id,
       seller_id: sellerId,
       cask_id: caskId,
-      transaction_type: "primary_purchase",
+      transaction_type: "purchase", // Use correct enum value
       total_amount: totalAmount,
       volume_liters: cask.current_volume_liters || 0,
       price_per_liter: cask.price_per_liter || 0,
