@@ -36,7 +36,7 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const initializeMagic = async () => {
       try {
         // Get Magic publishable key from environment
-        const magicKey = 'pk_live_F8B7D3E2A1C9E4F6'; // Replace with your actual key
+        const magicKey = 'pk_live_18128E74207D08B6'; // Replace with your actual key
         
         const magicInstance = new Magic(magicKey, {
           extensions: [new ConnectExtension()],
