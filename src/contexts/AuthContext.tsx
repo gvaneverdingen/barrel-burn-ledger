@@ -56,9 +56,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    console.log('AuthProvider mounting...');
+    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state change:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -77,6 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Existing session check:', session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       
@@ -93,8 +97,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signUp = async (email: string, password: string, role: UserRole, additionalData?: any) => {
-    const redirectUrl = `${window.location.origin}/`;
+    console.log('SignUp attempt for:', email, 'with role:', role);
     
+    const redirectUrl = `${window.location.origin}/`;
+    console.log('Redirect URL:', redirectUrl);
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -109,7 +116,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     });
 
+    console.log('SignUp result:', { error });
+
     if (error) {
+      console.error('SignUp error details:', error);
       toast({
         title: "Sign Up Error",
         description: error.message,
@@ -118,7 +128,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       toast({
         title: "Sign Up Successful",
-        description: "Please check your email to confirm your account.",
+        description: "Please check your email and click the confirmation link to complete your registration. Check your spam folder if you don't see the email.",
+        variant: "default",
       });
     }
 
@@ -126,15 +137,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (email: string, password: string) => {
+    console.log('SignIn attempt for:', email);
+    
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
+    console.log('SignIn result:', { error });
+
     if (error) {
+      console.error('SignIn error details:', error);
+      
+      // Provide more helpful error messages
+      let errorMessage = error.message;
+      if (error.message.includes('Email not confirmed')) {
+        errorMessage = "Please check your email and click the confirmation link before signing in. Check your spam folder if you don't see it.";
+      } else if (error.message.includes('Invalid login credentials')) {
+        errorMessage = "Invalid email or password. If you just signed up, please confirm your email first.";
+      }
+      
       toast({
         title: "Sign In Error",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     } else {
