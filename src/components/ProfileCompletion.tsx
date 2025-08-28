@@ -143,12 +143,15 @@ const ProfileCompletion = () => {
       });
 
       // Refresh user data to update profile completion status
+      console.log('ProfileCompletion: Calling refreshUserData...');
       await refreshUserData();
       
-      // Small delay to ensure state propagation
+      // Wait a bit longer to ensure state has propagated
+      console.log('ProfileCompletion: Waiting for state update before navigation...');
       setTimeout(() => {
+        console.log('ProfileCompletion: Navigating to homepage...');
         navigate('/');
-      }, 100);
+      }, 500);
     } catch (error) {
       console.error('ProfileCompletion: Unexpected error completing profile:', error);
       toast({

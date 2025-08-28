@@ -60,6 +60,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) return;
     
     try {
+      console.log('refreshUserData called for user:', user.id, 'isMagicUser:', !!user.user_metadata?.wallet_address);
+      
       // For Magic wallet users, we need to check by their generated UUID
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -71,6 +73,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.error('Error fetching user profile:', error);
         return;
       }
+      
+      console.log('refreshUserData profile result:', { profile, error });
       
       if (profile) {
         setUserRole(profile.role as UserRole);
@@ -211,9 +215,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isComplete: !!(profile?.first_name && profile?.last_name)
           });
           
-          setUserRole(profile?.role as UserRole || 'consumer');
-          const isComplete = !!(profile?.first_name && profile?.last_name);
-          setProfileComplete(isComplete);
+          if (profile) {
+            setUserRole(profile.role as UserRole);
+            const isComplete = !!(profile.first_name && profile.last_name);
+            setProfileComplete(isComplete);
+          } else {
+            setUserRole('consumer');
+            setProfileComplete(false);
+          }
         } catch (error) {
           console.error('Error fetching Magic user profile:', error);
           setUserRole('consumer');
