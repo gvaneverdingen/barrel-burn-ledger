@@ -166,10 +166,20 @@ const CaskDetails = () => {
 
 
   const handlePurchaseClick = async () => {
+    console.log('Purchase click - User:', user);
+    
     if (!user) {
+      console.log('No user found, redirecting to auth');
       navigate('/auth');
       return;
     }
+
+    console.log('User data being sent to payment:', {
+      userId: user.id,
+      userEmail: user.email,
+      caskId: cask?.id,
+      amount: Math.round((cask?.total_price || 0) * 100)
+    });
 
     try {
       const { data, error } = await supabase.functions.invoke('create-payment', {
@@ -183,13 +193,22 @@ const CaskDetails = () => {
         }
       });
 
-      if (error) throw error;
+      console.log('Payment response:', { data, error });
+
+      if (error) {
+        console.error('Payment error:', error);
+        throw error;
+      }
 
       if (data?.url) {
+        console.log('Redirecting to:', data.url);
         window.location.href = data.url;
+      } else {
+        console.error('No payment URL returned');
+        throw new Error('No payment URL returned');
       }
-    } catch (error: any) {
-      console.error('Payment error:', error);
+    } catch (error) {
+      console.error('Payment process failed:', error);
       toast({
         title: "Payment Error",
         description: "Failed to start payment process. Please try again.",
