@@ -42,42 +42,73 @@ serve(async (req) => {
     console.log("User authenticated:", user);
 
     // Get cask details for transaction
+    console.log("Fetching cask details for ID:", caskId);
+    
     const { data: cask, error: caskError } = await supabaseService
       .from("casks")
-      .select("*, distillery:distilleries(profile_id)")
+      .select(`
+        *,
+        distillery:distilleries!inner(
+          id,
+          profile_id,
+          name
+        )
+      `)
       .eq("id", caskId)
       .single();
 
-    if (caskError || !cask) {
+    if (caskError) {
+      console.error("Cask query error:", caskError);
+      throw new Error(`Cask not found: ${caskError.message}`);
+    }
+    
+    if (!cask) {
       throw new Error("Cask not found");
     }
+    
+    console.log("Cask data retrieved:", { caskId: cask.id, distilleryProfileId: cask.distillery.profile_id });
 
     // Calculate fees based on transaction type
     const totalAmount = amount / 100; // Convert to dollars
     const arigiPlatformFee = Math.round(totalAmount * 0.10 * 100) / 100; // 10%
     
-    let distilleryFee, sellerAmount, transactionFee;
+    let distilleryFee, sellerAmount, transactionFee, sellerId;
     
     // Check if this is primary sale (distillery selling) or secondary (investor to investor)
     const isPrimarySale = cask.distillery.profile_id === user.id;
+    
+    console.log("Sale type analysis:", { 
+      isPrimarySale, 
+      distilleryProfileId: cask.distillery.profile_id, 
+      buyerId: user.id 
+    });
     
     if (isPrimarySale) {
       // Primary market: Distillery → Investor
       distilleryFee = Math.round(totalAmount * 0.885 * 100) / 100; // 88.5% to distillery
       sellerAmount = distilleryFee;
       transactionFee = Math.round(totalAmount * 0.015 * 100) / 100; // 1.5% transaction fee
+      sellerId = user.id; // The distillery is the seller
     } else {
-      // Secondary market: Investor → Investor  
-      sellerAmount = Math.round(totalAmount * 0.885 * 100) / 100; // 88.5% to seller
-      distilleryFee = Math.round(totalAmount * 0.015 * 100) / 100; // 1.5% to distillery
-      transactionFee = Math.round(totalAmount * 0.015 * 100) / 100; // 1.5% transaction fee
+      // Secondary market: Investor → Investor
+      // For now, assume it's a primary sale since we don't have ownership tracking yet
+      // This would need ownership table to determine actual seller
+      throw new Error("Secondary market transactions not yet supported - ownership tracking needed");
     }
+
+    console.log("Creating transaction with data:", {
+      buyer_id: user.id,
+      seller_id: sellerId,
+      cask_id: caskId,
+      transaction_type: "primary_purchase",
+      total_amount: totalAmount
+    });
 
     const { data: transaction, error: transactionError } = await supabaseService.from("transactions").insert({
       buyer_id: user.id,
-      seller_id: isPrimarySale ? cask.distillery.profile_id : user.id, // Set seller appropriately
+      seller_id: sellerId,
       cask_id: caskId,
-      transaction_type: isPrimarySale ? "primary_purchase" : "secondary_purchase",
+      transaction_type: "primary_purchase",
       total_amount: totalAmount,
       volume_liters: cask.current_volume_liters || 0,
       price_per_liter: cask.price_per_liter || 0,
