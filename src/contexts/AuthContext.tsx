@@ -204,6 +204,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .eq('id', magicUser.id)
             .maybeSingle();
           
+          console.log('Magic auth profile fetch:', { 
+            magicUserId: magicUser.id, 
+            profile,
+            profileExists: !!profile,
+            isComplete: !!(profile?.first_name && profile?.last_name)
+          });
+          
           setUserRole(profile?.role as UserRole || 'consumer');
           const isComplete = !!(profile?.first_name && profile?.last_name);
           setProfileComplete(isComplete);
