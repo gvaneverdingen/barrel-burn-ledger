@@ -140,7 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .insert({
             id: magicUserId,
             email: email,
-            role: 'consumer' as UserRole,
+            role: 'consumer' as any,
             first_name: email.split('@')[0],
           });
 
