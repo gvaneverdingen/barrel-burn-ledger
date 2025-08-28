@@ -103,7 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .insert({
             id: magicUserId,
             email: email,
-            role: 'investor' as UserRole,
+            role: 'consumer' as UserRole,
             first_name: email.split('@')[0],
           });
 
@@ -168,7 +168,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Create mock user for Magic wallet
         const magicUser = await createMagicUser(magicUserMetadata.email, walletAddress);
         setUser(magicUser);
-        setUserRole('investor');
+        setUserRole('consumer');
         setLoading(false);
         
         toast({
