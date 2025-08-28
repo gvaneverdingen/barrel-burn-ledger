@@ -182,6 +182,8 @@ const CaskDetails = () => {
     });
 
     try {
+      console.log('Attempting to call create-payment function...');
+      
       const { data, error } = await supabase.functions.invoke('create-payment', {
         body: {
           caskId: cask?.id,
@@ -193,11 +195,12 @@ const CaskDetails = () => {
         }
       });
 
-      console.log('Payment response:', { data, error });
+      console.log('Payment function response:', { data, error });
 
       if (error) {
-        console.error('Payment error:', error);
-        throw error;
+        console.error('Payment function returned error:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
+        throw new Error(error.message || 'Payment function error');
       }
 
       if (data?.url) {
@@ -209,9 +212,19 @@ const CaskDetails = () => {
       }
     } catch (error) {
       console.error('Payment process failed:', error);
+      console.error('Full error object:', JSON.stringify(error, null, 2));
+      
+      let errorMessage = 'Failed to start payment process. Please try again.';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null) {
+        errorMessage = (error as any).message || errorMessage;
+      }
+      
       toast({
         title: "Payment Error",
-        description: "Failed to start payment process. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     }
