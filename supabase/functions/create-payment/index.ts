@@ -14,35 +14,32 @@ serve(async (req) => {
   }
 
   try {
-    // Create Supabase client using the anon key for user authentication
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-    );
-
-    // Retrieve authenticated user
-    const authHeader = req.headers.get("Authorization")!;
-    const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
+    console.log("Payment creation started");
     
-    if (!user?.email) {
-      throw new Error("User not authenticated or email not available");
-    }
-
-    // Parse request body
-    const { caskId, amount, currency = "usd", caskName } = await req.json();
-
-    if (!caskId || !amount || !caskName) {
-      throw new Error("Missing required parameters: caskId, amount, or caskName");
-    }
-
-    // Create transaction record in Supabase first
+    // Create Supabase service client for database operations
     const supabaseService = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
       { auth: { persistSession: false } }
     );
+
+    // Parse request body first to get user info
+    const requestBody = await req.json();
+    const { caskId, amount, currency = "usd", caskName, userId, userEmail } = requestBody;
+    
+    console.log("Request data:", { caskId, amount, currency, caskName, userId, userEmail });
+
+    if (!caskId || !amount || !caskName || !userId || !userEmail) {
+      throw new Error("Missing required parameters: caskId, amount, caskName, userId, or userEmail");
+    }
+
+    // For Magic wallet users, we get user info from the request body
+    const user = {
+      id: userId,
+      email: userEmail
+    };
+
+    console.log("User authenticated:", user);
 
     // Get cask details for transaction
     const { data: cask, error: caskError } = await supabaseService
