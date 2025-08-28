@@ -16,13 +16,6 @@ serve(async (req) => {
   try {
     console.log("Payment creation started");
     
-    // Create Supabase service client for database operations
-    const supabaseService = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-      { auth: { persistSession: false } }
-    );
-
     // Parse request body first to get user info
     const requestBody = await req.json();
     const { caskId, amount, currency = "usd", caskName, userId, userEmail } = requestBody;
@@ -33,7 +26,14 @@ serve(async (req) => {
       throw new Error("Missing required parameters: caskId, amount, caskName, userId, or userEmail");
     }
 
-    // For Magic wallet users, we get user info from the request body
+    // Create Supabase service client for database operations
+    const supabaseService = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
+
+    // Use user info from request body (works for both regular and Magic wallet users)
     const user = {
       id: userId,
       email: userEmail
