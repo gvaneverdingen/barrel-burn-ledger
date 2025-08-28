@@ -228,7 +228,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     handleMagicAuth();
-  }, [isMagicLoggedIn, magicUserMetadata, walletAddress, user]);
+  }, [isMagicLoggedIn, magicUserMetadata, walletAddress]); // Removed 'user' dependency to prevent loops
 
   const signUp = async (email: string, password: string, role: UserRole, additionalData?: any) => {
     console.log('SignUp attempt for:', email, 'with role:', role);
