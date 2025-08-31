@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import { DollarSign, Package, Calendar } from "lucide-react";
 
 interface CaskOwnership {
@@ -37,6 +38,7 @@ interface SellCaskDialogProps {
 
 export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }: SellCaskDialogProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [pricePerLiter, setPricePerLiter] = useState("");
   const [volumeToSell, setVolumeToSell] = useState("");
@@ -46,6 +48,16 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!ownership) return;
+
+    // Check authentication
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to sell your cask",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       setLoading(true);
@@ -60,6 +72,12 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
 
       if (isNaN(volumeNum) || volumeNum <= 0 || volumeNum > ownership.volume_liters) {
         throw new Error(`Volume must be between 0 and ${ownership.volume_liters}L`);
+      }
+
+      // Get fresh session token
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !sessionData.session) {
+        throw new Error("Please log in again to continue");
       }
 
       const { data, error } = await supabase.functions.invoke("create-cask-sale", {
