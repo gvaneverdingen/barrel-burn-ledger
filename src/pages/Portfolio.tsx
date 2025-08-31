@@ -78,6 +78,10 @@ const Portfolio = () => {
   useEffect(() => {
     console.log("=== PORTFOLIO USEEFFECT TRIGGERED ===");
     console.log("User in useEffect:", user);
+    console.log("User?.id:", user?.id);
+    console.log("typeof user:", typeof user);
+    console.log("!!user:", !!user);
+    
     if (user) {
       console.log("User exists, calling fetchPortfolioData");
       fetchPortfolioData();
@@ -88,6 +92,9 @@ const Portfolio = () => {
   }, [user]);
 
   const fetchPortfolioData = async () => {
+    console.log("=== FETCH PORTFOLIO DATA CALLED ===");
+    console.log("Function started with user:", user?.id);
+    
     try {
       setLoading(true);
       setError(null);
