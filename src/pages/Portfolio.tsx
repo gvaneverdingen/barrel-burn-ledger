@@ -269,18 +269,58 @@ const Portfolio = () => {
           
             <div className="p-6 space-y-6">
               {/* Debug Info */}
-              <div className="bg-red-100 border border-red-300 p-4 rounded">
+              <div className="bg-red-100 border border-red-300 p-4 rounded space-y-2">
                 <p className="text-red-800">DEBUG: {debugInfo}</p>
                 <p className="text-red-800">Expected Owner ID: fc1421f8-9702-4a0b-9a87-3d401cf1adfd</p>
                 <p className="text-red-800">Ownerships found: {ownerships.length}</p>
                 <p className="text-red-800">Loading: {loading ? 'true' : 'false'}</p>
                 <p className="text-red-800">Error: {error || 'none'}</p>
-                <button 
-                  onClick={fetchPortfolioData}
-                  className="bg-blue-500 text-white px-4 py-2 rounded"
-                >
-                  Force Refresh Data
-                </button>
+                <div className="space-x-2">
+                  <button 
+                    onClick={fetchPortfolioData}
+                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                  >
+                    Force Refresh Data
+                  </button>
+                  <button 
+                    onClick={() => {
+                      // Force create mock data to test display
+                      const mockOwnership: CaskOwnership = {
+                        id: '21985be0-6c06-4cc9-a2d2-61ef6bad7d76',
+                        ownership_percentage: 100,
+                        volume_liters: 190,
+                        acquired_date: '2025-08-31T19:01:36.46754+00:00',
+                        acquisition_price: 76000,
+                        casks: {
+                          id: '61d4257f-6d08-458e-b4d6-f2571454be80',
+                          spirit_name: 'Test Whisky 2',
+                          cask_number: 'TEST-2-1753780924696',
+                          distillation_date: '2006-01-01',
+                          current_volume_liters: 190,
+                          alcohol_percentage: 61,
+                          price_per_liter: 400,
+                          total_price: 76000,
+                          warehouse_location: 'Test Warehouse 2',
+                          tasting_notes: 'Rich and complex with notes from Sherry Butt',
+                          expected_maturation_years: 14,
+                          distilleries: {
+                            name: 'Highland Test Distillery',
+                            location: 'Speyside, Scotland'
+                          },
+                          cask_types: {
+                            name: 'Sherry Butt',
+                            capacity_liters: 500
+                          }
+                        }
+                      };
+                      setOwnerships([mockOwnership]);
+                      setError('MOCK DATA - This is your actual cask from the database');
+                    }}
+                    className="bg-green-500 text-white px-4 py-2 rounded"
+                  >
+                    Show My Cask (Mock)
+                  </button>
+                </div>
               </div>
             {loading ? (
               <div className="space-y-4">
