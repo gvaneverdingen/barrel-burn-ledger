@@ -76,17 +76,9 @@ const Portfolio = () => {
   const debugInfo = `User ID: ${user?.id || 'null'}, Email: ${user?.email || 'null'}`;
 
   useEffect(() => {
-    console.log("=== PORTFOLIO USEEFFECT TRIGGERED ===");
-    console.log("User in useEffect:", user);
-    console.log("User?.id:", user?.id);
-    console.log("typeof user:", typeof user);
-    console.log("!!user:", !!user);
-    
     if (user?.id) { // Check for user.id specifically, not just user
-      console.log("User ID exists, calling fetchPortfolioData");
       fetchPortfolioData();
     } else {
-      console.log("No user ID, skipping fetchPortfolioData, setting loading to false");
       setLoading(false);
       setOwnerships([]);
       setTransactions([]);
@@ -94,60 +86,12 @@ const Portfolio = () => {
   }, [user?.id]); // Depend on user.id specifically
 
   const fetchPortfolioData = async () => {
-    console.log("=== FETCH PORTFOLIO DATA CALLED ===");
-    console.log("Function started with user:", user?.id);
-    
     try {
       setLoading(true);
       setError(null);
       
       if (!user?.id) {
-        console.log("No user ID available for query");
         setError("Please log in to view your portfolio");
-        setLoading(false);
-        return;
-      }
-      
-      // First, let's try a simple query to see what ownership records exist
-      const { data: allOwnerships, error: allError } = await supabase
-        .from("cask_ownership")
-        .select("*")
-        .eq("is_active", true);
-      
-      console.log("All active ownerships:", allOwnerships);
-      console.log("All ownerships error:", allError);
-      
-      // Now try with the specific user ID
-      const { data: userOwnerships, error: userError } = await supabase
-        .from("cask_ownership")
-        .select("*")
-        .eq("owner_id", user?.id)
-        .eq("is_active", true);
-      
-      console.log("User ownerships (simple query):", userOwnerships);
-      console.log("User ownerships error:", userError);
-
-      // Simple direct query without complex joins first
-      console.log("Trying simple query...");
-      const { data: simpleData, error: simpleError } = await supabase
-        .from("cask_ownership")
-        .select("*")
-        .eq("owner_id", user?.id)
-        .eq("is_active", true);
-      
-      console.log("Simple query result:", simpleData, simpleError);
-      
-      if (simpleError) {
-        console.error("Simple query error:", simpleError);
-        setError(`Simple query failed: ${simpleError.message}`);
-        return;
-      }
-      
-      if (!simpleData || simpleData.length === 0) {
-        console.log("No ownership records found for user:", user?.id);
-        setError(`No ownership records found for user: ${user?.id}`);
-        setOwnerships([]);
-        setTransactions([]);
         setLoading(false);
         return;
       }
@@ -272,60 +216,6 @@ const Portfolio = () => {
           </header>
           
             <div className="p-6 space-y-6">
-              {/* Debug Info */}
-              <div className="bg-red-100 border border-red-300 p-4 rounded space-y-2">
-                <p className="text-red-800">DEBUG: {debugInfo}</p>
-                <p className="text-red-800">Expected Owner ID: fc1421f8-9702-4a0b-9a87-3d401cf1adfd</p>
-                <p className="text-red-800">Ownerships found: {ownerships.length}</p>
-                <p className="text-red-800">Loading: {loading ? 'true' : 'false'}</p>
-                <p className="text-red-800">Error: {error || 'none'}</p>
-                <div className="space-x-2">
-                  <button 
-                    onClick={fetchPortfolioData}
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
-                  >
-                    Force Refresh Data
-                  </button>
-                  <button 
-                    onClick={() => {
-                      // Force create mock data to test display
-                      const mockOwnership: CaskOwnership = {
-                        id: '21985be0-6c06-4cc9-a2d2-61ef6bad7d76',
-                        ownership_percentage: 100,
-                        volume_liters: 190,
-                        acquired_date: '2025-08-31T19:01:36.46754+00:00',
-                        acquisition_price: 76000,
-                        casks: {
-                          id: '61d4257f-6d08-458e-b4d6-f2571454be80',
-                          spirit_name: 'Test Whisky 2',
-                          cask_number: 'TEST-2-1753780924696',
-                          distillation_date: '2006-01-01',
-                          current_volume_liters: 190,
-                          alcohol_percentage: 61,
-                          price_per_liter: 400,
-                          total_price: 76000,
-                          warehouse_location: 'Test Warehouse 2',
-                          tasting_notes: 'Rich and complex with notes from Sherry Butt',
-                          expected_maturation_years: 14,
-                          distilleries: {
-                            name: 'Highland Test Distillery',
-                            location: 'Speyside, Scotland'
-                          },
-                          cask_types: {
-                            name: 'Sherry Butt',
-                            capacity_liters: 500
-                          }
-                        }
-                      };
-                      setOwnerships([mockOwnership]);
-                      setError('MOCK DATA - This is your actual cask from the database');
-                    }}
-                    className="bg-green-500 text-white px-4 py-2 rounded"
-                  >
-                    Show My Cask (Mock)
-                  </button>
-                </div>
-              </div>
             {loading ? (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
