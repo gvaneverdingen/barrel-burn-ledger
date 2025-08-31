@@ -209,18 +209,18 @@ const Portfolio = () => {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <main className="flex-1">
-          <header className="h-16 border-b flex items-center px-6">
+        <main className="flex-1 luxury-hero-bg">
+          <header className="h-16 border-b backdrop-blur-sm bg-background/80 flex items-center px-6 sticky top-0 z-10">
             <SidebarTrigger />
-            <h1 className="text-2xl font-bold ml-4">Portfolio</h1>
+            <h1 className="text-3xl font-bold ml-4 luxury-text-gradient">Portfolio</h1>
           </header>
           
-            <div className="p-6 space-y-6">
+          <div className="p-6 space-y-8 animate-fade-in">
             {loading ? (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {[...Array(3)].map((_, i) => (
-                    <Card key={i}>
+                    <Card key={i} className="luxury-card animate-scale-in hover-scale" style={{ animationDelay: `${i * 0.1}s` }}>
                       <CardHeader>
                         <Skeleton className="h-4 w-32" />
                       </CardHeader>
@@ -230,137 +230,185 @@ const Portfolio = () => {
                     </Card>
                   ))}
                 </div>
-                <Skeleton className="h-64 w-full" />
+                <Skeleton className="h-64 w-full rounded-xl" />
               </div>
             ) : error ? (
-              <Alert variant="destructive">
+              <Alert variant="destructive" className="luxury-card animate-scale-in">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             ) : (
               <>
+                {/* Portfolio Hero Section */}
+                <div className="text-center space-y-4 py-8">
+                  <h2 className="text-4xl font-bold luxury-text-gradient">Your Investment Portfolio</h2>
+                  <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                    Track your premium cask investments and watch your whisky mature into liquid gold
+                  </p>
+                </div>
+
                 {/* Portfolio Summary */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <Card className="luxury-card hover-scale animate-scale-in group cursor-pointer" style={{ animationDelay: '0.1s' }}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Portfolio Value</CardTitle>
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
+                      <CardTitle className="text-sm font-medium text-muted-foreground">Portfolio Value</CardTitle>
+                      <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <DollarSign className="h-5 w-5 text-primary" />
+                      </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">${calculatePortfolioValue().toLocaleString()}</div>
+                      <div className="text-3xl font-bold luxury-text-gradient">
+                        ${calculatePortfolioValue().toLocaleString()}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">Current market value</p>
                     </CardContent>
                   </Card>
                   
-                  <Card>
+                  <Card className="luxury-card hover-scale animate-scale-in group cursor-pointer" style={{ animationDelay: '0.2s' }}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Total Investment</CardTitle>
-                      <Package className="h-4 w-4 text-muted-foreground" />
+                      <CardTitle className="text-sm font-medium text-muted-foreground">Total Investment</CardTitle>
+                      <div className="p-2 rounded-full bg-secondary/10 group-hover:bg-secondary/20 transition-colors">
+                        <Package className="h-5 w-5 text-secondary-foreground" />
+                      </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">${calculateTotalInvestment().toLocaleString()}</div>
+                      <div className="text-3xl font-bold">
+                        ${calculateTotalInvestment().toLocaleString()}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">Total invested capital</p>
                     </CardContent>
                   </Card>
                   
-                  <Card>
+                  <Card className="luxury-card hover-scale animate-scale-in group cursor-pointer" style={{ animationDelay: '0.3s' }}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">ROI</CardTitle>
-                      {calculateROI() >= 0 ? (
-                        <TrendingUp className="h-4 w-4 text-green-600" />
-                      ) : (
-                        <TrendingDown className="h-4 w-4 text-red-600" />
-                      )}
+                      <CardTitle className="text-sm font-medium text-muted-foreground">Return on Investment</CardTitle>
+                      <div className={`p-2 rounded-full transition-colors ${
+                        calculateROI() >= 0 
+                          ? 'bg-green-500/10 group-hover:bg-green-500/20' 
+                          : 'bg-red-500/10 group-hover:bg-red-500/20'
+                      }`}>
+                        {calculateROI() >= 0 ? (
+                          <TrendingUp className="h-5 w-5 text-green-600" />
+                        ) : (
+                          <TrendingDown className="h-5 w-5 text-red-600" />
+                        )}
+                      </div>
                     </CardHeader>
                     <CardContent>
-                      <div className={`text-2xl font-bold ${calculateROI() >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      <div className={`text-3xl font-bold ${
+                        calculateROI() >= 0 ? 'text-green-600' : 'text-red-600'
+                      }`}>
                         {calculateROI().toFixed(2)}%
                       </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {calculateROI() >= 0 ? 'Profit generated' : 'Current loss'}
+                      </p>
                     </CardContent>
                   </Card>
                 </div>
 
-                {/* Tabs for different views */}
-                <Tabs defaultValue="holdings" className="w-full">
-                  <TabsList>
-                    <TabsTrigger value="holdings">My Holdings</TabsTrigger>
-                    <TabsTrigger value="transactions">Transaction History</TabsTrigger>
+                {/* Enhanced Tabs */}
+                <Tabs defaultValue="holdings" className="w-full animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                  <TabsList className="grid w-full grid-cols-2 luxury-card">
+                    <TabsTrigger value="holdings" className="text-base font-medium">
+                      My Holdings
+                    </TabsTrigger>
+                    <TabsTrigger value="transactions" className="text-base font-medium">
+                      Transaction History
+                    </TabsTrigger>
                   </TabsList>
                   
-                  <TabsContent value="holdings" className="space-y-4">
+                  <TabsContent value="holdings" className="space-y-6 mt-8">
                     {ownerships.length === 0 ? (
-                      <Card>
-                        <CardContent className="p-6 text-center">
-                          <p className="text-muted-foreground">No cask investments yet. Visit the marketplace to start investing!</p>
+                      <Card className="luxury-card animate-scale-in">
+                        <CardContent className="p-12 text-center">
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+                            <Package className="h-8 w-8 text-muted-foreground" />
+                          </div>
+                          <h3 className="text-xl font-semibold mb-2">No investments yet</h3>
+                          <p className="text-muted-foreground mb-6">
+                            Start building your portfolio by investing in premium whisky casks
+                          </p>
+                          <button className="luxury-button px-6 py-2 rounded-lg font-medium hover-scale">
+                            Visit Marketplace
+                          </button>
                         </CardContent>
                       </Card>
                     ) : (
-                      ownerships.map((ownership) => (
-                        <Card key={ownership.id}>
-                          <CardHeader>
+                      ownerships.map((ownership, index) => (
+                        <Card key={ownership.id} className="luxury-card hover-scale animate-fade-in group overflow-hidden" style={{ animationDelay: `${index * 0.1}s` }}>
+                          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                          <CardHeader className="relative">
                             <div className="flex justify-between items-start">
-                              <div>
-                                <CardTitle className="text-lg">{ownership.casks.spirit_name}</CardTitle>
-                                <CardDescription>
+                              <div className="space-y-2">
+                                <CardTitle className="text-2xl luxury-text-gradient">
+                                  {ownership.casks.spirit_name}
+                                </CardTitle>
+                                <CardDescription className="text-base">
                                   {ownership.casks.distilleries.name} • Cask #{ownership.casks.cask_number}
                                 </CardDescription>
                               </div>
-                              <Badge variant="secondary">
+                              <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 px-3 py-1">
                                 {ownership.ownership_percentage}% ownership
                               </Badge>
                             </div>
                           </CardHeader>
-                          <CardContent className="space-y-4">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                              <div>
-                                <p className="text-muted-foreground">Your Volume</p>
-                                <p className="font-medium">{ownership.volume_liters}L</p>
+                          <CardContent className="space-y-6 relative">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground font-medium">Your Volume</p>
+                                <p className="text-xl font-bold">{ownership.volume_liters}L</p>
                               </div>
-                              <div>
-                                <p className="text-muted-foreground">Current Value</p>
-                                <p className="font-medium">
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground font-medium">Current Value</p>
+                                <p className="text-xl font-bold luxury-text-gradient">
                                   ${(ownership.casks.price_per_liter * ownership.volume_liters).toLocaleString()}
                                 </p>
                               </div>
-                              <div>
-                                <p className="text-muted-foreground">Alcohol %</p>
-                                <p className="font-medium">{ownership.casks.alcohol_percentage}%</p>
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground font-medium">Alcohol %</p>
+                                <p className="text-xl font-bold">{ownership.casks.alcohol_percentage}%</p>
                               </div>
-                              <div>
-                                <p className="text-muted-foreground">Acquired</p>
-                                <p className="font-medium">{format(new Date(ownership.acquired_date), 'MMM dd, yyyy')}</p>
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground font-medium">Acquired</p>
+                                <p className="text-xl font-bold">{format(new Date(ownership.acquired_date), 'MMM dd, yyyy')}</p>
                               </div>
                             </div>
                             
-                            <div className="space-y-2">
-                              <div className="flex justify-between text-sm">
-                                <span>Maturation Progress</span>
-                                <span>
+                            <div className="space-y-3">
+                              <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium">Maturation Progress</span>
+                                <span className="text-sm font-bold text-primary">
                                   {getMaturityProgress(
                                     ownership.casks.distillation_date,
                                     ownership.casks.expected_maturation_years
                                   ).toFixed(1)}%
                                 </span>
                               </div>
-                              <div className="w-full bg-secondary rounded-full h-2">
-                                <div 
-                                  className="bg-primary h-2 rounded-full transition-all duration-300"
-                                  style={{
-                                    width: `${getMaturityProgress(
-                                      ownership.casks.distillation_date,
-                                      ownership.casks.expected_maturation_years
-                                    )}%`
-                                  }}
-                                />
+                              <div className="relative">
+                                <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
+                                  <div 
+                                    className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full transition-all duration-1000 shadow-lg"
+                                    style={{
+                                      width: `${getMaturityProgress(
+                                        ownership.casks.distillation_date,
+                                        ownership.casks.expected_maturation_years
+                                      )}%`
+                                    }}
+                                  />
+                                </div>
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-background/20 to-transparent animate-pulse" />
                               </div>
                             </div>
                             
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <MapPin className="h-4 w-4" />
-                              <span>{ownership.casks.warehouse_location}</span>
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground p-3 rounded-lg bg-muted/30">
+                              <MapPin className="h-5 w-5 text-primary" />
+                              <span className="font-medium">{ownership.casks.warehouse_location}</span>
                             </div>
                             
                             {ownership.casks.tasting_notes && (
-                              <div className="text-sm">
-                                <p className="text-muted-foreground mb-1">Tasting Notes</p>
-                                <p>{ownership.casks.tasting_notes}</p>
+                              <div className="p-4 rounded-lg bg-gradient-to-br from-secondary/10 to-primary/5 border border-secondary/20">
+                                <p className="text-sm font-medium text-muted-foreground mb-2">Tasting Notes</p>
+                                <p className="text-sm leading-relaxed">{ownership.casks.tasting_notes}</p>
                               </div>
                             )}
                           </CardContent>
@@ -369,34 +417,50 @@ const Portfolio = () => {
                     )}
                   </TabsContent>
                   
-                  <TabsContent value="transactions" className="space-y-4">
+                  <TabsContent value="transactions" className="space-y-6 mt-8">
                     {transactions.length === 0 ? (
-                      <Card>
-                        <CardContent className="p-6 text-center">
-                          <p className="text-muted-foreground">No transactions yet.</p>
+                      <Card className="luxury-card animate-scale-in">
+                        <CardContent className="p-12 text-center">
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+                            <Calendar className="h-8 w-8 text-muted-foreground" />
+                          </div>
+                          <h3 className="text-xl font-semibold mb-2">No transactions yet</h3>
+                          <p className="text-muted-foreground">Your transaction history will appear here</p>
                         </CardContent>
                       </Card>
                     ) : (
-                      transactions.map((transaction) => (
-                        <Card key={transaction.id}>
+                      transactions.map((transaction, index) => (
+                        <Card key={transaction.id} className="luxury-card hover-scale animate-fade-in group" style={{ animationDelay: `${index * 0.1}s` }}>
                           <CardContent className="p-6">
                             <div className="flex justify-between items-start">
-                              <div className="space-y-1">
-                                <p className="font-medium">{transaction.casks.spirit_name}</p>
-                                <p className="text-sm text-muted-foreground">
-                                  {transaction.casks.distilleries.name} • Cask #{transaction.casks.cask_number}
-                                </p>
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                  <Calendar className="h-4 w-4" />
+                              <div className="space-y-3 flex-1">
+                                <div>
+                                  <p className="text-lg font-semibold luxury-text-gradient">
+                                    {transaction.casks.spirit_name}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    {transaction.casks.distilleries.name} • Cask #{transaction.casks.cask_number}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                  <Calendar className="h-4 w-4 text-primary" />
                                   <span>{format(new Date(transaction.created_at), 'MMM dd, yyyy')}</span>
                                 </div>
                               </div>
-                              <div className="text-right">
-                                <p className="font-medium">${transaction.total_amount.toLocaleString()}</p>
-                                <p className="text-sm text-muted-foreground">{transaction.volume_liters}L</p>
+                              <div className="text-right space-y-2">
+                                <p className="text-2xl font-bold luxury-text-gradient">
+                                  ${transaction.total_amount.toLocaleString()}
+                                </p>
+                                <p className="text-sm text-muted-foreground font-medium">
+                                  {transaction.volume_liters}L
+                                </p>
                                 <Badge 
                                   variant={transaction.status === 'completed' ? 'default' : 'secondary'}
-                                  className="mt-1"
+                                  className={`px-3 py-1 ${
+                                    transaction.status === 'completed' 
+                                      ? 'bg-green-500/10 text-green-600 border-green-500/20' 
+                                      : 'bg-muted text-muted-foreground'
+                                  }`}
                                 >
                                   {transaction.status}
                                 </Badge>
