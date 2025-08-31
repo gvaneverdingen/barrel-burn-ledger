@@ -123,6 +123,31 @@ const Portfolio = () => {
       console.log("User ownerships (simple query):", userOwnerships);
       console.log("User ownerships error:", userError);
 
+      // Simple direct query without complex joins first
+      console.log("Trying simple query...");
+      const { data: simpleData, error: simpleError } = await supabase
+        .from("cask_ownership")
+        .select("*")
+        .eq("owner_id", user?.id)
+        .eq("is_active", true);
+      
+      console.log("Simple query result:", simpleData, simpleError);
+      
+      if (simpleError) {
+        console.error("Simple query error:", simpleError);
+        setError(`Simple query failed: ${simpleError.message}`);
+        return;
+      }
+      
+      if (!simpleData || simpleData.length === 0) {
+        console.log("No ownership records found for user:", user?.id);
+        setError(`No ownership records found for user: ${user?.id}`);
+        setOwnerships([]);
+        setTransactions([]);
+        setLoading(false);
+        return;
+      }
+
       // Simplified query first to test
       const { data: ownershipData, error: ownershipError } = await supabase
         .from("cask_ownership")
@@ -247,6 +272,15 @@ const Portfolio = () => {
               <div className="bg-red-100 border border-red-300 p-4 rounded">
                 <p className="text-red-800">DEBUG: {debugInfo}</p>
                 <p className="text-red-800">Expected Owner ID: fc1421f8-9702-4a0b-9a87-3d401cf1adfd</p>
+                <p className="text-red-800">Ownerships found: {ownerships.length}</p>
+                <p className="text-red-800">Loading: {loading ? 'true' : 'false'}</p>
+                <p className="text-red-800">Error: {error || 'none'}</p>
+                <button 
+                  onClick={fetchPortfolioData}
+                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                >
+                  Force Refresh Data
+                </button>
               </div>
             {loading ? (
               <div className="space-y-4">
