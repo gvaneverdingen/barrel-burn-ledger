@@ -212,32 +212,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
              .eq('id', magicUser.id)
              .maybeSingle();
            
-           // If not found by ID, try to find by email and update the ID
-           if (!profile && magicUser.email) {
-             console.log('Magic auth: No profile found by ID, searching by email...');
-             const { data: emailProfile } = await supabase
-               .from('profiles')
-               .select('role, first_name, last_name, id, email')
-               .eq('email', magicUser.email)
-               .maybeSingle();
-             
-             if (emailProfile) {
-               console.log('Magic auth: Found profile by email, updating ID to match Magic user...');
-               // Update the profile ID to match the Magic wallet user ID
-               const { error: updateError } = await supabase
-                 .from('profiles')
-                 .update({ id: magicUser.id })
-                 .eq('email', magicUser.email);
-               
-               if (!updateError) {
-                 profile = { ...emailProfile, id: magicUser.id };
-                 console.log('Magic auth: Successfully updated profile ID');
-               } else {
-                 console.error('Magic auth: Error updating profile ID:', updateError);
-                 profile = emailProfile; // Use the original profile
-               }
-             }
-           }
+            // If not found by ID, try to find by email and use existing profile
+            if (!profile && magicUser.email) {
+              console.log('Magic auth: No profile found by ID, searching by email...');
+              const { data: emailProfile } = await supabase
+                .from('profiles')
+                .select('role, first_name, last_name, id, email')
+                .eq('email', magicUser.email)
+                .maybeSingle();
+              
+              if (emailProfile) {
+                console.log('Magic auth: Found existing profile, using original profile ID');
+                // Use the existing profile as-is, don't try to update the ID
+                profile = emailProfile;
+                // Update the Magic user to use the existing profile ID
+                magicUser.id = emailProfile.id;
+                setUser(magicUser);
+              }
+            }
            
            console.log('Magic auth profile fetch:', { 
              magicUserId: magicUser.id, 
