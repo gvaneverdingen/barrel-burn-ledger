@@ -38,7 +38,7 @@ interface SellCaskDialogProps {
 
 export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }: SellCaskDialogProps) {
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [loading, setLoading] = useState(false);
   const [pricePerLiter, setPricePerLiter] = useState("");
   const [volumeToSell, setVolumeToSell] = useState("");
@@ -48,16 +48,6 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!ownership) return;
-
-    // Check authentication
-    if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please log in to sell your cask",
-        variant: "destructive",
-      });
-      return;
-    }
 
     try {
       setLoading(true);
