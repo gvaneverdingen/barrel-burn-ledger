@@ -191,20 +191,47 @@ const Profile = () => {
     }
   };
 
-  if (loading || isLoading) {
+  if (!user) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Loading profile...</p>
+      <SidebarProvider>
+        <div className="flex min-h-screen w-full">
+          <AppSidebar />
+          <main className="flex-1">
+            <header className="h-16 border-b flex items-center px-6">
+              <SidebarTrigger />
+              <h1 className="text-2xl font-bold ml-4">Profile</h1>
+            </header>
+            <div className="container max-w-4xl mx-auto px-4 py-8">
+              <div className="text-center">
+                <p>Please log in to view your profile.</p>
+              </div>
+            </div>
+          </main>
         </div>
-      </div>
+      </SidebarProvider>
     );
   }
 
-  if (!user) {
-    navigate('/auth');
-    return null;
+  if (loading || isLoading) {
+    return (
+      <SidebarProvider>
+        <div className="flex min-h-screen w-full">
+          <AppSidebar />
+          <main className="flex-1">
+            <header className="h-16 border-b flex items-center px-6">
+              <SidebarTrigger />
+              <h1 className="text-2xl font-bold ml-4">Profile</h1>
+            </header>
+            <div className="container max-w-4xl mx-auto px-4 py-8">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                <p className="mt-2 text-muted-foreground">Loading profile...</p>
+              </div>
+            </div>
+          </main>
+        </div>
+      </SidebarProvider>
+    );
   }
 
   return (
