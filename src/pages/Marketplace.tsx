@@ -329,6 +329,37 @@ const Marketplace = () => {
           </div>
         </div>
 
+        {/* Temporary Debug Section */}
+        <Card className="mb-8 border-red-200 bg-red-50">
+          <CardHeader>
+            <CardTitle className="text-red-700">Debug Info (Temporary)</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm">
+            <div>Sales Data Found: {salesData ? salesData.length : 'None'}</div>
+            {salesData && salesData.length > 0 && (
+              <div className="mt-2">
+                <div>Raw Sales:</div>
+                {salesData.map((sale: any) => (
+                  <div key={sale.id} className="ml-4 p-2 bg-white rounded mt-1">
+                    <div>Sale ID: {sale.id}</div>
+                    <div>Ownership ID: {sale.ownership_id}</div>
+                    <div>Price: ${sale.total_asking_price}</div>
+                    <div>Volume: {sale.volume_for_sale_liters}L</div>
+                    <div>Status: {sale.status}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="mt-2">Total Casks in Array: {casks.length}</div>
+            <div>Filtered Casks: {filteredCasks.length}</div>
+            {filteredCasks.filter(c => c.is_sale_listing).length > 0 && (
+              <div className="text-green-600">
+                Sale Listings Found: {filteredCasks.filter(c => c.is_sale_listing).length}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Filters and Search */}
         <Card className="mb-8">
           <CardHeader>
