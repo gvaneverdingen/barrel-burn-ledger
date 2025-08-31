@@ -75,6 +75,8 @@ const Portfolio = () => {
     try {
       setLoading(true);
       setError(null);
+      
+      console.log("Fetching portfolio data for user:", user?.id);
 
       // Fetch cask ownerships with proper joins
       const { data: ownershipData, error: ownershipError } = await supabase
@@ -112,6 +114,8 @@ const Portfolio = () => {
         `)
         .eq("owner_id", user?.id)
         .eq("is_active", true);
+
+      console.log("Ownership query result:", { ownershipData, ownershipError, userId: user?.id });
 
       if (ownershipError) throw ownershipError;
 
