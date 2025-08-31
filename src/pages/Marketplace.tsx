@@ -159,21 +159,38 @@ const Marketplace = () => {
             
           console.log(`✅ Found complete data for sale ${sale.id}:`, {
             cask: cask.spirit_name,
-            seller: seller ? `${seller.first_name} ${seller.last_name}` : 'Unknown'
+            seller: seller ? `${seller.first_name} ${seller.last_name}` : 'Unknown',
+            originalPrice: cask.price_per_liter,
+            salePrice: sale.asking_price_per_liter,
+            originalTotal: cask.total_price,
+            saleTotal: sale.total_asking_price
           });
           
-          salesCasks.push({
+          const transformedCask = {
+            // Copy all cask properties first
             ...cask,
-            price_per_liter: sale.asking_price_per_liter,
-            total_price: sale.total_asking_price,
-            current_volume_liters: sale.volume_for_sale_liters,
+            // Then forcibly override the price-related fields
+            price_per_liter: Number(sale.asking_price_per_liter),
+            total_price: Number(sale.total_asking_price),
+            current_volume_liters: Number(sale.volume_for_sale_liters),
+            // Add sale-specific metadata
             is_sale_listing: true,
             sale_id: sale.id,
-            volume_for_sale: sale.volume_for_sale_liters,
+            volume_for_sale: Number(sale.volume_for_sale_liters),
             seller: seller || { first_name: 'Unknown', last_name: 'Seller' },
             distillery: cask.distillery,
             cask_type: cask.cask_type,
+          };
+          
+          console.log(`🔄 Transformed cask for ${sale.id}:`, {
+            name: transformedCask.spirit_name,
+            pricePerLiter: transformedCask.price_per_liter,
+            totalPrice: transformedCask.total_price,
+            volume: transformedCask.current_volume_liters,
+            isSale: transformedCask.is_sale_listing
           });
+          
+          salesCasks.push(transformedCask);
         }
       }
       
