@@ -92,7 +92,13 @@ serve(async (req) => {
     // Use service role client for all database operations to ensure they work
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      }
     );
 
     // Validate the ownership record belongs to the user and has enough volume
