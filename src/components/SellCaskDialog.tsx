@@ -51,6 +51,9 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
 
     try {
       setLoading(true);
+      console.log("🔄 Starting cask sale submission...");
+      console.log("👤 User from context:", user);
+      console.log("🏷️ Session from context:", session);
 
       const priceNum = parseFloat(pricePerLiter);
       const volumeNum = parseFloat(volumeToSell);
@@ -65,10 +68,21 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
       }
 
       // Get fresh session token
+      console.log("🔍 Checking current session...");
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError || !sessionData.session) {
-        throw new Error("Please log in again to continue");
+      console.log("📊 Session check result:", { sessionData, sessionError });
+      
+      if (sessionError) {
+        console.error("❌ Session error:", sessionError);
+        throw new Error(`Session error: ${sessionError.message}`);
       }
+      
+      if (!sessionData.session) {
+        console.error("❌ No active session found");
+        throw new Error("No active session - please log in again");
+      }
+
+      console.log("✅ Active session found, proceeding with API call...");
 
       const { data, error } = await supabase.functions.invoke("create-cask-sale", {
         body: {
