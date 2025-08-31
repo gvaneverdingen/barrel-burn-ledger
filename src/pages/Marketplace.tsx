@@ -104,30 +104,16 @@ const Marketplace = () => {
         availableCasks = directCasks.filter(cask => !ownedCaskIds.has(cask.id));
       }
 
-      // Fetch active cask sales (user-to-user sales)
+      // Fetch active cask sales (user-to-user sales) with simpler query
       const { data: salesData, error: salesError } = await supabase
         .from('cask_sales')
         .select(`
-          id,
-          asking_price_per_liter,
-          total_asking_price,
-          volume_for_sale_liters,
-          notes,
-          ownership:cask_ownership!inner (
-            volume_liters,
-            casks!inner (
-              *,
-              distillery:distilleries (
-                name,
-                location
-              ),
-              cask_type:cask_types (
-                name,
-                capacity_liters
-              )
-            )
+          *,
+          ownership:cask_ownership (
+            cask_id,
+            volume_liters
           ),
-          seller:profiles!cask_sales_seller_id_fkey (
+          seller:profiles (
             first_name,
             last_name
           )
@@ -138,25 +124,47 @@ const Marketplace = () => {
         console.error('Error fetching sales:', salesError);
       }
 
-      // Transform sales data to match Cask interface
-      const salesCasks: Cask[] = salesData?.map(sale => {
-        const cask = sale.ownership.casks;
-        return {
-          ...cask,
-          // Override price and volume with sale data
-          price_per_liter: sale.asking_price_per_liter,
-          total_price: sale.total_asking_price,
-          current_volume_liters: sale.volume_for_sale_liters,
-          // Add sale-specific fields
-          is_sale_listing: true,
-          sale_id: sale.id,
-          volume_for_sale: sale.volume_for_sale_liters,
-          seller: Array.isArray(sale.seller) ? sale.seller[0] : sale.seller,
-          // Keep original distillery and cask_type structure
-          distillery: cask.distillery,
-          cask_type: cask.cask_type,
-        };
-      }) || [];
+      // For each sale, fetch the cask details separately
+      const salesCasks: Cask[] = [];
+      if (salesData && salesData.length > 0) {
+        for (const sale of salesData) {
+          if (!sale.ownership?.cask_id) continue;
+          
+          const { data: caskData } = await supabase
+            .from('casks')
+            .select(`
+              *,
+              distillery:distilleries (
+                name,
+                location
+              ),
+              cask_type:cask_types (
+                name,
+                capacity_liters
+              )
+            `)
+            .eq('id', sale.ownership.cask_id)
+            .single();
+            
+          if (caskData) {
+            salesCasks.push({
+              ...caskData,
+              // Override price and volume with sale data
+              price_per_liter: sale.asking_price_per_liter,
+              total_price: sale.total_asking_price,
+              current_volume_liters: sale.volume_for_sale_liters,
+              // Add sale-specific fields
+              is_sale_listing: true,
+              sale_id: sale.id,
+              volume_for_sale: sale.volume_for_sale_liters,
+              seller: Array.isArray(sale.seller) ? sale.seller[0] : sale.seller,
+              // Keep original distillery and cask_type structure
+              distillery: caskData.distillery,
+              cask_type: caskData.cask_type,
+            });
+          }
+        }
+      }
 
       // Combine both types of listings
       const allCasks = [...availableCasks, ...salesCasks];
