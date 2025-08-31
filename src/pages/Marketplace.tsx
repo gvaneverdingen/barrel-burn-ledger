@@ -105,6 +105,7 @@ const Marketplace = () => {
       }
 
       // Fetch active cask sales (user-to-user sales)
+      console.log("🔍 Fetching cask sales...");
       const { data: salesData, error: salesError } = await supabase
         .from('cask_sales')
         .select(`
@@ -133,6 +134,8 @@ const Marketplace = () => {
           )
         `)
         .eq('status', 'active');
+
+      console.log("📊 Sales data result:", { salesData, salesError });
 
       if (salesError) {
         console.error('Error fetching sales:', salesError);
