@@ -76,15 +76,38 @@ const Portfolio = () => {
       setLoading(true);
       setError(null);
 
-      // Fetch cask ownerships
+      // Fetch cask ownerships with proper joins
       const { data: ownershipData, error: ownershipError } = await supabase
         .from("cask_ownership")
         .select(`
-          *,
-          casks (
-            *,
-            distilleries (name, location),
-            cask_types (name, capacity_liters)
+          id,
+          ownership_percentage,
+          volume_liters,
+          acquired_date,
+          acquisition_price,
+          cask_id,
+          casks!inner (
+            id,
+            spirit_name,
+            cask_number,
+            distillation_date,
+            current_volume_liters,
+            alcohol_percentage,
+            price_per_liter,
+            total_price,
+            warehouse_location,
+            tasting_notes,
+            expected_maturation_years,
+            distillery_id,
+            cask_type_id,
+            distilleries!inner (
+              name,
+              location
+            ),
+            cask_types!inner (
+              name,
+              capacity_liters
+            )
           )
         `)
         .eq("owner_id", user?.id)

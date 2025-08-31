@@ -86,10 +86,26 @@ serve(async (req) => {
         throw updateError;
       }
 
-      console.log("Payment received and marked for manual approval");
+      console.log("Payment received, creating cask ownership...");
 
-      // Note: Blockchain logging and ownership transfer will happen 
-      // only after manual approval in the admin panel
+      // Create cask ownership record immediately after payment
+      const { error: ownershipError } = await supabaseService
+        .from('cask_ownership')
+        .insert({
+          cask_id: caskId,
+          owner_id: userId,
+          volume_liters: transaction.volume_liters,
+          ownership_percentage: 100.0,
+          acquisition_price: transaction.total_amount,
+          acquired_date: new Date().toISOString()
+        });
+
+      if (ownershipError) {
+        console.error("Error creating cask ownership:", ownershipError);
+        // Don't throw here, just log the error
+      } else {
+        console.log("Cask ownership created successfully");
+      }
     }
 
     return new Response(JSON.stringify({ received: true }), {
