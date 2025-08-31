@@ -3,12 +3,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, TrendingDown, Package, DollarSign, Calendar, MapPin } from "lucide-react";
+import { TrendingUp, TrendingDown, Package, DollarSign, Calendar, MapPin, ShoppingCart, X, Store } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SellCaskDialog } from "@/components/SellCaskDialog";
+import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
 interface CaskOwnership {
@@ -58,12 +61,46 @@ interface Transaction {
   };
 }
 
+interface CaskSale {
+  id: string;
+  asking_price_per_liter: number;
+  total_asking_price: number;
+  volume_for_sale_liters: number;
+  listing_date: string;
+  expires_at: string;
+  status: string;
+  notes: string;
+  cask_ownership: {
+    id: string;
+    ownership_percentage: number;
+    volume_liters: number;
+    acquired_date: string;
+    acquisition_price: number;
+    casks: {
+      spirit_name: string;
+      cask_number: string;
+      distilleries: {
+        name: string;
+        location: string;
+      };
+      cask_types: {
+        name: string;
+        capacity_liters: number;
+      };
+    };
+  };
+}
+
 const Portfolio = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [ownerships, setOwnerships] = useState<CaskOwnership[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [activeSales, setActiveSales] = useState<CaskSale[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sellDialogOpen, setSellDialogOpen] = useState(false);
+  const [selectedOwnership, setSelectedOwnership] = useState<CaskOwnership | null>(null);
 
   // Add immediate debug logging
   console.log("=== PORTFOLIO COMPONENT RENDER ===");
@@ -96,7 +133,7 @@ const Portfolio = () => {
         return;
       }
 
-      // Simplified query first to test
+      // Fetch ownership data
       const { data: ownershipData, error: ownershipError } = await supabase
         .from("cask_ownership")
         .select(`
@@ -126,9 +163,6 @@ const Portfolio = () => {
         .eq("owner_id", user?.id)
         .eq("is_active", true);
 
-      console.log("Ownership query result:", { ownershipData, ownershipError, userId: user?.id });
-      console.log("=== PORTFOLIO DEBUG END ===");
-
       if (ownershipError) throw ownershipError;
 
       // Fetch transaction history
@@ -147,13 +181,69 @@ const Portfolio = () => {
 
       if (transactionError) throw transactionError;
 
+      // Fetch active sales listings
+      const { data: salesData, error: salesError } = await supabase
+        .from("cask_sales")
+        .select(`
+          *,
+          cask_ownership (
+            *,
+            casks (
+              spirit_name,
+              cask_number,
+              distilleries (name, location),
+              cask_types (name, capacity_liters)
+            )
+          )
+        `)
+        .eq("seller_id", user?.id)
+        .eq("status", "active")
+        .order("listing_date", { ascending: false });
+
+      if (salesError) throw salesError;
+
       setOwnerships(ownershipData || []);
       setTransactions(transactionData || []);
+      setActiveSales(salesData || []);
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSellCask = (ownership: CaskOwnership) => {
+    setSelectedOwnership(ownership);
+    setSellDialogOpen(true);
+  };
+
+  const handleCancelSale = async (saleId: string) => {
+    try {
+      const { error } = await supabase
+        .from("cask_sales")
+        .update({ status: "cancelled" })
+        .eq("id", saleId)
+        .eq("seller_id", user?.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Sale Cancelled",
+        description: "Your cask listing has been removed from the marketplace",
+      });
+
+      fetchPortfolioData();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to cancel sale",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const isOwnershipForSale = (ownershipId: string) => {
+    return activeSales.some(sale => sale.cask_ownership.id === ownershipId);
   };
 
   const calculatePortfolioValue = () => {
@@ -308,9 +398,12 @@ const Portfolio = () => {
 
                 {/* Enhanced Tabs */}
                 <Tabs defaultValue="holdings" className="w-full animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                  <TabsList className="grid w-full grid-cols-2 luxury-card">
+                  <TabsList className="grid w-full grid-cols-3 luxury-card">
                     <TabsTrigger value="holdings" className="text-base font-medium">
                       My Holdings
+                    </TabsTrigger>
+                    <TabsTrigger value="sales" className="text-base font-medium">
+                      Active Sales ({activeSales.length})
                     </TabsTrigger>
                     <TabsTrigger value="transactions" className="text-base font-medium">
                       Transaction History
@@ -411,6 +504,110 @@ const Portfolio = () => {
                                 <p className="text-sm leading-relaxed">{ownership.casks.tasting_notes}</p>
                               </div>
                             )}
+
+                            {/* Sell Button */}
+                            <div className="flex justify-end pt-4">
+                              {isOwnershipForSale(ownership.id) ? (
+                                <Badge variant="secondary" className="bg-orange-500/10 text-orange-600 border-orange-500/20">
+                                  Listed for Sale
+                                </Badge>
+                              ) : (
+                                <Button
+                                  onClick={() => handleSellCask(ownership)}
+                                  className="luxury-button"
+                                  size="sm"
+                                >
+                                  <Store className="h-4 w-4 mr-2" />
+                                  Sell This Cask
+                                </Button>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="sales" className="space-y-6 mt-8">
+                    {activeSales.length === 0 ? (
+                      <Card className="luxury-card animate-scale-in">
+                        <CardContent className="p-12 text-center">
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+                            <Store className="h-8 w-8 text-muted-foreground" />
+                          </div>
+                          <h3 className="text-xl font-semibold mb-2">No active sales</h3>
+                          <p className="text-muted-foreground mb-6">
+                            You don't have any casks currently listed for sale
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      activeSales.map((sale, index) => (
+                        <Card key={sale.id} className="luxury-card hover-scale animate-fade-in group overflow-hidden" style={{ animationDelay: `${index * 0.1}s` }}>
+                          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                          <CardHeader className="relative">
+                            <div className="flex justify-between items-start">
+                              <div className="space-y-2">
+                                <CardTitle className="text-2xl luxury-text-gradient">
+                                  {sale.cask_ownership.casks.spirit_name}
+                                </CardTitle>
+                                <CardDescription className="text-base">
+                                  {sale.cask_ownership.casks.distilleries.name} • Cask #{sale.cask_ownership.casks.cask_number}
+                                </CardDescription>
+                              </div>
+                              <Badge className="bg-green-500/10 text-green-600 border-green-500/20 px-3 py-1">
+                                Active Listing
+                              </Badge>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="space-y-6 relative">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground font-medium">Volume for Sale</p>
+                                <p className="text-xl font-bold">{sale.volume_for_sale_liters}L</p>
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground font-medium">Price per Liter</p>
+                                <p className="text-xl font-bold luxury-text-gradient">
+                                  ${sale.asking_price_per_liter.toLocaleString()}
+                                </p>
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground font-medium">Total Price</p>
+                                <p className="text-xl font-bold luxury-text-gradient">
+                                  ${sale.total_asking_price.toLocaleString()}
+                                </p>
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground font-medium">Listed</p>
+                                <p className="text-xl font-bold">{format(new Date(sale.listing_date), 'MMM dd, yyyy')}</p>
+                              </div>
+                            </div>
+
+                            {sale.expires_at && (
+                              <div className="flex items-center gap-3 text-sm text-muted-foreground p-3 rounded-lg bg-muted/30">
+                                <Calendar className="h-5 w-5 text-primary" />
+                                <span>Expires: {format(new Date(sale.expires_at), 'MMM dd, yyyy')}</span>
+                              </div>
+                            )}
+
+                            {sale.notes && (
+                              <div className="p-4 rounded-lg bg-gradient-to-br from-secondary/10 to-primary/5 border border-secondary/20">
+                                <p className="text-sm font-medium text-muted-foreground mb-2">Listing Notes</p>
+                                <p className="text-sm leading-relaxed">{sale.notes}</p>
+                              </div>
+                            )}
+
+                            <div className="flex justify-end">
+                              <Button
+                                variant="outline"
+                                onClick={() => handleCancelSale(sale.id)}
+                                className="border-red-500/20 text-red-600 hover:bg-red-500/10"
+                              >
+                                <X className="h-4 w-4 mr-2" />
+                                Cancel Listing
+                              </Button>
+                            </div>
                           </CardContent>
                         </Card>
                       ))
@@ -477,6 +674,13 @@ const Portfolio = () => {
           </div>
         </main>
       </div>
+      
+      <SellCaskDialog
+        open={sellDialogOpen}
+        onOpenChange={setSellDialogOpen}
+        ownership={selectedOwnership}
+        onSaleCreated={fetchPortfolioData}
+      />
     </SidebarProvider>
   );
 };

@@ -104,6 +104,59 @@ export type Database = {
           },
         ]
       }
+      cask_sales: {
+        Row: {
+          asking_price_per_liter: number
+          created_at: string
+          expires_at: string | null
+          id: string
+          listing_date: string
+          notes: string | null
+          ownership_id: string
+          seller_id: string
+          status: string
+          total_asking_price: number
+          updated_at: string
+          volume_for_sale_liters: number
+        }
+        Insert: {
+          asking_price_per_liter: number
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          listing_date?: string
+          notes?: string | null
+          ownership_id: string
+          seller_id: string
+          status?: string
+          total_asking_price: number
+          updated_at?: string
+          volume_for_sale_liters: number
+        }
+        Update: {
+          asking_price_per_liter?: number
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          listing_date?: string
+          notes?: string | null
+          ownership_id?: string
+          seller_id?: string
+          status?: string
+          total_asking_price?: number
+          updated_at?: string
+          volume_for_sale_liters?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cask_sales_ownership_id_fkey"
+            columns: ["ownership_id"]
+            isOneToOne: false
+            referencedRelation: "cask_ownership"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cask_types: {
         Row: {
           capacity_liters: number
@@ -402,9 +455,12 @@ export type Database = {
           id: string
           platform_fee: number
           price_per_liter: number
+          sale_listing_id: string | null
           seller_amount: number | null
           seller_id: string
           status: string | null
+          stripe_payment_intent_id: string | null
+          stripe_transfer_id: string | null
           total_amount: number
           transaction_fee: number
           transaction_type: string
@@ -421,9 +477,12 @@ export type Database = {
           id?: string
           platform_fee: number
           price_per_liter: number
+          sale_listing_id?: string | null
           seller_amount?: number | null
           seller_id: string
           status?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_transfer_id?: string | null
           total_amount: number
           transaction_fee: number
           transaction_type: string
@@ -440,9 +499,12 @@ export type Database = {
           id?: string
           platform_fee?: number
           price_per_liter?: number
+          sale_listing_id?: string | null
           seller_amount?: number | null
           seller_id?: string
           status?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_transfer_id?: string | null
           total_amount?: number
           transaction_fee?: number
           transaction_type?: string
@@ -461,6 +523,13 @@ export type Database = {
             columns: ["cask_id"]
             isOneToOne: false
             referencedRelation: "casks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_sale_listing_id_fkey"
+            columns: ["sale_listing_id"]
+            isOneToOne: false
+            referencedRelation: "cask_sales"
             referencedColumns: ["id"]
           },
           {
