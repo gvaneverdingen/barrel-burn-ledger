@@ -72,11 +72,11 @@ serve(async (req) => {
         throw new Error("Transaction not found");
       }
 
-      // Update transaction status to indicate payment received but awaiting approval
+      // Update transaction status to completed
       const { error: updateError } = await supabaseService
         .from('transactions')
         .update({
-          status: 'payment_received_awaiting_approval',
+          status: 'completed',
           completed_at: new Date().toISOString()
         })
         .eq('id', transactionId);
@@ -86,25 +86,37 @@ serve(async (req) => {
         throw updateError;
       }
 
-      console.log("Payment received, creating cask ownership...");
+      console.log("Payment completed, creating cask ownership...");
 
-      // Create cask ownership record immediately after payment
-      const { error: ownershipError } = await supabaseService
+      // Check if ownership record already exists to avoid duplicates
+      const { data: existingOwnership } = await supabaseService
         .from('cask_ownership')
-        .insert({
-          cask_id: caskId,
-          owner_id: userId,
-          volume_liters: transaction.volume_liters,
-          ownership_percentage: 100.0,
-          acquisition_price: transaction.total_amount,
-          acquired_date: new Date().toISOString()
-        });
+        .select('id')
+        .eq('cask_id', caskId)
+        .eq('owner_id', userId)
+        .single();
 
-      if (ownershipError) {
-        console.error("Error creating cask ownership:", ownershipError);
-        // Don't throw here, just log the error
+      if (existingOwnership) {
+        console.log("Ownership record already exists, skipping creation");
       } else {
-        console.log("Cask ownership created successfully");
+        // Create cask ownership record immediately after payment
+        const { error: ownershipError } = await supabaseService
+          .from('cask_ownership')
+          .insert({
+            cask_id: caskId,
+            owner_id: userId,
+            volume_liters: transaction.volume_liters,
+            ownership_percentage: 100.0,
+            acquisition_price: transaction.total_amount,
+            acquired_date: new Date().toISOString()
+          });
+
+        if (ownershipError) {
+          console.error("Error creating cask ownership:", ownershipError);
+          throw new Error(`Failed to create cask ownership: ${ownershipError.message}`);
+        } else {
+          console.log("Cask ownership created successfully for transaction:", transactionId);
+        }
       }
     }
 
