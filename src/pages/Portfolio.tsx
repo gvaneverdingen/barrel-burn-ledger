@@ -100,17 +100,12 @@ const Portfolio = () => {
       console.log("User ownerships (simple query):", userOwnerships);
       console.log("User ownerships error:", userError);
 
-      // Fetch cask ownerships with proper joins
+      // Simplified query first to test
       const { data: ownershipData, error: ownershipError } = await supabase
         .from("cask_ownership")
         .select(`
-          id,
-          ownership_percentage,
-          volume_liters,
-          acquired_date,
-          acquisition_price,
-          cask_id,
-          casks!inner (
+          *,
+          casks (
             id,
             spirit_name,
             cask_number,
@@ -122,13 +117,11 @@ const Portfolio = () => {
             warehouse_location,
             tasting_notes,
             expected_maturation_years,
-            distillery_id,
-            cask_type_id,
-            distilleries!inner (
+            distilleries (
               name,
               location
             ),
-            cask_types!inner (
+            cask_types (
               name,
               capacity_liters
             )
