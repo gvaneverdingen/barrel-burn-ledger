@@ -62,6 +62,7 @@ const Marketplace = () => {
 
   const fetchCasks = async () => {
     try {
+      // Get casks that are available for sale AND don't have any ownership records
       const { data, error } = await supabase
         .from('casks')
         .select(`
@@ -77,16 +78,26 @@ const Marketplace = () => {
         `)
         .eq('available_for_sale', true);
 
-      if (error) {
-        toast({
-          title: "Error loading casks",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
+      if (error) throw error;
+
+      // Filter out casks that already have ownership records (have been sold)
+      if (data) {
+        const { data: ownedCasks, error: ownershipError } = await supabase
+          .from('cask_ownership')
+          .select('cask_id')
+          .eq('is_active', true);
+
+        if (ownershipError) {
+          console.error('Error fetching ownership data:', ownershipError);
+        }
+
+        const ownedCaskIds = new Set(ownedCasks?.map(o => o.cask_id) || []);
+        const availableCasks = data.filter(cask => !ownedCaskIds.has(cask.id));
+        setCasks(availableCasks);
+      } else {
+        setCasks([]);
       }
 
-      setCasks(data || []);
     } catch (error) {
       console.error('Error fetching casks:', error);
       toast({
@@ -188,7 +199,11 @@ const Marketplace = () => {
             </Button>
             {user ? (
               <>
-                <Button variant="ghost" size="sm">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/')}
+                >
                   <BarChart3 className="h-4 w-4 mr-2" />
                   Dashboard
                 </Button>

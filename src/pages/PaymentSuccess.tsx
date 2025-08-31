@@ -98,7 +98,7 @@ const PaymentSuccess = () => {
                 </Button>
                 {user && (
                   <Button variant="outline" asChild className="flex-1">
-                    <Link to="/profile">
+                    <Link to="/portfolio">
                       <Eye className="h-4 w-4 mr-2" />
                       View Portfolio
                     </Link>

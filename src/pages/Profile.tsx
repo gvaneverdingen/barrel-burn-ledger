@@ -10,6 +10,8 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 import { User, Settings, Save, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { AppSidebar } from '@/components/AppSidebar';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 
 interface UserProfile {
   id: string;
@@ -206,210 +208,207 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container max-w-4xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/')}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
-          </Button>
-        </div>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <main className="flex-1">
+          <header className="h-16 border-b flex items-center px-6">
+            <SidebarTrigger />
+            <h1 className="text-2xl font-bold ml-4">Profile</h1>
+          </header>
+          <div className="container max-w-4xl mx-auto px-4 py-8">
 
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-            <User className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Profile Settings</h1>
-            <p className="text-muted-foreground">Manage your account information and preferences</p>
-          </div>
-        </div>
-
-        <div className="grid gap-6">
-          {/* Account Information */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <User className="h-6 w-6 text-primary" />
+              </div>
               <div>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Account Information
-                </CardTitle>
-                <CardDescription>
-                  Your basic account details and verification status
-                </CardDescription>
+                <h1 className="text-3xl font-bold text-foreground">Profile Settings</h1>
+                <p className="text-muted-foreground">Manage your account information and preferences</p>
               </div>
-              {!isEditing && (
-                <Button
-                  onClick={() => setIsEditing(true)}
-                  variant="outline"
-                  size="sm"
-                >
-                  Edit Profile
-                </Button>
-              )}
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Read-only fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground">Email</Label>
-                  <div className="text-sm font-medium bg-muted/50 px-3 py-2 rounded-md">
-                    {profile?.email}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground">User ID</Label>
-                  <div className="text-sm font-mono bg-muted/50 px-3 py-2 rounded-md truncate">
-                    {profile?.id}
-                  </div>
-                </div>
-              </div>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground">Role</Label>
+            <div className="grid gap-6">
+              {/* Account Information */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
                   <div>
-                    <Badge className={getRoleColor(profile?.role || '')}>
-                      {profile?.role?.charAt(0).toUpperCase() + profile?.role?.slice(1)}
-                    </Badge>
+                    <CardTitle className="flex items-center gap-2">
+                      <Settings className="h-5 w-5" />
+                      Account Information
+                    </CardTitle>
+                    <CardDescription>
+                      Your basic account details and verification status
+                    </CardDescription>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground">Verification Status</Label>
-                  <div>
-                    <Badge className={getVerificationColor(profile?.verification_status)}>
-                      {profile?.verification_status?.charAt(0).toUpperCase() + profile?.verification_status?.slice(1) || 'Pending'}
-                    </Badge>
+                  {!isEditing && (
+                    <Button
+                      onClick={() => setIsEditing(true)}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Edit Profile
+                    </Button>
+                  )}
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Read-only fields */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-muted-foreground">Email</Label>
+                      <div className="text-sm font-medium bg-muted/50 px-3 py-2 rounded-md">
+                        {profile?.email}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-muted-foreground">User ID</Label>
+                      <div className="text-sm font-mono bg-muted/50 px-3 py-2 rounded-md truncate">
+                        {profile?.id}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              <Separator />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-muted-foreground">Role</Label>
+                      <div>
+                        <Badge className={getRoleColor(profile?.role || '')}>
+                          {profile?.role?.charAt(0).toUpperCase() + profile?.role?.slice(1)}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-muted-foreground">Verification Status</Label>
+                      <div>
+                        <Badge className={getVerificationColor(profile?.verification_status)}>
+                          {profile?.verification_status?.charAt(0).toUpperCase() + profile?.verification_status?.slice(1) || 'Pending'}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
 
-              {/* Editable fields */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Personal Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="first_name">First Name</Label>
-                    {isEditing ? (
-                      <Input
-                        id="first_name"
-                        value={formData.first_name}
-                        onChange={(e) => handleInputChange('first_name', e.target.value)}
-                        placeholder="Enter your first name"
-                      />
-                    ) : (
-                      <div className="text-sm bg-muted/50 px-3 py-2 rounded-md">
-                        {profile?.first_name || 'Not provided'}
+                  <Separator />
+
+                  {/* Editable fields */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Personal Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="first_name">First Name</Label>
+                        {isEditing ? (
+                          <Input
+                            id="first_name"
+                            value={formData.first_name}
+                            onChange={(e) => handleInputChange('first_name', e.target.value)}
+                            placeholder="Enter your first name"
+                          />
+                        ) : (
+                          <div className="text-sm bg-muted/50 px-3 py-2 rounded-md">
+                            {profile?.first_name || 'Not provided'}
+                          </div>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="last_name">Last Name</Label>
+                        {isEditing ? (
+                          <Input
+                            id="last_name"
+                            value={formData.last_name}
+                            onChange={(e) => handleInputChange('last_name', e.target.value)}
+                            placeholder="Enter your last name"
+                          />
+                        ) : (
+                          <div className="text-sm bg-muted/50 px-3 py-2 rounded-md">
+                            {profile?.last_name || 'Not provided'}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {(userRole === 'distillery' || userRole === 'investor') && (
+                      <div className="space-y-2">
+                        <Label htmlFor="company_name">Company Name</Label>
+                        {isEditing ? (
+                          <Input
+                            id="company_name"
+                            value={formData.company_name}
+                            onChange={(e) => handleInputChange('company_name', e.target.value)}
+                            placeholder="Enter your company name"
+                          />
+                        ) : (
+                          <div className="text-sm bg-muted/50 px-3 py-2 rounded-md">
+                            {profile?.company_name || 'Not provided'}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="last_name">Last Name</Label>
-                    {isEditing ? (
-                      <Input
-                        id="last_name"
-                        value={formData.last_name}
-                        onChange={(e) => handleInputChange('last_name', e.target.value)}
-                        placeholder="Enter your last name"
-                      />
-                    ) : (
+
+                  {isEditing && (
+                    <div className="flex gap-2 pt-4">
+                      <Button
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        className="gap-2"
+                      >
+                        <Save className="h-4 w-4" />
+                        {isSaving ? 'Saving...' : 'Save Changes'}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsEditing(false);
+                          setFormData({
+                            first_name: profile?.first_name || '',
+                            last_name: profile?.last_name || '',
+                            company_name: profile?.company_name || '',
+                          });
+                        }}
+                        disabled={isSaving}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Account Details */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Account Details</CardTitle>
+                  <CardDescription>Your account creation and activity information</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-muted-foreground">Account Created</Label>
                       <div className="text-sm bg-muted/50 px-3 py-2 rounded-md">
-                        {profile?.last_name || 'Not provided'}
+                        {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        }) : 'Unknown'}
                       </div>
-                    )}
-                  </div>
-                </div>
-
-                {(userRole === 'distillery' || userRole === 'investor') && (
-                  <div className="space-y-2">
-                    <Label htmlFor="company_name">Company Name</Label>
-                    {isEditing ? (
-                      <Input
-                        id="company_name"
-                        value={formData.company_name}
-                        onChange={(e) => handleInputChange('company_name', e.target.value)}
-                        placeholder="Enter your company name"
-                      />
-                    ) : (
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-muted-foreground">Last Updated</Label>
                       <div className="text-sm bg-muted/50 px-3 py-2 rounded-md">
-                        {profile?.company_name || 'Not provided'}
+                        {profile?.updated_at ? new Date(profile.updated_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        }) : 'Unknown'}
                       </div>
-                    )}
+                    </div>
                   </div>
-                )}
-              </div>
-
-              {isEditing && (
-                <div className="flex gap-2 pt-4">
-                  <Button
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="gap-2"
-                  >
-                    <Save className="h-4 w-4" />
-                    {isSaving ? 'Saving...' : 'Save Changes'}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setIsEditing(false);
-                      setFormData({
-                        first_name: profile?.first_name || '',
-                        last_name: profile?.last_name || '',
-                        company_name: profile?.company_name || '',
-                      });
-                    }}
-                    disabled={isSaving}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Account Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Account Details</CardTitle>
-              <CardDescription>Your account creation and activity information</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground">Account Created</Label>
-                  <div className="text-sm bg-muted/50 px-3 py-2 rounded-md">
-                    {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    }) : 'Unknown'}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground">Last Updated</Label>
-                  <div className="text-sm bg-muted/50 px-3 py-2 rounded-md">
-                    {profile?.updated_at ? new Date(profile.updated_at).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    }) : 'Unknown'}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </main>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
