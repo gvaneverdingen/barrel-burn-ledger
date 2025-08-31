@@ -469,13 +469,22 @@ const Marketplace = () => {
                     </div>
                   )}
 
-                  <div className="pt-4 border-t">
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="text-muted-foreground">Total Price:</span>
-                      <span className="text-2xl font-bold text-primary">
-                        {formatCurrency(cask.total_price)}
-                      </span>
-                    </div>
+                   <div className="pt-4 border-t">
+                     {cask.is_sale_listing && (
+                       <div className="mb-3 p-2 bg-blue-50 rounded text-xs text-blue-800">
+                         <div>DEBUG - Sale Listing Values:</div>
+                         <div>Per Liter: ${cask.price_per_liter}</div>
+                         <div>Total: ${cask.total_price}</div>
+                         <div>Volume: {cask.current_volume_liters}L</div>
+                         <div>Sale ID: {cask.sale_id}</div>
+                       </div>
+                     )}
+                     <div className="flex justify-between items-center mb-3">
+                       <span className="text-muted-foreground">Total Price:</span>
+                       <span className="text-2xl font-bold text-primary">
+                         {formatCurrency(cask.total_price)}
+                       </span>
+                     </div>
                     <div className="text-sm space-y-1">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Per liter:</span>
