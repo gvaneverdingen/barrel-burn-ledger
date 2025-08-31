@@ -65,9 +65,21 @@ const Portfolio = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Add immediate debug logging
+  console.log("=== PORTFOLIO COMPONENT RENDER ===");
+  console.log("User object:", user);
+  console.log("User ID:", user?.id);
+  console.log("User email:", user?.email);
+  console.log("Is user truthy:", !!user);
+
   useEffect(() => {
+    console.log("=== PORTFOLIO USEEFFECT TRIGGERED ===");
+    console.log("User in useEffect:", user);
     if (user) {
+      console.log("User exists, calling fetchPortfolioData");
       fetchPortfolioData();
+    } else {
+      console.log("No user, skipping fetchPortfolioData");
     }
   }, [user]);
 
