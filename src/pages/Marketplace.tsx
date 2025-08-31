@@ -56,7 +56,6 @@ const Marketplace = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('price');
-  const [salesData, setSalesData] = useState(null);
   const [filterByDistillery, setFilterByDistillery] = useState('all');
 
   // Allow access without authentication
@@ -111,17 +110,14 @@ const Marketplace = () => {
         .select('*')
         .eq('status', 'active');
 
-      console.log("📊 Direct sales query result:", { salesData, salesError, count: salesData?.length });
-      setSalesData(salesData); // Store for visual indicator
+      if (salesError) {
+        console.error('Error fetching sales:', salesError);
+      }
 
       // For each sale, manually build the cask data
       const salesCasks: Cask[] = [];
       if (salesData && salesData.length > 0) {
-        console.log(`🔄 Processing ${salesData.length} sales...`);
-        
         for (const sale of salesData) {
-          console.log(`📦 Processing sale ${sale.id} for ownership ${sale.ownership_id}`);
-          
           // Get ownership record
           const { data: ownership } = await supabase
             .from('cask_ownership')
@@ -129,10 +125,7 @@ const Marketplace = () => {
             .eq('id', sale.ownership_id)
             .single();
             
-          if (!ownership?.cask_id) {
-            console.log(`❌ No ownership found for ${sale.ownership_id}`);
-            continue;
-          }
+          if (!ownership?.cask_id) continue;
           
           // Get cask data
           const { data: cask } = await supabase
@@ -145,10 +138,7 @@ const Marketplace = () => {
             .eq('id', ownership.cask_id)
             .single();
             
-          if (!cask) {
-            console.log(`❌ No cask found for ${ownership.cask_id}`);
-            continue;
-          }
+          if (!cask) continue;
           
           // Get seller info
           const { data: seller } = await supabase
@@ -156,15 +146,6 @@ const Marketplace = () => {
             .select('first_name, last_name')
             .eq('id', sale.seller_id)
             .single();
-            
-          console.log(`✅ Found complete data for sale ${sale.id}:`, {
-            cask: cask.spirit_name,
-            seller: seller ? `${seller.first_name} ${seller.last_name}` : 'Unknown',
-            originalPrice: cask.price_per_liter,
-            salePrice: sale.asking_price_per_liter,
-            originalTotal: cask.total_price,
-            saleTotal: sale.total_asking_price
-          });
           
           const transformedCask = {
             // Start with base properties (non-price related)
@@ -188,7 +169,7 @@ const Marketplace = () => {
             distillery_id: cask.distillery_id,
             cask_type_id: cask.cask_type_id,
             
-            // FORCE OVERRIDE PRICE VALUES - DO NOT use spread operator for these
+            // FORCE OVERRIDE PRICE VALUES 
             price_per_liter: Number(sale.asking_price_per_liter),
             total_price: Number(sale.total_asking_price), 
             current_volume_liters: Number(sale.volume_for_sale_liters),
@@ -202,20 +183,9 @@ const Marketplace = () => {
             cask_type: cask.cask_type,
           };
           
-          console.log(`🔄 Transformed cask for ${sale.id}:`, {
-            name: transformedCask.spirit_name,
-            pricePerLiter: transformedCask.price_per_liter,
-            totalPrice: transformedCask.total_price,
-            volume: transformedCask.current_volume_liters,
-            isSale: transformedCask.is_sale_listing
-          });
-          
           salesCasks.push(transformedCask);
         }
       }
-      
-      console.log(`🎯 Final sales casks to add: ${salesCasks.length}`);
-      console.log("Sales casks:", salesCasks.map(c => ({ name: c.spirit_name, price: c.total_price })));
 
       // Combine both types of listings
       const allCasks = [...availableCasks, ...salesCasks];
@@ -413,11 +383,6 @@ const Marketplace = () => {
 
                <div className="text-sm text-muted-foreground flex items-center">
                 {filteredCasks.length} casks found
-                {salesData && salesData.length > 0 && (
-                  <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
-                    {salesData.length} user sales detected
-                  </span>
-                )}
               </div>
             </div>
           </CardContent>
@@ -507,37 +472,16 @@ const Marketplace = () => {
                   )}
 
                    <div className="pt-4 border-t">
-                     {cask.is_sale_listing && (
-                       <div className="mb-3 p-2 bg-blue-50 rounded text-xs text-blue-800">
-                         <div>DEBUG - Sale Listing Values:</div>
-                         <div>Per Liter: ${cask.price_per_liter}</div>
-                         <div>Total: ${cask.total_price}</div>
-                         <div>Volume: {cask.current_volume_liters}L</div>
-                         <div>Sale ID: {cask.sale_id}</div>
-                       </div>
-                     )}
                      <div className="flex justify-between items-center mb-3">
                        <span className="text-muted-foreground">Total Price:</span>
                        <span className="text-2xl font-bold text-primary">
                          {formatCurrency(cask.total_price)}
-                         {cask.is_sale_listing && (
-                           <div className="text-xs text-red-600 font-normal">
-                             DEBUG: cask.total_price = {cask.total_price}
-                           </div>
-                         )}
                        </span>
                      </div>
                      <div className="text-sm space-y-1">
                        <div className="flex justify-between">
                          <span className="text-muted-foreground">Per liter:</span>
-                         <span>
-                           {formatCurrency(cask.price_per_liter)}
-                           {cask.is_sale_listing && (
-                             <div className="text-xs text-red-600">
-                               DEBUG: cask.price_per_liter = {cask.price_per_liter}
-                             </div>
-                           )}
-                         </span>
+                         <span>{formatCurrency(cask.price_per_liter)}</span>
                        </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Per liter (100% ASL):</span>

@@ -48,6 +48,13 @@ interface CaskDetails {
     capacity_liters: number;
     description: string;
   };
+  // Optional sale-related fields
+  is_sale_listing?: boolean;
+  sale_id?: string;
+  seller?: {
+    first_name?: string;
+    last_name?: string;
+  };
 }
 
 const CaskDetails = () => {
@@ -123,7 +130,64 @@ const CaskDetails = () => {
 
       if (error) throw error;
 
-      setCask(data as CaskDetails);
+      // Check if this cask has an active sale listing
+      const { data: saleData } = await supabase
+        .from('cask_sales')
+        .select(`
+          id,
+          asking_price_per_liter,
+          total_asking_price,
+          volume_for_sale_liters,
+          notes,
+          ownership_id,
+          seller:profiles(first_name, last_name)
+        `)
+        .eq('status', 'active')
+        .eq('ownership_id', caskId) // This might need to be different - let me check the relationship
+
+      // Actually, I need to check by finding ownership records for this cask
+      const { data: ownershipData } = await supabase
+        .from('cask_ownership')
+        .select('id')
+        .eq('cask_id', caskId)
+        .eq('is_active', true);
+
+      let activeSale = null;
+      if (ownershipData && ownershipData.length > 0) {
+        // Check if any of these ownership records have active sales
+        const ownershipIds = ownershipData.map(o => o.id);
+        const { data: salesForCask } = await supabase
+          .from('cask_sales')
+          .select(`
+            id,
+            asking_price_per_liter,
+            total_asking_price,
+            volume_for_sale_liters,
+            notes,
+            seller:profiles(first_name, last_name)
+          `)
+          .eq('status', 'active')
+          .in('ownership_id', ownershipIds);
+          
+        activeSale = salesForCask && salesForCask.length > 0 ? salesForCask[0] : null;
+      }
+
+      // If there's an active sale, override the pricing
+      let finalCaskData = data;
+      if (activeSale) {
+        finalCaskData = {
+          ...data,
+          price_per_liter: Number(activeSale.asking_price_per_liter),
+          total_price: Number(activeSale.total_asking_price),
+          current_volume_liters: Number(activeSale.volume_for_sale_liters),
+          // Add sale metadata
+          is_sale_listing: true,
+          sale_id: activeSale.id,
+          seller: activeSale.seller
+        } as any;
+      }
+
+      setCask(finalCaskData as CaskDetails);
     } catch (error: any) {
       console.error("Error fetching cask details:", error);
       toast({
@@ -307,18 +371,23 @@ const CaskDetails = () => {
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-3xl font-bold text-primary">
-                      {cask.spirit_name}
-                    </CardTitle>
-                    <CardDescription className="flex items-center space-x-2 mt-2">
-                      <MapPin className="h-4 w-4" />
-                      <span>{cask.distillery.name}</span>
-                      {cask.distillery.verified && (
-                        <Shield className="h-4 w-4 text-green-600" />
-                      )}
-                    </CardDescription>
-                  </div>
+                   <div>
+                     <CardTitle className="text-3xl font-bold text-primary">
+                       {cask.spirit_name}
+                     </CardTitle>
+                     <CardDescription className="flex items-center space-x-2 mt-2">
+                       <MapPin className="h-4 w-4" />
+                       <span>{cask.distillery.name}</span>
+                       {cask.distillery.verified && (
+                         <Shield className="h-4 w-4 text-green-600" />
+                       )}
+                       {cask.is_sale_listing && cask.seller && (
+                         <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 ml-2">
+                           Resale by {cask.seller.first_name} {cask.seller.last_name}
+                         </Badge>
+                       )}
+                     </CardDescription>
+                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-primary">
                       {formatCurrency(cask.total_price)}
