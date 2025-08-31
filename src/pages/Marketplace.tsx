@@ -167,12 +167,32 @@ const Marketplace = () => {
           });
           
           const transformedCask = {
-            // Copy all cask properties first
-            ...cask,
-            // Then forcibly override the price-related fields
+            // Start with base properties (non-price related)
+            id: cask.id,
+            spirit_name: cask.spirit_name,
+            cask_number: cask.cask_number,
+            distillation_date: cask.distillation_date,
+            expected_maturation_years: cask.expected_maturation_years,
+            alcohol_percentage: cask.alcohol_percentage,
+            warehouse_location: cask.warehouse_location,
+            tasting_notes: cask.tasting_notes,
+            blockchain_id: cask.blockchain_id,
+            original_cask_type: cask.original_cask_type,
+            finishing_cask_type: cask.finishing_cask_type,
+            finishing_duration_months: cask.finishing_duration_months,
+            finishing_notes: cask.finishing_notes,
+            has_been_finished: cask.has_been_finished,
+            available_for_sale: cask.available_for_sale,
+            created_at: cask.created_at,
+            updated_at: cask.updated_at,
+            distillery_id: cask.distillery_id,
+            cask_type_id: cask.cask_type_id,
+            
+            // FORCE OVERRIDE PRICE VALUES - DO NOT use spread operator for these
             price_per_liter: Number(sale.asking_price_per_liter),
-            total_price: Number(sale.total_asking_price),
+            total_price: Number(sale.total_asking_price), 
             current_volume_liters: Number(sale.volume_for_sale_liters),
+            
             // Add sale-specific metadata
             is_sale_listing: true,
             sale_id: sale.id,
