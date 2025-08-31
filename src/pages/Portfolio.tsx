@@ -200,6 +200,7 @@ const Portfolio = () => {
   };
 
   if (!user) {
+    console.log("=== NO USER - SHOWING LOGIN MESSAGE ===");
     return (
       <SidebarProvider>
         <div className="flex min-h-screen w-full">
@@ -211,7 +212,7 @@ const Portfolio = () => {
             </header>
             <div className="p-6">
               <Alert>
-                <AlertDescription>Please log in to view your portfolio.</AlertDescription>
+                <AlertDescription>Please log in to view your portfolio. Current user: {JSON.stringify(user)}</AlertDescription>
               </Alert>
             </div>
           </main>
