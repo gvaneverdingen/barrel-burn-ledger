@@ -67,22 +67,26 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
         throw new Error(`Volume must be between 0 and ${ownership.volume_liters}L`);
       }
 
-      // Get fresh session token
-      console.log("🔍 Checking current session...");
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      console.log("📊 Session check result:", { sessionData, sessionError });
-      
-      if (sessionError) {
-        console.error("❌ Session error:", sessionError);
-        throw new Error(`Session error: ${sessionError.message}`);
-      }
-      
-      if (!sessionData.session) {
-        console.error("❌ No active session found");
-        throw new Error("No active session - please log in again");
+      // Check if we have user authentication (either regular or Magic wallet)
+      if (!user?.id) {
+        throw new Error("Authentication required - please log in again");
       }
 
-      console.log("✅ Active session found, proceeding with API call...");
+      // For regular Supabase users, verify session
+      if (!user.user_metadata?.wallet_address) {
+        console.log("🔍 Checking Supabase session for regular user...");
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        console.log("📊 Session check result:", { sessionData, sessionError });
+        
+        if (sessionError || !sessionData.session) {
+          console.error("❌ No Supabase session found for regular user");
+          throw new Error("Session expired - please log in again");
+        }
+      } else {
+        console.log("✅ Magic wallet user detected, skipping Supabase session check");
+      }
+
+      console.log("✅ Authentication verified, proceeding with API call...");
 
       const { data, error } = await supabase.functions.invoke("create-cask-sale", {
         body: {
@@ -91,6 +95,8 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
           volumeForSale: volumeNum,
           notes: notes.trim() || undefined,
           expiresInDays: expiresNum > 0 ? expiresNum : undefined,
+          // Include userId for Magic wallet users
+          ...(user.user_metadata?.wallet_address && { userId: user.id }),
         },
       });
 

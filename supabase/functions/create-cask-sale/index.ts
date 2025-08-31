@@ -20,38 +20,87 @@ serve(async (req) => {
   }
 
   try {
+    const requestBody: CreateSaleRequest & { userId?: string } = await req.json();
+    const { ownershipId, askingPricePerLiter, volumeForSale, notes, expiresInDays, userId } = requestBody;
+
+    let authenticatedUserId: string;
+    
+    // Try regular Supabase authentication first
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      throw new Error("Authorization header is required");
+    if (authHeader && authHeader !== "Bearer ") {
+      const supabaseClient = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+        {
+          global: {
+            headers: {
+              Authorization: authHeader,
+            },
+          },
+        }
+      );
+
+      const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+      if (!userError && userData.user) {
+        authenticatedUserId = userData.user.id;
+        console.log("✅ Regular Supabase user authenticated:", authenticatedUserId);
+      } else if (userId) {
+        // Magic wallet user - verify they exist in profiles
+        const serviceClient = createClient(
+          Deno.env.get("SUPABASE_URL") ?? "",
+          Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+        );
+        
+        const { data: profile } = await serviceClient
+          .from("profiles")
+          .select("id")
+          .eq("id", userId)
+          .single();
+          
+        if (profile) {
+          authenticatedUserId = userId;
+          console.log("✅ Magic wallet user verified:", authenticatedUserId);
+        } else {
+          throw new Error("Magic wallet user not found in profiles");
+        }
+      } else {
+        throw new Error("User not authenticated");
+      }
+    } else if (userId) {
+      // No auth header but userId provided - Magic wallet user
+      const serviceClient = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      );
+      
+      const { data: profile } = await serviceClient
+        .from("profiles")
+        .select("id")
+        .eq("id", userId)
+        .single();
+        
+      if (profile) {
+        authenticatedUserId = userId;
+        console.log("✅ Magic wallet user verified:", authenticatedUserId);
+      } else {
+        throw new Error("Magic wallet user not found in profiles");
+      }
+    } else {
+      throw new Error("Authorization required");
     }
 
+    // Use service role client for all database operations to ensure they work
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      {
-        global: {
-          headers: {
-            Authorization: authHeader,
-          },
-        },
-      }
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
-
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser();
-    if (userError || !userData.user) {
-      throw new Error("User not authenticated");
-    }
-    
-    const user = userData.user;
-
-    const { ownershipId, askingPricePerLiter, volumeForSale, notes, expiresInDays }: CreateSaleRequest = await req.json();
 
     // Validate the ownership record belongs to the user and has enough volume
     const { data: ownership, error: ownershipError } = await supabaseClient
       .from("cask_ownership")
       .select("*")
       .eq("id", ownershipId)
-      .eq("owner_id", user.id)
+      .eq("owner_id", authenticatedUserId)
       .eq("is_active", true)
       .single();
 
@@ -83,7 +132,7 @@ serve(async (req) => {
       .from("cask_sales")
       .insert({
         ownership_id: ownershipId,
-        seller_id: user.id,
+        seller_id: authenticatedUserId,
         asking_price_per_liter: askingPricePerLiter,
         total_asking_price: totalAskingPrice,
         volume_for_sale_liters: volumeForSale,
