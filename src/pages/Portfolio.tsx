@@ -82,14 +82,16 @@ const Portfolio = () => {
     console.log("typeof user:", typeof user);
     console.log("!!user:", !!user);
     
-    if (user) {
-      console.log("User exists, calling fetchPortfolioData");
+    if (user?.id) { // Check for user.id specifically, not just user
+      console.log("User ID exists, calling fetchPortfolioData");
       fetchPortfolioData();
     } else {
-      console.log("No user, skipping fetchPortfolioData");
+      console.log("No user ID, skipping fetchPortfolioData, setting loading to false");
       setLoading(false);
+      setOwnerships([]);
+      setTransactions([]);
     }
-  }, [user]);
+  }, [user?.id]); // Depend on user.id specifically
 
   const fetchPortfolioData = async () => {
     console.log("=== FETCH PORTFOLIO DATA CALLED ===");
@@ -99,10 +101,12 @@ const Portfolio = () => {
       setLoading(true);
       setError(null);
       
-      console.log("=== PORTFOLIO DEBUG START ===");
-      console.log("Current user:", user);
-      console.log("User ID:", user?.id);
-      console.log("User email:", user?.email);
+      if (!user?.id) {
+        console.log("No user ID available for query");
+        setError("Please log in to view your portfolio");
+        setLoading(false);
+        return;
+      }
       
       // First, let's try a simple query to see what ownership records exist
       const { data: allOwnerships, error: allError } = await supabase
