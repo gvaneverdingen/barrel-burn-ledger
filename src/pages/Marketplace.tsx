@@ -38,6 +38,14 @@ interface Cask {
     name: string;
     capacity_liters: number;
   };
+  // Add fields for sales listings
+  is_sale_listing?: boolean;
+  sale_id?: string;
+  volume_for_sale?: number;
+  seller?: {
+    first_name?: string;
+    last_name?: string;
+  };
 }
 
 const Marketplace = () => {
@@ -62,8 +70,8 @@ const Marketplace = () => {
 
   const fetchCasks = async () => {
     try {
-      // Get casks that are available for sale AND don't have any ownership records
-      const { data, error } = await supabase
+      // Fetch regular casks available for sale (new from distilleries)
+      const { data: directCasks, error: casksError } = await supabase
         .from('casks')
         .select(`
           *,
@@ -78,10 +86,11 @@ const Marketplace = () => {
         `)
         .eq('available_for_sale', true);
 
-      if (error) throw error;
+      if (casksError) throw casksError;
 
       // Filter out casks that already have ownership records (have been sold)
-      if (data) {
+      let availableCasks: Cask[] = [];
+      if (directCasks) {
         const { data: ownedCasks, error: ownershipError } = await supabase
           .from('cask_ownership')
           .select('cask_id')
@@ -92,11 +101,66 @@ const Marketplace = () => {
         }
 
         const ownedCaskIds = new Set(ownedCasks?.map(o => o.cask_id) || []);
-        const availableCasks = data.filter(cask => !ownedCaskIds.has(cask.id));
-        setCasks(availableCasks);
-      } else {
-        setCasks([]);
+        availableCasks = directCasks.filter(cask => !ownedCaskIds.has(cask.id));
       }
+
+      // Fetch active cask sales (user-to-user sales)
+      const { data: salesData, error: salesError } = await supabase
+        .from('cask_sales')
+        .select(`
+          id,
+          asking_price_per_liter,
+          total_asking_price,
+          volume_for_sale_liters,
+          notes,
+          ownership:cask_ownership!inner (
+            volume_liters,
+            casks!inner (
+              *,
+              distillery:distilleries (
+                name,
+                location
+              ),
+              cask_type:cask_types (
+                name,
+                capacity_liters
+              )
+            )
+          ),
+          seller:profiles!cask_sales_seller_id_fkey (
+            first_name,
+            last_name
+          )
+        `)
+        .eq('status', 'active');
+
+      if (salesError) {
+        console.error('Error fetching sales:', salesError);
+      }
+
+      // Transform sales data to match Cask interface
+      const salesCasks: Cask[] = salesData?.map(sale => {
+        const cask = sale.ownership.casks;
+        return {
+          ...cask,
+          // Override price and volume with sale data
+          price_per_liter: sale.asking_price_per_liter,
+          total_price: sale.total_asking_price,
+          current_volume_liters: sale.volume_for_sale_liters,
+          // Add sale-specific fields
+          is_sale_listing: true,
+          sale_id: sale.id,
+          volume_for_sale: sale.volume_for_sale_liters,
+          seller: Array.isArray(sale.seller) ? sale.seller[0] : sale.seller,
+          // Keep original distillery and cask_type structure
+          distillery: cask.distillery,
+          cask_type: cask.cask_type,
+        };
+      }) || [];
+
+      // Combine both types of listings
+      const allCasks = [...availableCasks, ...salesCasks];
+      setCasks(allCasks);
 
     } catch (error) {
       console.error('Error fetching casks:', error);
@@ -319,9 +383,21 @@ const Marketplace = () => {
                       <CardDescription className="flex items-center space-x-1">
                         <MapPin className="h-3 w-3" />
                         <span>{cask.distillery?.name}</span>
+                        {cask.is_sale_listing && cask.seller && (
+                          <span className="text-muted-foreground">
+                            • Listed by {cask.seller.first_name} {cask.seller.last_name}
+                          </span>
+                        )}
                       </CardDescription>
                     </div>
-                    <Badge variant="secondary">#{cask.cask_number}</Badge>
+                    <div className="flex flex-col gap-1 items-end">
+                      <Badge variant="secondary">#{cask.cask_number}</Badge>
+                      {cask.is_sale_listing && (
+                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                          Resale
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
