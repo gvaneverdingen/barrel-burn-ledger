@@ -56,6 +56,7 @@ const Marketplace = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('price');
+  const [salesData, setSalesData] = useState(null);
   const [filterByDistillery, setFilterByDistillery] = useState('all');
 
   // Allow access without authentication
@@ -104,67 +105,80 @@ const Marketplace = () => {
         availableCasks = directCasks.filter(cask => !ownedCaskIds.has(cask.id));
       }
 
-      // Fetch active cask sales (user-to-user sales) with simpler query
+      // Fetch active cask sales (simplified approach)
       const { data: salesData, error: salesError } = await supabase
         .from('cask_sales')
-        .select(`
-          *,
-          ownership:cask_ownership (
-            cask_id,
-            volume_liters
-          ),
-          seller:profiles (
-            first_name,
-            last_name
-          )
-        `)
+        .select('*')
         .eq('status', 'active');
 
-      if (salesError) {
-        console.error('Error fetching sales:', salesError);
-      }
+      console.log("📊 Direct sales query result:", { salesData, salesError, count: salesData?.length });
+      setSalesData(salesData); // Store for visual indicator
 
-      // For each sale, fetch the cask details separately
+      // For each sale, manually build the cask data
       const salesCasks: Cask[] = [];
       if (salesData && salesData.length > 0) {
+        console.log(`🔄 Processing ${salesData.length} sales...`);
+        
         for (const sale of salesData) {
-          if (!sale.ownership?.cask_id) continue;
+          console.log(`📦 Processing sale ${sale.id} for ownership ${sale.ownership_id}`);
           
-          const { data: caskData } = await supabase
+          // Get ownership record
+          const { data: ownership } = await supabase
+            .from('cask_ownership')
+            .select('cask_id')
+            .eq('id', sale.ownership_id)
+            .single();
+            
+          if (!ownership?.cask_id) {
+            console.log(`❌ No ownership found for ${sale.ownership_id}`);
+            continue;
+          }
+          
+          // Get cask data
+          const { data: cask } = await supabase
             .from('casks')
             .select(`
               *,
-              distillery:distilleries (
-                name,
-                location
-              ),
-              cask_type:cask_types (
-                name,
-                capacity_liters
-              )
+              distillery:distilleries(name, location),
+              cask_type:cask_types(name, capacity_liters)
             `)
-            .eq('id', sale.ownership.cask_id)
+            .eq('id', ownership.cask_id)
             .single();
             
-          if (caskData) {
-            salesCasks.push({
-              ...caskData,
-              // Override price and volume with sale data
-              price_per_liter: sale.asking_price_per_liter,
-              total_price: sale.total_asking_price,
-              current_volume_liters: sale.volume_for_sale_liters,
-              // Add sale-specific fields
-              is_sale_listing: true,
-              sale_id: sale.id,
-              volume_for_sale: sale.volume_for_sale_liters,
-              seller: Array.isArray(sale.seller) ? sale.seller[0] : sale.seller,
-              // Keep original distillery and cask_type structure
-              distillery: caskData.distillery,
-              cask_type: caskData.cask_type,
-            });
+          if (!cask) {
+            console.log(`❌ No cask found for ${ownership.cask_id}`);
+            continue;
           }
+          
+          // Get seller info
+          const { data: seller } = await supabase
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('id', sale.seller_id)
+            .single();
+            
+          console.log(`✅ Found complete data for sale ${sale.id}:`, {
+            cask: cask.spirit_name,
+            seller: seller ? `${seller.first_name} ${seller.last_name}` : 'Unknown'
+          });
+          
+          salesCasks.push({
+            ...cask,
+            price_per_liter: sale.asking_price_per_liter,
+            total_price: sale.total_asking_price,
+            current_volume_liters: sale.volume_for_sale_liters,
+            is_sale_listing: true,
+            sale_id: sale.id,
+            volume_for_sale: sale.volume_for_sale_liters,
+            seller: seller || { first_name: 'Unknown', last_name: 'Seller' },
+            distillery: cask.distillery,
+            cask_type: cask.cask_type,
+          });
         }
       }
+      
+      console.log(`🎯 Final sales casks to add: ${salesCasks.length}`);
+      console.log("Sales casks:", salesCasks.map(c => ({ name: c.spirit_name, price: c.total_price })));
 
       // Combine both types of listings
       const allCasks = [...availableCasks, ...salesCasks];
@@ -360,8 +374,13 @@ const Marketplace = () => {
                 </SelectContent>
               </Select>
 
-              <div className="text-sm text-muted-foreground flex items-center">
+               <div className="text-sm text-muted-foreground flex items-center">
                 {filteredCasks.length} casks found
+                {salesData && salesData.length > 0 && (
+                  <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                    {salesData.length} user sales detected
+                  </span>
+                )}
               </div>
             </div>
           </CardContent>
