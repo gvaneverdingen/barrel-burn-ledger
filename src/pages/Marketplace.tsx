@@ -202,7 +202,7 @@ const Marketplace = () => {
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate('/portfolio')}
                 >
                   <BarChart3 className="h-4 w-4 mr-2" />
                   Dashboard
