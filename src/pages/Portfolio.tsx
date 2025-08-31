@@ -71,6 +71,9 @@ const Portfolio = () => {
   console.log("User ID:", user?.id);
   console.log("User email:", user?.email);
   console.log("Is user truthy:", !!user);
+  
+  // Force render this info on screen for debugging
+  const debugInfo = `User ID: ${user?.id || 'null'}, Email: ${user?.email || 'null'}`;
 
   useEffect(() => {
     console.log("=== PORTFOLIO USEEFFECT TRIGGERED ===");
@@ -80,6 +83,7 @@ const Portfolio = () => {
       fetchPortfolioData();
     } else {
       console.log("No user, skipping fetchPortfolioData");
+      setLoading(false);
     }
   }, [user]);
 
@@ -231,7 +235,12 @@ const Portfolio = () => {
             <h1 className="text-2xl font-bold ml-4">Portfolio</h1>
           </header>
           
-          <div className="p-6 space-y-6">
+            <div className="p-6 space-y-6">
+              {/* Debug Info */}
+              <div className="bg-red-100 border border-red-300 p-4 rounded">
+                <p className="text-red-800">DEBUG: {debugInfo}</p>
+                <p className="text-red-800">Expected Owner ID: fc1421f8-9702-4a0b-9a87-3d401cf1adfd</p>
+              </div>
             {loading ? (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
