@@ -66,6 +66,7 @@ const CaskDetails = () => {
   const [loading, setLoading] = useState(true);
   const [imageRefreshTrigger, setImageRefreshTrigger] = useState(0);
   const [canManageImages, setCanManageImages] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
 
   useEffect(() => {
     if (id) {
@@ -191,6 +192,17 @@ const CaskDetails = () => {
           price_per_liter: data.price_per_liter
         });
       }
+
+      // Set debug info for mobile display
+      setDebugInfo({
+        caskId,
+        hasOwnership: ownershipData?.length > 0,
+        ownershipCount: ownershipData?.length || 0,
+        hasSale: !!activeSale,
+        originalPrice: data.total_price,
+        finalPrice: finalCaskData.total_price,
+        salePrice: activeSale?.total_asking_price || 'none'
+      });
 
       setCask(finalCaskData as CaskDetails);
     } catch (error: any) {
@@ -342,8 +354,22 @@ const CaskDetails = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
-      <div className="container mx-auto px-4 py-8">
-        <Button variant="ghost" asChild className="mb-6">
+        <div className="container mx-auto px-4 py-8">
+          {/* Always visible debug info */}
+          {debugInfo && (
+            <div className="bg-yellow-100 text-yellow-800 p-4 mb-4 rounded text-xs">
+              <div><strong>DEBUG INFO:</strong></div>
+              <div>Cask ID: {debugInfo.caskId}</div>
+              <div>Has Ownership: {debugInfo.hasOwnership ? 'YES' : 'NO'}</div>
+              <div>Ownership Count: {debugInfo.ownershipCount}</div>
+              <div>Has Sale: {debugInfo.hasSale ? 'YES' : 'NO'}</div>
+              <div>Original Price: ${debugInfo.originalPrice}</div>
+              <div>Final Price: ${debugInfo.finalPrice}</div>
+              <div>Sale Price: {debugInfo.salePrice}</div>
+            </div>
+          )}
+          
+          <Button variant="ghost" asChild className="mb-6">
           <Link to="/marketplace">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Marketplace
