@@ -158,13 +158,17 @@ const CaskDetails = () => {
           seller: saleData.ownership.profiles
         } as CaskDetails;
 
-        console.log('Found active sale listing - using resale pricing:', {
-          sale_id: saleData.id,
-          resale_total_price: saleData.total_asking_price,
-          resale_price_per_liter: saleData.asking_price_per_liter,
-          original_total_price: caskInfo.total_price,
-          volume: saleData.volume_for_sale_liters
-        });
+         console.log('Found active sale listing - using resale pricing:', {
+           sale_id: saleData.id,
+           resale_total_price: saleData.total_asking_price,
+           resale_price_per_liter: saleData.asking_price_per_liter,
+           original_total_price: caskInfo.total_price,
+           volume: saleData.volume_for_sale_liters,
+           // Debug the actual values being set
+           converted_total: Number(saleData.total_asking_price),
+           converted_per_liter: Number(saleData.asking_price_per_liter),
+           raw_sale_data: saleData
+         });
 
         setCask(finalCaskData);
         setDebugInfo({
@@ -380,19 +384,22 @@ const CaskDetails = () => {
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
         <div className="container mx-auto px-4 py-8">
           {/* Always visible debug info */}
-          {debugInfo && (
-            <div className="bg-yellow-100 text-yellow-800 p-4 mb-4 rounded text-xs">
-              <div><strong>DEBUG INFO:</strong></div>
-              <div>Cask ID: {debugInfo.caskId}</div>
-              <div>Has Ownership: {debugInfo.hasOwnership ? 'YES' : 'NO'}</div>
-              <div>Ownership Count: {debugInfo.ownershipCount}</div>
-              <div>Ownership IDs: {JSON.stringify(debugInfo.ownershipIds)}</div>
-              <div>Has Sale: {debugInfo.hasSale ? 'YES' : 'NO'}</div>
-              <div>Original Price: ${debugInfo.originalPrice}</div>
-              <div>Final Price: ${debugInfo.finalPrice}</div>
-              <div>Sale Price: {debugInfo.salePrice}</div>
-            </div>
-          )}
+           {debugInfo && (
+             <div className="bg-yellow-100 text-yellow-800 p-4 mb-4 rounded text-xs">
+               <div><strong>DEBUG INFO:</strong></div>
+               <div>Cask ID: {debugInfo.caskId}</div>
+               <div>Has Ownership: {debugInfo.hasOwnership ? 'YES' : 'NO'}</div>
+               <div>Ownership Count: {debugInfo.ownershipCount}</div>
+               <div>Ownership IDs: {JSON.stringify(debugInfo.ownershipIds)}</div>
+               <div>Has Sale: {debugInfo.hasSale ? 'YES' : 'NO'}</div>
+               <div>Original Price: ${debugInfo.originalPrice}</div>
+               <div>Final Price: ${debugInfo.finalPrice}</div>
+               <div>Sale Price: {debugInfo.salePrice}</div>
+               <div>Current Cask Total Price: ${cask?.total_price}</div>
+               <div>Current Cask Per Liter: ${cask?.price_per_liter}</div>
+               <div>Is Sale Listing: {cask?.is_sale_listing ? 'YES' : 'NO'}</div>
+             </div>
+           )}
           
           <Button variant="ghost" asChild className="mb-6">
           <Link to="/marketplace">
