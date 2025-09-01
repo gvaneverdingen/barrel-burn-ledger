@@ -130,32 +130,22 @@ const CaskDetails = () => {
 
       if (error) throw error;
 
-      // Check if this cask has an active sale listing
-      const { data: saleData } = await supabase
-        .from('cask_sales')
-        .select(`
-          id,
-          asking_price_per_liter,
-          total_asking_price,
-          volume_for_sale_liters,
-          notes,
-          ownership_id,
-          seller:profiles(first_name, last_name)
-        `)
-        .eq('status', 'active')
-        .eq('ownership_id', caskId) // This might need to be different - let me check the relationship
-
-      // Actually, I need to check by finding ownership records for this cask
+      // Check if this cask has an active sale listing by finding ownership records first
+      console.log('Checking ownership for cask:', caskId);
       const { data: ownershipData } = await supabase
         .from('cask_ownership')
         .select('id')
         .eq('cask_id', caskId)
         .eq('is_active', true);
 
+      console.log('Ownership data found:', ownershipData);
+
       let activeSale = null;
       if (ownershipData && ownershipData.length > 0) {
         // Check if any of these ownership records have active sales
         const ownershipIds = ownershipData.map(o => o.id);
+        console.log('Looking for sales with ownership IDs:', ownershipIds);
+        
         const { data: salesForCask } = await supabase
           .from('cask_sales')
           .select(`
@@ -169,12 +159,22 @@ const CaskDetails = () => {
           .eq('status', 'active')
           .in('ownership_id', ownershipIds);
           
+        console.log('Sales data found:', salesForCask);
         activeSale = salesForCask && salesForCask.length > 0 ? salesForCask[0] : null;
       }
+
+      console.log('Active sale:', activeSale);
 
       // If there's an active sale, override the pricing
       let finalCaskData = data;
       if (activeSale) {
+        console.log('Overriding prices with sale data:', {
+          original_total: data.total_price,
+          original_per_liter: data.price_per_liter,
+          sale_total: activeSale.total_asking_price,
+          sale_per_liter: activeSale.asking_price_per_liter
+        });
+        
         finalCaskData = {
           ...data,
           price_per_liter: Number(activeSale.asking_price_per_liter),
@@ -185,6 +185,11 @@ const CaskDetails = () => {
           sale_id: activeSale.id,
           seller: activeSale.seller
         } as any;
+      } else {
+        console.log('No active sale found, using original cask prices:', {
+          total_price: data.total_price,
+          price_per_liter: data.price_per_liter
+        });
       }
 
       setCask(finalCaskData as CaskDetails);
