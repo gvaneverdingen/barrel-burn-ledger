@@ -106,6 +106,80 @@ const CaskDetails = () => {
 
   const fetchCaskDetails = async (caskId: string) => {
     try {
+      // Use a direct join query to get all the data in one call
+      const { data: saleData, error: saleError } = await supabase
+        .from('cask_sales')
+        .select(`
+          id,
+          asking_price_per_liter,
+          total_asking_price,
+          volume_for_sale_liters,
+          notes,
+          seller:profiles(first_name, last_name),
+          ownership:cask_ownership(
+            id,
+            cask_id,
+            cask:casks(
+              *,
+              distillery:distilleries(
+                id,
+                name,
+                location,
+                description,
+                established_year,
+                verified
+              ),
+              cask_type:cask_types(
+                id,
+                name,
+                capacity_liters,
+                description
+              )
+            )
+          )
+        `)
+        .eq('status', 'active')
+        .eq('ownership.cask_id', caskId)
+        .single();
+
+      if (!saleError && saleData?.ownership?.cask) {
+        // This is a resale listing - use sale data
+        const caskInfo = saleData.ownership.cask;
+        const finalCaskData = {
+          ...caskInfo,
+          // Override with sale pricing
+          price_per_liter: Number(saleData.asking_price_per_liter),
+          total_price: Number(saleData.total_asking_price),
+          current_volume_liters: Number(saleData.volume_for_sale_liters),
+          // Add sale metadata
+          is_sale_listing: true,
+          sale_id: saleData.id,
+          seller: saleData.seller
+        } as CaskDetails;
+
+        console.log('Found active sale listing:', {
+          sale_id: saleData.id,
+          total_price: saleData.total_asking_price,
+          price_per_liter: saleData.asking_price_per_liter,
+          volume: saleData.volume_for_sale_liters
+        });
+
+        setCask(finalCaskData);
+        setDebugInfo({
+          caskId,
+          hasOwnership: true,
+          ownershipCount: 1,
+          ownershipIds: [saleData.ownership.id],
+          hasSale: true,
+          originalPrice: caskInfo.total_price,
+          finalPrice: Number(saleData.total_asking_price),
+          salePrice: Number(saleData.total_asking_price),
+          salesError: 'none'
+        });
+        return;
+      }
+
+      // If no active sale, fetch original cask data
       const { data, error } = await supabase
         .from("casks")
         .select(`
@@ -131,82 +205,24 @@ const CaskDetails = () => {
 
       if (error) throw error;
 
-      // Check if this cask has an active sale listing by finding ownership records first
-      console.log('Checking ownership for cask:', caskId);
-      const { data: ownershipData } = await supabase
-        .from('cask_ownership')
-        .select('id')
-        .eq('cask_id', caskId)
-        .eq('is_active', true);
-
-      console.log('Ownership data found:', ownershipData);
-
-      let activeSale = null;
-      if (ownershipData && ownershipData.length > 0) {
-        // Check if any of these ownership records have active sales
-        const ownershipIds = ownershipData.map(o => o.id);
-        console.log('Looking for sales with ownership IDs:', ownershipIds);
-        
-        const { data: salesForCask, error: salesError } = await supabase
-          .from('cask_sales')
-          .select(`
-            id,
-            asking_price_per_liter,
-            total_asking_price,
-            volume_for_sale_liters,
-            notes,
-            seller:profiles(first_name, last_name)
-          `)
-          .eq('status', 'active')
-          .in('ownership_id', ownershipIds);
-          
-        console.log('Sales query result:', { salesForCask, salesError });
-        activeSale = salesForCask && salesForCask.length > 0 ? salesForCask[0] : null;
-      }
-
-      console.log('Active sale:', activeSale);
-
-      // If there's an active sale, override the pricing
-      let finalCaskData = data;
-      if (activeSale) {
-        console.log('Overriding prices with sale data:', {
-          original_total: data.total_price,
-          original_per_liter: data.price_per_liter,
-          sale_total: activeSale.total_asking_price,
-          sale_per_liter: activeSale.asking_price_per_liter
-        });
-        
-        finalCaskData = {
-          ...data,
-          price_per_liter: Number(activeSale.asking_price_per_liter),
-          total_price: Number(activeSale.total_asking_price),
-          current_volume_liters: Number(activeSale.volume_for_sale_liters),
-          // Add sale metadata
-          is_sale_listing: true,
-          sale_id: activeSale.id,
-          seller: activeSale.seller
-        } as any;
-      } else {
-        console.log('No active sale found, using original cask prices:', {
-          total_price: data.total_price,
-          price_per_liter: data.price_per_liter
-        });
-      }
-
-      // Set debug info for mobile display
-      setDebugInfo({
-        caskId,
-        hasOwnership: ownershipData?.length > 0,
-        ownershipCount: ownershipData?.length || 0,
-        ownershipIds: ownershipData?.map(o => o.id) || [],
-        hasSale: !!activeSale,
-        originalPrice: data.total_price,
-        finalPrice: finalCaskData.total_price,
-        salePrice: activeSale?.total_asking_price || 'none',
-        salesError: 'check console'
+      console.log('No active sale found, using original cask data:', {
+        total_price: data.total_price,
+        price_per_liter: data.price_per_liter
       });
 
-      setCask(finalCaskData as CaskDetails);
+      setCask(data as CaskDetails);
+      setDebugInfo({
+        caskId,
+        hasOwnership: false,
+        ownershipCount: 0,
+        ownershipIds: [],
+        hasSale: false,
+        originalPrice: data.total_price,
+        finalPrice: data.total_price,
+        salePrice: 'none',
+        salesError: 'none'
+      });
+
     } catch (error: any) {
       console.error("Error fetching cask details:", error);
       toast({
