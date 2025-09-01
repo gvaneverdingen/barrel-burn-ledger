@@ -106,81 +106,8 @@ const CaskDetails = () => {
 
   const fetchCaskDetails = async (caskId: string) => {
     try {
-      // Use a direct join query to get all the data in one call
-      const { data: saleData, error: saleError } = await supabase
-        .from('cask_sales')
-        .select(`
-          id,
-          asking_price_per_liter,
-          total_asking_price,
-          volume_for_sale_liters,
-          notes,
-          seller:profiles(first_name, last_name),
-          ownership:cask_ownership(
-            id,
-            cask_id,
-            cask:casks(
-              *,
-              distillery:distilleries(
-                id,
-                name,
-                location,
-                description,
-                established_year,
-                verified
-              ),
-              cask_type:cask_types(
-                id,
-                name,
-                capacity_liters,
-                description
-              )
-            )
-          )
-        `)
-        .eq('status', 'active')
-        .eq('ownership.cask_id', caskId)
-        .single();
-
-      if (!saleError && saleData?.ownership?.cask) {
-        // This is a resale listing - use sale data
-        const caskInfo = saleData.ownership.cask;
-        const finalCaskData = {
-          ...caskInfo,
-          // Override with sale pricing
-          price_per_liter: Number(saleData.asking_price_per_liter),
-          total_price: Number(saleData.total_asking_price),
-          current_volume_liters: Number(saleData.volume_for_sale_liters),
-          // Add sale metadata
-          is_sale_listing: true,
-          sale_id: saleData.id,
-          seller: saleData.seller
-        } as CaskDetails;
-
-        console.log('Found active sale listing:', {
-          sale_id: saleData.id,
-          total_price: saleData.total_asking_price,
-          price_per_liter: saleData.asking_price_per_liter,
-          volume: saleData.volume_for_sale_liters
-        });
-
-        setCask(finalCaskData);
-        setDebugInfo({
-          caskId,
-          hasOwnership: true,
-          ownershipCount: 1,
-          ownershipIds: [saleData.ownership.id],
-          hasSale: true,
-          originalPrice: caskInfo.total_price,
-          finalPrice: Number(saleData.total_asking_price),
-          salePrice: Number(saleData.total_asking_price),
-          salesError: 'none'
-        });
-        return;
-      }
-
-      // If no active sale, fetch original cask data
-      const { data, error } = await supabase
+      // First, always fetch the original cask data
+      const { data: caskData, error: caskError } = await supabase
         .from("casks")
         .select(`
           *,
@@ -203,24 +130,62 @@ const CaskDetails = () => {
         .eq("available_for_sale", true)
         .single();
 
-      if (error) throw error;
+      if (caskError) throw caskError;
 
-      console.log('No active sale found, using original cask data:', {
-        total_price: data.total_price,
-        price_per_liter: data.price_per_liter
+      // Then check for any active resale listings for metadata only
+      const { data: saleData, error: saleError } = await supabase
+        .from('cask_sales')
+        .select(`
+          id,
+          asking_price_per_liter,
+          total_asking_price,
+          volume_for_sale_liters,
+          notes,
+          ownership:cask_ownership(
+            id,
+            profiles:profiles(first_name, last_name)
+          )
+        `)
+        .eq('status', 'active')
+        .eq('ownership.cask_id', caskId)
+        .single();
+
+      // Always use original cask pricing, add resale info as metadata only
+      const finalCaskData = {
+        ...caskData,
+        // Keep original pricing from distillery
+        price_per_liter: caskData.price_per_liter,
+        total_price: caskData.total_price,
+        current_volume_liters: caskData.current_volume_liters,
+        // Add resale metadata if available
+        resale_price_per_liter: saleData?.asking_price_per_liter,
+        resale_total_price: saleData?.total_asking_price,
+        resale_volume: saleData?.volume_for_sale_liters,
+        resale_notes: saleData?.notes,
+        is_sale_listing: !!saleData,
+        sale_id: saleData?.id,
+        seller: saleData?.ownership?.profiles
+      } as CaskDetails;
+
+      console.log('Using original cask data with resale metadata:', {
+        original_total_price: caskData.total_price,
+        original_price_per_liter: caskData.price_per_liter,
+        resale_total_price: saleData?.total_asking_price,
+        resale_price_per_liter: saleData?.asking_price_per_liter,
+        has_active_sale: !!saleData
       });
 
-      setCask(data as CaskDetails);
+      setCask(finalCaskData);
       setDebugInfo({
         caskId,
-        hasOwnership: false,
-        ownershipCount: 0,
-        ownershipIds: [],
-        hasSale: false,
-        originalPrice: data.total_price,
-        finalPrice: data.total_price,
-        salePrice: 'none',
-        salesError: 'none'
+        hasOwnership: !!saleData,
+        ownershipCount: saleData ? 1 : 0,
+        ownershipIds: saleData ? [saleData.ownership.id] : [],
+        hasSale: !!saleData,
+        originalPrice: caskData.total_price,
+        finalPrice: caskData.total_price, // Always show original price
+        salePrice: saleData?.total_asking_price || 'none',
+        salesError: saleError?.message || 'none'
       });
 
     } catch (error: any) {
