@@ -147,7 +147,7 @@ const CaskDetails = () => {
         const ownershipIds = ownershipData.map(o => o.id);
         console.log('Looking for sales with ownership IDs:', ownershipIds);
         
-        const { data: salesForCask } = await supabase
+        const { data: salesForCask, error: salesError } = await supabase
           .from('cask_sales')
           .select(`
             id,
@@ -160,7 +160,7 @@ const CaskDetails = () => {
           .eq('status', 'active')
           .in('ownership_id', ownershipIds);
           
-        console.log('Sales data found:', salesForCask);
+        console.log('Sales query result:', { salesForCask, salesError });
         activeSale = salesForCask && salesForCask.length > 0 ? salesForCask[0] : null;
       }
 
