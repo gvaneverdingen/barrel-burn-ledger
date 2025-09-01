@@ -46,12 +46,19 @@ image_transformation = { enabled = true }
 [auth]
 enabled = true
 port = 54329
-site_url = "http://127.0.0.1:3000"
-additional_redirect_urls = ["https://127.0.0.1:3000"]
+site_url = "http://localhost:3000"
+additional_redirect_urls = [
+  "https://localhost:3000",
+  "http://localhost:3000",
+  "https://127.0.0.1:3000",
+  "http://127.0.0.1:3000",
+  "https://sandbox.lovable.dev",
+  "http://sandbox.lovable.dev"
+]
 jwt_expiry = 3600
 enable_signup = true
 enable_email_confirmations = false
-enable_email_autoconfirm = false
+enable_email_autoconfirm = true
 enable_phone_confirmations = false
 enable_phone_autoconfirm = false
 
