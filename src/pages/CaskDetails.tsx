@@ -66,7 +66,7 @@ const CaskDetails = () => {
   const [loading, setLoading] = useState(true);
   const [imageRefreshTrigger, setImageRefreshTrigger] = useState(0);
   const [canManageImages, setCanManageImages] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<any>(null);
+  
 
   useEffect(() => {
     if (id) {
@@ -158,30 +158,7 @@ const CaskDetails = () => {
           seller: saleData.ownership.profiles
         } as CaskDetails;
 
-         console.log('Found active sale listing - using resale pricing:', {
-           sale_id: saleData.id,
-           resale_total_price: saleData.total_asking_price,
-           resale_price_per_liter: saleData.asking_price_per_liter,
-           original_total_price: caskInfo.total_price,
-           volume: saleData.volume_for_sale_liters,
-           // Debug the actual values being set
-           converted_total: Number(saleData.total_asking_price),
-           converted_per_liter: Number(saleData.asking_price_per_liter),
-           raw_sale_data: saleData
-         });
-
         setCask(finalCaskData);
-        setDebugInfo({
-          caskId,
-          hasOwnership: true,
-          ownershipCount: 1,
-          ownershipIds: [saleData.ownership.id],
-          hasSale: true,
-          originalPrice: caskInfo.total_price,
-          finalPrice: Number(saleData.total_asking_price), // Show resale price as final
-          salePrice: Number(saleData.total_asking_price),
-          salesError: saleError?.message || 'none'
-        });
         return;
       }
 
@@ -211,27 +188,10 @@ const CaskDetails = () => {
 
       if (caskError) throw caskError;
 
-      console.log('No active resale found, using original cask pricing:', {
-        total_price: caskData.total_price,
-        price_per_liter: caskData.price_per_liter
-      });
-
       setCask({
         ...caskData,
         is_sale_listing: false
       } as CaskDetails);
-      
-      setDebugInfo({
-        caskId,
-        hasOwnership: false,
-        ownershipCount: 0,
-        ownershipIds: [],
-        hasSale: false,
-        originalPrice: caskData.total_price,
-        finalPrice: caskData.total_price,
-        salePrice: 'none',
-        salesError: saleError?.message || 'none'
-      });
 
     } catch (error: any) {
       console.error("Error fetching cask details:", error);
@@ -383,23 +343,6 @@ const CaskDetails = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
         <div className="container mx-auto px-4 py-8">
-          {/* Always visible debug info */}
-           {debugInfo && (
-             <div className="bg-yellow-100 text-yellow-800 p-4 mb-4 rounded text-xs">
-               <div><strong>DEBUG INFO:</strong></div>
-               <div>Cask ID: {debugInfo.caskId}</div>
-               <div>Has Ownership: {debugInfo.hasOwnership ? 'YES' : 'NO'}</div>
-               <div>Ownership Count: {debugInfo.ownershipCount}</div>
-               <div>Ownership IDs: {JSON.stringify(debugInfo.ownershipIds)}</div>
-               <div>Has Sale: {debugInfo.hasSale ? 'YES' : 'NO'}</div>
-               <div>Original Price: ${debugInfo.originalPrice}</div>
-               <div>Final Price: ${debugInfo.finalPrice}</div>
-               <div>Sale Price: {debugInfo.salePrice}</div>
-               <div>Current Cask Total Price: ${cask?.total_price}</div>
-               <div>Current Cask Per Liter: ${cask?.price_per_liter}</div>
-               <div>Is Sale Listing: {cask?.is_sale_listing ? 'YES' : 'NO'}</div>
-             </div>
-           )}
           
           <Button variant="ghost" asChild className="mb-6">
           <Link to="/marketplace">
@@ -455,19 +398,10 @@ const CaskDetails = () => {
                    <div className="text-2xl font-bold text-primary">
                      {formatCurrency(cask.total_price)}
                    </div>
-                   <div className="text-sm text-muted-foreground">
-                     {formatCurrency(cask.price_per_liter)}/L
-                   </div>
-                   {/* DEBUG INFO */}
-                   <div className="text-xs bg-red-100 text-red-800 p-2 mt-2 rounded">
-                     <div>Is Sale: {cask.is_sale_listing ? 'YES' : 'NO'}</div>
-                     <div>Sale ID: {cask.sale_id || 'None'}</div>
-                     <div>Total: ${cask.total_price}</div>
-                     <div>Per L: ${cask.price_per_liter}</div>
-                     <div>Volume: {cask.current_volume_liters}L</div>
-                     {cask.seller && <div>Seller: {cask.seller.first_name} {cask.seller.last_name}</div>}
-                   </div>
-                 </div>
+                    <div className="text-sm text-muted-foreground">
+                      {formatCurrency(cask.price_per_liter)}/L
+                    </div>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
