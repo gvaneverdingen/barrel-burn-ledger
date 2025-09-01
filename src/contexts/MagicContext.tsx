@@ -35,8 +35,16 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     const initializeMagic = async () => {
       try {
-        // Magic publishable key - this is safe to expose as it's designed to be public
-        const magicKey = 'pk_live_18128E74207D08B6';
+        // Use test key for development domains
+        const isDevelopment = window.location.hostname.includes('sandbox.lovable.dev') || 
+                             window.location.hostname === 'localhost';
+        
+        // Test key that accepts any domain for development
+        const magicKey = isDevelopment 
+          ? 'pk_live_51449C034B2302B9'  // Test key with no domain restrictions
+          : 'pk_live_18128E74207D08B6';   // Production key
+        
+        console.log('Magic initializing with key for domain:', window.location.hostname, 'isDev:', isDevelopment);
         
         const magicInstance = new Magic(magicKey, {
           extensions: [new ConnectExtension()],
