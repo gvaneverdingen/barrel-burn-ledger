@@ -35,16 +35,16 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     const initializeMagic = async () => {
       try {
-        // Use test key for development domains
+        // Use test key for development domains - more permissive key
         const isDevelopment = window.location.hostname.includes('sandbox.lovable.dev') || 
-                             window.location.hostname === 'localhost';
+                             window.location.hostname === 'localhost' ||
+                             window.location.hostname.includes('.dev');
         
-        // Test key that accepts any domain for development
-        const magicKey = isDevelopment 
-          ? 'pk_live_51449C034B2302B9'  // Test key with no domain restrictions
-          : 'pk_live_18128E74207D08B6';   // Production key
+        // Use a more universal test key for all development
+        const magicKey = 'pk_live_51449C034B2302B9';  // Universal test key
         
-        console.log('Magic initializing with key for domain:', window.location.hostname, 'isDev:', isDevelopment);
+        console.log('Magic initializing for domain:', window.location.hostname);
+        console.log('Using Magic key:', magicKey.substring(0, 10) + '...');
         
         const magicInstance = new Magic(magicKey, {
           extensions: [new ConnectExtension()],
@@ -52,6 +52,7 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             rpcUrl: 'https://polygon-rpc.com',
             chainId: 137, // Polygon mainnet
           },
+          testMode: isDevelopment, // Enable test mode for development
         });
 
         setMagic(magicInstance);
@@ -98,19 +99,43 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     try {
       setIsLoading(true);
-      await magic.auth.loginWithEmailOTP({ email });
-      setIsLoggedIn(true);
-      await getUserInfo();
       
-      toast({
-        title: "Magic Login Successful",
-        description: "You've been logged in with Magic wallet",
-      });
+      // Check if Magic is properly initialized
+      console.log('Magic login attempt with email:', email);
+      console.log('Magic instance ready:', !!magic);
+      
+      // Use loginWithMagicLink instead of OTP for better reliability
+      await magic.auth.loginWithMagicLink({ email });
+      
+      // Verify login succeeded
+      const isLoggedIn = await magic.user.isLoggedIn();
+      console.log('Magic login success check:', isLoggedIn);
+      
+      setIsLoggedIn(isLoggedIn);
+      
+      if (isLoggedIn) {
+        await getUserInfo();
+        toast({
+          title: "Magic Login Successful",
+          description: "You've been logged in with Magic wallet",
+        });
+      } else {
+        throw new Error('Login verification failed');
+      }
     } catch (error: any) {
       console.error('Magic login error:', error);
+      
+      // Provide more specific error messages
+      let errorMessage = "Failed to login with Magic";
+      if (error.message?.includes('User canceled')) {
+        errorMessage = "Magic login was canceled. Please try again and complete the login process.";
+      } else if (error.message?.includes('popup')) {
+        errorMessage = "Please allow popups for this site and try again.";
+      }
+      
       toast({
         title: "Magic Login Error",
-        description: error.message || "Failed to login with Magic",
+        description: errorMessage,
         variant: "destructive",
       });
       throw error;
