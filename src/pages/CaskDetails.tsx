@@ -393,14 +393,23 @@ const CaskDetails = () => {
                        )}
                      </CardDescription>
                    </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-primary">
-                      {formatCurrency(cask.total_price)}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {formatCurrency(cask.price_per_liter)}/L
-                    </div>
-                  </div>
+                 <div className="text-right">
+                   <div className="text-2xl font-bold text-primary">
+                     {formatCurrency(cask.total_price)}
+                   </div>
+                   <div className="text-sm text-muted-foreground">
+                     {formatCurrency(cask.price_per_liter)}/L
+                   </div>
+                   {/* DEBUG INFO */}
+                   <div className="text-xs bg-red-100 text-red-800 p-2 mt-2 rounded">
+                     <div>Is Sale: {cask.is_sale_listing ? 'YES' : 'NO'}</div>
+                     <div>Sale ID: {cask.sale_id || 'None'}</div>
+                     <div>Total: ${cask.total_price}</div>
+                     <div>Per L: ${cask.price_per_liter}</div>
+                     <div>Volume: {cask.current_volume_liters}L</div>
+                     {cask.seller && <div>Seller: {cask.seller.first_name} {cask.seller.last_name}</div>}
+                   </div>
+                 </div>
                 </div>
               </CardHeader>
               <CardContent>
