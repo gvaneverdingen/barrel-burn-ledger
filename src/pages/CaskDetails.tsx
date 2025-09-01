@@ -198,10 +198,12 @@ const CaskDetails = () => {
         caskId,
         hasOwnership: ownershipData?.length > 0,
         ownershipCount: ownershipData?.length || 0,
+        ownershipIds: ownershipData?.map(o => o.id) || [],
         hasSale: !!activeSale,
         originalPrice: data.total_price,
         finalPrice: finalCaskData.total_price,
-        salePrice: activeSale?.total_asking_price || 'none'
+        salePrice: activeSale?.total_asking_price || 'none',
+        salesError: 'check console'
       });
 
       setCask(finalCaskData as CaskDetails);
@@ -362,6 +364,7 @@ const CaskDetails = () => {
               <div>Cask ID: {debugInfo.caskId}</div>
               <div>Has Ownership: {debugInfo.hasOwnership ? 'YES' : 'NO'}</div>
               <div>Ownership Count: {debugInfo.ownershipCount}</div>
+              <div>Ownership IDs: {JSON.stringify(debugInfo.ownershipIds)}</div>
               <div>Has Sale: {debugInfo.hasSale ? 'YES' : 'NO'}</div>
               <div>Original Price: ${debugInfo.originalPrice}</div>
               <div>Final Price: ${debugInfo.finalPrice}</div>
