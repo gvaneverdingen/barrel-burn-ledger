@@ -150,10 +150,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     console.log('AuthProvider mounting...');
+    let isInitialized = false;
     
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         console.log('Auth state change:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
@@ -168,7 +169,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setProfileComplete(false);
         }
         
-        setLoading(false);
+        // Only set loading to false after initial setup
+        if (!isInitialized) {
+          setLoading(false);
+          isInitialized = true;
+        }
       }
     );
 
@@ -184,7 +189,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }, 0);
       }
       
-      setLoading(false);
+      // Set loading to false if not already set by auth listener
+      if (!isInitialized) {
+        setLoading(false);
+        isInitialized = true;
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -195,83 +204,82 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const handleMagicAuth = async () => {
       console.log('Magic auth state:', { isMagicLoggedIn, magicUserMetadata, walletAddress });
       
+      // Skip if we already have a Supabase session (avoid conflicts)
+      if (session && !user?.user_metadata?.wallet_address) {
+        return;
+      }
+      
       if (isMagicLoggedIn && magicUserMetadata?.email && walletAddress) {
-        // Create mock user for Magic wallet
-        const magicUser = await createMagicUser(magicUserMetadata.email, walletAddress);
-        setUser(magicUser);
-        
-         // Fetch the role and profile completeness from the database
-         try {
-           console.log('Magic auth: Looking for profile with ID:', magicUser.id);
-           console.log('Magic auth: User email:', magicUser.email);
-           
-           // First try to find by ID
-           let { data: profile } = await supabase
-             .from('profiles')
-             .select('role, first_name, last_name, id, email')
-             .eq('id', magicUser.id)
-             .maybeSingle();
-           
-            // If not found by ID, try to find by email and use existing profile
-            if (!profile && magicUser.email) {
-              console.log('Magic auth: No profile found by ID, searching by email...');
-              const { data: emailProfile } = await supabase
-                .from('profiles')
-                .select('role, first_name, last_name, id, email')
-                .eq('email', magicUser.email)
-                .maybeSingle();
-              
-              if (emailProfile) {
-                console.log('Magic auth: Found existing profile, using original profile ID');
-                // Use the existing profile as-is, don't try to update the ID
-                profile = emailProfile;
-                // Update the Magic user to use the existing profile ID
-                magicUser.id = emailProfile.id;
-                setUser(magicUser);
-              }
+        try {
+          // Create mock user for Magic wallet
+          const magicUser = await createMagicUser(magicUserMetadata.email, walletAddress);
+          setUser(magicUser);
+          
+          // Fetch the role and profile completeness from the database
+          console.log('Magic auth: Looking for profile with ID:', magicUser.id);
+          console.log('Magic auth: User email:', magicUser.email);
+          
+          // First try to find by ID
+          let { data: profile } = await supabase
+            .from('profiles')
+            .select('role, first_name, last_name, id, email')
+            .eq('id', magicUser.id)
+            .maybeSingle();
+          
+          // If not found by ID, try to find by email and use existing profile
+          if (!profile && magicUser.email) {
+            console.log('Magic auth: No profile found by ID, searching by email...');
+            const { data: emailProfile } = await supabase
+              .from('profiles')
+              .select('role, first_name, last_name, id, email')
+              .eq('email', magicUser.email)
+              .maybeSingle();
+            
+            if (emailProfile) {
+              console.log('Magic auth: Found existing profile, using original profile ID');
+              profile = emailProfile;
+              // Update the Magic user to use the existing profile ID
+              magicUser.id = emailProfile.id;
+              setUser(magicUser);
             }
-           
-           console.log('Magic auth profile fetch:', { 
-             magicUserId: magicUser.id, 
-             profile,
-             profileExists: !!profile,
-             isComplete: !!(profile?.first_name && profile?.last_name)
-           });
-           
-           if (profile) {
-             setUserRole(profile.role as UserRole);
-             const isComplete = !!(profile.first_name && profile.last_name);
-             setProfileComplete(isComplete);
-           } else {
-             setUserRole('consumer');
-             setProfileComplete(false);
-           }
+          }
+          
+          console.log('Magic auth profile fetch:', { 
+            magicUserId: magicUser.id, 
+            profile,
+            profileExists: !!profile,
+            isComplete: !!(profile?.first_name && profile?.last_name)
+          });
+          
+          if (profile) {
+            setUserRole(profile.role as UserRole);
+            const isComplete = !!(profile.first_name && profile.last_name);
+            setProfileComplete(isComplete);
+          } else {
+            setUserRole('consumer');
+            setProfileComplete(false);
+          }
+          
+          toast({
+            title: "Magic Wallet Connected",
+            description: "Successfully connected with Magic wallet.",
+          });
         } catch (error) {
-          console.error('Error fetching Magic user profile:', error);
+          console.error('Error handling Magic auth:', error);
           setUserRole('consumer');
           setProfileComplete(false);
         }
-        
-        setLoading(false);
-        
-        toast({
-          title: "Magic Wallet Connected",
-          description: "Successfully connected with Magic wallet.",
-        });
-      } else if (!isMagicLoggedIn && user?.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(user.id) && user.user_metadata?.wallet_address) {
+      } else if (!isMagicLoggedIn && user?.user_metadata?.wallet_address) {
         // Magic user logged out
+        console.log('Magic user logged out, clearing state');
         setUser(null);
         setUserRole(null);
         setProfileComplete(false);
-        setLoading(false);
-      } else if (!isMagicLoggedIn && !user) {
-        // No authentication active - ensure loading is false
-        setLoading(false);
       }
     };
 
     handleMagicAuth();
-  }, [isMagicLoggedIn, magicUserMetadata, walletAddress]); // Removed 'user' dependency to prevent loops
+  }, [isMagicLoggedIn, magicUserMetadata, walletAddress, session]); // Added session as dependency
 
   const signUp = async (email: string, password: string, role: UserRole, additionalData?: any) => {
     console.log('SignUp attempt for:', email, 'with role:', role);
@@ -297,9 +305,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (error) {
       console.error('SignUp error details:', error);
+      
+      // Handle specific error cases with more helpful messages
+      let errorMessage = error.message;
+      let errorTitle = "Sign Up Error";
+      
+      if (error.message.includes('Email signups are disabled')) {
+        errorTitle = "Sign Up Currently Unavailable";
+        errorMessage = "Email signup is currently disabled. Please try signing up with Magic Wallet instead, or contact support.";
+      } else if (error.message.includes('User already registered')) {
+        errorTitle = "Account Already Exists";
+        errorMessage = "An account with this email already exists. Please try signing in instead.";
+      }
+      
       toast({
-        title: "Sign Up Error",
-        description: error.message,
+        title: errorTitle,
+        description: errorMessage,
         variant: "destructive",
       });
     } else {
