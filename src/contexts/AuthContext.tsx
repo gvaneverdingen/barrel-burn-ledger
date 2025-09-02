@@ -213,36 +213,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           // Create mock user for Magic wallet
           const magicUser = await createMagicUser(magicUserMetadata.email, walletAddress);
-          setUser(magicUser);
           
-          // Fetch the role and profile completeness from the database
-          console.log('Magic auth: Looking for profile with ID:', magicUser.id);
-          console.log('Magic auth: User email:', magicUser.email);
-          
-          // First try to find by ID
-          let { data: profile } = await supabase
+          // Simplified profile fetch logic
+          const { data: profile } = await supabase
             .from('profiles')
             .select('role, first_name, last_name, id, email')
             .eq('id', magicUser.id)
             .maybeSingle();
-          
-          // If not found by ID, try to find by email and use existing profile
-          if (!profile && magicUser.email) {
-            console.log('Magic auth: No profile found by ID, searching by email...');
-            const { data: emailProfile } = await supabase
-              .from('profiles')
-              .select('role, first_name, last_name, id, email')
-              .eq('email', magicUser.email)
-              .maybeSingle();
-            
-            if (emailProfile) {
-              console.log('Magic auth: Found existing profile, using original profile ID');
-              profile = emailProfile;
-              // Update the Magic user to use the existing profile ID
-              magicUser.id = emailProfile.id;
-              setUser(magicUser);
-            }
-          }
           
           console.log('Magic auth profile fetch:', { 
             magicUserId: magicUser.id, 
@@ -251,10 +228,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isComplete: !!(profile?.first_name && profile?.last_name)
           });
           
+          setUser(magicUser);
+          
           if (profile) {
             setUserRole(profile.role as UserRole);
-            const isComplete = !!(profile.first_name && profile.last_name);
-            setProfileComplete(isComplete);
+            setProfileComplete(!!(profile.first_name && profile.last_name));
           } else {
             setUserRole('consumer');
             setProfileComplete(false);
@@ -268,6 +246,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.error('Error handling Magic auth:', error);
           setUserRole('consumer');
           setProfileComplete(false);
+          toast({
+            title: "Magic Auth Error",
+            description: "Failed to authenticate with Magic wallet",
+            variant: "destructive",
+          });
         }
       } else if (!isMagicLoggedIn && user?.user_metadata?.wallet_address) {
         // Magic user logged out
@@ -278,8 +261,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
-    handleMagicAuth();
-  }, [isMagicLoggedIn, magicUserMetadata, walletAddress, session]); // Added session as dependency
+    // Debounce the magic auth handling to prevent excessive calls
+    const timeoutId = setTimeout(handleMagicAuth, 100);
+    return () => clearTimeout(timeoutId);
+  }, [isMagicLoggedIn, magicUserMetadata, walletAddress]); // Removed session dependency to prevent loops
 
   const signUp = async (email: string, password: string, role: UserRole, additionalData?: any) => {
     console.log('SignUp attempt for:', email, 'with role:', role);

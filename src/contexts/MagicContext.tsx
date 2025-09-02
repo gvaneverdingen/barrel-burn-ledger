@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Magic } from 'magic-sdk';
 import { ConnectExtension } from '@magic-ext/connect';
 import { toast } from '@/hooks/use-toast';
+import { getMagicConfig, validateMagicConfig } from '@/utils/magicConfig';
 
 interface MagicContextType {
   magic: Magic | null;
@@ -35,24 +36,19 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     const initializeMagic = async () => {
       try {
-        // Use test key for development domains - more permissive key
-        const isDevelopment = window.location.hostname.includes('sandbox.lovable.dev') || 
-                             window.location.hostname === 'localhost' ||
-                             window.location.hostname.includes('.dev');
+        const config = getMagicConfig();
         
-        // Use a more universal test key for all development
-        const magicKey = 'pk_live_51449C034B2302B9';  // Universal test key
+        if (!validateMagicConfig(config)) {
+          throw new Error('Invalid Magic configuration');
+        }
         
         console.log('Magic initializing for domain:', window.location.hostname);
-        console.log('Using Magic key:', magicKey.substring(0, 10) + '...');
+        console.log('Using Magic key:', config.key.substring(0, 10) + '...');
         
-        const magicInstance = new Magic(magicKey, {
+        const magicInstance = new Magic(config.key, {
           extensions: [new ConnectExtension()],
-          network: {
-            rpcUrl: 'https://polygon-rpc.com',
-            chainId: 137, // Polygon mainnet
-          },
-          testMode: isDevelopment, // Enable test mode for development
+          network: config.network,
+          testMode: config.testMode,
         });
 
         setMagic(magicInstance);

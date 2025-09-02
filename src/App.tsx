@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { MagicProvider } from "@/contexts/MagicContext";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { setupResizeObserverErrorHandler } from "@/utils/resizeObserver";
 import ProfileCompletion from "@/components/ProfileCompletion";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -29,7 +31,18 @@ import DistilleryCasks from "./pages/distillery/Casks";
 import DistilleryAnalytics from "./pages/distillery/Analytics";
 import DistilleryVerification from "./pages/distillery/Verification";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
+
+// Set up global error handlers
+setupResizeObserverErrorHandler();
 
 const AppRoutes = () => {
   const { user, loading, profileComplete } = useAuth();
@@ -91,19 +104,23 @@ const AppRoutes = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <MagicProvider>
-        <AuthProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
-        </AuthProvider>
-      </MagicProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <MagicProvider>
+          <AuthProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <ErrorBoundary>
+                <AppRoutes />
+              </ErrorBoundary>
+            </BrowserRouter>
+          </AuthProvider>
+        </MagicProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
