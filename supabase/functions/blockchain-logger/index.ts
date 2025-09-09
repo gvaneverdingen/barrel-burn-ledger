@@ -81,13 +81,12 @@ serve(async (req) => {
       const { error: updateError } = await supabaseService
         .from('transactions')
         .update({
-          blockchain_transaction_hash: blockchainResult.transactionHash,
-          status: 'completed',
-          completed_at: new Date().toISOString()
+          blockchain_transaction_hash: blockchainResult.transactionHash
         })
         .eq('cask_id', transaction.caskId)
         .eq('buyer_id', transaction.buyerId)
-        .eq('status', 'pending');
+        .eq('status', 'completed')
+        .is('blockchain_transaction_hash', null);
 
       if (updateError) {
         console.error("Error updating transaction:", updateError);
