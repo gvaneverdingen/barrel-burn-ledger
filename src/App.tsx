@@ -30,6 +30,7 @@ import DistilleryDashboard from "./pages/distillery/Dashboard";
 import DistilleryCasks from "./pages/distillery/Casks";
 import DistilleryAnalytics from "./pages/distillery/Analytics";
 import DistilleryVerification from "./pages/distillery/Verification";
+import BlockchainExample from "./pages/BlockchainExample";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -90,6 +91,7 @@ const AppRoutes = () => {
       <Route path="/admin" element={<Admin />} />
       <Route path="/test-data" element={<TestData />} />
       <Route path="/payment-success" element={<PaymentSuccess />} />
+      <Route path="/blockchain-example" element={<BlockchainExample />} />
       
       {/* Distillery Routes */}
       <Route path="/distillery" element={<DistilleryDashboard />} />
