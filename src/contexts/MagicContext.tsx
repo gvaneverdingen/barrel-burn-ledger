@@ -35,8 +35,9 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     const initializeMagic = async () => {
+      console.log('🟡 MagicContext: Starting Magic initialization');
+      
       try {
-        console.log('🟡 MagicContext: Starting Magic initialization');
         const config = getMagicConfig();
         
         if (!validateMagicConfig(config)) {
@@ -74,10 +75,11 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           description: "Failed to initialize Magic wallet",
           variant: "destructive",
         });
-      } finally {
-        console.log('🟡 MagicContext: Setting loading to false');
-        setIsLoading(false);
       }
+      
+      // Always set loading to false, regardless of success or failure
+      console.log('🟡 MagicContext: Setting loading to false');
+      setIsLoading(false);
     };
 
     initializeMagic();
