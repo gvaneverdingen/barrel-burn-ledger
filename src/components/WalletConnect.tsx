@@ -191,26 +191,32 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
         
         {/* Magic SDK Test */}
         <Button 
-          onClick={async () => {
-            console.log('🔵 DEBUG: Testing Magic SDK directly');
-            if (magic) {
-              try {
-                console.log('🔵 DEBUG: Magic instance exists, testing basic functionality');
-                const isLoggedIn = await magic.user.isLoggedIn();
-                console.log('🔵 DEBUG: isLoggedIn check result:', isLoggedIn);
-                alert(`Magic SDK test: isLoggedIn = ${isLoggedIn}`);
-              } catch (error) {
-                console.error('🔴 DEBUG: Magic SDK test failed:', error);
-                alert(`Magic SDK test failed: ${error.message}`);
-              }
-            } else {
-              alert('Magic instance is null');
+          onClick={() => {
+            console.log('🔵 DEBUG: Button clicked - starting Magic test');
+            alert('Button click registered!');
+            
+            if (!magic) {
+              console.log('🔴 DEBUG: Magic is null/undefined');
+              alert('Magic is null - not initialized properly');
+              return;
+            }
+            
+            console.log('🔵 DEBUG: Magic exists, testing...');
+            
+            // Simple test without async
+            try {
+              console.log('🔵 DEBUG: Magic object:', typeof magic);
+              console.log('🔵 DEBUG: Magic.user exists:', !!magic.user);
+              alert(`Magic object type: ${typeof magic}, has user: ${!!magic.user}`);
+            } catch (error) {
+              console.error('🔴 DEBUG: Error accessing Magic:', error);
+              alert(`Error: ${error.message}`);
             }
           }}
           variant="outline"
           className="w-full"
         >
-          🧪 Test Magic SDK
+          🧪 Simple Magic Test
         </Button>
         
         {/* Magic state debug info */}
