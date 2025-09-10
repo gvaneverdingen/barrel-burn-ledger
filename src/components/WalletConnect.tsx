@@ -212,6 +212,28 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
           <p>• email: "{email}"</p>
         </div>
         
+        {/* Popup blocker warning */}
+        <div className="text-xs bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-3 rounded space-y-2">
+          <p className="font-medium text-yellow-800 dark:text-yellow-200">⚠️ Important for Magic Wallet:</p>
+          <p className="text-yellow-700 dark:text-yellow-300">• Please <strong>allow popups</strong> for this site</p>
+          <p className="text-yellow-700 dark:text-yellow-300">• Magic opens a popup window for authentication</p>
+          <p className="text-yellow-700 dark:text-yellow-300">• If stuck on "Connecting...", check your popup blocker</p>
+          <button 
+            onClick={() => {
+              const popup = window.open('', '_blank', 'width=500,height=600');
+              if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+                alert('Popups are blocked! Please allow popups for this site to use Magic wallet.');
+              } else {
+                popup.close();
+                alert('Popups are working! Magic wallet should work now.');
+              }
+            }}
+            className="text-yellow-800 dark:text-yellow-200 underline hover:no-underline"
+          >
+            Test Popup Blocker
+          </button>
+        </div>
+        
         {/* Email Login */}
         <form onSubmit={handleEmailLogin} className="space-y-4">
           <div className="space-y-2">
