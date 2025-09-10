@@ -195,34 +195,40 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
           🔧 Test Click (Debug)
         </Button>
         
-        {/* Magic SDK Test */}
+        {/* Magic Key Test */}
         <Button 
-          onClick={() => {
-            console.log('🔵 DEBUG: Button clicked - starting Magic test');
-            alert('Button click registered!');
+          onClick={async () => {
+            console.log('🔵 DEBUG: Testing Magic key validation');
+            alert('Testing Magic key...');
             
             if (!magic) {
-              console.log('🔴 DEBUG: Magic is null/undefined');
-              alert('Magic is null - not initialized properly');
+              alert('Magic is null');
               return;
             }
             
-            console.log('🔵 DEBUG: Magic exists, testing...');
-            
-            // Simple test without async
             try {
-              console.log('🔵 DEBUG: Magic object:', typeof magic);
-              console.log('🔵 DEBUG: Magic.user exists:', !!magic.user);
-              alert(`Magic object type: ${typeof magic}, has user: ${!!magic.user}`);
+              console.log('🔵 DEBUG: Testing basic Magic functionality');
+              
+              // Test if Magic can perform any operation at all
+              const testResult = await Promise.race([
+                magic.user.getInfo(),
+                new Promise((_, reject) => 
+                  setTimeout(() => reject(new Error('Magic call timeout')), 5000)
+                )
+              ]);
+              
+              console.log('🟢 DEBUG: Magic test successful:', testResult);
+              alert('Magic key works! Issue might be with specific auth methods.');
+              
             } catch (error) {
-              console.error('🔴 DEBUG: Error accessing Magic:', error);
-              alert(`Error: ${error.message}`);
+              console.error('🔴 DEBUG: Magic key test failed:', error);
+              alert(`Magic key test failed: ${error.message}`);
             }
           }}
           variant="outline"
           className="w-full"
         >
-          🧪 Simple Magic Test
+          🔑 Test Magic Key
         </Button>
         
         {/* Force Reset All States */}
@@ -231,7 +237,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
             console.log('🔵 DEBUG: Force resetting all states');
             setIsConnecting(false);
             resetLoadingState();
-            alert('All states reset! Try Magic login now.');
+            alert('All states reset! Try login now.');
           }}
           variant="destructive"
           className="w-full"
