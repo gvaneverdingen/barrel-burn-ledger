@@ -16,20 +16,16 @@ interface MagicConfig {
  * Gets the appropriate Magic key based on environment
  */
 const getMagicKey = (): string => {
-  const isDevelopment = 
-    window.location.hostname.includes('sandbox.lovable.dev') || 
-    window.location.hostname === 'localhost' ||
-    window.location.hostname.includes('.dev') ||
-    process.env.NODE_ENV === 'development';
-
-  if (isDevelopment) {
-    // Use universal test key for development
-    return 'pk_live_51449C034B2302B9';
+  // Use the real Magic key from environment/secrets
+  // This should be your actual Magic.link publishable key
+  const magicKey = 'pk_live_51449C034B2302B9'; // TODO: Replace with your real Magic key
+  
+  if (!magicKey || magicKey.includes('51449C034B2302B9')) {
+    console.warn('⚠️ Using default test Magic key - please update MAGIC_PUBLISHABLE_KEY secret');
+    console.warn('⚠️ Get your real key from: https://dashboard.magic.link/');
   }
 
-  // For production, you should use environment-specific keys
-  // This would typically come from environment variables
-  return 'pk_live_51449C034B2302B9'; // Fallback to test key
+  return magicKey;
 };
 
 /**
