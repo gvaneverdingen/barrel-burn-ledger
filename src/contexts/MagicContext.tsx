@@ -137,29 +137,23 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       
       console.log('🟡 MagicContext: Magic instance ready:', !!magic);
       
-      // Try OTP method instead of magic link as a test
-      console.log('🟡 MagicContext: Trying OTP method instead of magic link');
+      // Simplified Magic Link approach 
+      console.log('🟡 MagicContext: Calling magic.auth.loginWithMagicLink');
       
       try {
-        // Test with OTP method
-        const didToken = await magic.auth.loginWithSMS({ phoneNumber: '+1234567890' });
-        console.log('🟡 MagicContext: OTP test successful');
-      } catch (otpError) {
-        console.log('🟡 MagicContext: OTP test failed, trying magic link:', otpError);
+        const didToken = await magic.auth.loginWithMagicLink({ email });
+        console.log('🟡 MagicContext: Magic login completed, didToken:', !!didToken);
         
-        // Fall back to magic link but with better error handling
-        try {
-          console.log('🟡 MagicContext: Attempting magic link with basic config');
-          const didToken = await magic.auth.loginWithMagicLink({ email });
-          console.log('🟡 MagicContext: Magic link succeeded:', !!didToken);
-        } catch (linkError) {
-          console.error('🔴 MagicContext: Both OTP and Magic Link failed');
-          console.error('🔴 MagicContext: Magic Link error:', linkError);
-          throw new Error(`Magic authentication failed: ${linkError.message}`);
+        if (didToken) {
+          console.log('🟢 MagicContext: Login successful with token');
+        } else {
+          console.log('🔴 MagicContext: No token returned');
+          throw new Error('No authentication token received');
         }
+      } catch (error) {
+        console.error('🔴 MagicContext: Magic login call failed:', error);
+        throw error;
       }
-      
-      console.log('🟡 MagicContext: Authentication method completed');
       
       // Verify login succeeded
       console.log('🟡 MagicContext: Checking if user is logged in');

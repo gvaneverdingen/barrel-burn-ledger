@@ -28,6 +28,11 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Reset connecting state on mount
+  React.useEffect(() => {
+    setIsConnecting(false);
+  }, []);
+
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('🔵 WalletConnect: Email login form submitted', { email, hasEmail: !!email });
