@@ -29,31 +29,52 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    console.log('🔵 WalletConnect: Email login form submitted', { email, hasEmail: !!email });
+    
+    if (!email) {
+      console.log('🔴 WalletConnect: No email provided');
+      return;
+    }
 
     try {
+      console.log('🔵 WalletConnect: Starting email login process');
       setIsConnecting(true);
+      
+      console.log('🔵 WalletConnect: Calling loginWithEmail');
       await loginWithEmail(email);
+      
+      console.log('🔵 WalletConnect: Login completed, wallet address:', walletAddress);
       if (onConnect && walletAddress) {
+        console.log('🔵 WalletConnect: Calling onConnect callback');
         onConnect(walletAddress, email);
       }
     } catch (error) {
-      console.error('Email login failed:', error);
+      console.error('🔴 WalletConnect: Email login failed:', error);
     } finally {
+      console.log('🔵 WalletConnect: Setting connecting to false');
       setIsConnecting(false);
     }
   };
 
   const handleWalletConnect = async () => {
+    console.log('🔵 WalletConnect: External wallet connect button clicked');
+    
     try {
+      console.log('🔵 WalletConnect: Starting wallet connect process');
       setIsConnecting(true);
+      
+      console.log('🔵 WalletConnect: Calling loginWithWallet');
       await loginWithWallet();
+      
+      console.log('🔵 WalletConnect: Wallet connect completed, wallet address:', walletAddress);
       if (onConnect && walletAddress) {
+        console.log('🔵 WalletConnect: Calling onConnect callback');
         onConnect(walletAddress);
       }
     } catch (error) {
-      console.error('Wallet connect failed:', error);
+      console.error('🔴 WalletConnect: Wallet connect failed:', error);
     } finally {
+      console.log('🔵 WalletConnect: Setting connecting to false');
       setIsConnecting(false);
     }
   };

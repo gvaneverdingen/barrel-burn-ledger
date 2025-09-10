@@ -89,41 +89,49 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const loginWithEmail = async (email: string) => {
+    console.log('🟡 MagicContext: loginWithEmail called with email:', email);
+    
     if (!magic) {
+      console.error('🔴 MagicContext: Magic not initialized');
       throw new Error('Magic not initialized');
     }
 
     try {
+      console.log('🟡 MagicContext: Starting email login process');
       setIsLoading(true);
       
-      console.log('Magic login attempt with email:', email);
-      console.log('Magic instance ready:', !!magic);
+      console.log('🟡 MagicContext: Magic instance ready:', !!magic);
       
       // Use loginWithMagicLink with proper configuration
+      console.log('🟡 MagicContext: Calling magic.auth.loginWithMagicLink');
       const didToken = await magic.auth.loginWithMagicLink({ 
         email,
         redirectURI: window.location.origin + '/auth'
       });
       
-      console.log('Magic login DID token received:', !!didToken);
+      console.log('🟡 MagicContext: Magic login DID token received:', !!didToken);
       
       // Verify login succeeded
+      console.log('🟡 MagicContext: Checking if user is logged in');
       const isLoggedIn = await magic.user.isLoggedIn();
-      console.log('Magic login success check:', isLoggedIn);
+      console.log('🟡 MagicContext: Magic login success check:', isLoggedIn);
       
       setIsLoggedIn(isLoggedIn);
       
       if (isLoggedIn) {
+        console.log('🟡 MagicContext: Getting user info');
         await getUserInfo();
+        console.log('🟢 MagicContext: Email login successful');
         toast({
           title: "Magic Login Successful",
           description: "You've been logged in with Magic wallet",
         });
       } else {
+        console.error('🔴 MagicContext: Login verification failed');
         throw new Error('Login verification failed');
       }
     } catch (error: any) {
-      console.error('Magic login error:', error);
+      console.error('🔴 MagicContext: Magic login error:', error);
       
       // Provide more specific error messages
       let errorMessage = "Failed to login with Magic";
@@ -142,27 +150,37 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
       throw error;
     } finally {
+      console.log('🟡 MagicContext: Setting loading to false');
       setIsLoading(false);
     }
   };
 
   const loginWithWallet = async () => {
+    console.log('🟡 MagicContext: loginWithWallet called');
+    
     if (!magic) {
+      console.error('🔴 MagicContext: Magic not initialized');
       throw new Error('Magic not initialized');
     }
 
     try {
+      console.log('🟡 MagicContext: Starting wallet connect with UI');
       setIsLoading(true);
+      
+      console.log('🟡 MagicContext: Calling magic.wallet.connectWithUI()');
       await magic.wallet.connectWithUI();
+      
+      console.log('🟡 MagicContext: Wallet UI completed, setting logged in');
       setIsLoggedIn(true);
       await getUserInfo();
       
+      console.log('🟢 MagicContext: Wallet connection successful');
       toast({
         title: "Wallet Connected",
         description: "Your wallet has been connected successfully",
       });
     } catch (error: any) {
-      console.error('Magic wallet connect error:', error);
+      console.error('🔴 MagicContext: Magic wallet connect error:', error);
       toast({
         title: "Wallet Connection Error",
         description: error.message || "Failed to connect wallet",
@@ -170,6 +188,7 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
       throw error;
     } finally {
+      console.log('🟡 MagicContext: Setting loading to false');
       setIsLoading(false);
     }
   };
