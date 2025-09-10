@@ -138,22 +138,32 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       
       console.log('🟡 MagicContext: Magic instance ready:', !!magic);
       
-      // Simplified Magic Link approach 
-      console.log('🟡 MagicContext: Calling magic.auth.loginWithMagicLink');
+      // Try using loginWithEmailOTP instead of loginWithMagicLink
+      console.log('🟡 MagicContext: Trying loginWithEmailOTP instead of magic link');
       
       try {
-        const didToken = await magic.auth.loginWithMagicLink({ email });
-        console.log('🟡 MagicContext: Magic login completed, didToken:', !!didToken);
+        // Use OTP method which might work better
+        const didToken = await magic.auth.loginWithEmailOTP({ email });
+        console.log('🟡 MagicContext: Email OTP login completed, didToken:', !!didToken);
         
         if (didToken) {
-          console.log('🟢 MagicContext: Login successful with token');
+          console.log('🟢 MagicContext: OTP Login successful with token');
         } else {
-          console.log('🔴 MagicContext: No token returned');
-          throw new Error('No authentication token received');
+          console.log('🔴 MagicContext: No token returned from OTP');
+          throw new Error('No authentication token received from OTP');
         }
       } catch (error) {
-        console.error('🔴 MagicContext: Magic login call failed:', error);
-        throw error;
+        console.error('🔴 MagicContext: Email OTP failed, trying magic link fallback:', error);
+        
+        // Fallback to magic link if OTP fails
+        try {
+          console.log('🟡 MagicContext: Fallback to magic link');
+          const didToken = await magic.auth.loginWithMagicLink({ email });
+          console.log('🟡 MagicContext: Magic link fallback completed:', !!didToken);
+        } catch (linkError) {
+          console.error('🔴 MagicContext: Both OTP and Magic Link failed:', linkError);
+          throw new Error(`All Magic authentication methods failed: ${linkError.message}`);
+        }
       }
       
       // Verify login succeeded
