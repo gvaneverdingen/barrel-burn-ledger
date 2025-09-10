@@ -137,12 +137,20 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       
       console.log('🟡 MagicContext: Magic instance ready:', !!magic);
       
-      // Use loginWithMagicLink with proper configuration
+      // Add timeout to the Magic login call
       console.log('🟡 MagicContext: Calling magic.auth.loginWithMagicLink');
-      const didToken = await magic.auth.loginWithMagicLink({ 
+      
+      const loginPromise = magic.auth.loginWithMagicLink({ 
         email,
         redirectURI: window.location.origin + '/auth'
       });
+      
+      // Add 30 second timeout
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Login timeout - please check for popup blockers')), 30000)
+      );
+      
+      const didToken = await Promise.race([loginPromise, timeoutPromise]);
       
       console.log('🟡 MagicContext: Magic login DID token received:', !!didToken);
       
@@ -170,7 +178,9 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       
       // Provide more specific error messages
       let errorMessage = "Failed to login with Magic";
-      if (error.message?.includes('User denied') || error.message?.includes('User canceled')) {
+      if (error.message?.includes('timeout')) {
+        errorMessage = "Login timed out. Please check if popups are blocked and try again.";
+      } else if (error.message?.includes('User denied') || error.message?.includes('User canceled')) {
         errorMessage = "Magic login was canceled. Please try again and complete the login process.";
       } else if (error.message?.includes('popup') || error.message?.includes('blocked')) {
         errorMessage = "Please allow popups for this site and try again.";
@@ -203,7 +213,14 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setIsLoading(true);
       
       console.log('🟡 MagicContext: Calling magic.wallet.connectWithUI()');
-      await magic.wallet.connectWithUI();
+      
+      // Add timeout to the wallet connect call
+      const connectPromise = magic.wallet.connectWithUI();
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Wallet connect timeout - please check for popup blockers')), 30000)
+      );
+      
+      await Promise.race([connectPromise, timeoutPromise]);
       
       console.log('🟡 MagicContext: Wallet UI completed, setting logged in');
       setIsLoggedIn(true);
@@ -216,9 +233,17 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
     } catch (error: any) {
       console.error('🔴 MagicContext: Magic wallet connect error:', error);
+      
+      let errorMessage = "Failed to connect wallet";
+      if (error.message?.includes('timeout')) {
+        errorMessage = "Wallet connect timed out. Please check if popups are blocked and try again.";
+      } else if (error.message?.includes('User denied') || error.message?.includes('User canceled')) {
+        errorMessage = "Wallet connection was canceled. Please try again.";
+      }
+      
       toast({
         title: "Wallet Connection Error",
-        description: error.message || "Failed to connect wallet",
+        description: errorMessage,
         variant: "destructive",
       });
       throw error;
