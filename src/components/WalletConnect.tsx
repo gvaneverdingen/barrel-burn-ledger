@@ -189,6 +189,19 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
           🔧 Test Click (Debug)
         </Button>
         
+        {/* Force reset loading state */}
+        <Button 
+          onClick={() => {
+            console.log('🔵 DEBUG: Force reset loading state');
+            // Access the magic context directly to reset state
+            window.location.reload();
+          }}
+          variant="destructive"
+          className="w-full"
+        >
+          🔄 Reload Page (Force Reset)
+        </Button>
+        
         {/* Magic state debug info */}
         <div className="text-xs bg-muted p-2 rounded space-y-1">
           <p>Magic State Debug:</p>

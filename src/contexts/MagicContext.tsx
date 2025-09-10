@@ -87,14 +87,19 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const getUserInfo = async (magicInstance?: Magic) => {
     const magicToUse = magicInstance || magic;
-    if (!magicToUse) return;
+    if (!magicToUse) {
+      console.log('🟡 MagicContext: No magic instance for getUserInfo');
+      return;
+    }
 
     try {
+      console.log('🟡 MagicContext: Getting user metadata');
       const metadata = await magicToUse.user.getInfo();
+      console.log('🟡 MagicContext: User metadata received:', metadata);
       setUserMetadata(metadata);
       setWalletAddress(metadata.publicAddress);
     } catch (error) {
-      console.error('Failed to get user metadata:', error);
+      console.error('🔴 MagicContext: Failed to get user metadata:', error);
     }
   };
 
