@@ -16,9 +16,9 @@ interface MagicConfig {
  * Gets the appropriate Magic key based on environment
  */
 const getMagicKey = (): string => {
-  // Use the real Magic key from environment/secrets
-  // This should be your actual Magic.link publishable key
-  const magicKey = 'pk_live_51449C034B2302B9'; // TODO: Replace with your real Magic key
+  // Use your actual Magic.link publishable key
+  // Get this from https://dashboard.magic.link/
+  const magicKey = 'YOUR_ACTUAL_MAGIC_KEY_HERE'; // Replace with your real Magic publishable key
   
   if (!magicKey || magicKey.includes('51449C034B2302B9')) {
     console.warn('⚠️ Using default test Magic key - please update MAGIC_PUBLISHABLE_KEY secret');
