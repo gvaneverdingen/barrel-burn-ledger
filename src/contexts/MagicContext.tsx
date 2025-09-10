@@ -34,8 +34,16 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    
     const initializeMagic = async () => {
       console.log('🟡 MagicContext: Starting Magic initialization');
+      
+      // Force loading to false after 3 seconds maximum
+      timeoutId = setTimeout(() => {
+        console.log('🔴 MagicContext: Timeout - forcing loading to false');
+        setIsLoading(false);
+      }, 3000);
       
       try {
         const config = getMagicConfig();
@@ -55,34 +63,46 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
         console.log('🟡 MagicContext: Magic instance created');
         setMagic(magicInstance);
-
-        // Check if user is already logged in
-        console.log('🟡 MagicContext: Checking if user is logged in');
-        const isUserLoggedIn = await magicInstance.user.isLoggedIn();
-        console.log('🟡 MagicContext: User logged in status:', isUserLoggedIn);
-        setIsLoggedIn(isUserLoggedIn);
-
-        if (isUserLoggedIn) {
-          console.log('🟡 MagicContext: Getting user info for logged in user');
-          await getUserInfo(magicInstance);
-        }
+        
+        // Clear timeout since we're about to finish
+        clearTimeout(timeoutId);
         
         console.log('🟢 MagicContext: Magic initialization completed successfully');
+        setIsLoading(false);
+        
+        // Check login status after loading is set to false
+        setTimeout(async () => {
+          try {
+            const isUserLoggedIn = await magicInstance.user.isLoggedIn();
+            console.log('🟡 MagicContext: User logged in status:', isUserLoggedIn);
+            setIsLoggedIn(isUserLoggedIn);
+
+            if (isUserLoggedIn) {
+              console.log('🟡 MagicContext: Getting user info for logged in user');
+              await getUserInfo(magicInstance);
+            }
+          } catch (err) {
+            console.error('🔴 MagicContext: Error checking login status:', err);
+          }
+        }, 100);
+        
       } catch (error) {
         console.error('🔴 MagicContext: Failed to initialize Magic:', error);
+        clearTimeout(timeoutId);
+        setIsLoading(false);
         toast({
           title: "Magic Wallet Error",
           description: "Failed to initialize Magic wallet",
           variant: "destructive",
         });
       }
-      
-      // Always set loading to false, regardless of success or failure
-      console.log('🟡 MagicContext: Setting loading to false');
-      setIsLoading(false);
     };
 
     initializeMagic();
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   const getUserInfo = async (magicInstance?: Magic) => {
