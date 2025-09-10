@@ -96,12 +96,16 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       setIsLoading(true);
       
-      // Check if Magic is properly initialized
       console.log('Magic login attempt with email:', email);
       console.log('Magic instance ready:', !!magic);
       
-      // Use loginWithMagicLink instead of OTP for better reliability
-      await magic.auth.loginWithMagicLink({ email });
+      // Use loginWithMagicLink with proper configuration
+      const didToken = await magic.auth.loginWithMagicLink({ 
+        email,
+        redirectURI: window.location.origin + '/auth'
+      });
+      
+      console.log('Magic login DID token received:', !!didToken);
       
       // Verify login succeeded
       const isLoggedIn = await magic.user.isLoggedIn();
@@ -123,10 +127,12 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       
       // Provide more specific error messages
       let errorMessage = "Failed to login with Magic";
-      if (error.message?.includes('User canceled')) {
+      if (error.message?.includes('User denied') || error.message?.includes('User canceled')) {
         errorMessage = "Magic login was canceled. Please try again and complete the login process.";
-      } else if (error.message?.includes('popup')) {
+      } else if (error.message?.includes('popup') || error.message?.includes('blocked')) {
         errorMessage = "Please allow popups for this site and try again.";
+      } else if (error.message?.includes('network')) {
+        errorMessage = "Network error. Please check your connection and try again.";
       }
       
       toast({
