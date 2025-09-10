@@ -189,17 +189,28 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
           🔧 Test Click (Debug)
         </Button>
         
-        {/* Force reset loading state */}
+        {/* Magic SDK Test */}
         <Button 
-          onClick={() => {
-            console.log('🔵 DEBUG: Force reset loading state');
-            // Access the magic context directly to reset state
-            window.location.reload();
+          onClick={async () => {
+            console.log('🔵 DEBUG: Testing Magic SDK directly');
+            if (magic) {
+              try {
+                console.log('🔵 DEBUG: Magic instance exists, testing basic functionality');
+                const isLoggedIn = await magic.user.isLoggedIn();
+                console.log('🔵 DEBUG: isLoggedIn check result:', isLoggedIn);
+                alert(`Magic SDK test: isLoggedIn = ${isLoggedIn}`);
+              } catch (error) {
+                console.error('🔴 DEBUG: Magic SDK test failed:', error);
+                alert(`Magic SDK test failed: ${error.message}`);
+              }
+            } else {
+              alert('Magic instance is null');
+            }
           }}
-          variant="destructive"
+          variant="outline"
           className="w-full"
         >
-          🔄 Reload Page (Force Reset)
+          🧪 Test Magic SDK
         </Button>
         
         {/* Magic state debug info */}
