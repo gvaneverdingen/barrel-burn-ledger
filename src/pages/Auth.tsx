@@ -125,10 +125,11 @@ const Auth = () => {
         </div>
 
         <Tabs defaultValue="signin" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="signin">Sign In</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            <TabsTrigger value="wallet">Magic Wallet</TabsTrigger>
+            {/* Magic Wallet temporarily disabled - invalid API key */}
+            {/* <TabsTrigger value="wallet">Magic Wallet</TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="signin">
