@@ -36,6 +36,7 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     const initializeMagic = async () => {
       try {
+        console.log('🟡 MagicContext: Starting Magic initialization');
         const config = getMagicConfig();
         
         if (!validateMagicConfig(config)) {
@@ -51,23 +52,30 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           testMode: config.testMode,
         });
 
+        console.log('🟡 MagicContext: Magic instance created');
         setMagic(magicInstance);
 
         // Check if user is already logged in
+        console.log('🟡 MagicContext: Checking if user is logged in');
         const isUserLoggedIn = await magicInstance.user.isLoggedIn();
+        console.log('🟡 MagicContext: User logged in status:', isUserLoggedIn);
         setIsLoggedIn(isUserLoggedIn);
 
         if (isUserLoggedIn) {
+          console.log('🟡 MagicContext: Getting user info for logged in user');
           await getUserInfo(magicInstance);
         }
+        
+        console.log('🟢 MagicContext: Magic initialization completed successfully');
       } catch (error) {
-        console.error('Failed to initialize Magic:', error);
+        console.error('🔴 MagicContext: Failed to initialize Magic:', error);
         toast({
           title: "Magic Wallet Error",
           description: "Failed to initialize Magic wallet",
           variant: "destructive",
         });
       } finally {
+        console.log('🟡 MagicContext: Setting loading to false');
         setIsLoading(false);
       }
     };
