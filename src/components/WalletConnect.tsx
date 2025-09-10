@@ -22,7 +22,8 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
     isLoading, 
     loginWithEmail, 
     loginWithWallet, 
-    logout 
+    logout,
+    resetLoadingState
   } = useMagic();
   const [email, setEmail] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
@@ -222,6 +223,20 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
           className="w-full"
         >
           🧪 Simple Magic Test
+        </Button>
+        
+        {/* Force Reset All States */}
+        <Button 
+          onClick={() => {
+            console.log('🔵 DEBUG: Force resetting all states');
+            setIsConnecting(false);
+            resetLoadingState();
+            alert('All states reset! Try Magic login now.');
+          }}
+          variant="destructive"
+          className="w-full"
+        >
+          🔄 Force Reset All States
         </Button>
         
         {/* Magic state debug info */}

@@ -14,6 +14,7 @@ interface MagicContextType {
   loginWithWallet: () => Promise<void>;
   logout: () => Promise<void>;
   getWalletInfo: () => Promise<void>;
+  resetLoadingState: () => void;
 }
 
 const MagicContext = createContext<MagicContextType | undefined>(undefined);
@@ -281,6 +282,12 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     await getUserInfo();
   };
 
+  // Add a reset function for debugging
+  const resetLoadingState = () => {
+    console.log('🔄 MagicContext: Force resetting loading state');
+    setIsLoading(false);
+  };
+
   const value = {
     magic,
     isLoggedIn,
@@ -291,6 +298,7 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     loginWithWallet,
     logout,
     getWalletInfo,
+    resetLoadingState, // Export reset function
   };
 
   return <MagicContext.Provider value={value}>{children}</MagicContext.Provider>;
