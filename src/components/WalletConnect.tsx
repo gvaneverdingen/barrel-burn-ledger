@@ -15,6 +15,7 @@ interface WalletConnectProps {
 
 const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
   const { 
+    magic,
     isLoggedIn, 
     userMetadata, 
     walletAddress, 
@@ -176,6 +177,28 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Debug button to test clicks */}
+        <Button 
+          onClick={() => {
+            console.log('🔵 DEBUG: Test button clicked!');
+            alert('Test button works!');
+          }}
+          variant="secondary"
+          className="w-full"
+        >
+          🔧 Test Click (Debug)
+        </Button>
+        
+        {/* Magic state debug info */}
+        <div className="text-xs bg-muted p-2 rounded space-y-1">
+          <p>Magic State Debug:</p>
+          <p>• isLoading: {isLoading ? 'true' : 'false'}</p>
+          <p>• isLoggedIn: {isLoggedIn ? 'true' : 'false'}</p>
+          <p>• magic instance: {magic ? 'exists' : 'null'}</p>
+          <p>• isConnecting: {isConnecting ? 'true' : 'false'}</p>
+          <p>• email: "{email}"</p>
+        </div>
+        
         {/* Email Login */}
         <form onSubmit={handleEmailLogin} className="space-y-4">
           <div className="space-y-2">
