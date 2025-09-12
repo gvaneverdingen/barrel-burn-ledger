@@ -20,7 +20,7 @@ const getMagicKey = (): string => {
   // This should be your actual Magic.link publishable key
   const magicKey = 'pk_live_18128E74207D08B6'; // TODO: Replace with your real Magic key
   
-  if (!magicKey || magicKey.includes('18128E74207D08B6)) {
+  if (!magicKey || magicKey.includes('18128E74207D08B6')) {
     console.warn('⚠️ Using default test Magic key - please update MAGIC_PUBLISHABLE_KEY secret');
     console.warn('⚠️ Get your real key from: https://dashboard.magic.link/');
   }
