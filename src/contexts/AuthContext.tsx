@@ -40,17 +40,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkProfileComplete = async (userId: string) => {
     try {
-      const { data: profile } = await supabase
+      console.log('🔍 AuthContext: Checking profile completeness for user:', userId);
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('first_name, last_name')
         .eq('id', userId)
         .maybeSingle();
       
+      console.log('🔍 AuthContext: Profile data:', profile, 'Error:', error);
+      
       const isComplete = !!(profile?.first_name && profile?.last_name);
+      console.log('🔍 AuthContext: Profile complete check:', {
+        first_name: profile?.first_name,
+        last_name: profile?.last_name,
+        isComplete
+      });
+      
       setProfileComplete(isComplete);
       return isComplete;
     } catch (error) {
-      console.error('Error checking profile completeness:', error);
+      console.error('🔴 AuthContext: Error checking profile completeness:', error);
       setProfileComplete(false);
       return false;
     }
@@ -74,17 +83,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
       
-      console.log('refreshUserData profile result:', { profile, error });
+      console.log('🔍 AuthContext refreshUserData: Profile result:', { profile, error });
       
       if (profile) {
         setUserRole(profile.role as UserRole);
         const isComplete = !!(profile.first_name && profile.last_name);
-        console.log('AuthContext refreshUserData:', { 
+        console.log('🔍 AuthContext refreshUserData complete check:', { 
           userId: user.id, 
-          profile, 
+          first_name: profile.first_name,
+          last_name: profile.last_name,
           isComplete,
           isMagicUser: !!user.user_metadata?.wallet_address 
         });
+        console.log('🔍 AuthContext: Setting profileComplete to:', isComplete);
         setProfileComplete(isComplete);
       } else {
         // No profile found - profile is incomplete

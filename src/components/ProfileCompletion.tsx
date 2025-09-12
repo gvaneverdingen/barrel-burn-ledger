@@ -13,11 +13,79 @@ const ProfileCompletion = () => {
   const { user, userRole, refreshUserData } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
     company_name: '',
   });
+
+  // Check if profile is already complete on component mount
+  React.useEffect(() => {
+    const checkExistingProfile = async () => {
+      if (!user) return;
+      
+      try {
+        console.log('🔍 ProfileCompletion: Checking existing profile for user:', user.id);
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('first_name, last_name, company_name')
+          .eq('id', user.id)
+          .maybeSingle();
+        
+        console.log('🔍 ProfileCompletion: Existing profile check:', { profile, error });
+        
+        if (profile) {
+          const isComplete = !!(profile.first_name && profile.last_name);
+          console.log('🔍 ProfileCompletion: Profile completeness:', {
+            first_name: profile.first_name,
+            last_name: profile.last_name,
+            isComplete
+          });
+          
+          if (isComplete) {
+            console.log('🟢 ProfileCompletion: Profile is already complete, should refresh auth state');
+            // Profile is complete, refresh auth state and navigate
+            await refreshUserData();
+            setTimeout(() => navigate('/'), 100);
+            return;
+          }
+
+          // Pre-fill form with existing data
+          setFormData({
+            first_name: profile.first_name || '',
+            last_name: profile.last_name || '',
+            company_name: profile.company_name || '',
+          });
+        }
+      } catch (error) {
+        console.error('🔴 ProfileCompletion: Error checking existing profile:', error);
+      }
+    };
+
+    checkExistingProfile();
+  }, [user, refreshUserData, navigate]);
+
+  const handleManualRefresh = async () => {
+    setRefreshing(true);
+    try {
+      console.log('🔄 ProfileCompletion: Manual refresh triggered');
+      await refreshUserData();
+      toast({
+        title: "Profile Refreshed",
+        description: "Profile data has been refreshed",
+      });
+    } catch (error) {
+      console.error('🔴 ProfileCompletion: Manual refresh error:', error);
+      toast({
+        title: "Refresh Error",
+        description: "Failed to refresh profile data",
+        variant: "destructive",
+      });
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -240,6 +308,16 @@ const ProfileCompletion = () => {
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}
+            </Button>
+            
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full gap-2"
+              disabled={refreshing}
+              onClick={handleManualRefresh}
+            >
+              {refreshing ? 'Refreshing...' : 'Refresh Profile Status'}
             </Button>
           </form>
         </CardContent>
