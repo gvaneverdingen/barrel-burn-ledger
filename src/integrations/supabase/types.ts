@@ -541,6 +541,50 @@ export type Database = {
           },
         ]
       }
+      wallets: {
+        Row: {
+          connected_at: string
+          created_at: string
+          id: string
+          is_primary: boolean
+          last_used_at: string | null
+          updated_at: string
+          user_id: string
+          wallet_address: string
+          wallet_type: string
+        }
+        Insert: {
+          connected_at?: string
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          last_used_at?: string | null
+          updated_at?: string
+          user_id: string
+          wallet_address: string
+          wallet_type?: string
+        }
+        Update: {
+          connected_at?: string
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          last_used_at?: string | null
+          updated_at?: string
+          user_id?: string
+          wallet_address?: string
+          wallet_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

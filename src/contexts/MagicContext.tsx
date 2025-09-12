@@ -3,6 +3,7 @@ import { Magic } from 'magic-sdk';
 import { ConnectExtension } from '@magic-ext/connect';
 import { toast } from '@/hooks/use-toast';
 import { getMagicConfig, validateMagicConfig } from '@/utils/magicConfig';
+import { supabase } from '@/integrations/supabase/client';
 
 interface MagicContextType {
   magic: Magic | null;
@@ -15,6 +16,7 @@ interface MagicContextType {
   logout: () => Promise<void>;
   getWalletInfo: () => Promise<void>;
   resetLoadingState: () => void;
+  getUserWallets: () => Promise<any[]>;
 }
 
 const MagicContext = createContext<MagicContextType | undefined>(undefined);
@@ -119,8 +121,73 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.log('🟡 MagicContext: User metadata received:', metadata);
       setUserMetadata(metadata);
       setWalletAddress(metadata.publicAddress);
+      
+      // Save wallet to database
+      if (metadata.publicAddress) {
+        await saveWalletToDatabase(metadata.publicAddress, 'magic');
+      }
     } catch (error) {
       console.error('🔴 MagicContext: Failed to get user metadata:', error);
+    }
+  };
+
+  const saveWalletToDatabase = async (walletAddress: string, walletType: string = 'magic') => {
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.log('🟡 MagicContext: No authenticated user for wallet save');
+        return;
+      }
+
+      // Check if wallet already exists
+      const { data: existingWallet } = await supabase
+        .from('wallets')
+        .select('id, is_primary')
+        .eq('wallet_address', walletAddress)
+        .eq('user_id', user.id)
+        .single();
+
+      if (!existingWallet) {
+        // Check if user has any existing wallets to determine if this should be primary
+        const { data: userWallets } = await supabase
+          .from('wallets')
+          .select('id')
+          .eq('user_id', user.id);
+
+        const isPrimary = !userWallets || userWallets.length === 0;
+
+        // Insert new wallet
+        const { error } = await supabase
+          .from('wallets')
+          .insert({
+            user_id: user.id,
+            wallet_address: walletAddress,
+            wallet_type: walletType,
+            is_primary: isPrimary,
+            last_used_at: new Date().toISOString()
+          });
+
+        if (error) {
+          console.error('🔴 MagicContext: Failed to save wallet to database:', error);
+        } else {
+          console.log('🟢 MagicContext: Wallet saved to database successfully');
+        }
+      } else {
+        // Update last_used_at for existing wallet
+        const { error } = await supabase
+          .from('wallets')
+          .update({ last_used_at: new Date().toISOString() })
+          .eq('id', existingWallet.id);
+
+        if (error) {
+          console.error('🔴 MagicContext: Failed to update wallet last_used_at:', error);
+        } else {
+          console.log('🟢 MagicContext: Wallet last_used_at updated');
+        }
+      }
+    } catch (error) {
+      console.error('🔴 MagicContext: Error in saveWalletToDatabase:', error);
     }
   };
 
@@ -292,6 +359,33 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     await getUserInfo();
   };
 
+  const getUserWallets = async (): Promise<any[]> => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.log('🟡 MagicContext: No authenticated user for getUserWallets');
+        return [];
+      }
+
+      const { data: wallets, error } = await supabase
+        .from('wallets')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('is_primary', { ascending: false })
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('🔴 MagicContext: Failed to fetch user wallets:', error);
+        return [];
+      }
+
+      return wallets || [];
+    } catch (error) {
+      console.error('🔴 MagicContext: Error in getUserWallets:', error);
+      return [];
+    }
+  };
+
   // Add a reset function for debugging
   const resetLoadingState = () => {
     console.log('🔄 MagicContext: Force resetting loading state');
@@ -308,7 +402,8 @@ export const MagicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     loginWithWallet,
     logout,
     getWalletInfo,
-    resetLoadingState, // Export reset function
+    resetLoadingState,
+    getUserWallets,
   };
 
   return <MagicContext.Provider value={value}>{children}</MagicContext.Provider>;
