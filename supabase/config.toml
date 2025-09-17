@@ -57,8 +57,17 @@ additional_redirect_urls = [
 ]
 jwt_expiry = 3600
 enable_signup = true
-enable_email_confirmations = false
-enable_email_autoconfirm = true
+enable_email_confirmations = true
+enable_email_autoconfirm = false
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true
+template = { }
+
+[auth.hook.send_email]
+enabled = true
+uri = "https://vnmmjmxhtbplfkdughxu.supabase.co/functions/v1/send-email"
 enable_phone_confirmations = false
 enable_phone_autoconfirm = false
 
@@ -90,3 +99,6 @@ verify_jwt = false
 
 [functions.approve-transaction]
 verify_jwt = true
+
+[functions.send-email]
+verify_jwt = false
