@@ -24,6 +24,7 @@ import Transactions from "./pages/Transactions";
 import Documentation from "./pages/Documentation";
 import Help from "./pages/Help";
 import Settings from "./pages/Settings";
+import ConsumerJourney from "./pages/ConsumerJourney";
 
 // Distillery pages
 import DistilleryDashboard from "./pages/distillery/Dashboard";
@@ -89,6 +90,7 @@ const AppRoutes = () => {
       <Route path="/docs" element={<Documentation />} />
       <Route path="/help" element={<Help />} />
       <Route path="/settings" element={<Settings />} />
+      <Route path="/consumer-journey" element={<ConsumerJourney />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/test-data" element={<TestData />} />
       <Route path="/payment-success" element={<PaymentSuccess />} />
