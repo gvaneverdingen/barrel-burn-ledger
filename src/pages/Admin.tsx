@@ -35,7 +35,7 @@ const Admin = () => {
       category: "Public Pages",
       pages: [
         { name: "Home", path: "/", description: "Landing page with hero section", icon: Home },
-        { name: "Marketplace", path: "/marketplace", description: "Browse available casks", icon: Package },
+        { name: "Marketplace", path: "/marketplace", description: "Unified marketplace for primary and secondary cask trading", icon: Package },
         { name: "Cask Details", path: "/cask/1", description: "Individual cask information and purchase", icon: Eye },
         { name: "Authentication", path: "/auth", description: "Login/signup forms", icon: Shield },
       ]
@@ -85,14 +85,14 @@ const Admin = () => {
       role: 'consumer',
       name: 'Consumer/Investor',
       description: 'Authenticated user who can invest in casks',
-      access: ['All Public Pages', 'Profile', 'Portfolio', 'Wishlist', 'Secondary Market', 'Transactions', 'Market Insights', 'Reports', 'Notifications'],
+      access: ['All Public Pages', 'Profile', 'Portfolio', 'Wishlist', 'Unified Marketplace', 'Transactions', 'Market Insights', 'Reports', 'Notifications'],
       color: 'bg-green-100 text-green-800'
     },
     {
       role: 'distillery',
       name: 'Distillery',
       description: 'Verified distillery that can list casks',
-      access: ['All Consumer Access', 'Secondary Market Access', 'My Distillery', 'Manage Casks', 'Sales Analytics', 'Verification'],
+      access: ['All Consumer Access', 'Unified Marketplace Access', 'My Distillery', 'Manage Casks', 'Sales Analytics', 'Verification'],
       color: 'bg-blue-100 text-blue-800'
     }
   ];

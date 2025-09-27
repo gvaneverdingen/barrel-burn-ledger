@@ -12,7 +12,6 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Marketplace from "./pages/Marketplace";
 import Wishlist from "./pages/Wishlist";
-import SecondaryMarket from "./pages/SecondaryMarket";
 import Reports from "./pages/Reports";
 import CaskDetails from "./pages/CaskDetails";
 import Profile from "./pages/Profile";
@@ -99,7 +98,6 @@ const AppRoutes = () => {
       <Route path="/marketplace" element={<Marketplace />} />
       <Route path="/cask/:id" element={<CaskDetails />} />
       <Route path="/wishlist" element={<Wishlist />} />
-      <Route path="/secondary-market" element={<SecondaryMarket />} />
       
       {/* User Profile and Portfolio - Available to consumers and others */}
       <Route 
