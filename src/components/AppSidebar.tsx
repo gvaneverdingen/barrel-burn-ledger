@@ -21,9 +21,17 @@ const publicItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Consumer Journey", url: "/consumer-journey", icon: Route },
   { title: "Marketplace", url: "/marketplace", icon: Package },
+]
+
+const adminItems = [
   { title: "Admin View", url: "/admin", icon: Users },
   { title: "Test Data", url: "/test-data", icon: Database },
   { title: "Blockchain Testing", url: "/blockchain-testing", icon: Link },
+]
+
+const consumerItems = [
+  { title: "Portfolio", url: "/portfolio", icon: BarChart3 },
+  { title: "Profile", url: "/profile", icon: User },
 ]
 
 const userItems = [
@@ -47,6 +55,11 @@ const supportItems = [
   { title: "Settings", url: "/settings", icon: Settings },
 ]
 
+const consumerSupportItems = [
+  { title: "Help Center", url: "/help", icon: HelpCircle },
+  { title: "Settings", url: "/settings", icon: Settings },
+]
+
 export function AppSidebar() {
   const { state } = useSidebar()
   const collapsed = state === "collapsed"
@@ -56,10 +69,45 @@ export function AppSidebar() {
   const currentPath = location.pathname
 
   const isActive = (path: string) => currentPath === path
-  const isPublicExpanded = publicItems.some((i) => isActive(i.url))
-  const isUserExpanded = user && userItems.some((i) => isActive(i.url))
-  const isDistilleryExpanded = user && userRole === 'distillery' && distilleryItems.some((i) => isActive(i.url))
-  const isSupportExpanded = supportItems.some((i) => isActive(i.url))
+  
+  // Role-based navigation logic
+  const isConsumer = userRole === 'consumer'
+  const isAdmin = userRole === 'administrator'
+  const isDistillery = userRole === 'distillery'
+  
+  // Determine which items to show based on role
+  const getPublicItems = () => {
+    if (isConsumer) {
+      return publicItems // Consumer sees basic public items
+    }
+    if (isAdmin) {
+      return [...publicItems, ...adminItems] // Admin sees everything
+    }
+    return publicItems // Others see basic public items
+  }
+  
+  const getUserItems = () => {
+    if (isConsumer) {
+      return consumerItems // Consumer sees only portfolio and profile
+    }
+    return userItems // Others see full user items
+  }
+  
+  const getSupportItems = () => {
+    if (isConsumer) {
+      return consumerSupportItems // Consumer sees limited support
+    }
+    return supportItems // Others see full support
+  }
+  
+  const currentPublicItems = getPublicItems()
+  const currentUserItems = getUserItems()
+  const currentSupportItems = getSupportItems()
+  
+  const isPublicExpanded = currentPublicItems.some((i) => isActive(i.url))
+  const isUserExpanded = user && currentUserItems.some((i) => isActive(i.url))
+  const isDistilleryExpanded = user && isDistillery && distilleryItems.some((i) => isActive(i.url))
+  const isSupportExpanded = currentSupportItems.some((i) => isActive(i.url))
   
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
     isActive ? "bg-muted text-primary font-medium" : "hover:bg-muted/50"
@@ -83,7 +131,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {publicItems.map((item) => (
+              {currentPublicItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} end className={getNavCls}>
@@ -97,50 +145,54 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* User Navigation - Always visible for setup */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Account</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {userItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={item.url} className={getNavCls}>
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {/* User Navigation - Show based on role */}
+        {(user && !isConsumer) || (user && isConsumer) ? (
+          <SidebarGroup>
+            <SidebarGroupLabel>{isConsumer ? "My Account" : "Account"}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {currentUserItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <NavLink to={item.url} className={getNavCls}>
+                        <item.icon className="mr-2 h-4 w-4" />
+                        {!collapsed && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ) : null}
 
-        {/* Distillery Navigation - Always visible for setup */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Distillery</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {distilleryItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={item.url} className={getNavCls}>
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {/* Distillery Navigation - Only show for distilleries and admins */}
+        {((user && isDistillery) || (user && isAdmin)) && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Distillery</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {distilleryItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <NavLink to={item.url} className={getNavCls}>
+                        <item.icon className="mr-2 h-4 w-4" />
+                        {!collapsed && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         {/* Support & Settings */}
         <SidebarGroup>
           <SidebarGroupLabel>Support</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {supportItems.map((item) => (
+              {currentSupportItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} className={getNavCls}>
