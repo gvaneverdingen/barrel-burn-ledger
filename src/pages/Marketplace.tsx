@@ -5,12 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, Filter, MapPin, Calendar, BarChart3, LogOut, Home, Package } from 'lucide-react';
+import { Search, Filter, MapPin, Calendar, BarChart3, LogOut, Home, Package, TrendingUp, Users, Handshake, Eye, Heart, MessageCircle, Star } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import arigiLogo from '@/assets/arigi-logo.png';
 import marketplaceBg from '@/assets/marketplace-bg.jpg';
+import { MarketplaceAnalytics } from '@/components/MarketplaceAnalytics';
+import { MatchmakingSystem } from '@/components/MatchmakingSystem';
 
 interface Cask {
   id: string;
@@ -30,6 +33,11 @@ interface Cask {
   finishing_duration_months: number;
   finishing_notes: string;
   has_been_finished: boolean;
+  available_for_sale: boolean;
+  created_at: string;
+  updated_at: string;
+  distillery_id: string;
+  cask_type_id: string;
   distillery: {
     name: string;
     location: string;
@@ -57,16 +65,26 @@ const Marketplace = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('price');
   const [filterByDistillery, setFilterByDistillery] = useState('all');
+  const [filterBySupplyType, setFilterBySupplyType] = useState('all');
+  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+  const [ageRange, setAgeRange] = useState({ min: '', max: '' });
+  const [activeTab, setActiveTab] = useState('browse');
+  const [watchlist, setWatchlist] = useState<string[]>([]);
+  const [marketAnalytics, setMarketAnalytics] = useState<any>(null);
 
   // Allow access without authentication
 
   useEffect(() => {
     fetchCasks();
-  }, []);
+    fetchMarketAnalytics();
+    if (user) {
+      fetchWatchlist();
+    }
+  }, [user]);
 
   useEffect(() => {
     filterAndSortCasks();
-  }, [casks, searchTerm, sortBy, filterByDistillery]);
+  }, [casks, searchTerm, sortBy, filterByDistillery, filterBySupplyType, priceRange, ageRange]);
 
   const fetchCasks = async () => {
     try {
@@ -203,6 +221,66 @@ const Marketplace = () => {
     }
   };
 
+  const fetchMarketAnalytics = async () => {
+    try {
+      // Calculate market analytics from casks data
+      const totalListings = casks.length;
+      const averagePrice = casks.length > 0 ? casks.reduce((sum, cask) => sum + cask.total_price, 0) / casks.length : 0;
+      const totalVolume = casks.reduce((sum, cask) => sum + cask.current_volume_liters, 0);
+      const activeDistilleries = new Set(casks.map(cask => cask.distillery?.name)).size;
+      
+      // Mock recent sales data
+      const recentSales = Math.floor(Math.random() * 20) + 5;
+      const priceChange = (Math.random() - 0.5) * 10; // Random change between -5% to +5%
+      
+      setMarketAnalytics({
+        totalListings,
+        averagePrice,
+        priceChange,
+        totalVolume,
+        activeDistilleries,
+        recentSales,
+      });
+    } catch (error) {
+      console.error('Error fetching market analytics:', error);
+    }
+  };
+
+  const fetchWatchlist = async () => {
+    try {
+      // Mock watchlist data - in real app, fetch from user preferences
+      setWatchlist(['cask-1', 'cask-2']);
+    } catch (error) {
+      console.error('Error fetching watchlist:', error);
+    }
+  };
+
+  const toggleWatchlist = async (caskId: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to add items to watchlist.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const isWatched = watchlist.includes(caskId);
+    if (isWatched) {
+      setWatchlist(prev => prev.filter(id => id !== caskId));
+      toast({
+        title: "Removed from Watchlist",
+        description: "Item removed from your watchlist.",
+      });
+    } else {
+      setWatchlist(prev => [...prev, caskId]);
+      toast({
+        title: "Added to Watchlist", 
+        description: "Item added to your watchlist.",
+      });
+    }
+  };
+
   const filterAndSortCasks = () => {
     let filtered = [...casks];
 
@@ -212,13 +290,44 @@ const Marketplace = () => {
         cask =>
           cask.spirit_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           cask.distillery?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          cask.cask_type?.name.toLowerCase().includes(searchTerm.toLowerCase())
+          cask.cask_type?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          cask.warehouse_location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          cask.tasting_notes?.toLowerCase().includes(searchTerm.toLowerCase())
       );
+    }
+
+    // Supply type filter
+    if (filterBySupplyType !== 'all') {
+      if (filterBySupplyType === 'producers') {
+        filtered = filtered.filter(cask => !cask.is_sale_listing);
+      } else if (filterBySupplyType === 'resellers') {
+        filtered = filtered.filter(cask => cask.is_sale_listing);
+      }
     }
 
     // Distillery filter
     if (filterByDistillery !== 'all') {
       filtered = filtered.filter(cask => cask.distillery?.name === filterByDistillery);
+    }
+
+    // Price range filter
+    if (priceRange.min || priceRange.max) {
+      filtered = filtered.filter(cask => {
+        const price = cask.total_price;
+        const min = priceRange.min ? parseFloat(priceRange.min) : 0;
+        const max = priceRange.max ? parseFloat(priceRange.max) : Infinity;
+        return price >= min && price <= max;
+      });
+    }
+
+    // Age range filter
+    if (ageRange.min || ageRange.max) {
+      filtered = filtered.filter(cask => {
+        const age = calculateAge(cask.distillation_date);
+        const min = ageRange.min ? parseFloat(ageRange.min) : 0;
+        const max = ageRange.max ? parseFloat(ageRange.max) : Infinity;
+        return age >= min && age <= max;
+      });
     }
 
     // Sort
@@ -230,6 +339,11 @@ const Marketplace = () => {
           return new Date(a.distillation_date).getTime() - new Date(b.distillation_date).getTime();
         case 'volume':
           return (b.current_volume_liters || 0) - (a.current_volume_liters || 0);
+        case 'newest':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'rating':
+          // Mock rating sort - in real app would use actual ratings
+          return Math.random() - 0.5;
         default:
           return 0;
       }
@@ -331,104 +445,221 @@ const Marketplace = () => {
               Premium Whisky Cask Marketplace
             </h3>
             <p className="text-lg max-w-2xl mx-auto">
-              Discover and invest in authenticated whisky casks from verified distilleries
+              Connect with producers and resellers • Advanced matchmaking • Real-time analytics
             </p>
           </div>
         </div>
 
-        {/* Filters and Search */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Filter className="h-5 w-5" />
-              <span>Search & Filter</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-4 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search casks, distilleries..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="price">Price (Low to High)</SelectItem>
-                  <SelectItem value="age">Age (Oldest First)</SelectItem>
-                  <SelectItem value="volume">Volume (High to Low)</SelectItem>
-                </SelectContent>
-              </Select>
+        {/* Market Analytics */}
+        {marketAnalytics && (
+          <MarketplaceAnalytics data={marketAnalytics} />
+        )}
 
-              <Select value={filterByDistillery} onValueChange={setFilterByDistillery}>
-                <SelectTrigger>
-                  <SelectValue placeholder="All Distilleries" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Distilleries</SelectItem>
-                  {getDistilleries().map((distillery) => (
-                    <SelectItem key={distillery} value={distillery}>
-                      {distillery}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        {/* Main Navigation Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="browse" className="flex items-center space-x-2">
+              <Search className="h-4 w-4" />
+              <span>Browse & Buy</span>
+            </TabsTrigger>
+            <TabsTrigger value="matchmaking" className="flex items-center space-x-2">
+              <Handshake className="h-4 w-4" />
+              <span>Matchmaking</span>
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center space-x-2">
+              <BarChart3 className="h-4 w-4" />
+              <span>Market Analytics</span>
+            </TabsTrigger>
+          </TabsList>
 
-               <div className="text-sm text-muted-foreground flex items-center">
-                {filteredCasks.length} casks found
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Cask Grid */}
-        {filteredCasks.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h4 className="text-lg font-medium text-foreground mb-2">No casks found</h4>
-              <p className="text-muted-foreground">
-                {casks.length === 0 
-                  ? "No casks are currently available in the marketplace." 
-                  : "Try adjusting your search or filter criteria."}
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCasks.map((cask) => (
-              <Card key={cask.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate(`/cask/${cask.id}`)}>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">{cask.spirit_name}</CardTitle>
-                      <CardDescription className="flex items-center space-x-1">
-                        <MapPin className="h-3 w-3" />
-                        <span>{cask.distillery?.name}</span>
-                        {cask.is_sale_listing && cask.seller && (
-                          <span className="text-muted-foreground">
-                            • Listed by {cask.seller.first_name} {cask.seller.last_name}
-                          </span>
-                        )}
-                      </CardDescription>
+          <TabsContent value="browse">
+            {/* Enhanced Filters and Search */}
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Filter className="h-5 w-5" />
+                  <span>Advanced Search & Filters</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4">
+                  <div className="grid md:grid-cols-4 gap-4">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search casks, distilleries, notes..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10"
+                      />
                     </div>
-                    <div className="flex flex-col gap-1 items-end">
-                      <Badge variant="secondary">#{cask.cask_number}</Badge>
-                      {cask.is_sale_listing && (
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                          Resale
-                        </Badge>
-                      )}
+                    
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sort by" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="price">Price (Low to High)</SelectItem>
+                        <SelectItem value="age">Age (Oldest First)</SelectItem>
+                        <SelectItem value="volume">Volume (High to Low)</SelectItem>
+                        <SelectItem value="newest">Newest Listed</SelectItem>
+                        <SelectItem value="rating">Highest Rated</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Select value={filterBySupplyType} onValueChange={setFilterBySupplyType}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Supply Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Sources</SelectItem>
+                        <SelectItem value="producers">Direct from Producers</SelectItem>
+                        <SelectItem value="resellers">From Resellers</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Select value={filterByDistillery} onValueChange={setFilterByDistillery}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All Distilleries" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Distilleries</SelectItem>
+                        {getDistilleries().map((distillery) => (
+                          <SelectItem key={distillery} value={distillery}>
+                            {distillery}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Price Range ($)</label>
+                      <div className="flex space-x-2">
+                        <Input
+                          placeholder="Min"
+                          type="number"
+                          value={priceRange.min}
+                          onChange={(e) => setPriceRange(prev => ({...prev, min: e.target.value}))}
+                        />
+                        <Input
+                          placeholder="Max"
+                          type="number"
+                          value={priceRange.max}
+                          onChange={(e) => setPriceRange(prev => ({...prev, max: e.target.value}))}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Age Range (years)</label>
+                      <div className="flex space-x-2">
+                        <Input
+                          placeholder="Min"
+                          type="number"
+                          value={ageRange.min}
+                          onChange={(e) => setAgeRange(prev => ({...prev, min: e.target.value}))}
+                        />
+                        <Input
+                          placeholder="Max"
+                          type="number"
+                          value={ageRange.max}
+                          onChange={(e) => setAgeRange(prev => ({...prev, max: e.target.value}))}
+                        />
+                      </div>
                     </div>
                   </div>
-                </CardHeader>
+
+                  <div className="flex justify-between items-center">
+                    <div className="text-sm text-muted-foreground flex items-center">
+                      <Package className="h-4 w-4 mr-1" />
+                      {filteredCasks.length} casks found
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => {
+                        setSearchTerm('');
+                        setSortBy('price');
+                        setFilterByDistillery('all');
+                        setFilterBySupplyType('all');
+                        setPriceRange({ min: '', max: '' });
+                        setAgeRange({ min: '', max: '' });
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Cask Grid */}
+            {filteredCasks.length === 0 ? (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h4 className="text-lg font-medium text-foreground mb-2">No casks found</h4>
+                  <p className="text-muted-foreground">
+                    {casks.length === 0 
+                      ? "No casks are currently available in the marketplace." 
+                      : "Try adjusting your search or filter criteria."}
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredCasks.map((cask) => (
+                  <Card key={cask.id} className="hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => navigate(`/cask/${cask.id}`)}>
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="text-lg">{cask.spirit_name}</CardTitle>
+                          <CardDescription className="flex items-center space-x-1">
+                            <MapPin className="h-3 w-3" />
+                            <span>{cask.distillery?.name}</span>
+                            {cask.is_sale_listing && cask.seller && (
+                              <span className="text-muted-foreground">
+                                • Listed by {cask.seller.first_name} {cask.seller.last_name}
+                              </span>
+                            )}
+                          </CardDescription>
+                        </div>
+                        <div className="flex flex-col gap-1 items-end">
+                          <div className="flex items-center space-x-1">
+                            <Badge variant="secondary">#{cask.cask_number}</Badge>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleWatchlist(cask.id);
+                              }}
+                            >
+                              <Heart className={`h-4 w-4 ${watchlist.includes(cask.id) ? 'fill-red-500 text-red-500' : ''}`} />
+                            </Button>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {cask.is_sale_listing ? (
+                              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                <Users className="h-3 w-3 mr-1" />
+                                Reseller
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                <TrendingUp className="h-3 w-3 mr-1" />
+                                Producer
+                              </Badge>
+                            )}
+                            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                              <Star className="h-3 w-3 mr-1" />
+                              4.8
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
@@ -490,43 +721,102 @@ const Marketplace = () => {
                         </span>
                       </div>
                     </div>
-                    
-                    {user && (userRole === 'consumer' || userRole === 'investor') && (
-                      <Button className="w-full">
-                        View Details & Purchase
-                      </Button>
-                    )}
-                    
-                    {user && userRole === 'distillery' && (
-                      <Button variant="outline" className="w-full" disabled>
-                        Contact Seller
-                      </Button>
-                    )}
-                    
-                    {!user && (
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate('/auth');
-                        }}
-                      >
-                        Sign In to Purchase
-                      </Button>
-                    )}
-                  </div>
+                     
+                     <div className="flex space-x-2">
+                       {user && (userRole === 'consumer' || userRole === 'investor') && (
+                         <>
+                           <Button className="flex-1">
+                             <Eye className="h-4 w-4 mr-2" />
+                             View Details
+                           </Button>
+                           <Button variant="outline" size="sm">
+                             <MessageCircle className="h-4 w-4" />
+                           </Button>
+                         </>
+                       )}
+                       
+                       {user && userRole === 'distillery' && (
+                         <Button variant="outline" className="w-full">
+                           <MessageCircle className="h-4 w-4 mr-2" />
+                           Contact Seller
+                         </Button>
+                       )}
+                       
+                       {!user && (
+                         <Button 
+                           variant="outline" 
+                           className="w-full"
+                           onClick={(e) => {
+                             e.stopPropagation();
+                             navigate('/auth');
+                           }}
+                         >
+                           Sign In to Purchase
+                         </Button>
+                       )}
+                     </div>
+                   </div>
 
-                  <div className="text-xs text-muted-foreground pt-2 border-t">
-                    Blockchain ID: {cask.blockchain_id}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-      </main>
-    </div>
+                   <div className="text-xs text-muted-foreground pt-2 border-t">
+                     Blockchain ID: {cask.blockchain_id}
+                   </div>
+                 </CardContent>
+               </Card>
+             ))}
+           </div>
+         )}
+       </TabsContent>
+
+       <TabsContent value="matchmaking">
+         <MatchmakingSystem />
+       </TabsContent>
+
+       <TabsContent value="analytics">
+         <Card>
+           <CardHeader>
+             <CardTitle>Market Analytics & Reporting</CardTitle>
+             <CardDescription>Comprehensive market insights and trends</CardDescription>
+           </CardHeader>
+           <CardContent>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <div>
+                 <h4 className="text-lg font-semibold mb-4">Price Trends</h4>
+                 <div className="h-48 bg-muted/30 rounded-lg flex items-center justify-center">
+                   <p className="text-muted-foreground">Price trend chart placeholder</p>
+                 </div>
+               </div>
+               <div>
+                 <h4 className="text-lg font-semibold mb-4">Volume Analysis</h4>
+                 <div className="h-48 bg-muted/30 rounded-lg flex items-center justify-center">
+                   <p className="text-muted-foreground">Volume analysis chart placeholder</p>
+                 </div>
+               </div>
+               <div>
+                 <h4 className="text-lg font-semibold mb-4">Regional Distribution</h4>
+                 <div className="h-48 bg-muted/30 rounded-lg flex items-center justify-center">
+                   <p className="text-muted-foreground">Regional map placeholder</p>
+                 </div>
+               </div>
+               <div>
+                 <h4 className="text-lg font-semibold mb-4">Top Performers</h4>
+                 <div className="space-y-3">
+                   {['Highland Distillery', 'Speyside Premium', 'Islay Reserve'].map((name, idx) => (
+                     <div key={name} className="flex justify-between items-center p-3 bg-muted/20 rounded-lg">
+                       <span className="font-medium">{name}</span>
+                       <Badge variant="outline" className="bg-green-50 text-green-700">
+                         +{(idx + 1) * 5}%
+                       </Badge>
+                     </div>
+                   ))}
+                 </div>
+               </div>
+             </div>
+           </CardContent>
+         </Card>
+       </TabsContent>
+     </Tabs>
+     </main>
+     </div>
   );
 };
 
