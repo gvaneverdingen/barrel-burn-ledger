@@ -20,6 +20,7 @@ const Auth = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signUpPassword, setSignUpPassword] = useState('');
   const [passwordTouched, setPasswordTouched] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<'distillery' | 'consumer' | 'investor' | ''>('');
 
   // Redirect if already authenticated
   if (user && !loading) {
@@ -179,31 +180,62 @@ const Auth = () => {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="role">Account Type</Label>
-                    <Select name="role" required>
+                    <Select name="role" required onValueChange={(value) => setSelectedRole(value as any)}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select your account type" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="distillery">
                           <div className="flex items-center">
-                            <Building2 className="h-4 w-4 mr-2" />
-                            Distillery
+                            <Building2 className="h-4 w-4 mr-2 text-blue-600" />
+                            <div>
+                              <div className="font-medium">Distillery</div>
+                              <div className="text-xs text-muted-foreground">Sell casks & manage inventory</div>
+                            </div>
                           </div>
                         </SelectItem>
                         <SelectItem value="consumer">
                           <div className="flex items-center">
-                            <Users className="h-4 w-4 mr-2" />
-                            Consumer
+                            <Users className="h-4 w-4 mr-2 text-green-600" />
+                            <div>
+                              <div className="font-medium">Consumer</div>
+                              <div className="text-xs text-muted-foreground">Browse & purchase casks</div>
+                            </div>
                           </div>
                         </SelectItem>
                         <SelectItem value="investor">
                           <div className="flex items-center">
-                            <Users className="h-4 w-4 mr-2" />
-                            Investor
+                            <Users className="h-4 w-4 mr-2 text-purple-600" />
+                            <div>
+                              <div className="font-medium">Investor</div>
+                              <div className="text-xs text-muted-foreground">Advanced trading & analytics</div>
+                            </div>
                           </div>
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                    {selectedRole === 'distillery' && (
+                      <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="flex items-start space-x-2">
+                          <Building2 className="h-4 w-4 text-blue-600 mt-0.5" />
+                          <div className="text-sm">
+                            <p className="font-medium text-blue-900">Welcome, Distillery!</p>
+                            <p className="text-blue-700">You'll get access to cask management, sales analytics, and verification tools.</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {selectedRole === 'consumer' && (
+                      <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <div className="flex items-start space-x-2">
+                          <Users className="h-4 w-4 text-green-600 mt-0.5" />
+                          <div className="text-sm">
+                            <p className="font-medium text-green-900">Welcome, Consumer!</p>
+                            <p className="text-green-700">Browse and purchase premium whisky casks from verified distilleries.</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <Separator />
@@ -230,12 +262,24 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="companyName">Company Name (Distilleries only)</Label>
+                    <Label htmlFor="companyName">
+                      Company Name 
+                      {selectedRole === 'distillery' && <span className="text-red-500">*</span>}
+                      <span className="text-muted-foreground text-sm ml-1">
+                        {selectedRole === 'distillery' ? '(Required)' : '(Optional for non-distilleries)'}
+                      </span>
+                    </Label>
                     <Input
                       id="companyName"
                       name="companyName"
-                      placeholder="Your Distillery Name"
+                      placeholder={selectedRole === 'distillery' ? "e.g., Macallan Distillery, Glenfiddich, etc." : "Company or Organization (optional)"}
+                      required={selectedRole === 'distillery'}
                     />
+                    {selectedRole === 'distillery' && (
+                      <p className="text-xs text-muted-foreground">
+                        This will be displayed publicly on your cask listings and must be verified
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
