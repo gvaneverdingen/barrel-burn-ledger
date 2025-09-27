@@ -50,7 +50,7 @@ const Wishlist = () => {
         .from('wishlist')
         .select(`
           *,
-          casks (
+          casks!inner (
             id,
             spirit_name,
             cask_number,

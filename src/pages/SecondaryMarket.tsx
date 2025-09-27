@@ -50,7 +50,7 @@ interface SecondaryListing {
   profiles?: {
     first_name: string;
     last_name: string;
-  };
+  } | null;
 }
 
 const SecondaryMarket = () => {
@@ -92,7 +92,7 @@ const SecondaryMarket = () => {
               )
             )
           ),
-          profiles (
+          profiles!inner (
             first_name,
             last_name
           )

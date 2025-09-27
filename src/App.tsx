@@ -11,6 +11,9 @@ import ProfileCompletion from "@/components/ProfileCompletion";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Marketplace from "./pages/Marketplace";
+import Wishlist from "./pages/Wishlist";
+import SecondaryMarket from "./pages/SecondaryMarket";
+import Reports from "./pages/Reports";
 import CaskDetails from "./pages/CaskDetails";
 import Profile from "./pages/Profile";
 import Portfolio from "./pages/Portfolio";
@@ -92,9 +95,11 @@ const AppRoutes = () => {
         } 
       />
       
-      {/* Marketplace - Available to all */}
+      {/* Marketplace and related features - Available to all */}
       <Route path="/marketplace" element={<Marketplace />} />
       <Route path="/cask/:id" element={<CaskDetails />} />
+      <Route path="/wishlist" element={<Wishlist />} />
+      <Route path="/secondary-market" element={<SecondaryMarket />} />
       
       {/* User Profile and Portfolio - Available to consumers and others */}
       <Route 
@@ -110,6 +115,14 @@ const AppRoutes = () => {
         element={
           <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
             <Portfolio />
+          </RoleBasedRoute>
+        } 
+      />
+      <Route 
+        path="/reports" 
+        element={
+          <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
+            <Reports />
           </RoleBasedRoute>
         } 
       />

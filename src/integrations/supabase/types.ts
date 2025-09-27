@@ -585,6 +585,36 @@ export type Database = {
           },
         ]
       }
+      wishlist: {
+        Row: {
+          cask_id: string
+          created_at: string
+          id: string
+          max_price: number
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cask_id: string
+          created_at?: string
+          id?: string
+          max_price: number
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cask_id?: string
+          created_at?: string
+          id?: string
+          max_price?: number
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
