@@ -19,7 +19,7 @@ import arigiLogo from '@/assets/arigi-logo.png'
 
 const publicItems = [
   { title: "Home", url: "/", icon: Home },
-  { title: "Consumer Journey", url: "/consumer-journey", icon: Route },
+  { title: "My Profile", url: "/consumer-journey", icon: Route },
   { title: "Marketplace", url: "/marketplace", icon: Package },
 ]
 
