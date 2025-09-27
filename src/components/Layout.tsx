@@ -54,7 +54,7 @@ export const Layout = ({ children }: LayoutProps) => {
                 <div className="animate-float">
                   <img src={arigiLogo} alt="ARIGI Logo" className="h-8 w-8 object-contain" />
                 </div>
-                <h1 className="text-xl font-bold organic-text-gradient">ARIGI</h1>
+                <h1 className="text-xl font-bold heritage-title font-playfair">ARIGI</h1>
               </div>
               
               <div className="flex items-center space-x-4">
@@ -86,7 +86,7 @@ export const Layout = ({ children }: LayoutProps) => {
                     </div>
                   </>
                 ) : (
-                  <Button onClick={() => navigate('/auth')} className="organic-button" size="sm">
+                  <Button onClick={() => navigate('/auth')} className="heritage-button" size="sm">
                     Sign In
                   </Button>
                 )}

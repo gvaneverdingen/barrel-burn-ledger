@@ -49,21 +49,21 @@ const Index = () => {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         {/* Enhanced Luxury Hero Section */}
-        <div className="relative rounded-2xl overflow-hidden mb-12 luxury-hero-bg">
+        <div className="relative rounded-2xl overflow-hidden mb-12 heritage-hero-bg">
           <div className="absolute inset-0">
             <img 
               src={warehouseHero} 
               alt="Whisky barrel warehouse" 
-              className="w-full h-full object-cover opacity-40"
+              className="w-full h-full object-cover opacity-30"
             />
-            <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/60 to-background/40"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/80 to-background/60"></div>
           </div>
           <div className="relative text-center py-32 px-8 text-foreground">
             <div className="animate-fade-in">
-              <h2 className="text-6xl font-bold mb-6 luxury-text-gradient">
+              <h2 className="text-6xl font-bold mb-6 heritage-title font-playfair">
                 Welcome to ARIGI
               </h2>
-              <p className="text-xl mb-12 max-w-3xl mx-auto text-muted-foreground">
+              <p className="text-xl mb-12 max-w-3xl mx-auto heritage-body">
                 The blockchain-enhanced premium whisky cask investment platform crafted for the connoisseur
               </p>
               
@@ -72,7 +72,7 @@ const Index = () => {
                 <Button 
                   size="lg"
                   onClick={() => navigate('/marketplace')}
-                  className="luxury-button text-lg px-12 py-4 animate-luxury-glow"
+                  className="heritage-button-buy text-lg px-12 py-4 animate-luxury-glow"
                 >
                   <Crown className="mr-2 h-5 w-5" />
                   Explore Marketplace
@@ -82,7 +82,7 @@ const Index = () => {
                     size="lg"
                     onClick={() => navigate('/auth')}
                     variant="outline"
-                    className="text-lg px-12 py-4 border-primary/50 hover:bg-primary/10 hover:border-primary"
+                    className="text-lg px-12 py-4 border-primary/50 hover:bg-primary/10 hover:border-primary font-inter"
                   >
                     <Sparkles className="mr-2 h-5 w-5" />
                     Join Elite Platform
@@ -94,10 +94,10 @@ const Index = () => {
         </div>
 
         {/* Platform Concept & Vision */}
-        <div className="mb-20">
+        <div className="mb-20 heritage-section-bg py-16 px-8 rounded-2xl">
           <div className="text-center mb-16">
-            <h3 className="text-5xl font-bold luxury-text-gradient mb-6">Revolutionizing Whisky Investment</h3>
-            <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+            <h3 className="text-5xl font-bold heritage-title mb-6 font-playfair">Revolutionizing Whisky Investment</h3>
+            <p className="text-xl heritage-body max-w-4xl mx-auto leading-relaxed">
               ARIGI bridges the gap between traditional whisky craftsmanship and modern blockchain technology, 
               creating the world's first comprehensive platform for single malt cask investment and ownership verification.
             </p>
@@ -106,20 +106,20 @@ const Index = () => {
           {/* Enhanced Vision Cards - Symmetric Expandable Layout */}
           <div className="grid lg:grid-cols-2 gap-8 mb-16">
             {/* Blockchain-Verified Ownership */}
-            <Card className="organic-card animate-fade-in group cursor-pointer h-fit transition-all duration-500 hover:scale-[1.02]" style={{animationDelay: '0.1s'}}>
+            <Card className="heritage-card animate-fade-in group cursor-pointer h-fit transition-all duration-500 hover:scale-[1.02]" style={{animationDelay: '0.1s'}}>
               <CardHeader className="text-center pb-4">
-                <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-secondary to-secondary/80 rounded-full w-16 h-16 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-secondary to-secondary/80 rounded-full w-16 h-16 flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-heritage">
                   <Shield className="h-8 w-8 text-secondary-foreground" />
                 </div>
-                <CardTitle className="text-2xl text-secondary mb-2 font-bold">
+                <CardTitle className="text-2xl text-secondary mb-2 font-bold font-playfair">
                   Blockchain-Verified Ownership
                 </CardTitle>
-                <CardDescription className="text-muted-foreground text-base">
+                <CardDescription className="heritage-body text-base">
                   Revolutionary technology ensuring authentic cask ownership
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-muted-foreground leading-relaxed text-center">
+                <p className="heritage-body leading-relaxed text-center">
                   Every cask is backed by blockchain technology, eliminating fraud and providing complete confidence.
                 </p>
                 
@@ -127,11 +127,11 @@ const Index = () => {
                 <div className="overflow-hidden transition-all duration-500 max-h-0 group-hover:max-h-96 group-hover:opacity-100 opacity-0">
                   <div className="pt-4 space-y-4">
                     <div className="bg-gradient-to-r from-secondary/10 to-accent/10 rounded-lg p-4 border border-secondary/20">
-                      <h4 className="font-semibold text-secondary mb-3 flex items-center gap-2">
+                      <h4 className="font-semibold text-secondary mb-3 flex items-center gap-2 font-inter">
                         <Gem className="h-4 w-4" />
                         Ownership Benefits:
                       </h4>
-                      <ul className="space-y-2 text-sm text-muted-foreground">
+                      <ul className="space-y-2 text-sm heritage-body">
                         <li className="flex items-center gap-2">
                           <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
                           Immutable ownership records
@@ -154,7 +154,7 @@ const Index = () => {
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        className="border-secondary/50 text-secondary hover:bg-secondary/10"
+                        className="border-secondary/50 text-secondary hover:bg-secondary/10 font-inter"
                       >
                         Learn More
                       </Button>
@@ -346,43 +346,43 @@ const Index = () => {
             </Card>
           </div>
 
-          {/* How It Works Section */}
+        <div className="mb-20 heritage-section-bg py-16 px-8 rounded-2xl">
           <div className="text-center mb-12">
-            <h4 className="text-3xl font-bold luxury-text-gradient mb-8">How ARIGI Works</h4>
+            <h4 className="text-3xl font-bold heritage-title mb-8 font-playfair">How ARIGI Works</h4>
             <div className="grid md:grid-cols-3 gap-8">
-              <Card className="luxury-card animate-fade-in group hover:scale-105 transition-all duration-300">
+              <Card className="heritage-card animate-fade-in group hover:scale-105 transition-all duration-300">
                 <CardHeader className="text-center">
-                  <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-primary to-primary/80 rounded-full w-16 h-16 flex items-center justify-center">
+                  <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-primary to-primary/80 rounded-full w-16 h-16 flex items-center justify-center shadow-gold">
                     <Building2 className="h-8 w-8 text-primary-foreground" />
                   </div>
-                  <CardTitle className="text-lg text-primary mb-2">1. Distillery Verification</CardTitle>
-                  <CardDescription className="text-muted-foreground">
+                  <CardTitle className="text-lg text-primary mb-2 font-playfair">1. Distillery Verification</CardTitle>
+                  <CardDescription className="heritage-body">
                     Premium distilleries register and verify their credentials, ensuring only authentic producers 
                     can list casks on our platform.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              <Card className="luxury-card animate-fade-in group hover:scale-105 transition-all duration-300" style={{animationDelay: '0.1s'}}>
+              <Card className="heritage-card animate-fade-in group hover:scale-105 transition-all duration-300" style={{animationDelay: '0.1s'}}>
                 <CardHeader className="text-center">
-                  <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-accent to-accent/80 rounded-full w-16 h-16 flex items-center justify-center">
+                  <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-accent to-accent/80 rounded-full w-16 h-16 flex items-center justify-center shadow-heritage">
                     <Link2 className="h-8 w-8 text-accent-foreground" />
                   </div>
-                  <CardTitle className="text-lg text-accent mb-2">2. Blockchain Registration</CardTitle>
-                  <CardDescription className="text-muted-foreground">
+                  <CardTitle className="text-lg text-accent mb-2 font-playfair">2. Blockchain Registration</CardTitle>
+                  <CardDescription className="heritage-body">
                     Each cask is registered on the blockchain with comprehensive details, creating an 
                     immutable record of its existence and characteristics.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              <Card className="luxury-card animate-fade-in group hover:scale-105 transition-all duration-300" style={{animationDelay: '0.2s'}}>
+              <Card className="heritage-card animate-fade-in group hover:scale-105 transition-all duration-300" style={{animationDelay: '0.2s'}}>
                 <CardHeader className="text-center">
-                  <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-secondary to-secondary/80 rounded-full w-16 h-16 flex items-center justify-center">
+                  <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-secondary to-secondary/80 rounded-full w-16 h-16 flex items-center justify-center shadow-heritage">
                     <Eye className="h-8 w-8 text-secondary-foreground" />
                   </div>
-                  <CardTitle className="text-lg text-secondary mb-2">3. Transparent Investment</CardTitle>
-                  <CardDescription className="text-muted-foreground">
+                  <CardTitle className="text-lg text-secondary mb-2 font-playfair">3. Transparent Investment</CardTitle>
+                  <CardDescription className="heritage-body">
                     Investors can browse, analyze, and purchase cask shares with complete visibility into 
                     ownership history, cask details, and investment potential.
                   </CardDescription>
@@ -390,6 +390,7 @@ const Index = () => {
               </Card>
             </div>
           </div>
+        </div>
         </div>
 
         {/* Enhanced Role-based Dashboard Preview */}

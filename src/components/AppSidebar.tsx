@@ -112,18 +112,18 @@ export function AppSidebar() {
 
   return (
     <div 
-      className={`fixed left-0 top-0 h-full bg-card border-r border-border/50 backdrop-blur-md transition-all duration-300 ease-in-out z-50 ${
+      className={`fixed left-0 top-0 h-full heritage-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out z-50 ${
         isExpanded ? 'w-64' : 'w-16'
       }`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
       {/* Logo */}
-      <div className="p-2 border-b border-border/50 h-16 flex items-center">
+      <div className="p-2 border-b border-sidebar-border h-16 flex items-center">
         <div className="flex items-center space-x-2 px-2 overflow-hidden">
           <img src={arigiLogo} alt="ARIGI" className="h-8 w-8 flex-shrink-0" />
           <span 
-            className={`font-bold text-lg whitespace-nowrap transition-all duration-300 ${
+            className={`font-bold text-lg whitespace-nowrap transition-all duration-300 font-playfair heritage-text-gradient ${
               isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
             }`}
           >
@@ -136,7 +136,7 @@ export function AppSidebar() {
         {/* Public Navigation */}
         <div className="px-2 mb-6">
           <div 
-            className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2 transition-all duration-300 ${
+            className={`text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-3 px-2 transition-all duration-300 font-inter ${
               isExpanded ? 'opacity-100' : 'opacity-0'
             }`}
           >
@@ -149,10 +149,10 @@ export function AppSidebar() {
                 to={item.url}
                 end
                 className={({ isActive }) =>
-                  `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
+                  `flex items-center px-2 py-2 rounded-lg transition-all duration-200 font-inter ${
                     isActive
-                      ? 'bg-primary/10 text-primary font-medium border-l-2 border-primary'
-                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                      ? 'bg-sidebar-primary/10 text-sidebar-primary font-medium border-l-2 border-sidebar-primary shadow-gold'
+                      : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
                   }`
                 }
               >
