@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { MagicProvider } from "@/contexts/MagicContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { setupResizeObserverErrorHandler } from "@/utils/resizeObserver";
+import { Layout } from "@/components/Layout";
 import ProfileCompletion from "@/components/ProfileCompletion";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -81,149 +82,158 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
+      {/* Auth page without layout */}
       <Route path="/auth" element={<Auth />} />
       
-      {/* Consumer Journey - Available to consumers and administrators */}
-      <Route 
-        path="/consumer-journey" 
-        element={
-          <RoleBasedRoute allowedRoles={['consumer', 'administrator', 'investor', 'distillery', 'facilitator']}>
-            <ConsumerJourney />
-          </RoleBasedRoute>
-        } 
-      />
-      
-      {/* Marketplace and related features - Available to all */}
-      <Route path="/marketplace" element={<Marketplace />} />
-      <Route path="/cask/:id" element={<CaskDetails />} />
-      <Route path="/wishlist" element={<Wishlist />} />
-      
-      {/* User Profile and Portfolio - Available to consumers and others */}
-      <Route 
-        path="/profile" 
-        element={
-          <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
-            <Profile />
-          </RoleBasedRoute>
-        } 
-      />
-      <Route 
-        path="/portfolio" 
-        element={
-          <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
-            <Portfolio />
-          </RoleBasedRoute>
-        } 
-      />
-      <Route 
-        path="/reports" 
-        element={
-          <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
-            <Reports />
-          </RoleBasedRoute>
-        } 
-      />
-      
-      {/* Advanced features - Restricted from consumers unless admin */}
-      <Route 
-        path="/insights" 
-        element={
-          <RoleBasedRoute allowedRoles={['investor', 'distillery', 'facilitator', 'administrator']}>
-            <Insights />
-          </RoleBasedRoute>
-        } 
-      />
-      <Route 
-        path="/notifications" 
-        element={
-          <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
-            <Notifications />
-          </RoleBasedRoute>
-        } 
-      />
-      <Route 
-        path="/transactions" 
-        element={
-          <RoleBasedRoute allowedRoles={['investor', 'distillery', 'facilitator', 'administrator']}>
-            <Transactions />
-          </RoleBasedRoute>
-        } 
-      />
-      
-      {/* Documentation and Help - Available to all */}
-      <Route path="/docs" element={
-        <RoleBasedRoute allowedRoles={['investor', 'distillery', 'facilitator', 'administrator']}>
-          <Documentation />
-        </RoleBasedRoute>
+      {/* All other routes with layout */}
+      <Route path="/*" element={
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            
+            {/* Consumer Journey - Available to consumers and administrators */}
+            <Route 
+              path="/consumer-journey" 
+              element={
+                <RoleBasedRoute allowedRoles={['consumer', 'administrator', 'investor', 'distillery', 'facilitator']}>
+                  <ConsumerJourney />
+                </RoleBasedRoute>
+              } 
+            />
+            
+            {/* Marketplace and related features - Available to all */}
+            <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/cask/:id" element={<CaskDetails />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            
+            {/* User Profile and Portfolio - Available to consumers and others */}
+            <Route 
+              path="/profile" 
+              element={
+                <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
+                  <Profile />
+                </RoleBasedRoute>
+              } 
+            />
+            <Route 
+              path="/portfolio" 
+              element={
+                <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
+                  <Portfolio />
+                </RoleBasedRoute>
+              } 
+            />
+            <Route 
+              path="/reports" 
+              element={
+                <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
+                  <Reports />
+                </RoleBasedRoute>
+              } 
+            />
+            
+            {/* Advanced features - Restricted from consumers unless admin */}
+            <Route 
+              path="/insights" 
+              element={
+                <RoleBasedRoute allowedRoles={['investor', 'distillery', 'facilitator', 'administrator']}>
+                  <Insights />
+                </RoleBasedRoute>
+              } 
+            />
+            <Route 
+              path="/notifications" 
+              element={
+                <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
+                  <Notifications />
+                </RoleBasedRoute>
+              } 
+            />
+            <Route 
+              path="/transactions" 
+              element={
+                <RoleBasedRoute allowedRoles={['investor', 'distillery', 'facilitator', 'administrator']}>
+                  <Transactions />
+                </RoleBasedRoute>
+              } 
+            />
+            
+            {/* Documentation and Help - Available to all */}
+            <Route path="/docs" element={
+              <RoleBasedRoute allowedRoles={['investor', 'distillery', 'facilitator', 'administrator']}>
+                <Documentation />
+              </RoleBasedRoute>
+            } />
+            <Route path="/help" element={<Help />} />
+            <Route path="/settings" element={<Settings />} />
+            
+            {/* Admin and Testing - Admin only */}
+            <Route 
+              path="/admin" 
+              element={
+                <RoleBasedRoute allowedRoles={['administrator']}>
+                  <Admin />
+                </RoleBasedRoute>
+              } 
+            />
+            <Route 
+              path="/test-data" 
+              element={
+                <RoleBasedRoute allowedRoles={['administrator']}>
+                  <TestData />
+                </RoleBasedRoute>
+              } 
+            />
+            <Route 
+              path="/blockchain-testing" 
+              element={
+                <RoleBasedRoute allowedRoles={['administrator']}>
+                  <BlockchainTesting />
+                </RoleBasedRoute>
+              } 
+            />
+            
+            <Route path="/payment-success" element={<PaymentSuccess />} />
+            
+            {/* Distillery Routes - Distillery and Admin only */}
+            <Route 
+              path="/distillery" 
+              element={
+                <RoleBasedRoute allowedRoles={['distillery', 'administrator']}>
+                  <DistilleryDashboard />
+                </RoleBasedRoute>
+              } 
+            />
+            <Route 
+              path="/distillery/casks" 
+              element={
+                <RoleBasedRoute allowedRoles={['distillery', 'administrator']}>
+                  <DistilleryCasks />
+                </RoleBasedRoute>
+              } 
+            />
+            <Route 
+              path="/distillery/analytics" 
+              element={
+                <RoleBasedRoute allowedRoles={['distillery', 'administrator']}>
+                  <DistilleryAnalytics />
+                </RoleBasedRoute>
+              } 
+            />
+            <Route 
+              path="/distillery/verification" 
+              element={
+                <RoleBasedRoute allowedRoles={['distillery', 'administrator']}>
+                  <DistilleryVerification />
+                </RoleBasedRoute>
+              } 
+            />
+            
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Layout>
       } />
-      <Route path="/help" element={<Help />} />
-      <Route path="/settings" element={<Settings />} />
-      
-      {/* Admin and Testing - Admin only */}
-      <Route 
-        path="/admin" 
-        element={
-          <RoleBasedRoute allowedRoles={['administrator']}>
-            <Admin />
-          </RoleBasedRoute>
-        } 
-      />
-      <Route 
-        path="/test-data" 
-        element={
-          <RoleBasedRoute allowedRoles={['administrator']}>
-            <TestData />
-          </RoleBasedRoute>
-        } 
-      />
-      <Route 
-        path="/blockchain-testing" 
-        element={
-          <RoleBasedRoute allowedRoles={['administrator']}>
-            <BlockchainTesting />
-          </RoleBasedRoute>
-        } 
-      />
-      
-      <Route path="/payment-success" element={<PaymentSuccess />} />
-      
-      {/* Distillery Routes - Distillery and Admin only */}
-      <Route 
-        path="/distillery" 
-        element={
-          <RoleBasedRoute allowedRoles={['distillery', 'administrator']}>
-            <DistilleryDashboard />
-          </RoleBasedRoute>
-        } 
-      />
-      <Route 
-        path="/distillery/casks" 
-        element={
-          <RoleBasedRoute allowedRoles={['distillery', 'administrator']}>
-            <DistilleryCasks />
-          </RoleBasedRoute>
-        } 
-      />
-      <Route 
-        path="/distillery/analytics" 
-        element={
-          <RoleBasedRoute allowedRoles={['distillery', 'administrator']}>
-            <DistilleryAnalytics />
-          </RoleBasedRoute>
-        } 
-      />
-      <Route 
-        path="/distillery/verification" 
-        element={
-          <RoleBasedRoute allowedRoles={['distillery', 'administrator']}>
-            <DistilleryVerification />
-          </RoleBasedRoute>
-        } 
-      />
-      
-      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
