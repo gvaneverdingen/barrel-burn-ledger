@@ -3,10 +3,12 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { ArrowRight, Users, Search, ShoppingCart, Wallet, Shield, FileText, TrendingUp, RefreshCw, CheckCircle } from 'lucide-react';
+import { ArrowRight, Users, Search, ShoppingCart, Wallet, Shield, FileText, TrendingUp, RefreshCw, CheckCircle, ExternalLink, Package } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ConsumerJourney = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <SidebarProvider>
@@ -56,15 +58,55 @@ const ConsumerJourney = () => {
                     <div className="grid md:grid-cols-3 gap-6">
                       <div className="text-center p-4 border border-border/50 rounded-lg">
                         <h4 className="font-semibold mb-2 text-primary">Welcome to ARIGI</h4>
-                        <p className="text-sm text-muted-foreground">Discover premium whisky cask investment opportunities</p>
+                        <p className="text-sm text-muted-foreground mb-3">Discover premium whisky cask investment opportunities</p>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => navigate('/')}
+                          className="border-primary/50 hover:bg-primary/10"
+                        >
+                          <ExternalLink className="h-3 w-3 mr-1" />
+                          Visit Homepage
+                        </Button>
                       </div>
                       <div className="text-center p-4 border border-border/50 rounded-lg">
                         <h4 className="font-semibold mb-2 text-accent">Create Account</h4>
-                        <p className="text-sm text-muted-foreground">Sign up with email or connect your wallet</p>
+                        <p className="text-sm text-muted-foreground mb-3">Sign up with email or connect your wallet</p>
+                        {!user && (
+                          <Button 
+                            size="sm" 
+                            onClick={() => navigate('/auth')}
+                            className="bg-accent hover:bg-accent/90"
+                          >
+                            <Users className="h-3 w-3 mr-1" />
+                            Sign Up Now
+                          </Button>
+                        )}
+                        {user && (
+                          <Button size="sm" variant="outline" disabled>
+                            ✓ Completed
+                          </Button>
+                        )}
                       </div>
                       <div className="text-center p-4 border border-border/50 rounded-lg">
                         <h4 className="font-semibold mb-2 text-secondary">Complete Profile</h4>
-                        <p className="text-sm text-muted-foreground">Wallet connection, identity verification, set preferences</p>
+                        <p className="text-sm text-muted-foreground mb-3">Wallet connection, identity verification, set preferences</p>
+                        {user && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => navigate('/profile')}
+                            className="border-secondary/50 hover:bg-secondary/10"
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            View Profile
+                          </Button>
+                        )}
+                        {!user && (
+                          <Button size="sm" variant="outline" disabled>
+                            Sign up first
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -92,21 +134,38 @@ const ConsumerJourney = () => {
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
                         <h4 className="font-semibold mb-3 text-accent">Browse & Search</h4>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
+                        <ul className="space-y-2 text-sm text-muted-foreground mb-4">
                           <li>• Filter by distillery, age, region</li>
                           <li>• View detailed cask information</li>
                           <li>• Compare investment opportunities</li>
                           <li>• Access professional tasting notes</li>
                         </ul>
+                        <Button 
+                          size="sm" 
+                          onClick={() => navigate('/marketplace')}
+                          className="bg-accent hover:bg-accent/90"
+                        >
+                          <Search className="h-3 w-3 mr-1" />
+                          Explore Marketplace
+                        </Button>
                       </div>
                       <div>
                         <h4 className="font-semibold mb-3 text-secondary">Smart Features</h4>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
+                        <ul className="space-y-2 text-sm text-muted-foreground mb-4">
                           <li>• AI-powered matchmaking suggestions</li>
                           <li>• Real-time market analytics</li>
                           <li>• Investment performance tracking</li>
                           <li>• Pricing transparency tools</li>
                         </ul>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => navigate('/insights')}
+                          className="border-secondary/50 hover:bg-secondary/10"
+                        >
+                          <TrendingUp className="h-3 w-3 mr-1" />
+                          View Analytics
+                        </Button>
                       </div>
                     </div>
                   </CardContent>
@@ -215,21 +274,43 @@ const ConsumerJourney = () => {
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
                         <h4 className="font-semibold mb-3 text-secondary">Investment Options</h4>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
+                        <ul className="space-y-2 text-sm text-muted-foreground mb-4">
                           <li>• Hold for long-term appreciation</li>
                           <li>• List for resale on marketplace</li>
                           <li>• Set competitive pricing per LPA</li>
                           <li>• Track market performance</li>
                         </ul>
+                        {user && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => navigate('/portfolio')}
+                            className="border-secondary/50 hover:bg-secondary/10"
+                          >
+                            <Package className="h-3 w-3 mr-1" />
+                            My Portfolio
+                          </Button>
+                        )}
                       </div>
                       <div>
                         <h4 className="font-semibold mb-3 text-primary">Resale Features</h4>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
+                        <ul className="space-y-2 text-sm text-muted-foreground mb-4">
                           <li>• Transparent commission structure</li>
                           <li>• Automated pricing suggestions</li>
                           <li>• Instant ownership transfer</li>
                           <li>• Performance analytics</li>
                         </ul>
+                         {user && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => navigate('/transactions')}
+                            className="border-primary/50 hover:bg-primary/10"
+                          >
+                            <FileText className="h-3 w-3 mr-1" />
+                            View Transactions
+                          </Button>
+                         )}
                       </div>
                     </div>
                   </CardContent>
