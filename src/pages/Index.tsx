@@ -103,105 +103,247 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12 mb-16">
-            {/* Left Column - Our Vision */}
-            <div className="space-y-8">
-              <Card className="luxury-card animate-fade-in">
-                <CardHeader>
-                  <CardTitle className="text-2xl text-primary flex items-center gap-3 mb-4">
-                    <TrendingUp className="h-8 w-8" />
-                    Our Vision
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
-                  <p>
-                    We envision a world where whisky cask investment is accessible, transparent, and secure for both 
-                    seasoned collectors and newcomers to the market. Our platform democratizes access to premium single 
-                    malt investments while maintaining the highest standards of authenticity and provenance.
-                  </p>
-                  <p>
-                    By leveraging blockchain technology, we ensure that every barrel's existence is verified, 
-                    ownership is crystal clear, and the complete history of each cask is immutably preserved 
-                    for future generations of whisky enthusiasts.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="luxury-card animate-fade-in" style={{animationDelay: '0.1s'}}>
-                <CardHeader>
-                  <CardTitle className="text-2xl text-accent flex items-center gap-3 mb-4">
-                    <Link2 className="h-8 w-8" />
-                    Connecting Investors & Distilleries
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
-                  <p>
-                    ARIGI serves as the premium bridge connecting passionate investors with world-renowned distilleries. 
-                    Our platform enables distilleries to showcase their finest casks while providing investors with 
-                    unprecedented access to exceptional single malt opportunities.
-                  </p>
-                  <p>
-                    Through our verification system, distilleries gain complete visibility into cask ownership, 
-                    enabling better relationships with their investors and enhanced tracking of their premium products 
-                    throughout the maturation and investment lifecycle.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Right Column - Key Features */}
-            <div className="space-y-8">
-              <Card className="luxury-card animate-fade-in" style={{animationDelay: '0.2s'}}>
-                <CardHeader>
-                  <CardTitle className="text-2xl text-secondary flex items-center gap-3 mb-4">
-                    <Shield className="h-8 w-8" />
-                    Blockchain-Verified Ownership
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
-                  <p>
-                    Every cask on our platform is backed by blockchain technology, ensuring that all barrels 
-                    genuinely exist and are properly documented. This revolutionary approach eliminates fraud 
-                    and provides investors with complete confidence in their acquisitions.
-                  </p>
-                  <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg p-4 border border-primary/20">
-                    <h4 className="font-semibold text-primary mb-2">Ownership Benefits:</h4>
-                    <ul className="space-y-1 text-sm">
-                      <li>• Immutable ownership records</li>
-                      <li>• Clear title verification</li>
-                      <li>• Transparent transaction history</li>
-                      <li>• Instant ownership transfers</li>
-                    </ul>
+          {/* Enhanced Vision Cards - Symmetric Expandable Layout */}
+          <div className="grid lg:grid-cols-2 gap-8 mb-16">
+            {/* Blockchain-Verified Ownership */}
+            <Card className="organic-card animate-fade-in group cursor-pointer h-fit transition-all duration-500 hover:scale-[1.02]" style={{animationDelay: '0.1s'}}>
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-secondary to-secondary/80 rounded-full w-16 h-16 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                  <Shield className="h-8 w-8 text-secondary-foreground" />
+                </div>
+                <CardTitle className="text-2xl text-secondary mb-2 font-bold">
+                  Blockchain-Verified Ownership
+                </CardTitle>
+                <CardDescription className="text-muted-foreground text-base">
+                  Revolutionary technology ensuring authentic cask ownership
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed text-center">
+                  Every cask is backed by blockchain technology, eliminating fraud and providing complete confidence.
+                </p>
+                
+                {/* Expandable Content */}
+                <div className="overflow-hidden transition-all duration-500 max-h-0 group-hover:max-h-96 group-hover:opacity-100 opacity-0">
+                  <div className="pt-4 space-y-4">
+                    <div className="bg-gradient-to-r from-secondary/10 to-accent/10 rounded-lg p-4 border border-secondary/20">
+                      <h4 className="font-semibold text-secondary mb-3 flex items-center gap-2">
+                        <Gem className="h-4 w-4" />
+                        Ownership Benefits:
+                      </h4>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
+                          Immutable ownership records
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
+                          Clear title verification
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
+                          Transparent transaction history
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
+                          Instant ownership transfers
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="text-center">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-secondary/50 text-secondary hover:bg-secondary/10"
+                      >
+                        Learn More
+                      </Button>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </CardContent>
+            </Card>
 
-              <Card className="luxury-card animate-fade-in" style={{animationDelay: '0.3s'}}>
-                <CardHeader>
-                  <CardTitle className="text-2xl text-primary flex items-center gap-3 mb-4">
-                    <FileText className="h-8 w-8" />
-                    Complete Cask History & Details
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
-                  <p>
-                    Access comprehensive information about each cask including its complete ownership history, 
-                    distillation details, maturation progress, and tasting notes. Our platform maintains 
-                    detailed records that enhance both investment decisions and collecting experiences.
-                  </p>
-                  <div className="bg-gradient-to-r from-accent/10 to-secondary/10 rounded-lg p-4 border border-accent/20">
-                    <h4 className="font-semibold text-accent mb-2">Detailed Information:</h4>
-                    <ul className="space-y-1 text-sm">
-                      <li>• Previous ownership chain</li>
-                      <li>• Distillation & maturation data</li>
-                      <li>• Current volume & alcohol content</li>
-                      <li>• Professional tasting notes</li>
-                      <li>• Investment performance metrics</li>
-                    </ul>
+            {/* Complete Cask History & Details */}
+            <Card className="organic-card animate-fade-in group cursor-pointer h-fit transition-all duration-500 hover:scale-[1.02]" style={{animationDelay: '0.2s'}}>
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-primary to-primary/80 rounded-full w-16 h-16 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                  <FileText className="h-8 w-8 text-primary-foreground" />
+                </div>
+                <CardTitle className="text-2xl text-primary mb-2 font-bold">
+                  Complete Cask History & Details
+                </CardTitle>
+                <CardDescription className="text-muted-foreground text-base">
+                  Comprehensive records enhancing investment decisions
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed text-center">
+                  Access detailed information about ownership history, distillation, and maturation progress.
+                </p>
+                
+                {/* Expandable Content */}
+                <div className="overflow-hidden transition-all duration-500 max-h-0 group-hover:max-h-96 group-hover:opacity-100 opacity-0">
+                  <div className="pt-4 space-y-4">
+                    <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg p-4 border border-primary/20">
+                      <h4 className="font-semibold text-primary mb-3 flex items-center gap-2">
+                        <Star className="h-4 w-4" />
+                        Detailed Information:
+                      </h4>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                          Previous ownership chain
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                          Distillation & maturation data
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                          Current volume & alcohol content
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                          Professional tasting notes
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                          Investment performance metrics
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="text-center">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-primary/50 text-primary hover:bg-primary/10"
+                      >
+                        Explore Details
+                      </Button>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Connecting Investors & Distilleries */}
+            <Card className="organic-card animate-fade-in group cursor-pointer h-fit transition-all duration-500 hover:scale-[1.02]" style={{animationDelay: '0.3s'}}>
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-accent to-accent/80 rounded-full w-16 h-16 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                  <Link2 className="h-8 w-8 text-accent-foreground" />
+                </div>
+                <CardTitle className="text-2xl text-accent mb-2 font-bold">
+                  Connecting Investors & Distilleries
+                </CardTitle>
+                <CardDescription className="text-muted-foreground text-base">
+                  Premium bridge between passionate investors and renowned distilleries
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed text-center">
+                  Enabling distilleries to showcase finest casks while providing unprecedented access to investments.
+                </p>
+                
+                {/* Expandable Content */}
+                <div className="overflow-hidden transition-all duration-500 max-h-0 group-hover:max-h-96 group-hover:opacity-100 opacity-0">
+                  <div className="pt-4 space-y-4">
+                    <div className="bg-gradient-to-r from-accent/10 to-secondary/10 rounded-lg p-4 border border-accent/20">
+                      <h4 className="font-semibold text-accent mb-3 flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        Connection Benefits:
+                      </h4>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
+                          Direct distillery partnerships
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
+                          Verified premium cask access
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
+                          Enhanced tracking visibility
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
+                          Investment lifecycle management
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="text-center">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-accent/50 text-accent hover:bg-accent/10"
+                      >
+                        Join Network
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Our Vision */}
+            <Card className="organic-card animate-fade-in group cursor-pointer h-fit transition-all duration-500 hover:scale-[1.02]" style={{animationDelay: '0.4s'}}>
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-primary to-accent rounded-full w-16 h-16 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                  <TrendingUp className="h-8 w-8 text-primary-foreground" />
+                </div>
+                <CardTitle className="text-2xl text-primary mb-2 font-bold">
+                  Our Vision
+                </CardTitle>
+                <CardDescription className="text-muted-foreground text-base">
+                  Democratizing whisky investment with transparency and security
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed text-center">
+                  Making whisky cask investment accessible for both seasoned collectors and newcomers.
+                </p>
+                
+                {/* Expandable Content */}
+                <div className="overflow-hidden transition-all duration-500 max-h-0 group-hover:max-h-96 group-hover:opacity-100 opacity-0">
+                  <div className="pt-4 space-y-4">
+                    <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-4 border border-primary/20">
+                      <h4 className="font-semibold text-primary mb-3 flex items-center gap-2">
+                        <Sparkles className="h-4 w-4" />
+                        Vision Goals:
+                      </h4>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                          Accessible premium investments
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                          Highest authenticity standards
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                          Preserved heritage for future generations
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                          Transparent market ecosystem
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="text-center">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-primary/50 text-primary hover:bg-primary/10"
+                      >
+                        Discover Vision
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* How It Works Section */}
