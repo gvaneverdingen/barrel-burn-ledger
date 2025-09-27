@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, Building2, Users, BarChart3, User, Crown, Shield, Gem, Star, Sparkles, Link2, FileText, TrendingUp, Eye } from 'lucide-react';
 import warehouseHero from '@/assets/warehouse-hero.jpg';
+import angelShareLogo from '@/assets/angel-share-horizontal-logo.png';
 
 const Index = () => {
   const { user, userRole, signOut, loading } = useAuth();
@@ -61,10 +62,10 @@ const Index = () => {
           <div className="relative text-center py-32 px-8 text-foreground">
             <div className="animate-fade-in">
               <h2 className="text-6xl font-bold mb-6 heritage-title font-playfair">
-                Welcome to ARIGI
+                Welcome to Angel Share
               </h2>
               <p className="text-xl mb-12 max-w-3xl mx-auto heritage-body">
-                The blockchain-enhanced premium whisky cask investment platform crafted for the connoisseur
+                The blockchain-enhanced premium whisky cask investment platform where heritage meets innovation
               </p>
               
               {/* Enhanced CTA Buttons */}
@@ -98,7 +99,7 @@ const Index = () => {
           <div className="text-center mb-16">
             <h3 className="text-5xl font-bold heritage-title mb-6 font-playfair">Revolutionizing Whisky Investment</h3>
             <p className="text-xl heritage-body max-w-4xl mx-auto leading-relaxed">
-              ARIGI bridges the gap between traditional whisky craftsmanship and modern blockchain technology, 
+              Angel Share bridges the gap between traditional whisky craftsmanship and modern blockchain technology, 
               creating the world's first comprehensive platform for single malt cask investment and ownership verification.
             </p>
           </div>
@@ -348,7 +349,7 @@ const Index = () => {
 
         <div className="mb-20 heritage-section-bg py-16 px-8 rounded-2xl">
           <div className="text-center mb-12">
-            <h4 className="text-3xl font-bold heritage-title mb-8 font-playfair">How ARIGI Works</h4>
+            <h4 className="text-3xl font-bold heritage-title mb-8 font-playfair">How Angel Share Works</h4>
             <div className="grid md:grid-cols-3 gap-8">
               <Card className="heritage-card animate-fade-in group hover:scale-105 transition-all duration-300">
                 <CardHeader className="text-center">

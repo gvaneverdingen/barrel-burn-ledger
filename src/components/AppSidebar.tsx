@@ -13,7 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import arigiLogo from '@/assets/arigi-logo.png'
+import angelShareLogo from '@/assets/angel-share-logo.png'
 
 const publicItems = [
   { title: "Home", url: "/", icon: Home },
@@ -121,13 +121,13 @@ export function AppSidebar() {
       {/* Logo */}
       <div className="p-2 border-b border-sidebar-border h-16 flex items-center">
         <div className="flex items-center space-x-2 px-2 overflow-hidden">
-          <img src={arigiLogo} alt="ARIGI" className="h-8 w-8 flex-shrink-0" />
+          <img src={angelShareLogo} alt="Angel Share Barrel Trading" className="h-8 w-8 flex-shrink-0" />
           <span 
-            className={`font-bold text-lg whitespace-nowrap transition-all duration-300 font-playfair heritage-text-gradient ${
+            className={`font-bold text-sm whitespace-nowrap transition-all duration-300 font-playfair heritage-text-gradient ${
               isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
             }`}
           >
-            ARIGI
+            Angel Share
           </span>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Home, Eye, Package } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import arigiLogo from '@/assets/arigi-logo.png';
+import angelShareLogo from '@/assets/angel-share-logo.png';
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -23,8 +23,8 @@ const PaymentSuccess = () => {
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <img src={arigiLogo} alt="ARIGI Logo" className="h-10 w-10 object-contain" />
-            <h1 className="text-2xl font-bold text-foreground">ARIGI</h1>
+            <img src={angelShareLogo} alt="Angel Share Logo" className="h-10 w-10 object-contain" />
+            <h1 className="text-2xl font-bold text-foreground heritage-title font-playfair">Angel Share</h1>
           </div>
           
           <div className="flex items-center space-x-4">
@@ -108,7 +108,7 @@ const PaymentSuccess = () => {
 
               <div className="pt-4 border-t">
                 <p className="text-xs text-muted-foreground">
-                  Need help? Contact our support team at support@arigi.com
+                  Need help? Contact our support team at support@angelshare.com
                 </p>
               </div>
             </CardContent>

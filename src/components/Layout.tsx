@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, User } from 'lucide-react';
 import { AppSidebar } from '@/components/AppSidebar';
-import arigiLogo from '@/assets/arigi-logo.png';
+import angelShareLogo from '@/assets/angel-share-logo.png';
 
 interface LayoutProps {
   children: ReactNode;
@@ -52,9 +52,9 @@ export const Layout = ({ children }: LayoutProps) => {
             <div className="container mx-auto px-4 h-full flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="animate-float">
-                  <img src={arigiLogo} alt="ARIGI Logo" className="h-8 w-8 object-contain" />
+                  <img src={angelShareLogo} alt="Angel Share Barrel Trading Logo" className="h-8 w-8 object-contain" />
                 </div>
-                <h1 className="text-xl font-bold heritage-title font-playfair">ARIGI</h1>
+                <h1 className="text-xl font-bold heritage-title font-playfair">Angel Share</h1>
               </div>
               
               <div className="flex items-center space-x-4">

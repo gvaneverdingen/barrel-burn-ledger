@@ -120,7 +120,7 @@ const Auth = () => {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
             <Grape className="h-8 w-8 text-primary mr-2" />
-            <h1 className="text-3xl font-bold text-foreground">ARIGI</h1>
+            <h1 className="text-3xl font-bold text-foreground heritage-title font-playfair">Angel Share</h1>
           </div>
           <p className="text-muted-foreground">Premium whisky cask investment platform</p>
         </div>
@@ -136,7 +136,7 @@ const Auth = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Welcome Back</CardTitle>
-                <CardDescription>Sign in to your ARIGI account</CardDescription>
+                <CardDescription>Sign in to your Angel Share account</CardDescription>
               </CardHeader>
               <form onSubmit={handleSignIn}>
                 <CardContent className="space-y-4">
@@ -174,7 +174,7 @@ const Auth = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Create Account</CardTitle>
-                <CardDescription>Join the ARIGI platform</CardDescription>
+                <CardDescription>Join the Angel Share platform</CardDescription>
               </CardHeader>
               <form onSubmit={handleSignUp}>
                 <CardContent className="space-y-4">

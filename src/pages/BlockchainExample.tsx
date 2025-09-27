@@ -184,7 +184,7 @@ export default function BlockchainExample() {
   sellerId: "99e289e8-cf01-4277-bbe2-b99b088a4166",
   caskId: "86efe4be-85e1-4f80-b9f5-8ab0d5c2900e",
   metadata: {
-    platform: "Arigi",
+    platform: "Angel Share Barrel Trading",
     version: "1.0"
   }
 }, null, 2)}
