@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useMagic } from '@/contexts/MagicContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,8 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from '@/hooks/use-toast';
-import { User, Settings, Save, Shield, CreditCard, Lock, Eye, EyeOff, Plus, Trash2 } from 'lucide-react';
+import { User, Settings, Save, Shield, CreditCard, Lock, Eye, EyeOff, Plus, Trash2, Wallet, CheckCircle, XCircle, AlertCircle, Upload, FileText, Camera } from 'lucide-react';
 import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 
@@ -35,15 +38,36 @@ interface BankAccount {
   created_at: string;
 }
 
+interface WalletInfo {
+  id: string;
+  wallet_address: string;
+  wallet_type: string;
+  is_primary: boolean;
+  connected_at: string;
+}
+
+interface VerificationDocument {
+  id: string;
+  document_type: 'government_id' | 'proof_of_address' | 'selfie';
+  status: 'pending' | 'approved' | 'rejected';
+  uploaded_at: string;
+  notes?: string;
+}
+
 const ConsumerJourney = () => {
   const { user, userRole, loading } = useAuth();
+  const { magic, isLoggedIn, userMetadata, walletAddress, loginWithWallet, getUserWallets } = useMagic();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
+  const [wallets, setWallets] = useState<WalletInfo[]>([]);
+  const [verificationDocs, setVerificationDocs] = useState<VerificationDocument[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isConnectingWallet, setIsConnectingWallet] = useState(false);
   const [showAccountNumber, setShowAccountNumber] = useState<{[key: string]: boolean}>({});
   const [isAddingBank, setIsAddingBank] = useState(false);
+  const [verificationStep, setVerificationStep] = useState(0);
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -87,8 +111,34 @@ const ConsumerJourney = () => {
         });
       }
 
-      // Fetch bank accounts (would need to create this table)
-      // For now, we'll use mock data
+      // Fetch wallets
+      const { data: walletsData, error: walletsError } = await supabase
+        .from('wallets')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (!walletsError) {
+        setWallets(walletsData || []);
+      }
+
+      // Mock verification documents (would need to create this table)
+      setVerificationDocs([
+        {
+          id: '1',
+          document_type: 'government_id',
+          status: 'approved',
+          uploaded_at: new Date().toISOString(),
+        },
+        {
+          id: '2',
+          document_type: 'proof_of_address',
+          status: 'pending',
+          uploaded_at: new Date().toISOString(),
+        }
+      ]);
+
+      // Mock bank accounts (would need to create this table)
       setBankAccounts([]);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -152,6 +202,67 @@ const ConsumerJourney = () => {
   const maskAccountNumber = (accountNumber: string) => {
     if (accountNumber.length <= 4) return accountNumber;
     return '****' + accountNumber.slice(-4);
+  };
+
+  const maskWalletAddress = (address: string) => {
+    if (address.length <= 8) return address;
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+
+  const handleConnectWallet = async () => {
+    setIsConnectingWallet(true);
+    try {
+      await loginWithWallet();
+      await fetchData(); // Refresh wallet data
+      toast({
+        title: "Success",
+        description: "Wallet connected successfully!",
+      });
+    } catch (error) {
+      console.error('Error connecting wallet:', error);
+      toast({
+        title: "Error",
+        description: "Failed to connect wallet. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsConnectingWallet(false);
+    }
+  };
+
+  const getVerificationProgress = () => {
+    const totalSteps = 4; // Profile, Identity, Address, Selfie
+    let completedSteps = 0;
+    
+    if (profile?.first_name && profile?.last_name) completedSteps++;
+    if (verificationDocs.some(doc => doc.document_type === 'government_id' && doc.status === 'approved')) completedSteps++;
+    if (verificationDocs.some(doc => doc.document_type === 'proof_of_address' && doc.status === 'approved')) completedSteps++;
+    if (verificationDocs.some(doc => doc.document_type === 'selfie' && doc.status === 'approved')) completedSteps++;
+    
+    return (completedSteps / totalSteps) * 100;
+  };
+
+  const getDocumentStatus = (docType: string) => {
+    const doc = verificationDocs.find(d => d.document_type === docType);
+    return doc?.status || 'not_uploaded';
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'approved': return 'text-green-600';
+      case 'pending': return 'text-yellow-600';
+      case 'rejected': return 'text-red-600';
+      default: return 'text-muted-foreground';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'approved': return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'pending': return <AlertCircle className="h-4 w-4 text-yellow-600" />;
+      case 'rejected': return <XCircle className="h-4 w-4 text-red-600" />;
+      default: return <Upload className="h-4 w-4 text-muted-foreground" />;
+    }
   };
 
   if (!user) {
@@ -313,8 +424,209 @@ const ConsumerJourney = () => {
               </CardContent>
             </Card>
 
-            {/* Banking Information */}
+            {/* Wallet Management */}
             <Card className="luxury-card hover-scale animate-scale-in" style={{ animationDelay: '0.1s' }}>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Wallet className="h-5 w-5" />
+                    Blockchain Wallets
+                  </CardTitle>
+                  <CardDescription>
+                    Connect and manage your crypto wallets for cask ownership
+                  </CardDescription>
+                </div>
+                <Button
+                  onClick={handleConnectWallet}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  disabled={isConnectingWallet}
+                >
+                  <Plus className="h-4 w-4" />
+                  {isConnectingWallet ? 'Connecting...' : 'Connect Wallet'}
+                </Button>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {wallets.length === 0 ? (
+                  <div className="text-center py-8 space-y-4">
+                    <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center">
+                      <Wallet className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-2">No wallets connected</h3>
+                      <p className="text-muted-foreground text-sm">
+                        Connect a blockchain wallet to start investing in whisky casks
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {wallets.map((wallet) => (
+                      <div key={wallet.id} className="p-4 border border-border/50 rounded-lg space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                              <Wallet className="h-5 w-5 text-primary" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold capitalize">{wallet.wallet_type} Wallet</h4>
+                              <p className="text-sm text-muted-foreground font-mono">
+                                {maskWalletAddress(wallet.wallet_address)}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {wallet.is_primary && (
+                              <Badge variant="secondary" className="bg-primary/10 text-primary">
+                                Primary
+                              </Badge>
+                            )}
+                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                              Connected
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Connected on {new Date(wallet.connected_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Identity Verification */}
+            <Card className="luxury-card hover-scale animate-scale-in" style={{ animationDelay: '0.2s' }}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  Identity Verification
+                </CardTitle>
+                <CardDescription>
+                  Complete your identity verification for full platform access
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Progress Bar */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Verification Progress</span>
+                    <span className="font-medium">{Math.round(getVerificationProgress())}% Complete</span>
+                  </div>
+                  <Progress value={getVerificationProgress()} className="h-2" />
+                </div>
+
+                {/* Verification Steps */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 border border-border/50 rounded-lg space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {getStatusIcon(profile?.first_name && profile?.last_name ? 'approved' : 'not_uploaded')}
+                        <h4 className="font-semibold">Personal Information</h4>
+                      </div>
+                      <Badge 
+                        variant="outline" 
+                        className={profile?.first_name && profile?.last_name ? 'border-green-200 text-green-700' : 'border-gray-200'}
+                      >
+                        {profile?.first_name && profile?.last_name ? 'Complete' : 'Required'}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Provide your full legal name as it appears on government ID
+                    </p>
+                  </div>
+
+                  <div className="p-4 border border-border/50 rounded-lg space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {getStatusIcon(getDocumentStatus('government_id'))}
+                        <h4 className="font-semibold">Government ID</h4>
+                      </div>
+                      <Badge 
+                        variant="outline" 
+                        className={`border-${getDocumentStatus('government_id') === 'approved' ? 'green' : getDocumentStatus('government_id') === 'pending' ? 'yellow' : 'gray'}-200`}
+                      >
+                        {getDocumentStatus('government_id') === 'approved' ? 'Verified' : 
+                         getDocumentStatus('government_id') === 'pending' ? 'Pending' : 'Upload Required'}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Upload a clear photo of your passport, driver's license, or national ID
+                    </p>
+                    {getDocumentStatus('government_id') === 'not_uploaded' && (
+                      <Button variant="outline" size="sm" className="w-full gap-2">
+                        <Camera className="h-3 w-3" />
+                        Upload Document
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="p-4 border border-border/50 rounded-lg space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {getStatusIcon(getDocumentStatus('proof_of_address'))}
+                        <h4 className="font-semibold">Proof of Address</h4>
+                      </div>
+                      <Badge 
+                        variant="outline" 
+                        className={`border-${getDocumentStatus('proof_of_address') === 'approved' ? 'green' : getDocumentStatus('proof_of_address') === 'pending' ? 'yellow' : 'gray'}-200`}
+                      >
+                        {getDocumentStatus('proof_of_address') === 'approved' ? 'Verified' : 
+                         getDocumentStatus('proof_of_address') === 'pending' ? 'Under Review' : 'Upload Required'}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Upload a recent utility bill, bank statement, or rental agreement
+                    </p>
+                    {getDocumentStatus('proof_of_address') === 'not_uploaded' && (
+                      <Button variant="outline" size="sm" className="w-full gap-2">
+                        <FileText className="h-3 w-3" />
+                        Upload Document
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="p-4 border border-border/50 rounded-lg space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {getStatusIcon(getDocumentStatus('selfie'))}
+                        <h4 className="font-semibold">Identity Selfie</h4>
+                      </div>
+                      <Badge 
+                        variant="outline" 
+                        className={`border-${getDocumentStatus('selfie') === 'approved' ? 'green' : getDocumentStatus('selfie') === 'pending' ? 'yellow' : 'gray'}-200`}
+                      >
+                        {getDocumentStatus('selfie') === 'approved' ? 'Verified' : 
+                         getDocumentStatus('selfie') === 'pending' ? 'Pending' : 'Required'}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Take a selfie while holding your government ID for verification
+                    </p>
+                    {getDocumentStatus('selfie') === 'not_uploaded' && (
+                      <Button variant="outline" size="sm" className="w-full gap-2">
+                        <Camera className="h-3 w-3" />
+                        Take Selfie
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {getVerificationProgress() === 100 && (
+                  <Alert className="border-green-200 bg-green-50">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <AlertDescription className="text-green-800">
+                      Congratulations! Your identity verification is complete. You now have full access to all platform features.
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Banking Information */}
+            <Card className="luxury-card hover-scale animate-scale-in" style={{ animationDelay: '0.3s' }}>
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center gap-2">
@@ -397,41 +709,57 @@ const ConsumerJourney = () => {
               </CardContent>
             </Card>
 
-            {/* Security & Verification */}
-            <Card className="luxury-card hover-scale animate-scale-in" style={{ animationDelay: '0.2s' }}>
+            {/* Account Security Overview */}
+            <Card className="luxury-card hover-scale animate-scale-in" style={{ animationDelay: '0.4s' }}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Lock className="h-5 w-5" />
-                  Security & Verification
+                  Account Security Overview
                 </CardTitle>
                 <CardDescription>
-                  Your account security status and verification level
+                  Your overall security and verification status
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                   <div className="text-center p-4 border border-border/50 rounded-lg">
-                    <Shield className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                    <h4 className="font-semibold mb-1">Identity Verified</h4>
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">
-                      Verified
+                    <Shield className={`h-8 w-8 mx-auto mb-2 ${getVerificationProgress() === 100 ? 'text-green-600' : 'text-yellow-600'}`} />
+                    <h4 className="font-semibold mb-1">Identity Status</h4>
+                    <Badge variant="secondary" className={getVerificationProgress() === 100 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
+                      {getVerificationProgress() === 100 ? 'Verified' : 'In Progress'}
                     </Badge>
                   </div>
                   <div className="text-center p-4 border border-border/50 rounded-lg">
-                    <CreditCard className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                    <Wallet className={`h-8 w-8 mx-auto mb-2 ${wallets.length > 0 ? 'text-green-600' : 'text-gray-600'}`} />
+                    <h4 className="font-semibold mb-1">Wallets</h4>
+                    <Badge variant="secondary" className={wallets.length > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                      {wallets.length} Connected
+                    </Badge>
+                  </div>
+                  <div className="text-center p-4 border border-border/50 rounded-lg">
+                    <CreditCard className={`h-8 w-8 mx-auto mb-2 ${bankAccounts.length > 0 ? 'text-blue-600' : 'text-gray-600'}`} />
                     <h4 className="font-semibold mb-1">Payment Methods</h4>
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                    <Badge variant="secondary" className={bankAccounts.length > 0 ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}>
                       {bankAccounts.length} Connected
                     </Badge>
                   </div>
                   <div className="text-center p-4 border border-border/50 rounded-lg">
                     <Lock className="h-8 w-8 text-primary mx-auto mb-2" />
                     <h4 className="font-semibold mb-1">2FA Security</h4>
-                    <Badge variant="outline">
+                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                       Enabled
                     </Badge>
                   </div>
                 </div>
+
+                {getVerificationProgress() < 100 && (
+                  <Alert className="border-yellow-200 bg-yellow-50">
+                    <AlertCircle className="h-4 w-4 text-yellow-600" />
+                    <AlertDescription className="text-yellow-800">
+                      Complete your identity verification to unlock full platform features and higher investment limits.
+                    </AlertDescription>
+                  </Alert>
+                )}
               </CardContent>
             </Card>
           </div>
