@@ -21,7 +21,9 @@ import {
   TrendingUp,
   Eye,
   Users,
-  Database
+  Database,
+  Heart,
+  RefreshCw
 } from "lucide-react";
 
 const Admin = () => {
@@ -43,8 +45,11 @@ const Admin = () => {
       pages: [
         { name: "Profile", path: "/profile", description: "User profile management", icon: User },
         { name: "Portfolio", path: "/portfolio", description: "Investment dashboard and holdings", icon: BarChart3 },
+        { name: "Wishlist", path: "/wishlist", description: "Favorite casks and price alerts", icon: Heart },
+        { name: "Secondary Market", path: "/secondary-market", description: "Resale marketplace with blockchain transparency", icon: RefreshCw },
         { name: "Transactions", path: "/transactions", description: "Transaction history", icon: CreditCard },
         { name: "Market Insights", path: "/insights", description: "Market analysis and trends", icon: TrendingUp },
+        { name: "Reports", path: "/reports", description: "Portfolio reports and compliance", icon: FileText },
         { name: "Notifications", path: "/notifications", description: "User notifications", icon: Bell },
         { name: "Payment Success", path: "/payment-success", description: "Post-purchase confirmation", icon: CreditCard },
       ]
@@ -80,14 +85,14 @@ const Admin = () => {
       role: 'consumer',
       name: 'Consumer/Investor',
       description: 'Authenticated user who can invest in casks',
-      access: ['All Public Pages', 'Profile', 'Portfolio', 'Transactions', 'Market Insights', 'Notifications'],
+      access: ['All Public Pages', 'Profile', 'Portfolio', 'Wishlist', 'Secondary Market', 'Transactions', 'Market Insights', 'Reports', 'Notifications'],
       color: 'bg-green-100 text-green-800'
     },
     {
       role: 'distillery',
       name: 'Distillery',
       description: 'Verified distillery that can list casks',
-      access: ['All Consumer Access', 'My Distillery', 'Manage Casks', 'Sales Analytics', 'Verification'],
+      access: ['All Consumer Access', 'Secondary Market Access', 'My Distillery', 'Manage Casks', 'Sales Analytics', 'Verification'],
       color: 'bg-blue-100 text-blue-800'
     }
   ];
