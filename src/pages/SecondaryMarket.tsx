@@ -91,10 +91,6 @@ const SecondaryMarket = () => {
                 verified
               )
             )
-          ),
-          profiles!inner (
-            first_name,
-            last_name
           )
         `)
         .eq('status', 'active')
@@ -320,7 +316,6 @@ const SecondaryMarket = () => {
 
                     <div className="text-xs text-muted-foreground space-y-1">
                       <div>Distillery: {listing.cask_ownership?.casks?.distilleries?.name}</div>
-                      <div>Seller: {listing.profiles?.first_name} {listing.profiles?.last_name}</div>
                       <div>Listed: {new Date(listing.created_at).toLocaleDateString()}</div>
                     </div>
 

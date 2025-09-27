@@ -13,22 +13,22 @@ interface WishlistItem {
   user_id: string;
   cask_id: string;
   max_price: number;
-  notes: string;
+  notes: string | null;
   created_at: string;
   // Joined cask data
   casks?: {
     id: string;
     spirit_name: string;
     cask_number: string;
-    price_per_liter: number;
-    current_volume_liters: number;
-    total_price: number;
-    available_for_sale: boolean;
+    price_per_liter: number | null;
+    current_volume_liters: number | null;
+    total_price: number | null;
+    available_for_sale: boolean | null;
     distilleries: {
       name: string;
-      location: string;
-    };
-  };
+      location: string | null;
+    } | null;
+  } | null;
 }
 
 const Wishlist = () => {

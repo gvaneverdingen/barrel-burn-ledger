@@ -613,7 +613,22 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_wishlist_cask"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_wishlist_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
