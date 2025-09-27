@@ -52,6 +52,8 @@ All colors MUST be HSL.
     --shadow-luxury: 0 15px 35px -8px hsl(15 70% 55% / 0.15);
     --shadow-gold: 0 10px 25px -5px hsl(25 55% 65% / 0.2);
     --shadow-elegant: 0 5px 15px -3px hsl(25 25% 15% / 0.1);
+    --shadow-organic-soft: 0 4px 12px -2px hsl(25 25% 15% / 0.08);
+    --shadow-organic-glow: 0 8px 32px -4px hsl(15 70% 55% / 0.25);
 
     /* Sidebar Warm Theme */
     --sidebar-background: 35 25% 94%;
@@ -142,6 +144,14 @@ All colors MUST be HSL.
     background: var(--gradient-luxury);
     opacity: 0.08;
     pointer-events: none;
+  }
+  
+  .shadow-organic-soft {
+    box-shadow: var(--shadow-organic-soft);
+  }
+  
+  .shadow-organic-glow {
+    box-shadow: var(--shadow-organic-glow);
   }
 }
 

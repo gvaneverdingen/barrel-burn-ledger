@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, User } from 'lucide-react';
 import { AppSidebar } from '@/components/AppSidebar';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import arigiLogo from '@/assets/arigi-logo.png';
 
 interface LayoutProps {
@@ -45,19 +44,17 @@ export const Layout = ({ children }: LayoutProps) => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AppSidebar />
-        <main className="flex-1">
+    <div className="flex min-h-screen w-full">
+      <AppSidebar />
+      <main className="flex-1 ml-16 transition-all duration-300">
           {/* Global Header */}
           <header className="h-16 border-b border-border/50 bg-card/80 backdrop-blur-md sticky top-0 z-40">
             <div className="container mx-auto px-4 h-full flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <SidebarTrigger />
                 <div className="animate-float">
                   <img src={arigiLogo} alt="ARIGI Logo" className="h-8 w-8 object-contain" />
                 </div>
-                <h1 className="text-xl font-bold luxury-text-gradient">ARIGI</h1>
+                <h1 className="text-xl font-bold organic-text-gradient">ARIGI</h1>
               </div>
               
               <div className="flex items-center space-x-4">
@@ -89,7 +86,7 @@ export const Layout = ({ children }: LayoutProps) => {
                     </div>
                   </>
                 ) : (
-                  <Button onClick={() => navigate('/auth')} className="luxury-button" size="sm">
+                  <Button onClick={() => navigate('/auth')} className="organic-button" size="sm">
                     Sign In
                   </Button>
                 )}
@@ -103,6 +100,5 @@ export const Layout = ({ children }: LayoutProps) => {
           </div>
         </main>
       </div>
-    </SidebarProvider>
   );
 };

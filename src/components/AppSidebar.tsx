@@ -12,8 +12,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
-  useSidebar,
 } from "@/components/ui/sidebar"
 import arigiLogo from '@/assets/arigi-logo.png'
 
@@ -63,9 +61,7 @@ const consumerSupportItems = [
 ]
 
 export function AppSidebar() {
-  const { state } = useSidebar()
-  const collapsed = state === "collapsed"
-
+  const [isExpanded, setIsExpanded] = useState(false)
   const { user, userRole } = useAuth()
   const location = useLocation()
   const currentPath = location.pathname
@@ -115,99 +111,173 @@ export function AppSidebar() {
     isActive ? "bg-muted text-primary font-medium" : "hover:bg-muted/50"
 
   return (
-    <Sidebar collapsible="icon">
-      {/* Logo and trigger */}
-      <div className="p-2 border-b">
-        {!collapsed && (
-          <div className="flex items-center space-x-2 px-2">
-            <img src={arigiLogo} alt="ARIGI" className="h-8 w-8" />
-            <span className="font-bold text-lg">ARIGI</span>
-          </div>
-        )}
-        <SidebarTrigger className={collapsed ? "mx-auto" : "ml-auto"} />
+    <div 
+      className={`fixed left-0 top-0 h-full bg-card border-r border-border/50 backdrop-blur-md transition-all duration-300 ease-in-out z-50 ${
+        isExpanded ? 'w-64' : 'w-16'
+      }`}
+      onMouseEnter={() => setIsExpanded(true)}
+      onMouseLeave={() => setIsExpanded(false)}
+    >
+      {/* Logo */}
+      <div className="p-2 border-b border-border/50 h-16 flex items-center">
+        <div className="flex items-center space-x-2 px-2 overflow-hidden">
+          <img src={arigiLogo} alt="ARIGI" className="h-8 w-8 flex-shrink-0" />
+          <span 
+            className={`font-bold text-lg whitespace-nowrap transition-all duration-300 ${
+              isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+            }`}
+          >
+            ARIGI
+          </span>
+        </div>
       </div>
 
-      <SidebarContent>
+      <div className="flex-1 overflow-y-auto py-4">
         {/* Public Navigation */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {currentPublicItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={item.url} end className={getNavCls}>
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <div className="px-2 mb-6">
+          <div 
+            className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2 transition-all duration-300 ${
+              isExpanded ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            Navigation
+          </div>
+          <div className="space-y-1">
+            {currentPublicItems.map((item) => (
+              <NavLink
+                key={item.title}
+                to={item.url}
+                end
+                className={({ isActive }) =>
+                  `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
+                    isActive
+                      ? 'bg-primary/10 text-primary font-medium border-l-2 border-primary'
+                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                  }`
+                }
+              >
+                <item.icon className="h-5 w-5 flex-shrink-0" />
+                <span 
+                  className={`ml-3 whitespace-nowrap transition-all duration-300 ${
+                    isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+                  }`}
+                >
+                  {item.title}
+                </span>
+              </NavLink>
+            ))}
+          </div>
+        </div>
 
         {/* User Navigation - Show based on role */}
         {(user && !isConsumer) || (user && isConsumer) ? (
-          <SidebarGroup>
-            <SidebarGroupLabel>{isConsumer ? "My Account" : "Account"}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {currentUserItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <NavLink to={item.url} className={getNavCls}>
-                        <item.icon className="mr-2 h-4 w-4" />
-                        {!collapsed && <span>{item.title}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+          <div className="px-2 mb-6">
+            <div 
+              className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2 transition-all duration-300 ${
+                isExpanded ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              {isConsumer ? "My Account" : "Account"}
+            </div>
+            <div className="space-y-1">
+              {currentUserItems.map((item) => (
+                <NavLink
+                  key={item.title}
+                  to={item.url}
+                  className={({ isActive }) =>
+                    `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
+                      isActive
+                        ? 'bg-primary/10 text-primary font-medium border-l-2 border-primary'
+                        : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                    }`
+                  }
+                >
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  <span 
+                    className={`ml-3 whitespace-nowrap transition-all duration-300 ${
+                      isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+                    }`}
+                  >
+                    {item.title}
+                  </span>
+                </NavLink>
+              ))}
+            </div>
+          </div>
         ) : null}
 
         {/* Distillery Navigation - Only show for distilleries and admins */}
         {((user && isDistillery) || (user && isAdmin)) && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Distillery</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {distilleryItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <NavLink to={item.url} className={getNavCls}>
-                        <item.icon className="mr-2 h-4 w-4" />
-                        {!collapsed && <span>{item.title}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+          <div className="px-2 mb-6">
+            <div 
+              className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2 transition-all duration-300 ${
+                isExpanded ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              Distillery
+            </div>
+            <div className="space-y-1">
+              {distilleryItems.map((item) => (
+                <NavLink
+                  key={item.title}
+                  to={item.url}
+                  className={({ isActive }) =>
+                    `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
+                      isActive
+                        ? 'bg-primary/10 text-primary font-medium border-l-2 border-primary'
+                        : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                    }`
+                  }
+                >
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  <span 
+                    className={`ml-3 whitespace-nowrap transition-all duration-300 ${
+                      isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+                    }`}
+                  >
+                    {item.title}
+                  </span>
+                </NavLink>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Support & Settings */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Support</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {currentSupportItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={item.url} className={getNavCls}>
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+        <div className="px-2">
+          <div 
+            className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2 transition-all duration-300 ${
+              isExpanded ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            Support
+          </div>
+          <div className="space-y-1">
+            {currentSupportItems.map((item) => (
+              <NavLink
+                key={item.title}
+                to={item.url}
+                className={({ isActive }) =>
+                  `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
+                    isActive
+                      ? 'bg-primary/10 text-primary font-medium border-l-2 border-primary'
+                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                  }`
+                }
+              >
+                <item.icon className="h-5 w-5 flex-shrink-0" />
+                <span 
+                  className={`ml-3 whitespace-nowrap transition-all duration-300 ${
+                    isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+                  }`}
+                >
+                  {item.title}
+                </span>
+              </NavLink>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
