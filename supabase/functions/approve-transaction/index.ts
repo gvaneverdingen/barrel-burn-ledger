@@ -164,7 +164,7 @@ serve(async (req) => {
         .from('transactions')
         .update({
           status: 'approved_blockchain_failed',
-          admin_notes: `Approved but blockchain failed: ${blockchainError.message}`
+          admin_notes: `Approved but blockchain failed: ${(blockchainError as Error).message}`
         })
         .eq('id', transactionId);
 
@@ -181,7 +181,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Transaction approval error:", error);
     return new Response(JSON.stringify({ 
-      error: error.message,
+      error: (error as Error).message,
       success: false 
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

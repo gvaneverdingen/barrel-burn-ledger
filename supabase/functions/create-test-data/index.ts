@@ -163,7 +163,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Error creating test data:", error);
     return new Response(JSON.stringify({ 
-      error: error.message,
+      error: (error as Error).message,
       details: error
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

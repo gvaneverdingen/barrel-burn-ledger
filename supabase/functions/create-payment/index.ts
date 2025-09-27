@@ -201,11 +201,11 @@ serve(async (req) => {
   } catch (error) {
     console.error("=== PAYMENT CREATION ERROR ===");
     console.error("Error details:", {
-      message: error.message,
-      name: error.name,
-      stack: error.stack
+      message: (error as Error).message,
+      name: (error as Error).name,
+      stack: (error as Error).stack
     });
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: (error as Error).message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });

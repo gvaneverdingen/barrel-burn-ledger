@@ -150,7 +150,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Blockchain logging error:", error);
     return new Response(JSON.stringify({ 
-      error: error.message,
+      error: (error as Error).message,
       success: false 
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -263,8 +263,8 @@ async function executePolygonTransaction(transaction: BlockchainTransaction): Pr
     
   } catch (error) {
     console.error("Polygon transaction error:", {
-      message: error.message,
-      stack: error.stack,
+      message: (error as Error).message,
+      stack: (error as Error).stack,
       caskId: transaction.caskId,
       transactionType: transaction.transactionType
     });
