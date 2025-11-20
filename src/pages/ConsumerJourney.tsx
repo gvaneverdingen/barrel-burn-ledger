@@ -18,7 +18,6 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 interface UserProfile {
   id: string;
   email: string;
-  role: 'distillery' | 'consumer' | 'investor' | 'administrator' | 'facilitator';
   first_name: string | null;
   last_name: string | null;
   company_name: string | null;
@@ -360,7 +359,7 @@ const ConsumerJourney = () => {
                     <Label className="text-sm font-medium">Account Role</Label>
                     <div className="p-3 bg-muted/50 rounded-md">
                       <Badge variant="outline" className="capitalize">
-                        {profile?.role || 'Consumer'}
+                        {userRole || 'Consumer'}
                       </Badge>
                     </div>
                   </div>
