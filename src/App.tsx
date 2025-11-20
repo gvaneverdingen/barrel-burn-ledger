@@ -1,47 +1,51 @@
+import { lazy, Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { MagicProvider } from "@/contexts/MagicContext";
 import { ComparisonProvider } from "@/contexts/ComparisonContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { setupResizeObserverErrorHandler } from "@/utils/resizeObserver";
 import { Layout } from "@/components/Layout";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import ProfileCompletion from "@/components/ProfileCompletion";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import ResetPassword from "./pages/ResetPassword";
-import Marketplace from "./pages/Marketplace";
-import Wishlist from "./pages/Wishlist";
-import Comparison from "./pages/Comparison";
-import Reports from "./pages/Reports";
-import CaskDetails from "./pages/CaskDetails";
-import Profile from "./pages/Profile";
-import Portfolio from "./pages/Portfolio";
-import Admin from "./pages/Admin";
-import AdminDashboard from "./pages/admin/Dashboard";
-import TestData from "./pages/TestData";
-import PaymentSuccess from "./pages/PaymentSuccess";
-import NotFound from "./pages/NotFound";
-import Insights from "./pages/Insights";
-import MarketInsights from "./pages/MarketInsights";
-import Notifications from "./pages/Notifications";
-import Transactions from "./pages/Transactions";
-import Documentation from "./pages/Documentation";
-import Help from "./pages/Help";
-import Settings from "./pages/Settings";
-import ConsumerJourney from "./pages/ConsumerJourney";
 import RoleBasedRoute from "./components/RoleBasedRoute";
 
-// Distillery pages
-import DistilleryDashboard from "./pages/distillery/Dashboard";
-import DistilleryCasks from "./pages/distillery/Casks";
-import DistilleryAnalytics from "./pages/distillery/Analytics";
-import DistilleryVerification from "./pages/distillery/Verification";
-import BlockchainExample from "./pages/BlockchainExample";
-import BlockchainTesting from "./pages/BlockchainTesting";
+// Critical routes - load immediately
+import Index from "./pages/Index";
+import Auth from "./pages/Auth";
+
+// Lazy load non-critical routes
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Marketplace = lazy(() => import("./pages/Marketplace"));
+const Wishlist = lazy(() => import("./pages/Wishlist"));
+const Comparison = lazy(() => import("./pages/Comparison"));
+const Reports = lazy(() => import("./pages/Reports"));
+const CaskDetails = lazy(() => import("./pages/CaskDetails"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Portfolio = lazy(() => import("./pages/Portfolio"));
+const Admin = lazy(() => import("./pages/Admin"));
+const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
+const TestData = lazy(() => import("./pages/TestData"));
+const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Insights = lazy(() => import("./pages/Insights"));
+const MarketInsights = lazy(() => import("./pages/MarketInsights"));
+const Notifications = lazy(() => import("./pages/Notifications"));
+const Transactions = lazy(() => import("./pages/Transactions"));
+const Documentation = lazy(() => import("./pages/Documentation"));
+const Help = lazy(() => import("./pages/Help"));
+const Settings = lazy(() => import("./pages/Settings"));
+const ConsumerJourney = lazy(() => import("./pages/ConsumerJourney"));
+const DistilleryDashboard = lazy(() => import("./pages/distillery/Dashboard"));
+const DistilleryCasks = lazy(() => import("./pages/distillery/Casks"));
+const DistilleryAnalytics = lazy(() => import("./pages/distillery/Analytics"));
+const DistilleryVerification = lazy(() => import("./pages/distillery/Verification"));
+const BlockchainExample = lazy(() => import("./pages/BlockchainExample"));
+const BlockchainTesting = lazy(() => import("./pages/BlockchainTesting"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -86,10 +90,15 @@ const AppRoutes = () => {
   }
 
   return (
-    <Routes>
-      {/* Auth pages without layout */}
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    }>
+      <Routes>
+        {/* Auth pages without layout */}
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       
       {/* All other routes with layout */}
       <Route path="/*" element={
@@ -258,6 +267,7 @@ const AppRoutes = () => {
         </Layout>
       } />
     </Routes>
+    </Suspense>
   );
 };
 
