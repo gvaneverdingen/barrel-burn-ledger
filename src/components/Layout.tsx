@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, User } from 'lucide-react';
 import { AppSidebar } from '@/components/AppSidebar';
 import { ComparisonButton } from '@/components/ComparisonButton';
+import { MobileBottomNav } from '@/components/MobileBottomNav';
 import angelShareLogo from '@/assets/angel-share-logo.png';
 
 interface LayoutProps {
@@ -47,22 +48,22 @@ export const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="flex min-h-screen w-full">
       <AppSidebar />
-      <main className="flex-1 ml-16 transition-all duration-300">
-          {/* Global Header */}
-          <header className="h-16 border-b border-border/50 bg-card/80 backdrop-blur-md sticky top-0 z-40">
-            <div className="container mx-auto px-4 h-full flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="animate-float">
-                  <img src={angelShareLogo} alt="Angel Share Barrel Trading Logo" className="h-8 w-8 object-contain" />
+      <main className="flex-1 ml-0 lg:ml-16 transition-all duration-300 pb-16 lg:pb-0">
+          {/* Mobile-Optimized Global Header */}
+          <header className="mobile-sticky-header h-14 sm:h-16 border-b border-border/50 bg-card/80 backdrop-blur-md">
+            <div className="mobile-container h-full flex items-center justify-between gap-2">
+              <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                <div className="animate-float shrink-0">
+                  <img src={angelShareLogo} alt="Angel Share Logo" className="h-7 w-7 sm:h-8 sm:w-8 object-contain" />
                 </div>
-                <h1 className="text-xl font-bold heritage-title font-playfair">Angel Share</h1>
+                <h1 className="text-base sm:text-xl font-bold heritage-title font-playfair truncate">Angel Share</h1>
               </div>
               
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 sm:space-x-4">
                 {user ? (
                   <>
-                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                      <span>Welcome, {user?.email}</span>
+                    <div className="hidden md:flex items-center space-x-2 text-sm text-muted-foreground">
+                      <span className="truncate max-w-[150px]">Welcome, {user?.email}</span>
                       {userRole && (
                         <div className={`flex items-center space-x-1 ${getRoleColor(userRole)}`}>
                           <span>{getRoleIcon(userRole)}</span>
@@ -70,24 +71,24 @@ export const Layout = ({ children }: LayoutProps) => {
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1 sm:space-x-2">
                       <Button 
                         onClick={() => navigate('/profile')} 
                         variant="ghost" 
                         size="sm"
-                        className="gap-2 hover:bg-accent/20"
+                        className="gap-1 sm:gap-2 hover:bg-accent/20 mobile-touch-target px-2 sm:px-4"
                       >
                         <User className="h-4 w-4" />
-                        Profile
+                        <span className="hidden sm:inline">Profile</span>
                       </Button>
-                      <Button onClick={signOut} variant="outline" size="sm" className="border-primary/30 hover:bg-primary/10">
-                        <LogOut className="h-4 w-4 mr-2" />
-                        Sign Out
+                      <Button onClick={signOut} variant="outline" size="sm" className="border-primary/30 hover:bg-primary/10 mobile-touch-target px-2 sm:px-4">
+                        <LogOut className="h-4 w-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Sign Out</span>
                       </Button>
                     </div>
                   </>
                 ) : (
-                  <Button onClick={() => navigate('/auth')} className="heritage-button" size="sm">
+                  <Button onClick={() => navigate('/auth')} className="heritage-button mobile-button-md" size="sm">
                     Sign In
                   </Button>
                 )}
@@ -101,6 +102,7 @@ export const Layout = ({ children }: LayoutProps) => {
           </div>
           
           <ComparisonButton />
+          <MobileBottomNav />
         </main>
       </div>
   );

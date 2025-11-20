@@ -61,23 +61,26 @@ const Comparison = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => navigate('/marketplace')}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Marketplace
+    <div className="mobile-container pb-20 lg:pb-8">
+      <div className="mobile-sticky-header py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/marketplace')} className="mobile-touch-target">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Back to Marketplace</span>
+              <span className="sm:hidden">Back</span>
+            </Button>
+            <h1 className="mobile-heading font-bold">Compare Casks</h1>
+          </div>
+          <Button variant="outline" size="sm" onClick={clearComparison} className="mobile-touch-target w-full sm:w-auto">
+            Clear All
           </Button>
-          <h1 className="text-3xl font-bold">Compare Casks</h1>
         </div>
-        <Button variant="outline" onClick={clearComparison}>
-          Clear All
-        </Button>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 mt-6">
         <div className="inline-block min-w-full align-middle">
-          <div className="grid gap-4" style={{ gridTemplateColumns: `200px repeat(${comparisonCasks.length}, 1fr)` }}>
+          <div className="grid gap-3 sm:gap-4" style={{ gridTemplateColumns: `minmax(120px, 200px) repeat(${comparisonCasks.length}, minmax(200px, 1fr))` }}>
             {/* Header row with cask names */}
             <div className="font-semibold bg-muted p-4 rounded-lg">
               Attribute
