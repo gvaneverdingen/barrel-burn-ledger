@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { MagicProvider } from "@/contexts/MagicContext";
+import { ComparisonProvider } from "@/contexts/ComparisonContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { setupResizeObserverErrorHandler } from "@/utils/resizeObserver";
 import { Layout } from "@/components/Layout";
@@ -14,6 +15,7 @@ import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import Marketplace from "./pages/Marketplace";
 import Wishlist from "./pages/Wishlist";
+import Comparison from "./pages/Comparison";
 import Reports from "./pages/Reports";
 import CaskDetails from "./pages/CaskDetails";
 import Profile from "./pages/Profile";
@@ -107,6 +109,7 @@ const AppRoutes = () => {
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/cask/:id" element={<CaskDetails />} />
             <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/comparison" element={<Comparison />} />
             
             {/* User Profile and Portfolio - Available to consumers and others */}
             <Route 
@@ -246,13 +249,15 @@ const App = () => (
       <TooltipProvider>
         <MagicProvider>
           <AuthProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <ErrorBoundary>
-                <AppRoutes />
-              </ErrorBoundary>
-            </BrowserRouter>
+            <ComparisonProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <ErrorBoundary>
+                  <AppRoutes />
+                </ErrorBoundary>
+              </BrowserRouter>
+            </ComparisonProvider>
           </AuthProvider>
         </MagicProvider>
       </TooltipProvider>

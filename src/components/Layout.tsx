@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, User } from 'lucide-react';
 import { AppSidebar } from '@/components/AppSidebar';
+import { ComparisonButton } from '@/components/ComparisonButton';
 import angelShareLogo from '@/assets/angel-share-logo.png';
 
 interface LayoutProps {
@@ -98,6 +99,8 @@ export const Layout = ({ children }: LayoutProps) => {
           <div className="flex-1">
             {children}
           </div>
+          
+          <ComparisonButton />
         </main>
       </div>
   );
