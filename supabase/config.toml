@@ -102,3 +102,6 @@ verify_jwt = true
 
 [functions.send-email]
 verify_jwt = false
+
+[functions.search-market-prices]
+verify_jwt = true

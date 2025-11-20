@@ -39,6 +39,7 @@ const userItems = [
   { title: "Portfolio", url: "/portfolio", icon: BarChart3 },
   { title: "Transactions", url: "/transactions", icon: CreditCard },
   { title: "Market Insights", url: "/insights", icon: TrendingUp },
+  { title: "AI Price Tracker", url: "/market-insights", icon: TrendingUp },
   { title: "Notifications", url: "/notifications", icon: Bell },
   { title: "Reports", url: "/reports", icon: FileText },
 ]
