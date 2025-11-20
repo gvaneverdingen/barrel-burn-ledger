@@ -11,6 +11,7 @@ import { Layout } from "@/components/Layout";
 import ProfileCompletion from "@/components/ProfileCompletion";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import Marketplace from "./pages/Marketplace";
 import Wishlist from "./pages/Wishlist";
 import Reports from "./pages/Reports";
@@ -82,8 +83,9 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      {/* Auth page without layout */}
+      {/* Auth pages without layout */}
       <Route path="/auth" element={<Auth />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       
       {/* All other routes with layout */}
       <Route path="/*" element={

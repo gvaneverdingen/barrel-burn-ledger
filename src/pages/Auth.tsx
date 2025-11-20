@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { Grape, Building2, Users, AlertCircle, ArrowLeft } from 'lucide-react';
@@ -14,6 +15,7 @@ import WalletConnect from '@/components/WalletConnect';
 import PasswordStrengthIndicator from '@/components/PasswordStrengthIndicator';
 import { validatePasswordStrength } from '@/utils/passwordValidation';
 import { authRateLimiter } from '@/utils/rateLimiting';
+import { supabase } from '@/integrations/supabase/client';
 
 const Auth = () => {
   const { user, signUp, signIn, loading } = useAuth();
@@ -21,6 +23,9 @@ const Auth = () => {
   const [signUpPassword, setSignUpPassword] = useState('');
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [selectedRole, setSelectedRole] = useState<'distillery' | 'consumer' | 'investor' | ''>('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [isResetting, setIsResetting] = useState(false);
 
   // Redirect if already authenticated
   if (user && !loading) {
@@ -92,6 +97,40 @@ const Auth = () => {
     setIsSubmitting(false);
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsResetting(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Reset Email Sent",
+          description: "Check your email for a password reset link.",
+        });
+        setShowForgotPassword(false);
+        setResetEmail('');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send reset email. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -151,7 +190,44 @@ const Auth = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="signin-password">Password</Label>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="signin-password">Password</Label>
+                      <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
+                        <DialogTrigger asChild>
+                          <Button variant="link" className="px-0 text-xs h-auto">
+                            Forgot password?
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Reset Password</DialogTitle>
+                            <DialogDescription>
+                              Enter your email address and we'll send you a link to reset your password.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <form onSubmit={handleForgotPassword}>
+                            <div className="space-y-4 py-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="reset-email">Email</Label>
+                                <Input
+                                  id="reset-email"
+                                  type="email"
+                                  placeholder="your@email.com"
+                                  value={resetEmail}
+                                  onChange={(e) => setResetEmail(e.target.value)}
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <DialogFooter>
+                              <Button type="submit" disabled={isResetting}>
+                                {isResetting ? 'Sending...' : 'Send Reset Link'}
+                              </Button>
+                            </DialogFooter>
+                          </form>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                     <Input
                       id="signin-password"
                       name="password"
