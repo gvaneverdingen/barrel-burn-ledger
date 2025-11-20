@@ -21,6 +21,7 @@ import CaskDetails from "./pages/CaskDetails";
 import Profile from "./pages/Profile";
 import Portfolio from "./pages/Portfolio";
 import Admin from "./pages/Admin";
+import AdminDashboard from "./pages/admin/Dashboard";
 import TestData from "./pages/TestData";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
@@ -178,6 +179,14 @@ const AppRoutes = () => {
               element={
                 <RoleBasedRoute allowedRoles={['administrator']}>
                   <Admin />
+                </RoleBasedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/dashboard" 
+              element={
+                <RoleBasedRoute allowedRoles={['administrator']}>
+                  <AdminDashboard />
                 </RoleBasedRoute>
               } 
             />
