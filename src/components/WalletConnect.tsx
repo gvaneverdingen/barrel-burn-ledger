@@ -36,52 +36,36 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('🔵 WalletConnect: Email login form submitted', { email, hasEmail: !!email });
     
     if (!email) {
-      console.log('🔴 WalletConnect: No email provided');
       return;
     }
 
     try {
-      console.log('🔵 WalletConnect: Starting email login process');
       setIsConnecting(true);
-      
-      console.log('🔵 WalletConnect: Calling loginWithEmail');
       await loginWithEmail(email);
       
-      console.log('🔵 WalletConnect: Login completed, wallet address:', walletAddress);
       if (onConnect && walletAddress) {
-        console.log('🔵 WalletConnect: Calling onConnect callback');
         onConnect(walletAddress, email);
       }
     } catch (error) {
-      console.error('🔴 WalletConnect: Email login failed:', error);
+      // Error handling is done in loginWithEmail
     } finally {
-      console.log('🔵 WalletConnect: Setting connecting to false');
       setIsConnecting(false);
     }
   };
 
   const handleWalletConnect = async () => {
-    console.log('🔵 WalletConnect: External wallet connect button clicked');
-    
     try {
-      console.log('🔵 WalletConnect: Starting wallet connect process');
       setIsConnecting(true);
-      
-      console.log('🔵 WalletConnect: Calling loginWithWallet');
       await loginWithWallet();
       
-      console.log('🔵 WalletConnect: Wallet connect completed, wallet address:', walletAddress);
       if (onConnect && walletAddress) {
-        console.log('🔵 WalletConnect: Calling onConnect callback');
         onConnect(walletAddress);
       }
     } catch (error) {
-      console.error('🔴 WalletConnect: Wallet connect failed:', error);
+      // Error handling is done in loginWithWallet
     } finally {
-      console.log('🔵 WalletConnect: Setting connecting to false');
       setIsConnecting(false);
     }
   };
@@ -96,7 +80,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
       });
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy:', error);
+      // Silently fail
     }
   };
 
@@ -183,98 +167,12 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Debug button to test clicks */}
-        <Button 
-          onClick={() => {
-            console.log('🔵 DEBUG: Test button clicked!');
-            alert('Test button works!');
-          }}
-          variant="secondary"
-          className="w-full"
-        >
-          🔧 Test Click (Debug)
-        </Button>
-        
-        {/* Magic Key Test */}
-        <Button 
-          onClick={async () => {
-            console.log('🔵 DEBUG: Testing Magic key validation');
-            alert('Testing Magic key...');
-            
-            if (!magic) {
-              alert('Magic is null');
-              return;
-            }
-            
-            try {
-              console.log('🔵 DEBUG: Testing basic Magic functionality');
-              
-              // Test if Magic can perform any operation at all
-              const testResult = await Promise.race([
-                magic.user.getInfo(),
-                new Promise((_, reject) => 
-                  setTimeout(() => reject(new Error('Magic call timeout')), 5000)
-                )
-              ]);
-              
-              console.log('🟢 DEBUG: Magic test successful:', testResult);
-              alert('Magic key works! Issue might be with specific auth methods.');
-              
-            } catch (error) {
-              console.error('🔴 DEBUG: Magic key test failed:', error);
-              alert(`Magic key test failed: ${error.message}`);
-            }
-          }}
-          variant="outline"
-          className="w-full"
-        >
-          🔑 Test Magic Key
-        </Button>
-        
-        {/* Force Reset All States */}
-        <Button 
-          onClick={() => {
-            console.log('🔵 DEBUG: Force resetting all states');
-            setIsConnecting(false);
-            resetLoadingState();
-            alert('All states reset! Try login now.');
-          }}
-          variant="destructive"
-          className="w-full"
-        >
-          🔄 Force Reset All States
-        </Button>
-        
-        {/* Magic state debug info */}
-        <div className="text-xs bg-muted p-2 rounded space-y-1">
-          <p>Magic State Debug:</p>
-          <p>• isLoading: {isLoading ? 'true' : 'false'}</p>
-          <p>• isLoggedIn: {isLoggedIn ? 'true' : 'false'}</p>
-          <p>• magic instance: {magic ? 'exists' : 'null'}</p>
-          <p>• isConnecting: {isConnecting ? 'true' : 'false'}</p>
-          <p>• email: "{email}"</p>
-        </div>
-        
         {/* Popup blocker warning */}
         <div className="text-xs bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-3 rounded space-y-2">
           <p className="font-medium text-yellow-800 dark:text-yellow-200">⚠️ Important for Magic Wallet:</p>
           <p className="text-yellow-700 dark:text-yellow-300">• Please <strong>allow popups</strong> for this site</p>
           <p className="text-yellow-700 dark:text-yellow-300">• Magic opens a popup window for authentication</p>
           <p className="text-yellow-700 dark:text-yellow-300">• If stuck on "Connecting...", check your popup blocker</p>
-          <button 
-            onClick={() => {
-              const popup = window.open('', '_blank', 'width=500,height=600');
-              if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-                alert('Popups are blocked! Please allow popups for this site to use Magic wallet.');
-              } else {
-                popup.close();
-                alert('Popups are working! Magic wallet should work now.');
-              }
-            }}
-            className="text-yellow-800 dark:text-yellow-200 underline hover:no-underline"
-          >
-            Test Popup Blocker
-          </button>
         </div>
         
         {/* Email Login */}
