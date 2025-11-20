@@ -17,21 +17,8 @@ const ResetPassword = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
 
-  useEffect(() => {
-    // Check if user has a valid recovery token
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast({
-          title: "Invalid Link",
-          description: "This password reset link is invalid or has expired.",
-          variant: "destructive",
-        });
-        navigate('/auth');
-      }
-    };
-    checkSession();
-  }, [navigate]);
+  // No need to check session on mount - Supabase handles the token exchange
+  // If the token is invalid, the updateUser call will fail with a proper error
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,11 +53,20 @@ const ResetPassword = () => {
       });
 
       if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
+        // Show specific error message for invalid/expired tokens
+        if (error.message.includes('session') || error.message.includes('token')) {
+          toast({
+            title: "Invalid Link",
+            description: "This password reset link is invalid or has expired. Please request a new one.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       } else {
         toast({
           title: "Password Updated",
@@ -81,7 +77,7 @@ const ResetPassword = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to reset password. Please try again.",
+        description: "Failed to reset password. Please try again or request a new reset link.",
         variant: "destructive",
       });
     } finally {
