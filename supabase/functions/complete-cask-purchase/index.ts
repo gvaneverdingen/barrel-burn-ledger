@@ -149,6 +149,84 @@ serve(async (req) => {
       }
     ]);
 
+    // Send email notifications in the background
+    const sendEmailNotifications = async () => {
+      try {
+        // Get buyer and seller email addresses
+        const { data: buyerProfile } = await supabaseService
+          .from("profiles")
+          .select("email, first_name, last_name")
+          .eq("id", buyerId)
+          .single();
+
+        const { data: sellerProfile } = await supabaseService
+          .from("profiles")
+          .select("email, first_name, last_name")
+          .eq("id", sellerId)
+          .single();
+
+        const { data: caskData } = await supabaseService
+          .from("casks")
+          .select("spirit_name, cask_number, distilleries(name)")
+          .eq("id", transaction.cask_id)
+          .single();
+
+        // Send buyer confirmation email
+        if (buyerProfile?.email) {
+          await fetch("https://vnmmjmxhtbplfkdughxu.supabase.co/functions/v1/send-transaction-email", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+            },
+            body: JSON.stringify({
+              type: "purchase_confirmation",
+              recipientEmail: buyerProfile.email,
+              recipientName: `${buyerProfile.first_name || ''} ${buyerProfile.last_name || ''}`.trim(),
+              caskName: caskData?.spirit_name || "Whisky Cask",
+              caskNumber: caskData?.cask_number || "N/A",
+              distilleryName: caskData?.distilleries?.name || "Unknown",
+              volume: transaction.volume_liters,
+              pricePerLiter: transaction.price_per_liter,
+              totalAmount: transaction.total_amount,
+              transactionId: transaction.id,
+            }),
+          });
+        }
+
+        // Send seller confirmation email
+        if (sellerProfile?.email) {
+          await fetch("https://vnmmjmxhtbplfkdughxu.supabase.co/functions/v1/send-transaction-email", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+            },
+            body: JSON.stringify({
+              type: "sale_confirmation",
+              recipientEmail: sellerProfile.email,
+              recipientName: `${sellerProfile.first_name || ''} ${sellerProfile.last_name || ''}`.trim(),
+              caskName: caskData?.spirit_name || "Whisky Cask",
+              caskNumber: caskData?.cask_number || "N/A",
+              distilleryName: caskData?.distilleries?.name || "Unknown",
+              volume: transaction.volume_liters,
+              pricePerLiter: transaction.price_per_liter,
+              totalAmount: transaction.seller_amount || transaction.total_amount,
+              transactionId: transaction.id,
+            }),
+          });
+        }
+
+        console.log("✓ Email notifications sent successfully");
+      } catch (emailError) {
+        console.error("Failed to send email notifications:", emailError);
+        // Don't throw - emails are nice-to-have, not critical
+      }
+    };
+
+    // Execute email sending in background
+    EdgeRuntime.waitUntil(sendEmailNotifications());
+
     return new Response(
       JSON.stringify({
         success: true,

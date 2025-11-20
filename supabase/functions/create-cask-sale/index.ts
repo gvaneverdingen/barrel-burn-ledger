@@ -152,6 +152,58 @@ serve(async (req) => {
       throw new Error(`Failed to create sale listing: ${saleError.message}`);
     }
 
+    // Send sale created email notification in background
+    const sendSaleCreatedEmail = async () => {
+      try {
+        const { data: sellerProfile } = await supabaseClient
+          .from("profiles")
+          .select("email, first_name, last_name")
+          .eq("id", authenticatedUserId)
+          .single();
+
+        const { data: caskData } = await supabaseClient
+          .from("cask_ownership")
+          .select(`
+            casks (
+              spirit_name,
+              cask_number,
+              distilleries (name)
+            )
+          `)
+          .eq("id", ownershipId)
+          .single();
+
+        if (sellerProfile?.email && caskData?.casks) {
+          await fetch("https://vnmmjmxhtbplfkdughxu.supabase.co/functions/v1/send-transaction-email", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+            },
+            body: JSON.stringify({
+              type: "sale_created",
+              recipientEmail: sellerProfile.email,
+              recipientName: `${sellerProfile.first_name || ''} ${sellerProfile.last_name || ''}`.trim(),
+              caskName: caskData.casks.spirit_name || "Whisky Cask",
+              caskNumber: caskData.casks.cask_number || "N/A",
+              distilleryName: caskData.casks.distilleries?.name || "Unknown",
+              volume: volumeForSale,
+              pricePerLiter: askingPricePerLiter,
+              totalAmount: totalAskingPrice,
+              saleId: sale.id,
+            }),
+          });
+          console.log("✓ Sale created email sent successfully");
+        }
+      } catch (emailError) {
+        console.error("Failed to send sale created email:", emailError);
+        // Don't throw - emails are nice-to-have
+      }
+    };
+
+    // Execute email sending in background
+    EdgeRuntime.waitUntil(sendSaleCreatedEmail());
+
     return new Response(
       JSON.stringify({
         success: true,
