@@ -33,15 +33,15 @@ const getMagicKey = (): string => {
  * Gets Magic SDK configuration based on current environment
  */
 export const getMagicConfig = (): MagicConfig => {
-  const isDevelopment = 
-    window.location.hostname.includes('sandbox.lovable.dev') || 
-    window.location.hostname === 'localhost' ||
-    window.location.hostname.includes('.dev') ||
-    process.env.NODE_ENV === 'development';
+  const magicKey = getMagicKey();
+  
+  // Use test mode only if the key is a test key (pk_test_)
+  // Production keys (pk_live_) must use production mode
+  const isTestKey = magicKey.startsWith('pk_test_');
 
   return {
-    key: getMagicKey(),
-    testMode: isDevelopment,
+    key: magicKey,
+    testMode: isTestKey,
     network: {
       rpcUrl: 'https://polygon-rpc.com',
       chainId: 137, // Polygon mainnet
