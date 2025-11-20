@@ -16,7 +16,6 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 interface UserProfile {
   id: string;
   email: string;
-  role: 'distillery' | 'consumer' | 'investor' | 'administrator' | 'facilitator';
   first_name: string | null;
   last_name: string | null;
   company_name: string | null;
@@ -299,8 +298,8 @@ const Profile = () => {
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-muted-foreground">Role</Label>
                       <div>
-                        <Badge className={getRoleColor(profile?.role || '')}>
-                          {profile?.role?.charAt(0).toUpperCase() + profile?.role?.slice(1)}
+                        <Badge className={getRoleColor(userRole || '')}>
+                          {userRole?.charAt(0).toUpperCase() + userRole?.slice(1)}
                         </Badge>
                       </div>
                     </div>

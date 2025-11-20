@@ -71,10 +71,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('refreshUserData called for user:', user.id, 'isMagicUser:', !!user.user_metadata?.wallet_address);
       
-      // For Magic wallet users, we need to check by their generated UUID
+      // Fetch role from user_roles table
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      // Fetch profile data separately
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('role, first_name, last_name')
+        .select('first_name, last_name')
         .eq('id', user.id)
         .maybeSingle();
       
@@ -83,10 +90,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
       
-      console.log('🔍 AuthContext refreshUserData: Profile result:', { profile, error });
+      console.log('🔍 AuthContext refreshUserData: Profile result:', { profile, roleData, error });
       
       if (profile) {
-        setUserRole(profile.role as UserRole);
+        if (roleData) {
+          setUserRole(roleData.role as UserRole);
+        }
         const isComplete = !!(profile.first_name && profile.last_name);
         console.log('🔍 AuthContext refreshUserData complete check:', { 
           userId: user.id, 
@@ -225,16 +234,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Create mock user for Magic wallet
           const magicUser = await createMagicUser(magicUserMetadata.email, walletAddress);
           
+          // Fetch role from user_roles table
+          const { data: roleData } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', magicUser.id)
+            .maybeSingle();
+          
           // Simplified profile fetch logic
           const { data: profile } = await supabase
             .from('profiles')
-            .select('role, first_name, last_name, id, email')
+            .select('first_name, last_name, id, email')
             .eq('id', magicUser.id)
             .maybeSingle();
           
           console.log('Magic auth profile fetch:', { 
             magicUserId: magicUser.id, 
             profile,
+            roleData,
             profileExists: !!profile,
             isComplete: !!(profile?.first_name && profile?.last_name)
           });
@@ -242,7 +259,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(magicUser);
           
           if (profile) {
-            setUserRole(profile.role as UserRole);
+            if (roleData) {
+              setUserRole(roleData.role as UserRole);
+            }
             setProfileComplete(!!(profile.first_name && profile.last_name));
           } else {
             setUserRole('consumer');
