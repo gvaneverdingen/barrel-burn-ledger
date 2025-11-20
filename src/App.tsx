@@ -26,6 +26,7 @@ import TestData from "./pages/TestData";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 import Insights from "./pages/Insights";
+import MarketInsights from "./pages/MarketInsights";
 import Notifications from "./pages/Notifications";
 import Transactions from "./pages/Transactions";
 import Documentation from "./pages/Documentation";
@@ -144,6 +145,14 @@ const AppRoutes = () => {
               element={
                 <RoleBasedRoute allowedRoles={['investor', 'distillery', 'facilitator', 'administrator']}>
                   <Insights />
+                </RoleBasedRoute>
+              } 
+            />
+            <Route 
+              path="/market-insights" 
+              element={
+                <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
+                  <MarketInsights />
                 </RoleBasedRoute>
               } 
             />
