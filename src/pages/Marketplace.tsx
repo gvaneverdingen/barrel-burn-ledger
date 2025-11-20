@@ -305,83 +305,90 @@ const Marketplace = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Package className="h-8 w-8 text-blue-500" />
-            Unified Marketplace
-          </h1>
-          <p className="text-muted-foreground">
-            Primary and secondary cask trading with advanced analytics
-          </p>
+    <div className="mobile-container space-y-4 sm:space-y-6 pb-20 lg:pb-6">
+      <div className="mobile-sticky-header py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h1 className="mobile-heading font-bold flex items-center gap-2">
+              <Package className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+              Marketplace
+            </h1>
+            <p className="mobile-body text-muted-foreground mt-1">
+              Primary and secondary cask trading
+            </p>
+          </div>
         </div>
       </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="marketplace" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-3 h-auto">
+          <TabsTrigger value="marketplace" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-1.5 text-xs sm:text-sm">
             <Package className="h-4 w-4" />
-            All Casks
+            <span className="hidden sm:inline">All Casks</span>
+            <span className="sm:hidden">Casks</span>
           </TabsTrigger>
-          <TabsTrigger value="matchmaking" className="flex items-center gap-2">
+          <TabsTrigger value="matchmaking" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-1.5 text-xs sm:text-sm">
             <TrendingUp className="h-4 w-4" />
-            Matchmaking
+            <span className="hidden sm:inline">Matchmaking</span>
+            <span className="sm:hidden">Match</span>
           </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center gap-2">
+          <TabsTrigger value="analytics" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-1.5 text-xs sm:text-sm">
             <TrendingUp className="h-4 w-4" />
-            Analytics
+            <span className="hidden sm:inline">Analytics</span>
+            <span className="sm:hidden">Stats</span>
           </TabsTrigger>
         </TabsList>
 
         {/* Filters */}
         {selectedTab === 'marketplace' && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Filter className="h-5 w-5" />
+          <Card className="mobile-card">
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Filter className="h-4 w-4 sm:h-5 sm:w-5" />
                 Filters & Search
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="flex flex-col md:flex-row gap-4">
+            <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+              <div className="flex flex-col gap-3 sm:gap-4">
                 <div className="flex-1">
                   <Input
-                    placeholder="Search by spirit name, distillery, or notes..."
+                    placeholder="Search spirits, distillery..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full"
+                    className="w-full mobile-touch-target"
                   />
                 </div>
-                <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                  <SelectTrigger className="w-full md:w-48">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="date">Newest First</SelectItem>
-                    <SelectItem value="price">Price: Low to High</SelectItem>
-                    <SelectItem value="name">Name A-Z</SelectItem>
-                    <SelectItem value="roi">Highest ROI</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={filterType} onValueChange={(value: any) => setFilterType(value)}>
-                  <SelectTrigger className="w-full md:w-40">
-                    <SelectValue placeholder="Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="resale">Resale Only</SelectItem>
-                    <SelectItem value="scotch">Scotch</SelectItem>
-                    <SelectItem value="bourbon">Bourbon</SelectItem>
-                    <SelectItem value="irish">Irish</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="grid grid-cols-2 gap-3 sm:flex sm:gap-4">
+                  <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+                    <SelectTrigger className="w-full sm:w-48 mobile-touch-target">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="date">Newest First</SelectItem>
+                      <SelectItem value="price">Price: Low to High</SelectItem>
+                      <SelectItem value="name">Name A-Z</SelectItem>
+                      <SelectItem value="roi">Highest ROI</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={filterType} onValueChange={(value: any) => setFilterType(value)}>
+                    <SelectTrigger className="w-full sm:w-40 mobile-touch-target">
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Types</SelectItem>
+                      <SelectItem value="resale">Resale Only</SelectItem>
+                      <SelectItem value="scotch">Scotch</SelectItem>
+                      <SelectItem value="bourbon">Bourbon</SelectItem>
+                      <SelectItem value="irish">Irish</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <Input
                   type="number"
                   placeholder="Max price per liter"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full md:w-48"
+                  className="w-full mobile-touch-target"
                 />
               </div>
             </CardContent>
@@ -401,32 +408,36 @@ const Marketplace = () => {
             </Badge>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {filteredListings.map((listing) => (
-              <Card key={listing.id} className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-lg">{listing.spirit_name}</CardTitle>
-                      <CardDescription>
-                        Cask #{listing.cask_number} • {listing.distilleries?.name}
+              <Card key={listing.id} className="mobile-card hover:shadow-lg transition-all cursor-pointer touch-highlight-none active:scale-[0.98]">
+                <CardHeader className="pb-3 p-4 sm:p-6 sm:pb-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <CardTitle className="text-base sm:text-lg truncate">{listing.spirit_name}</CardTitle>
+                      <CardDescription className="text-xs sm:text-sm truncate">
+                        Cask #{listing.cask_number}
+                      </CardDescription>
+                      <CardDescription className="text-xs truncate mt-1">
+                        {listing.distilleries?.name}
                       </CardDescription>
                     </div>
-                    <div className="flex gap-1">
+                    <div className="flex flex-col gap-1.5 shrink-0">
                       {listing.distilleries?.verified && (
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className="text-xs px-2 py-0.5 h-auto whitespace-nowrap">
                           <Shield className="h-3 w-3 mr-1" />
                           Verified
                         </Badge>
                       )}
                       {listing.is_resale && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs px-2 py-0.5 h-auto">
                           Resale
                         </Badge>
                       )}
                       <Button
                         size="sm"
                         variant="ghost"
+                        className="mobile-touch-target h-8 w-8 p-0"
                         onClick={(e) => {
                           e.stopPropagation();
                           addToWishlist(listing.is_resale ? listing.ownership_id || listing.id : listing.id);
