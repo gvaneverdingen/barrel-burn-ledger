@@ -26,6 +26,8 @@ const Auth = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [isResetting, setIsResetting] = useState(false);
+  const [lastResetTime, setLastResetTime] = useState<number>(0);
+  const [resetCooldown, setResetCooldown] = useState<number>(0);
 
   // Redirect if already authenticated
   if (user && !loading) {
@@ -99,6 +101,22 @@ const Auth = () => {
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check client-side cooldown (60 seconds)
+    const now = Date.now();
+    const timeSinceLastReset = now - lastResetTime;
+    const cooldownPeriod = 60000; // 60 seconds
+    
+    if (timeSinceLastReset < cooldownPeriod) {
+      const remainingSeconds = Math.ceil((cooldownPeriod - timeSinceLastReset) / 1000);
+      toast({
+        title: "Please Wait",
+        description: `You can request another reset link in ${remainingSeconds} seconds.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsResetting(true);
 
     try {
@@ -107,18 +125,42 @@ const Auth = () => {
       });
 
       if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
+        // Handle rate limiting error from Supabase
+        if (error.message.includes('security purposes') || error.message.includes('rate limit')) {
+          toast({
+            title: "Too Many Requests",
+            description: "Please wait a minute before requesting another password reset link.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       } else {
+        // Update last reset time
+        setLastResetTime(now);
+        
         toast({
           title: "Reset Email Sent",
-          description: "Check your email for a password reset link.",
+          description: "Check your email for a password reset link. It may take a few minutes to arrive.",
         });
         setShowForgotPassword(false);
         setResetEmail('');
+        
+        // Start cooldown timer
+        setResetCooldown(60);
+        const interval = setInterval(() => {
+          setResetCooldown((prev) => {
+            if (prev <= 1) {
+              clearInterval(interval);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
       }
     } catch (error) {
       toast({
@@ -220,8 +262,15 @@ const Auth = () => {
                               </div>
                             </div>
                             <DialogFooter>
-                              <Button type="submit" disabled={isResetting}>
-                                {isResetting ? 'Sending...' : 'Send Reset Link'}
+                              <Button 
+                                type="submit" 
+                                disabled={isResetting || resetCooldown > 0}
+                              >
+                                {isResetting 
+                                  ? 'Sending...' 
+                                  : resetCooldown > 0 
+                                    ? `Wait ${resetCooldown}s` 
+                                    : 'Send Reset Link'}
                               </Button>
                             </DialogFooter>
                           </form>
