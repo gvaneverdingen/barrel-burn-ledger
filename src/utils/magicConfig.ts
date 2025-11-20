@@ -16,13 +16,14 @@ interface MagicConfig {
  * Gets the appropriate Magic key based on environment
  */
 const getMagicKey = (): string => {
-  // Use the real Magic key from environment/secrets
-  // This should be your actual Magic.link publishable key
-  const magicKey = 'pk_live_18128E74207D08B6'; // TODO: Replace with your real Magic key
+  // Get Magic key from environment variable (set via Supabase secrets)
+  const magicKey = import.meta.env.VITE_MAGIC_PUBLISHABLE_KEY;
   
-  if (!magicKey || magicKey.includes('18128E74207D08B6')) {
-    console.warn('WARNING: Using default test Magic key - please update MAGIC_PUBLISHABLE_KEY secret');
-    console.warn('WARNING: Get your real key from: https://dashboard.magic.link/');
+  if (!magicKey) {
+    console.error('ERROR: MAGIC_PUBLISHABLE_KEY is not configured');
+    console.error('Please add your Magic.link publishable key as a secret');
+    console.error('Get your key from: https://dashboard.magic.link/');
+    throw new Error('Magic.link API key not configured. Please add MAGIC_PUBLISHABLE_KEY secret.');
   }
 
   return magicKey;
