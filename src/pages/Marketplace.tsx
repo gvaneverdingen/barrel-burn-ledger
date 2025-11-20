@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useComparison } from '@/contexts/ComparisonContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,7 +24,8 @@ import {
   DollarSign,
   Clock,
   Shield,
-  Eye
+  Eye,
+  ArrowLeftRight
 } from 'lucide-react';
 import { MarketplaceAnalytics } from '@/components/MarketplaceAnalytics';
 import { MatchmakingSystem } from '@/components/MatchmakingSystem';
@@ -95,6 +97,7 @@ interface UnifiedListing {
 const Marketplace = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { addToComparison, isInComparison } = useComparison();
   const [allListings, setAllListings] = useState<UnifiedListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -491,9 +494,37 @@ const Marketplace = () => {
                       <Eye className="h-3 w-3 mr-1" />
                       View Details
                     </Button>
-                    <Button size="sm" variant="outline">
-                      <ShoppingCart className="h-3 w-3 mr-1" />
-                      Buy Now
+                    <Button 
+                      size="sm" 
+                      variant={isInComparison(listing.id) ? "secondary" : "outline"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!isInComparison(listing.id)) {
+                          addToComparison({
+                            id: listing.id,
+                            spirit_name: listing.spirit_name,
+                            cask_number: listing.cask_number,
+                            distillery: listing.distilleries ? {
+                              name: listing.distilleries.name,
+                              location: listing.distilleries.location || undefined
+                            } : undefined,
+                            distillation_date: listing.distillation_date,
+                            current_volume_liters: listing.current_volume_liters || undefined,
+                            alcohol_percentage: listing.alcohol_percentage || undefined,
+                            price_per_liter: listing.price_per_liter || undefined,
+                            total_price: listing.total_price || undefined,
+                            cask_type: listing.cask_types ? {
+                              name: listing.cask_types.name,
+                              capacity_liters: listing.cask_types.capacity_liters
+                            } : undefined,
+                            tasting_notes: listing.tasting_notes || undefined,
+                            warehouse_location: listing.warehouse_location || undefined,
+                            expected_maturation_years: listing.expected_maturation_years || undefined
+                          });
+                        }
+                      }}
+                    >
+                      <ArrowLeftRight className="h-3 w-3" />
                     </Button>
                   </div>
                   
