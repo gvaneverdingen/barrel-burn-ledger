@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { ReactNode, useEffect } from 'react';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, User } from 'lucide-react';
@@ -16,6 +16,8 @@ interface LayoutProps {
 export const Layout = ({ children }: LayoutProps) => {
   const { user, userRole, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   const getRoleIcon = (role: string | null) => {
     switch (role) {
@@ -45,6 +47,15 @@ export const Layout = ({ children }: LayoutProps) => {
         return 'text-muted-foreground';
     }
   };
+
+  // Global handler: if Stripe sends us back with a session_id on any route,
+  // redirect to the dedicated payment verification page.
+  useEffect(() => {
+    const sessionId = searchParams.get('session_id');
+    if (sessionId && location.pathname !== '/payment-success') {
+      navigate(`/payment-success?session_id=${encodeURIComponent(sessionId)}`, { replace: true });
+    }
+  }, [searchParams, location.pathname, navigate]);
 
   return (
     <div className="flex min-h-screen w-full">
