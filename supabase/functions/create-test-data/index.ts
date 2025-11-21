@@ -18,7 +18,47 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    // First, get existing cask types
+    console.log("Starting comprehensive test data population...");
+
+    // Step 1: Fix existing incomplete casks
+    console.log("Step 1: Fixing incomplete casks...");
+    const { data: incompleteCasks, error: incompleteError } = await supabaseServiceRole
+      .from("casks")
+      .select("*")
+      .or('price_per_liter.is.null,total_price.is.null,current_volume_liters.is.null,alcohol_percentage.is.null');
+
+    if (incompleteError) {
+      console.log("Error fetching incomplete casks:", incompleteError);
+    } else if (incompleteCasks && incompleteCasks.length > 0) {
+      console.log(`Found ${incompleteCasks.length} incomplete casks. Updating...`);
+      
+      for (const cask of incompleteCasks) {
+        const volume = cask.current_volume_liters || (190 + Math.random() * 20);
+        const abv = cask.alcohol_percentage || (58 + Math.random() * 5);
+        const pricePerLiter = cask.price_per_liter || (400 + Math.random() * 200);
+        const totalPrice = cask.total_price || Math.round(volume * pricePerLiter);
+
+        const { error: updateError } = await supabaseServiceRole
+          .from("casks")
+          .update({
+            current_volume_liters: volume,
+            alcohol_percentage: abv,
+            price_per_liter: pricePerLiter,
+            total_price: totalPrice,
+            available_for_sale: true
+          })
+          .eq('id', cask.id);
+
+        if (updateError) {
+          console.log(`Error updating cask ${cask.id}:`, updateError);
+        }
+      }
+      console.log(`Updated ${incompleteCasks.length} incomplete casks`);
+    } else {
+      console.log("No incomplete casks found");
+    }
+
+    // Step 2: Get existing cask types
     const { data: caskTypes, error: caskTypesError } = await supabaseServiceRole
       .from("cask_types")
       .select("*");
@@ -149,11 +189,82 @@ serve(async (req) => {
 
     console.log("Created casks:", casks?.length);
 
+    // Step 3: Create sample cask ownerships for users
+    console.log("Step 3: Creating sample cask ownerships...");
+    const { data: existingUsers, error: usersListError } = await supabaseServiceRole
+      .from("profiles")
+      .select("id")
+      .limit(5);
+
+    if (!usersListError && existingUsers && existingUsers.length > 0 && casks && casks.length > 0) {
+      const ownerships = [];
+      const numOwnerships = Math.min(10, casks.length, existingUsers.length * 3);
+      
+      for (let i = 0; i < numOwnerships; i++) {
+        const user = existingUsers[i % existingUsers.length];
+        const cask = casks[i % casks.length];
+        
+        ownerships.push({
+          cask_id: cask.id,
+          owner_id: user.id,
+          volume_liters: Math.round((50 + Math.random() * 100) * 100) / 100,
+          ownership_percentage: Math.round((10 + Math.random() * 40) * 100) / 100,
+          acquisition_price: Math.round((5000 + Math.random() * 20000) * 100) / 100,
+          is_active: true
+        });
+      }
+
+      const { data: ownershipData, error: ownershipError } = await supabaseServiceRole
+        .from("cask_ownership")
+        .insert(ownerships)
+        .select();
+
+      if (ownershipError) {
+        console.log("Ownership insert error:", ownershipError);
+      } else {
+        console.log("Created ownerships:", ownershipData?.length);
+
+        // Step 4: Create some active sales listings
+        if (ownershipData && ownershipData.length > 3) {
+          console.log("Step 4: Creating sample sales listings...");
+          const salesListings = [];
+          
+          for (let i = 0; i < Math.min(5, ownershipData.length); i++) {
+            const ownership = ownershipData[i];
+            const volumeForSale = Math.round(ownership.volume_liters * (0.3 + Math.random() * 0.5) * 100) / 100;
+            const markupFactor = 1.1 + Math.random() * 0.3; // 10-40% markup
+            const pricePerLiter = Math.round((ownership.acquisition_price / ownership.volume_liters) * markupFactor * 100) / 100;
+            
+            salesListings.push({
+              ownership_id: ownership.id,
+              seller_id: ownership.owner_id,
+              asking_price_per_liter: pricePerLiter,
+              total_asking_price: Math.round(pricePerLiter * volumeForSale * 100) / 100,
+              volume_for_sale_liters: volumeForSale,
+              status: 'active',
+              notes: 'High quality investment opportunity'
+            });
+          }
+
+          const { error: salesError } = await supabaseServiceRole
+            .from("cask_sales")
+            .insert(salesListings);
+
+          if (salesError) {
+            console.log("Sales insert error:", salesError);
+          } else {
+            console.log("Created sales listings:", salesListings.length);
+          }
+        }
+      }
+    }
+
     return new Response(JSON.stringify({ 
       success: true, 
-      message: "Test data created successfully",
-      distilleries: 1,
-      casks: casks?.length || 0,
+      message: "Comprehensive test data created and missing data populated",
+      incomplete_casks_fixed: incompleteCasks?.length || 0,
+      new_distilleries: 1,
+      new_casks: casks?.length || 0,
       details: {
         distillery: distillery.name,
         cask_types_used: caskTypes?.length || 0
