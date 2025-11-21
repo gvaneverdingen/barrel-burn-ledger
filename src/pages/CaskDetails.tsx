@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, MapPin, Calendar, Droplets, Gauge, DollarSign, Wine, Building, Hash, Shield } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Droplets, Gauge, DollarSign, Wine, Building, Hash, Shield, Loader2 } from "lucide-react";
 import caskDetailImage from "@/assets/cask-detail.jpg";
 import singleCask from "@/assets/single-cask.jpg";
 import { CaskImageGallery } from "@/components/CaskImageGallery";
@@ -66,6 +66,7 @@ const CaskDetails = () => {
   const { toast } = useToast();
   const [cask, setCask] = useState<CaskDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const [purchasing, setPurchasing] = useState(false);
   const [imageRefreshTrigger, setImageRefreshTrigger] = useState(0);
   const [canManageImages, setCanManageImages] = useState(false);
   
@@ -239,6 +240,8 @@ const CaskDetails = () => {
       return;
     }
 
+    setPurchasing(true);
+
     console.log('User data being sent to payment:', {
       userId: user.id,
       userEmail: user.email,
@@ -264,30 +267,50 @@ const CaskDetails = () => {
 
       if (error) {
         console.error('Payment function returned error:', error);
-        console.error('Error details:', JSON.stringify(error, null, 2));
+        setPurchasing(false);
         throw new Error(error.message || 'Payment function error');
       }
 
       if (data?.url) {
         console.log('Redirecting to Stripe checkout:', data.url);
-        // Prefer top-level navigation, but fall back to opening a new tab if blocked
-        try {
-          if (window.top && window.top !== window.self) {
-            window.top.location.href = data.url;
-          } else {
-            window.location.href = data.url;
-          }
-        } catch (e) {
-          console.warn('Top-level redirect blocked, opening new tab instead', e);
-          window.open(data.url, '_blank', 'noopener,noreferrer');
+        
+        // Show toast to inform user about redirect
+        toast({
+          title: "Redirecting to Payment",
+          description: "Opening Stripe checkout in a new window...",
+        });
+
+        // Open Stripe checkout in new window
+        const stripeWindow = window.open(data.url, '_blank', 'noopener,noreferrer');
+        
+        // Check if popup was blocked
+        if (!stripeWindow || stripeWindow.closed || typeof stripeWindow.closed === 'undefined') {
+          setPurchasing(false);
+          toast({
+            title: "Popup Blocked",
+            description: "Please allow popups for this site to complete your purchase.",
+            variant: "destructive",
+          });
+        } else {
+          // Keep purchasing state active and show message
+          toast({
+            title: "Payment Window Opened",
+            description: "Complete your payment in the new window. After payment, you'll be redirected to your portfolio.",
+          });
+          
+          // Reset purchasing state after a delay
+          setTimeout(() => {
+            setPurchasing(false);
+          }, 3000);
         }
       } else {
         console.error('No payment URL returned');
+        setPurchasing(false);
         throw new Error('No payment URL returned');
       }
     } catch (error) {
       console.error('Payment process failed:', error);
-      console.error('Full error object:', JSON.stringify(error, null, 2));
+      setPurchasing(false);
       
       let errorMessage = 'Failed to start payment process. Please try again.';
       
@@ -604,8 +627,16 @@ const CaskDetails = () => {
                     className="w-full" 
                     onClick={handlePurchaseClick}
                     size="lg"
+                    disabled={purchasing}
                   >
-                    Purchase Cask
+                    {purchasing ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Opening Payment...
+                      </>
+                    ) : (
+                      'Purchase Cask'
+                    )}
                   </Button>
                 )}
                 
