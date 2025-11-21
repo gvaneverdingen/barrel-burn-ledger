@@ -246,7 +246,7 @@ const Wishlist = () => {
                 </div>
                 
                 {/* Price Match Indicator */}
-                {item.casks?.available_for_sale && item.casks?.price_per_liter <= item.max_price && (
+                {item.casks?.available_for_sale && (item.casks?.price_per_liter ?? 0) <= item.max_price && (
                   <Badge className="w-full bg-green-100 text-green-800 justify-center">
                     <TrendingUp className="h-3 w-3 mr-1" />
                     Price Match Available!
@@ -273,7 +273,7 @@ const Wishlist = () => {
                   >
                     View Details
                   </Button>
-                  {item.casks?.available_for_sale && item.casks?.price_per_liter <= item.max_price && (
+                   {item.casks?.available_for_sale && (item.casks?.price_per_liter ?? 0) <= item.max_price && (
                     <Button size="sm" variant="outline">
                       Buy Now
                     </Button>
