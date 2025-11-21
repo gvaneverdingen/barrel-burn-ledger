@@ -19,21 +19,21 @@ interface CaskDetails {
   spirit_name: string;
   cask_number: string;
   distillation_date: string;
-  current_volume_liters: number;
-  alcohol_percentage: number;
-  price_per_liter: number;
-  total_price: number;
+  current_volume_liters: number | null;
+  alcohol_percentage: number | null;
+  price_per_liter: number | null;
+  total_price: number | null;
   available_for_sale: boolean;
-  warehouse_location: string;
-  tasting_notes: string;
+  warehouse_location: string | null;
+  tasting_notes: string | null;
   blockchain_id: string;
-  blockchain_hash: string;
-  expected_maturation_years: number;
+  blockchain_hash: string | null;
+  expected_maturation_years: number | null;
   created_at: string;
-  original_cask_type: string;
-  finishing_cask_type: string;
-  finishing_duration_months: number;
-  finishing_notes: string;
+  original_cask_type: string | null;
+  finishing_cask_type: string | null;
+  finishing_duration_months: number | null;
+  finishing_notes: string | null;
   has_been_finished: boolean;
   distillery: {
     id: string;
@@ -92,7 +92,7 @@ const CaskDetails = () => {
         .select('id')
         .eq('profile_id', user.id)
         .eq('id', cask.distillery.id)
-        .single();
+        .maybeSingle();
 
       if (!error && data) {
         setCanManageImages(true);
@@ -216,8 +216,8 @@ const CaskDetails = () => {
 
 
   // Calculate price per liter at 100% alcohol strength (ASL)
-  const calculatePricePerLiterASL = (pricePerLiter: number, alcoholPercentage: number) => {
-    if (!alcoholPercentage || alcoholPercentage === 0) return pricePerLiter;
+  const calculatePricePerLiterASL = (pricePerLiter: number | null, alcoholPercentage: number | null) => {
+    if (!pricePerLiter || !alcoholPercentage || alcoholPercentage === 0) return pricePerLiter || 0;
     return pricePerLiter / (alcoholPercentage / 100);
   };
 
@@ -402,10 +402,10 @@ const CaskDetails = () => {
                    </div>
                  <div className="text-right">
                    <div className="text-2xl font-bold text-primary">
-                     {formatPrice(cask.total_price)}
+                     {formatPrice(cask.total_price || 0)}
                    </div>
                     <div className="text-sm text-muted-foreground">
-                      {formatPrice(cask.price_per_liter)}/L
+                      {formatPrice(cask.price_per_liter || 0)}/L
                     </div>
                   </div>
                 </div>
@@ -423,14 +423,14 @@ const CaskDetails = () => {
                     <Droplets className="h-5 w-5 text-primary" />
                     <div>
                       <p className="text-sm text-muted-foreground">Volume</p>
-                      <p className="font-semibold">{cask.current_volume_liters}L</p>
+                      <p className="font-semibold">{cask.current_volume_liters || 0}L</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Gauge className="h-5 w-5 text-primary" />
                     <div>
                       <p className="text-sm text-muted-foreground">ABV</p>
-                      <p className="font-semibold">{cask.alcohol_percentage}%</p>
+                      <p className="font-semibold">{cask.alcohol_percentage || 0}%</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -460,7 +460,7 @@ const CaskDetails = () => {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Expected Maturation:</span>
-                        <span>{cask.expected_maturation_years} years</span>
+                        <span>{cask.expected_maturation_years || 'N/A'} years</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Warehouse Location:</span>
@@ -477,11 +477,11 @@ const CaskDetails = () => {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Current Volume:</span>
-                        <span>{cask.current_volume_liters}L</span>
+                        <span>{cask.current_volume_liters || 0}L</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Fill Level:</span>
-                        <span>{Math.round((cask.current_volume_liters / cask.cask_type.capacity_liters) * 100)}%</span>
+                        <span>{cask.current_volume_liters && cask.cask_type.capacity_liters ? Math.round((cask.current_volume_liters / cask.cask_type.capacity_liters) * 100) : 0}%</span>
                       </div>
                     </div>
                   </div>
@@ -574,7 +574,7 @@ const CaskDetails = () => {
               <CardContent className="space-y-4">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-primary">
-                    {formatPrice(cask.total_price)}
+                    {formatPrice(cask.total_price || 0)}
                   </div>
                   <p className="text-sm text-muted-foreground">Total Investment</p>
                 </div>
@@ -582,7 +582,7 @@ const CaskDetails = () => {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Price per Liter:</span>
-                    <span className="font-medium">{formatPrice(cask.price_per_liter)}</span>
+                    <span className="font-medium">{formatPrice(cask.price_per_liter || 0)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Price per Liter (100% ASL):</span>
@@ -592,7 +592,7 @@ const CaskDetails = () => {
                   </div>
                   <div className="flex justify-between">
                     <span>Volume:</span>
-                    <span className="font-medium">{cask.current_volume_liters}L</span>
+                    <span className="font-medium">{cask.current_volume_liters || 0}L</span>
                   </div>
                   <div className="text-xs text-muted-foreground pt-2 border-t">
                     <p>ASL = Alcohol Strength by Liter</p>
