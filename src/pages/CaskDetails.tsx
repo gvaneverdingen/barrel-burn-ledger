@@ -329,34 +329,20 @@ const CaskDetails = () => {
       if (data?.url) {
         console.log('Redirecting to Stripe checkout:', data.url);
         
-        // Show toast to inform user about redirect
-        toast({
-          title: "Redirecting to Payment",
-          description: "Opening Stripe checkout in a new window...",
-        });
-
-        // Open Stripe checkout in new window
-        const stripeWindow = window.open(data.url, '_blank', 'noopener,noreferrer');
-        
-        // Check if popup was blocked
-        if (!stripeWindow || stripeWindow.closed || typeof stripeWindow.closed === 'undefined') {
-          setPurchasing(false);
-          toast({
-            title: "Popup Blocked",
-            description: "Please allow popups for this site to complete your purchase.",
-            variant: "destructive",
-          });
-        } else {
-          // Keep purchasing state active and show message
-          toast({
-            title: "Payment Window Opened",
-            description: "Complete your payment in the new window. After payment, you'll be redirected to your portfolio.",
-          });
-          
-          // Reset purchasing state after a delay
-          setTimeout(() => {
-            setPurchasing(false);
-          }, 3000);
+        // Try to redirect in the top-level window (outside iframe if in preview)
+        // This ensures the user goes through the full payment flow and returns to success page
+        try {
+          if (window.top && window.top !== window.self) {
+            // In an iframe, try to break out to top window
+            window.top.location.href = data.url;
+          } else {
+            // Not in iframe, use regular redirect
+            window.location.href = data.url;
+          }
+        } catch (e) {
+          // If we can't access window.top (security restrictions), fall back to current window
+          console.warn('Could not access top window, redirecting in current window', e);
+          window.location.href = data.url;
         }
       } else {
         console.error('No payment URL returned');
