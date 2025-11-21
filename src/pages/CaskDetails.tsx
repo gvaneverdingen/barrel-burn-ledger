@@ -305,6 +305,17 @@ const CaskDetails = () => {
     });
 
     try {
+      // Mark that a payment flow has been initiated. This is used as a
+      // fallback in case Stripe does not return a session_id in the URL.
+      try {
+        localStorage.setItem('arigi_pending_payment', JSON.stringify({
+          caskId: cask?.id,
+          createdAt: Date.now(),
+        }));
+      } catch (e) {
+        console.warn('Unable to write pending payment marker', e);
+      }
+
       console.log('Attempting to call create-payment function...');
       
       const { data, error } = await supabase.functions.invoke('create-payment', {
