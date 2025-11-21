@@ -4,7 +4,7 @@ import { ethers } from "https://esm.sh/ethers@6.8.0";
 
 // Contract ABIs (simplified - import full ABIs from artifacts in production)
 const CASK_NFT_ABI = [
-  "function mintCask(address to, string caskId, address distillery, string spiritName, string caskNumber, uint256 volumeLiters, uint256 alcoholPercentage, uint256 distillationDate, string tokenURI) returns (uint256)",
+  "function mintCask(address to, string caskId, address distillery, string spiritName, string caskNumber, uint256 volumeLiters, uint256 alcoholPercentage, uint256 distillationDate, uint8 ageYears, uint8 rarityTier, string caskType, string specialFinish, string region, bool isSingleBarrel, string tokenURI) returns (uint256)",
   "function getTokenIdByCaskId(string caskId) view returns (uint256)",
   "function ownerOf(uint256 tokenId) view returns (address)",
   "function safeTransferFromWithPrice(address from, address to, uint256 tokenId, uint256 price)"
@@ -222,19 +222,40 @@ async function executePolygonTransaction(transaction: BlockchainTransaction): Pr
       
       const nftContract = new ethers.Contract(nftContractAddress!, CASK_NFT_ABI, wallet);
       
+      // Fetch cask data from database to get rarity attributes
+      const { data: caskData, error: caskError } = await supabaseService
+        .from('casks')
+        .select('*, distilleries(id), cask_types(name)')
+        .eq('id', transaction.caskId)
+        .single();
+      
+      if (caskError || !caskData) {
+        throw new Error(`Failed to fetch cask data: ${caskError?.message}`);
+      }
+      
       // Prepare metadata (in production, this would be IPFS URI)
       const metadataUri = `ipfs://placeholder/${transaction.caskId}`;
       
-      // Mint the NFT
+      // Calculate age in years
+      const distillationDate = new Date(caskData.distillation_date);
+      const ageYears = Math.floor((Date.now() - distillationDate.getTime()) / (1000 * 60 * 60 * 24 * 365));
+      
+      // Mint the NFT with rarity attributes
       const mintTx = await nftContract.mintCask(
         transaction.buyerId, // to
         transaction.caskId, // caskId
         transaction.sellerId || wallet.address, // distillery
-        "Whisky Cask", // spiritName (get from metadata)
-        transaction.caskId.substring(0, 8), // caskNumber
-        Math.floor(transaction.volume), // volumeLiters
-        6350, // alcoholPercentage (63.5% example)
-        Math.floor(Date.now() / 1000), // distillationDate
+        caskData.spirit_name, // spiritName
+        caskData.cask_number, // caskNumber
+        Math.floor(caskData.current_volume_liters || transaction.volume), // volumeLiters
+        Math.floor((caskData.alcohol_percentage || 63.5) * 100), // alcoholPercentage (scaled by 100)
+        Math.floor(distillationDate.getTime() / 1000), // distillationDate
+        ageYears, // ageYears
+        caskData.rarity_tier || 1, // rarityTier (default to 1 if not set)
+        caskData.cask_types?.name || "Unknown", // caskType
+        caskData.special_finish || "", // specialFinish
+        caskData.region || "", // region
+        caskData.is_single_barrel || false, // isSingleBarrel
         metadataUri // tokenURI
       );
       
@@ -244,7 +265,7 @@ async function executePolygonTransaction(transaction: BlockchainTransaction): Pr
       // Get token ID from event logs
       const mintEvent = receipt.logs.find((log: any) => {
         try {
-          return log.topics[0] === ethers.id("CaskMinted(uint256,string,address,address,string,string)");
+          return log.topics[0] === ethers.id("CaskMinted(uint256,string,address,address,string,string,uint8)");
         } catch {
           return false;
         }

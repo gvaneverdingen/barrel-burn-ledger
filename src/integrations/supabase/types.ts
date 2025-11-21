@@ -250,6 +250,7 @@ export type Database = {
       }
       casks: {
         Row: {
+          age_years: number | null
           alcohol_percentage: number | null
           available_for_sale: boolean | null
           blockchain_hash: string | null
@@ -266,11 +267,16 @@ export type Database = {
           finishing_notes: string | null
           has_been_finished: boolean | null
           id: string
+          is_single_barrel: boolean | null
           nft_contract_address: string | null
           nft_minted_at: string | null
           nft_token_id: number | null
           original_cask_type: string | null
           price_per_liter: number | null
+          quality_grade: string | null
+          rarity_tier: number | null
+          region: string | null
+          special_finish: string | null
           spirit_name: string
           tasting_notes: string | null
           total_price: number | null
@@ -278,6 +284,7 @@ export type Database = {
           warehouse_location: string | null
         }
         Insert: {
+          age_years?: number | null
           alcohol_percentage?: number | null
           available_for_sale?: boolean | null
           blockchain_hash?: string | null
@@ -294,11 +301,16 @@ export type Database = {
           finishing_notes?: string | null
           has_been_finished?: boolean | null
           id?: string
+          is_single_barrel?: boolean | null
           nft_contract_address?: string | null
           nft_minted_at?: string | null
           nft_token_id?: number | null
           original_cask_type?: string | null
           price_per_liter?: number | null
+          quality_grade?: string | null
+          rarity_tier?: number | null
+          region?: string | null
+          special_finish?: string | null
           spirit_name: string
           tasting_notes?: string | null
           total_price?: number | null
@@ -306,6 +318,7 @@ export type Database = {
           warehouse_location?: string | null
         }
         Update: {
+          age_years?: number | null
           alcohol_percentage?: number | null
           available_for_sale?: boolean | null
           blockchain_hash?: string | null
@@ -322,11 +335,16 @@ export type Database = {
           finishing_notes?: string | null
           has_been_finished?: boolean | null
           id?: string
+          is_single_barrel?: boolean | null
           nft_contract_address?: string | null
           nft_minted_at?: string | null
           nft_token_id?: number | null
           original_cask_type?: string | null
           price_per_liter?: number | null
+          quality_grade?: string | null
+          rarity_tier?: number | null
+          region?: string | null
+          special_finish?: string | null
           spirit_name?: string
           tasting_notes?: string | null
           total_price?: number | null
