@@ -191,8 +191,8 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
-      success_url: `${req.headers.get("origin")}/?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/cask/${caskId}`,
+      success_url: "https://7a41cf81-dfb2-478b-9e01-dcdb07248a90.lovableproject.com/payment-success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "https://7a41cf81-dfb2-478b-9e01-dcdb07248a90.lovableproject.com/",
       metadata: {
         caskId: caskId,
         userId: user.id,
