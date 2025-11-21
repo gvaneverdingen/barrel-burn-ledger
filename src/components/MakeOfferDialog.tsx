@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { toast } from 'sonner';
 import { DollarSign, MessageSquare } from 'lucide-react';
 
@@ -26,6 +27,7 @@ interface MakeOfferDialogProps {
 
 export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialogProps) => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const [offerPricePerLiter, setOfferPricePerLiter] = useState('');
   const [offerVolume, setOfferVolume] = useState(listing.current_volume_liters?.toString() || '');
   const [message, setMessage] = useState('');
@@ -95,12 +97,6 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -117,11 +113,11 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
           <div className="bg-muted p-4 rounded-lg">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-muted-foreground">Current Asking Price</span>
-              <span className="font-semibold">{formatCurrency(listing.price_per_liter)}/L</span>
+              <span className="font-semibold">{formatPrice(listing.price_per_liter)}/L</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Total Asking Price</span>
-              <span className="font-semibold">{formatCurrency(listing.total_price)}</span>
+              <span className="font-semibold">{formatPrice(listing.total_price)}</span>
             </div>
           </div>
 
@@ -166,7 +162,7 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
               <div className="flex justify-between items-center">
                 <span className="font-semibold">Your Total Offer</span>
                 <span className="text-lg font-bold text-primary">
-                  {formatCurrency(calculateTotalPrice())}
+                  {formatPrice(calculateTotalPrice())}
                 </span>
               </div>
             </div>

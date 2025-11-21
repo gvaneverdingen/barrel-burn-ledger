@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,7 @@ interface CaskDetails {
 const CaskDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { user, userRole } = useAuth();
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [cask, setCask] = useState<CaskDetails | null>(null);
@@ -212,12 +214,6 @@ const CaskDetails = () => {
     return Math.floor((now.getTime() - distilled.getTime()) / (1000 * 60 * 60 * 24 * 365.25));
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
-  };
 
   // Calculate price per liter at 100% alcohol strength (ASL)
   const calculatePricePerLiterASL = (pricePerLiter: number, alcoholPercentage: number) => {
@@ -396,10 +392,10 @@ const CaskDetails = () => {
                    </div>
                  <div className="text-right">
                    <div className="text-2xl font-bold text-primary">
-                     {formatCurrency(cask.total_price)}
+                     {formatPrice(cask.total_price)}
                    </div>
                     <div className="text-sm text-muted-foreground">
-                      {formatCurrency(cask.price_per_liter)}/L
+                      {formatPrice(cask.price_per_liter)}/L
                     </div>
                   </div>
                 </div>
@@ -568,7 +564,7 @@ const CaskDetails = () => {
               <CardContent className="space-y-4">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-primary">
-                    {formatCurrency(cask.total_price)}
+                    {formatPrice(cask.total_price)}
                   </div>
                   <p className="text-sm text-muted-foreground">Total Investment</p>
                 </div>
@@ -576,12 +572,12 @@ const CaskDetails = () => {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Price per Liter:</span>
-                    <span className="font-medium">{formatCurrency(cask.price_per_liter)}</span>
+                    <span className="font-medium">{formatPrice(cask.price_per_liter)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Price per Liter (100% ASL):</span>
                     <span className="font-bold text-primary">
-                      {formatCurrency(calculatePricePerLiterASL(cask.price_per_liter, cask.alcohol_percentage))}
+                      {formatPrice(calculatePricePerLiterASL(cask.price_per_liter, cask.alcohol_percentage))}
                     </span>
                   </div>
                   <div className="flex justify-between">

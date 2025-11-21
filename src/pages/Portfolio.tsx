@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -93,6 +94,7 @@ interface CaskSale {
 
 const Portfolio = () => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const { toast } = useToast();
   const [ownerships, setOwnerships] = useState<CaskOwnership[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -454,7 +456,7 @@ const Portfolio = () => {
                               <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground font-medium">Current Value</p>
                                 <p className="text-xl font-bold luxury-text-gradient">
-                                  ${(ownership.casks.price_per_liter * ownership.volume_liters).toLocaleString()}
+                                  {formatPrice(ownership.casks.price_per_liter * ownership.volume_liters)}
                                 </p>
                               </div>
                               <div className="space-y-1">
@@ -569,13 +571,13 @@ const Portfolio = () => {
                               <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground font-medium">Price per Liter</p>
                                 <p className="text-xl font-bold luxury-text-gradient">
-                                  ${sale.asking_price_per_liter.toLocaleString()}
+                                  {formatPrice(sale.asking_price_per_liter)}
                                 </p>
                               </div>
                               <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground font-medium">Total Price</p>
                                 <p className="text-xl font-bold luxury-text-gradient">
-                                  ${sale.total_asking_price.toLocaleString()}
+                                  {formatPrice(sale.total_asking_price)}
                                 </p>
                               </div>
                               <div className="space-y-1">

@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { MagicProvider } from "@/contexts/MagicContext";
 import { ComparisonProvider } from "@/contexts/ComparisonContext";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { setupResizeObserverErrorHandler } from "@/utils/resizeObserver";
 import { Layout } from "@/components/Layout";
@@ -279,15 +280,17 @@ const App = () => (
       <TooltipProvider>
         <MagicProvider>
           <AuthProvider>
-            <ComparisonProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <ErrorBoundary>
-                  <AppRoutes />
-                </ErrorBoundary>
-              </BrowserRouter>
-            </ComparisonProvider>
+            <CurrencyProvider>
+              <ComparisonProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <ErrorBoundary>
+                    <AppRoutes />
+                  </ErrorBoundary>
+                </BrowserRouter>
+              </ComparisonProvider>
+            </CurrencyProvider>
           </AuthProvider>
         </MagicProvider>
       </TooltipProvider>
