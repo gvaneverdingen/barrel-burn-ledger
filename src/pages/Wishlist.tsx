@@ -68,7 +68,9 @@ const Wishlist = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setWishlistItems(data || []);
+      // Filter out any items without valid cask data
+      const validItems = (data || []).filter(item => item.casks && item.casks.spirit_name);
+      setWishlistItems(validItems);
     } catch (error) {
       console.error('Error fetching wishlist:', error);
       toast.error('Failed to load wishlist');
@@ -114,9 +116,13 @@ const Wishlist = () => {
   };
 
   const filteredItems = wishlistItems.filter(item => {
-    const matchesSearch = item.casks?.spirit_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.casks?.distilleries?.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesPrice = maxPrice === '' || (item.casks?.price_per_liter || 0) <= Number(maxPrice);
+    // Safety check - skip items without cask data
+    if (!item.casks) return false;
+    
+    const matchesSearch = 
+      (item.casks.spirit_name?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
+      (item.casks.distilleries?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
+    const matchesPrice = maxPrice === '' || (item.casks.price_per_liter || 0) <= Number(maxPrice);
     return matchesSearch && matchesPrice;
   });
 

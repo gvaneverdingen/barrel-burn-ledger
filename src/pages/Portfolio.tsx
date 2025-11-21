@@ -204,10 +204,13 @@ const Portfolio = () => {
 
       if (salesError) throw salesError;
 
-      const safeOwnerships = (ownershipData || []).filter((o: any) => o.casks);
+      const safeOwnerships = (ownershipData || []).filter((o: any) => o.casks && o.casks.spirit_name);
+      const safeTransactions = (transactionData || []).filter((t: any) => t.casks && t.casks.spirit_name);
+      const safeSales = (salesData || []).filter((s: any) => s.cask_ownership?.casks && s.cask_ownership.casks.spirit_name);
+      
       setOwnerships(safeOwnerships as CaskOwnership[]);
-      setTransactions(transactionData || []);
-      setActiveSales(salesData || []);
+      setTransactions(safeTransactions);
+      setActiveSales(safeSales);
     } catch (err: any) {
       setError(err.message);
     } finally {

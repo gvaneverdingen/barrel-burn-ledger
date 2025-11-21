@@ -210,39 +210,45 @@ const Marketplace = () => {
           seller_id: cask.distilleries?.profile_id // Add seller_id from distillery profile
         }));
 
-      // Transform secondary listings to unified format
-      const secondaryUnified: UnifiedListing[] = (secondaryListings || []).map(listing => {
-        const cask = listing.cask_ownership?.casks;
-        const roi = listing.cask_ownership?.acquisition_price 
-          ? ((listing.total_asking_price - listing.cask_ownership.acquisition_price) / listing.cask_ownership.acquisition_price) * 100
-          : 0;
+      // Transform secondary listings to unified format - filter out incomplete ones
+      const secondaryUnified: UnifiedListing[] = (secondaryListings || [])
+        .filter(listing => {
+          // Only include if cask data exists and has essential fields
+          const cask = listing.cask_ownership?.casks;
+          return cask && cask.spirit_name && cask.cask_number;
+        })
+        .map(listing => {
+          const cask = listing.cask_ownership!.casks!;
+          const roi = listing.cask_ownership?.acquisition_price 
+            ? ((listing.total_asking_price - listing.cask_ownership.acquisition_price) / listing.cask_ownership.acquisition_price) * 100
+            : 0;
 
-        return {
-          id: listing.id,
-          spirit_name: cask?.spirit_name || '',
-          cask_number: cask?.cask_number || '',
-          distillation_date: cask?.distillation_date || '',
-          current_volume_liters: listing.volume_for_sale_liters,
-          alcohol_percentage: cask?.alcohol_percentage || null,
-          price_per_liter: listing.asking_price_per_liter,
-          total_price: listing.total_asking_price,
-          warehouse_location: cask?.warehouse_location,
-          tasting_notes: cask?.tasting_notes,
-          created_at: listing.created_at,
-          updated_at: listing.created_at,
-          distilleries: cask?.distilleries,
-          cask_types: cask?.cask_types,
-          is_resale: true,
-          seller_id: listing.seller_id,
-          ownership_id: listing.ownership_id,
-          acquisition_price: listing.cask_ownership?.acquisition_price,
-          roi: roi,
-          blockchain_hash: cask?.blockchain_hash,
-          seller_name: listing.profiles 
-            ? `${listing.profiles.first_name} ${listing.profiles.last_name}` 
-            : 'Anonymous'
-        };
-      });
+          return {
+            id: listing.id,
+            spirit_name: cask.spirit_name,
+            cask_number: cask.cask_number,
+            distillation_date: cask.distillation_date || '',
+            current_volume_liters: listing.volume_for_sale_liters,
+            alcohol_percentage: cask.alcohol_percentage || null,
+            price_per_liter: listing.asking_price_per_liter,
+            total_price: listing.total_asking_price,
+            warehouse_location: cask.warehouse_location,
+            tasting_notes: cask.tasting_notes,
+            created_at: listing.created_at,
+            updated_at: listing.created_at,
+            distilleries: cask.distilleries,
+            cask_types: cask.cask_types,
+            is_resale: true,
+            seller_id: listing.seller_id,
+            ownership_id: listing.ownership_id,
+            acquisition_price: listing.cask_ownership?.acquisition_price,
+            roi: roi,
+            blockchain_hash: cask.blockchain_hash,
+            seller_name: listing.profiles 
+              ? `${listing.profiles.first_name} ${listing.profiles.last_name}` 
+              : 'Anonymous'
+          };
+        });
 
       // Combine all listings
       setAllListings([...primaryUnified, ...secondaryUnified]);
