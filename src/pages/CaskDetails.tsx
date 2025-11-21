@@ -8,6 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { ArrowLeft, MapPin, Calendar, Droplets, Gauge, DollarSign, Wine, Building, Hash, Shield, Loader2, X } from "lucide-react";
 import caskDetailImage from "@/assets/cask-detail.jpg";
 import singleCask from "@/assets/single-cask.jpg";
@@ -72,6 +82,7 @@ const CaskDetails = () => {
   const [activeSaleId, setActiveSaleId] = useState<string | null>(null);
   const [isOwnerSale, setIsOwnerSale] = useState(false);
   const [cancellingSale, setCancellingSale] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
   
 
   useEffect(() => {
@@ -113,6 +124,7 @@ const CaskDetails = () => {
   const handleCancelSale = async () => {
     if (!activeSaleId || !user) return;
     
+    setShowCancelDialog(false);
     setCancellingSale(true);
     try {
       const { error } = await supabase
@@ -694,21 +706,12 @@ const CaskDetails = () => {
                   <Button 
                     variant="outline"
                     className="w-full border-red-500/20 text-red-600 hover:bg-red-500/10" 
-                    onClick={handleCancelSale}
+                    onClick={() => setShowCancelDialog(true)}
                     size="lg"
                     disabled={cancellingSale}
                   >
-                    {cancellingSale ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Cancelling...
-                      </>
-                    ) : (
-                      <>
-                        <X className="mr-2 h-4 w-4" />
-                        Cancel Sale
-                      </>
-                    )}
+                    <X className="mr-2 h-4 w-4" />
+                    Cancel Sale
                   </Button>
                 )}
                 
@@ -779,6 +782,34 @@ const CaskDetails = () => {
           </div>
         </div>
       </div>
+
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Sale Listing?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove your cask from the marketplace. You can always list it again later.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Listed</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelSale}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={cancellingSale}
+            >
+              {cancellingSale ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Cancelling...
+                </>
+              ) : (
+                'Cancel Sale'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
