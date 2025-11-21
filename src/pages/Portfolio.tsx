@@ -8,7 +8,17 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, TrendingDown, Package, DollarSign, Calendar, MapPin, ShoppingCart, X, Store } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { TrendingUp, TrendingDown, Package, DollarSign, Calendar, MapPin, ShoppingCart, X, Store, Loader2 } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { SellCaskDialog } from "@/components/SellCaskDialog";
@@ -103,6 +113,9 @@ const Portfolio = () => {
   const [error, setError] = useState<string | null>(null);
   const [sellDialogOpen, setSellDialogOpen] = useState(false);
   const [selectedOwnership, setSelectedOwnership] = useState<CaskOwnership | null>(null);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [saleToCancel, setSaleToCancel] = useState<string | null>(null);
+  const [cancellingSale, setCancellingSale] = useState(false);
 
   // Add immediate debug logging
   console.log("=== PORTFOLIO COMPONENT RENDER ===");
@@ -223,12 +236,21 @@ const Portfolio = () => {
     setSellDialogOpen(true);
   };
 
-  const handleCancelSale = async (saleId: string) => {
+  const handleCancelSaleClick = (saleId: string) => {
+    setSaleToCancel(saleId);
+    setShowCancelDialog(true);
+  };
+
+  const handleCancelSale = async () => {
+    if (!saleToCancel) return;
+    
+    setShowCancelDialog(false);
+    setCancellingSale(true);
     try {
       const { error } = await supabase
         .from("cask_sales")
         .update({ status: "cancelled" })
-        .eq("id", saleId)
+        .eq("id", saleToCancel)
         .eq("seller_id", user?.id);
 
       if (error) throw error;
@@ -245,6 +267,9 @@ const Portfolio = () => {
         description: error.message || "Failed to cancel sale",
         variant: "destructive",
       });
+    } finally {
+      setCancellingSale(false);
+      setSaleToCancel(null);
     }
   };
 
@@ -608,7 +633,7 @@ const Portfolio = () => {
                             <div className="flex justify-end">
                               <Button
                                 variant="outline"
-                                onClick={() => handleCancelSale(sale.id)}
+                                onClick={() => handleCancelSaleClick(sale.id)}
                                 className="border-red-500/20 text-red-600 hover:bg-red-500/10"
                               >
                                 <X className="h-4 w-4 mr-2" />
@@ -688,6 +713,34 @@ const Portfolio = () => {
         ownership={selectedOwnership}
         onSaleCreated={fetchPortfolioData}
       />
+
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Sale Listing?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove your cask from the marketplace. You can always list it again later.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Listed</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelSale}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={cancellingSale}
+            >
+              {cancellingSale ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Cancelling...
+                </>
+              ) : (
+                'Cancel Sale'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </SidebarProvider>
   );
 };
