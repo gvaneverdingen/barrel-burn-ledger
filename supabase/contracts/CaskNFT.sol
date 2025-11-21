@@ -36,6 +36,13 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         uint256 alcoholPercentage;
         uint256 distillationDate;
         uint256 mintedAt;
+        // Rarity attributes
+        uint8 ageYears;
+        uint8 rarityTier; // 1=Common, 2=Uncommon, 3=Rare, 4=Epic, 5=Legendary
+        string caskType; // Ex-Bourbon, Sherry, Port, etc.
+        string specialFinish; // Sauternes Finish, Rum Cask, etc.
+        string region; // Speyside, Islay, Highland, etc.
+        bool isSingleBarrel;
         bool exists;
     }
     
@@ -49,7 +56,8 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         address indexed distillery,
         address indexed owner,
         string spiritName,
-        string caskNumber
+        string caskNumber,
+        uint8 rarityTier
     );
     
     event CaskTransferred(
@@ -71,6 +79,12 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
      * @param volumeLiters Volume in liters
      * @param alcoholPercentage Alcohol percentage (scaled by 100, e.g., 6350 = 63.5%)
      * @param distillationDate Unix timestamp of distillation
+     * @param ageYears Current age in years
+     * @param rarityTier Rarity tier (1-5)
+     * @param caskType Type of cask
+     * @param specialFinish Special finishing info
+     * @param region Production region
+     * @param isSingleBarrel Whether this is single barrel
      * @param tokenURI IPFS URI for metadata
      */
     function mintCask(
@@ -82,12 +96,19 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         uint256 volumeLiters,
         uint256 alcoholPercentage,
         uint256 distillationDate,
+        uint8 ageYears,
+        uint8 rarityTier,
+        string memory caskType,
+        string memory specialFinish,
+        string memory region,
+        bool isSingleBarrel,
         string memory tokenURI
     ) public onlyOwner returns (uint256) {
         require(bytes(caskId).length > 0, "CaskNFT: Cask ID cannot be empty");
         require(caskIdToTokenId[caskId] == 0, "CaskNFT: Cask already minted");
         require(to != address(0), "CaskNFT: Cannot mint to zero address");
         require(distillery != address(0), "CaskNFT: Invalid distillery address");
+        require(rarityTier >= 1 && rarityTier <= 5, "CaskNFT: Invalid rarity tier");
         
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
@@ -110,10 +131,16 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
             alcoholPercentage: alcoholPercentage,
             distillationDate: distillationDate,
             mintedAt: block.timestamp,
+            ageYears: ageYears,
+            rarityTier: rarityTier,
+            caskType: caskType,
+            specialFinish: specialFinish,
+            region: region,
+            isSingleBarrel: isSingleBarrel,
             exists: true
         });
         
-        emit CaskMinted(tokenId, caskId, distillery, to, spiritName, caskNumber);
+        emit CaskMinted(tokenId, caskId, distillery, to, spiritName, caskNumber, rarityTier);
         
         return tokenId;
     }

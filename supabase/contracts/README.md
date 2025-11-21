@@ -12,6 +12,13 @@ ERC-721 NFT contract representing individual cask ownership.
 - Metadata stored on-chain and IPFS
 - Distillery tracking for royalties
 - Safe minting with validation
+- **Rarity attributes for collectibility:**
+  - `ageYears`: Current age of the cask
+  - `rarityTier`: 1-5 scale (Common to Legendary)
+  - `caskType`: Type of cask (Ex-Bourbon, Sherry, Port, etc.)
+  - `specialFinish`: Special finishing (Sauternes, Rum Cask, etc.)
+  - `region`: Production region (Speyside, Islay, Highland, etc.)
+  - `isSingleBarrel`: Whether it's a single barrel cask
 
 ### CaskMarketplace.sol
 Marketplace contract for buying and selling cask NFTs.
