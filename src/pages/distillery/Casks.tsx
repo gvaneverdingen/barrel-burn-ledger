@@ -68,8 +68,8 @@ const DistilleryCasks = () => {
 
   const filteredCasks = casks.filter((cask: any) => {
     const matchesSearch = 
-      cask.cask_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cask.spirit_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      cask.cask_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      cask.spirit_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cask.warehouse_location?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus = 
