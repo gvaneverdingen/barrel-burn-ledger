@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      blockchain_logs: {
+        Row: {
+          block_number: number | null
+          blockchain_hash: string
+          cask_id: string | null
+          contract_address: string | null
+          created_at: string | null
+          gas_used: number | null
+          id: string
+          metadata: Json | null
+          token_id: number | null
+          transaction_id: string | null
+          transaction_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          block_number?: number | null
+          blockchain_hash: string
+          cask_id?: string | null
+          contract_address?: string | null
+          created_at?: string | null
+          gas_used?: number | null
+          id?: string
+          metadata?: Json | null
+          token_id?: number | null
+          transaction_id?: string | null
+          transaction_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          block_number?: number | null
+          blockchain_hash?: string
+          cask_id?: string | null
+          contract_address?: string | null
+          created_at?: string | null
+          gas_used?: number | null
+          id?: string
+          metadata?: Json | null
+          token_id?: number | null
+          transaction_id?: string | null
+          transaction_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blockchain_logs_cask_id_fkey"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blockchain_logs_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cask_images: {
         Row: {
           cask_id: string
@@ -206,6 +266,9 @@ export type Database = {
           finishing_notes: string | null
           has_been_finished: boolean | null
           id: string
+          nft_contract_address: string | null
+          nft_minted_at: string | null
+          nft_token_id: number | null
           original_cask_type: string | null
           price_per_liter: number | null
           spirit_name: string
@@ -231,6 +294,9 @@ export type Database = {
           finishing_notes?: string | null
           has_been_finished?: boolean | null
           id?: string
+          nft_contract_address?: string | null
+          nft_minted_at?: string | null
+          nft_token_id?: number | null
           original_cask_type?: string | null
           price_per_liter?: number | null
           spirit_name: string
@@ -256,6 +322,9 @@ export type Database = {
           finishing_notes?: string | null
           has_been_finished?: boolean | null
           id?: string
+          nft_contract_address?: string | null
+          nft_minted_at?: string | null
+          nft_token_id?: number | null
           original_cask_type?: string | null
           price_per_liter?: number | null
           spirit_name?: string
