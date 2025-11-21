@@ -179,29 +179,36 @@ const Marketplace = () => {
 
       if (secondaryError) throw secondaryError;
 
-      // Transform primary casks to unified format
-      const primaryUnified: UnifiedListing[] = (primaryCasks || []).map(cask => ({
-        id: cask.id,
-        spirit_name: cask.spirit_name,
-        cask_number: cask.cask_number,
-        distillation_date: cask.distillation_date,
-        expected_maturation_years: cask.expected_maturation_years,
-        current_volume_liters: cask.current_volume_liters,
-        alcohol_percentage: cask.alcohol_percentage,
-        price_per_liter: cask.price_per_liter,
-        total_price: cask.total_price,
-        warehouse_location: cask.warehouse_location,
-        tasting_notes: cask.tasting_notes,
-        available_for_sale: cask.available_for_sale,
-        created_at: cask.created_at,
-        updated_at: cask.updated_at,
-        distillery_id: cask.distillery_id,
-        cask_type_id: cask.cask_type_id,
-        distilleries: cask.distilleries,
-        cask_types: cask.cask_types,
-        is_resale: false,
-        seller_id: cask.distilleries?.profile_id // Add seller_id from distillery profile
-      }));
+      // Transform primary casks to unified format - filter out incomplete listings
+      const primaryUnified: UnifiedListing[] = (primaryCasks || [])
+        .filter(cask => 
+          cask.price_per_liter != null && 
+          cask.total_price != null && 
+          cask.current_volume_liters != null && 
+          cask.alcohol_percentage != null
+        )
+        .map(cask => ({
+          id: cask.id,
+          spirit_name: cask.spirit_name,
+          cask_number: cask.cask_number,
+          distillation_date: cask.distillation_date,
+          expected_maturation_years: cask.expected_maturation_years,
+          current_volume_liters: cask.current_volume_liters,
+          alcohol_percentage: cask.alcohol_percentage,
+          price_per_liter: cask.price_per_liter,
+          total_price: cask.total_price,
+          warehouse_location: cask.warehouse_location,
+          tasting_notes: cask.tasting_notes,
+          available_for_sale: cask.available_for_sale,
+          created_at: cask.created_at,
+          updated_at: cask.updated_at,
+          distillery_id: cask.distillery_id,
+          cask_type_id: cask.cask_type_id,
+          distilleries: cask.distilleries,
+          cask_types: cask.cask_types,
+          is_resale: false,
+          seller_id: cask.distilleries?.profile_id // Add seller_id from distillery profile
+        }));
 
       // Transform secondary listings to unified format
       const secondaryUnified: UnifiedListing[] = (secondaryListings || []).map(listing => {
@@ -469,11 +476,11 @@ const Marketplace = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Volume</span>
-                    <span>{listing.current_volume_liters}L</span>
+                    <span>{listing.current_volume_liters ?? 0}L</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">ABV</span>
-                    <span>{listing.alcohol_percentage}%</span>
+                    <span>{listing.alcohol_percentage ?? 0}%</span>
                   </div>
                   
                   {listing.is_resale && listing.roi !== undefined && (
