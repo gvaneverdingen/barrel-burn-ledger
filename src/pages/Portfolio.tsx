@@ -277,6 +277,11 @@ const Portfolio = () => {
     return activeSales.some(sale => sale.cask_ownership.id === ownershipId);
   };
 
+  const getSaleIdForOwnership = (ownershipId: string): string | null => {
+    const sale = activeSales.find(sale => sale.cask_ownership.id === ownershipId);
+    return sale ? sale.id : null;
+  };
+
   const calculatePortfolioValue = () => {
     return ownerships.reduce((total, ownership) => {
       const pricePerLiter = ownership.casks?.price_per_liter ?? 0;
@@ -537,12 +542,25 @@ const Portfolio = () => {
                               </div>
                             )}
 
-                            {/* Sell Button */}
+                            {/* Sell / Cancel Buttons */}
                             <div className="flex justify-end pt-4">
                               {isOwnershipForSale(ownership.id) ? (
-                                <Badge variant="secondary" className="bg-orange-500/10 text-orange-600 border-orange-500/20">
-                                  Listed for Sale
-                                </Badge>
+                                <div className="flex items-center gap-3">
+                                  <Badge variant="secondary" className="bg-orange-500/10 text-orange-600 border-orange-500/20">
+                                    Listed for Sale
+                                  </Badge>
+                                  {getSaleIdForOwnership(ownership.id) && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleCancelSaleClick(getSaleIdForOwnership(ownership.id)!)}
+                                      className="border-red-500/20 text-red-600 hover:bg-red-500/10"
+                                    >
+                                      <X className="h-4 w-4 mr-2" />
+                                      Cancel Listing
+                                    </Button>
+                                  )}
+                                </div>
                               ) : (
                                 <Button
                                   onClick={() => handleSellCask(ownership)}
