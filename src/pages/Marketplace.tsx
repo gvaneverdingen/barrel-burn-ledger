@@ -25,10 +25,12 @@ import {
   Clock,
   Shield,
   Eye,
-  ArrowLeftRight
+  ArrowLeftRight,
+  HandCoins
 } from 'lucide-react';
 import { MarketplaceAnalytics } from '@/components/MarketplaceAnalytics';
 import { MatchmakingSystem } from '@/components/MatchmakingSystem';
+import { MakeOfferDialog } from '@/components/MakeOfferDialog';
 
 interface Cask {
   id: string;
@@ -51,6 +53,7 @@ interface Cask {
     name: string;
     location: string | null;
     verified: boolean | null;
+    profile_id?: string;
   };
   cask_types?: {
     name: string;
@@ -79,6 +82,7 @@ interface UnifiedListing {
     name: string;
     location: string | null;
     verified: boolean | null;
+    profile_id?: string;
   };
   cask_types?: {
     name: string;
@@ -98,6 +102,8 @@ const Marketplace = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToComparison, isInComparison } = useComparison();
+  const [selectedOfferListing, setSelectedOfferListing] = useState<UnifiedListing | null>(null);
+  const [offerDialogOpen, setOfferDialogOpen] = useState(false);
   const [allListings, setAllListings] = useState<UnifiedListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -120,7 +126,8 @@ const Marketplace = () => {
           distilleries (
             name,
             location,
-            verified
+            verified,
+            profile_id
           ),
           cask_types (
             name,
@@ -190,7 +197,8 @@ const Marketplace = () => {
         cask_type_id: cask.cask_type_id,
         distilleries: cask.distilleries,
         cask_types: cask.cask_types,
-        is_resale: false
+        is_resale: false,
+        seller_id: cask.distilleries?.profile_id // Add seller_id from distillery profile
       }));
 
       // Transform secondary listings to unified format
@@ -505,6 +513,24 @@ const Marketplace = () => {
                       <Eye className="h-3 w-3 mr-1" />
                       View Details
                     </Button>
+                    {listing.seller_id && listing.seller_id !== user?.id && (
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!user) {
+                            toast.error('Please log in to make an offer');
+                            return;
+                          }
+                          setSelectedOfferListing(listing);
+                          setOfferDialogOpen(true);
+                        }}
+                      >
+                        <HandCoins className="h-3 w-3 mr-1" />
+                        Offer
+                      </Button>
+                    )}
                     <Button 
                       size="sm" 
                       variant={isInComparison(listing.id) ? "secondary" : "outline"}
@@ -581,6 +607,24 @@ const Marketplace = () => {
           }} />
         </TabsContent>
       </Tabs>
+
+      {/* Make Offer Dialog */}
+      {selectedOfferListing && (
+        <MakeOfferDialog
+          open={offerDialogOpen}
+          onOpenChange={setOfferDialogOpen}
+          listing={{
+            id: selectedOfferListing.is_resale ? selectedOfferListing.ownership_id || selectedOfferListing.id : selectedOfferListing.id,
+            cask_id: selectedOfferListing.id,
+            seller_id: selectedOfferListing.seller_id,
+            spirit_name: selectedOfferListing.spirit_name,
+            cask_number: selectedOfferListing.cask_number,
+            current_volume_liters: selectedOfferListing.current_volume_liters || 0,
+            price_per_liter: selectedOfferListing.price_per_liter || 0,
+            total_price: selectedOfferListing.total_price || 0,
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Package, TrendingUp, User, Menu } from 'lucide-react';
+import { Home, Package, TrendingUp, User, Menu, HandCoins } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface NavItem {
@@ -11,6 +11,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { icon: Home, label: 'Home', path: '/' },
   { icon: Package, label: 'Marketplace', path: '/marketplace' },
+  { icon: HandCoins, label: 'Offers', path: '/offers' },
   { icon: TrendingUp, label: 'Portfolio', path: '/portfolio' },
   { icon: User, label: 'Profile', path: '/profile' },
 ];
