@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useComparison } from '@/contexts/ComparisonContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -102,6 +103,7 @@ const Marketplace = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToComparison, isInComparison } = useComparison();
+  const { formatPrice } = useCurrency();
   const [selectedOfferListing, setSelectedOfferListing] = useState<UnifiedListing | null>(null);
   const [offerDialogOpen, setOfferDialogOpen] = useState(false);
   const [allListings, setAllListings] = useState<UnifiedListing[]>([]);
@@ -459,11 +461,11 @@ const Marketplace = () => {
                 <CardContent className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Price per Liter</span>
-                    <span className="font-bold text-lg">£{listing.price_per_liter}</span>
+                    <span className="font-bold text-lg">{formatPrice(listing.price_per_liter || 0)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Total Price</span>
-                    <span className="font-semibold">£{listing.total_price?.toLocaleString()}</span>
+                    <span className="font-semibold">{formatPrice(listing.total_price || 0)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Volume</span>

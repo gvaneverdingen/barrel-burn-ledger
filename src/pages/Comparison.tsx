@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useComparison } from '@/contexts/ComparisonContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { X, ArrowLeft } from 'lucide-react';
@@ -9,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 const Comparison = () => {
   const navigate = useNavigate();
   const { comparisonCasks, removeFromComparison, clearComparison } = useComparison();
+  const { formatPrice } = useCurrency();
 
   if (comparisonCasks.length === 0) {
     return (
@@ -47,8 +49,8 @@ const Comparison = () => {
     { label: 'ABV', key: (cask: any) => cask.alcohol_percentage ? `${cask.alcohol_percentage}%` : 'N/A' },
     { label: 'Cask Type', key: (cask: any) => cask.cask_type?.name || 'N/A' },
     { label: 'Capacity', key: (cask: any) => cask.cask_type?.capacity_liters ? `${cask.cask_type.capacity_liters}L` : 'N/A' },
-    { label: 'Price per Liter', key: (cask: any) => cask.price_per_liter ? `£${Number(cask.price_per_liter).toLocaleString()}` : 'N/A' },
-    { label: 'Total Price', key: (cask: any) => cask.total_price ? `£${Number(cask.total_price).toLocaleString()}` : 'N/A' },
+    { label: 'Price per Liter', key: (cask: any) => cask.price_per_liter ? formatPrice(Number(cask.price_per_liter)) : 'N/A' },
+    { label: 'Total Price', key: (cask: any) => cask.total_price ? formatPrice(Number(cask.total_price)) : 'N/A' },
     { label: 'Warehouse', key: (cask: any) => cask.warehouse_location || 'N/A' },
     { label: 'Tasting Notes', key: (cask: any) => cask.tasting_notes || 'N/A' },
   ];

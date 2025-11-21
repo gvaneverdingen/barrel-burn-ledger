@@ -6,6 +6,7 @@ import { LogOut, User } from 'lucide-react';
 import { AppSidebar } from '@/components/AppSidebar';
 import { ComparisonButton } from '@/components/ComparisonButton';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
+import { CurrencySelector } from '@/components/CurrencySelector';
 import angelShareLogo from '@/assets/angel-share-logo.png';
 
 interface LayoutProps {
@@ -60,6 +61,7 @@ export const Layout = ({ children }: LayoutProps) => {
               </div>
               
               <div className="flex items-center space-x-2 sm:space-x-4">
+                <CurrencySelector />
                 {user ? (
                   <>
                     <div className="hidden md:flex items-center space-x-2 text-sm text-muted-foreground">
