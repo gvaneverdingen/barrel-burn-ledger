@@ -27,6 +27,9 @@ const PaymentSuccess = () => {
       }
 
       try {
+        // Give webhook a moment to process if needed
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
         // Verify payment by checking transaction status
         const { data: transactions, error: txError } = await supabase
           .from('transactions')
@@ -48,6 +51,18 @@ const PaymentSuccess = () => {
         if (transactions && transactions.length > 0) {
           setTransactionDetails(transactions[0]);
           setVerified(true);
+          
+          // Verify ownership was created
+          const { data: ownership, error: ownershipError } = await supabase
+            .from('cask_ownership')
+            .select('id')
+            .eq('cask_id', transactions[0].cask_id)
+            .eq('owner_id', user.id)
+            .single();
+            
+          if (ownershipError || !ownership) {
+            console.warn('Ownership record not found yet, but transaction is completed');
+          }
         } else {
           setError('Payment verification in progress. Please check your portfolio in a few minutes.');
         }
@@ -163,7 +178,7 @@ const PaymentSuccess = () => {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Amount Paid:</span>
-                        <span className="font-medium">${(transactionDetails.total_amount / 100).toFixed(2)}</span>
+                        <span className="font-medium">${transactionDetails.total_amount.toFixed(2)}</span>
                       </div>
                     </div>
                   </div>

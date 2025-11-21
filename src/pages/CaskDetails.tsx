@@ -269,8 +269,9 @@ const CaskDetails = () => {
       }
 
       if (data?.url) {
-        console.log('Redirecting to Stripe checkout in new tab:', data.url);
-        window.open(data.url, '_blank', 'noopener,noreferrer');
+        console.log('Redirecting to Stripe checkout:', data.url);
+        // Redirect in the same window so user returns to success page
+        window.location.href = data.url;
       } else {
         console.error('No payment URL returned');
         throw new Error('No payment URL returned');
