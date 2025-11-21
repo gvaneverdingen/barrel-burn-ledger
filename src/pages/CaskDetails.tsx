@@ -270,15 +270,16 @@ const CaskDetails = () => {
 
       if (data?.url) {
         console.log('Redirecting to Stripe checkout:', data.url);
-        // Use top-level navigation to avoid iframe/X-Frame-Options issues
+        // Prefer top-level navigation, but fall back to opening a new tab if blocked
         try {
-          if (window.top) {
+          if (window.top && window.top !== window.self) {
             window.top.location.href = data.url;
           } else {
             window.location.href = data.url;
           }
-        } catch {
-          window.location.href = data.url;
+        } catch (e) {
+          console.warn('Top-level redirect blocked, opening new tab instead', e);
+          window.open(data.url, '_blank', 'noopener,noreferrer');
         }
       } else {
         console.error('No payment URL returned');
