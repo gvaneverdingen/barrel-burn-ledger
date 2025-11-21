@@ -86,7 +86,7 @@ serve(async (req) => {
         throw updateError;
       }
 
-      console.log("Payment completed, creating cask ownership...");
+      console.log("Payment completed, processing ownership transfer...");
 
       // Check if ownership record already exists to avoid duplicates
       const { data: existingOwnership } = await supabaseService
@@ -114,9 +114,83 @@ serve(async (req) => {
         if (ownershipError) {
           console.error("Error creating cask ownership:", ownershipError);
           throw new Error(`Failed to create cask ownership: ${ownershipError.message}`);
-        } else {
-          console.log("Cask ownership created successfully for transaction:", transactionId);
         }
+        
+        console.log("✓ Cask ownership created successfully");
+      }
+
+      // Mark cask as unavailable for sale
+      const { error: caskUpdateError } = await supabaseService
+        .from('casks')
+        .update({ available_for_sale: false })
+        .eq('id', caskId);
+
+      if (caskUpdateError) {
+        console.error("Error updating cask availability:", caskUpdateError);
+        // Don't throw - ownership was created successfully
+      } else {
+        console.log("✓ Cask marked as sold");
+      }
+
+      // Create payout records for distillery and platform
+      const { error: payoutsError } = await supabaseService
+        .from('payouts')
+        .insert([
+          {
+            transaction_id: transactionId,
+            recipient_id: transaction.seller_id,
+            recipient_type: 'distillery',
+            amount: transaction.distillery_fee || transaction.seller_amount,
+            fee_type: 'distillery_payout',
+            status: 'pending_payout',
+            description: `Primary sale payout for ${transaction.cask.spirit_name}`
+          },
+          {
+            transaction_id: transactionId,
+            recipient_id: null,
+            recipient_type: 'platform',
+            amount: transaction.platform_fee,
+            fee_type: 'platform_fee',
+            status: 'pending_payout',
+            description: 'ARIGI platform fee for cask sale'
+          }
+        ]);
+
+      if (payoutsError) {
+        console.error("Error creating payout records:", payoutsError);
+        // Don't throw - this can be handled manually
+      } else {
+        console.log("✓ Payout records created");
+      }
+
+      // Send email notification to buyer
+      try {
+        const { data: buyerProfile } = await supabaseService
+          .from('profiles')
+          .select('email, first_name, last_name')
+          .eq('id', userId)
+          .single();
+
+        if (buyerProfile?.email) {
+          await supabaseService.functions.invoke('send-transaction-email', {
+            body: {
+              type: 'purchase_confirmation',
+              recipientEmail: buyerProfile.email,
+              recipientName: `${buyerProfile.first_name || ''} ${buyerProfile.last_name || ''}`.trim(),
+              caskName: transaction.cask.spirit_name || 'Whisky Cask',
+              caskNumber: transaction.cask.cask_number || 'N/A',
+              distilleryName: transaction.cask.distilleries?.name || 'Unknown',
+              volume: transaction.volume_liters,
+              pricePerLiter: transaction.price_per_liter,
+              totalAmount: transaction.total_amount,
+              transactionId: transactionId
+            }
+          });
+          console.log("✓ Email notification sent to buyer");
+        }
+      } catch (emailError) {
+        console.error("Failed to send email notification:", emailError);
+        // Don't throw - email is nice-to-have
       }
     }
 
