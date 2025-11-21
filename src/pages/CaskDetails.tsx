@@ -161,6 +161,7 @@ const CaskDetails = () => {
         .from('cask_sales')
         .select(`
           id,
+          seller_id,
           asking_price_per_liter,
           total_asking_price,
           volume_for_sale_liters,
@@ -211,16 +212,8 @@ const CaskDetails = () => {
         setActiveSaleId(saleData.id);
         
         // Check if current user owns this sale listing
-        if (user) {
-          const { data: saleOwnerData } = await supabase
-            .from('cask_sales')
-            .select('seller_id')
-            .eq('id', saleData.id)
-            .single();
-          
-          if (saleOwnerData?.seller_id === user.id) {
-            setIsOwnerSale(true);
-          }
+        if (user && saleData.seller_id === user.id) {
+          setIsOwnerSale(true);
         }
 
         setCask(finalCaskData);
