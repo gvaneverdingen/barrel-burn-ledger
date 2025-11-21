@@ -26,11 +26,6 @@ const PaymentSuccess = () => {
         return;
       }
 
-      // Wait for authenticated user before verifying payment
-      if (!user) {
-        return;
-      }
-
       setVerifying(true);
       setError(null);
 
@@ -38,8 +33,8 @@ const PaymentSuccess = () => {
         // Give webhook a moment to process if needed
         await new Promise(resolve => setTimeout(resolve, 2000));
         
-        // Verify payment by checking transaction status
-        const { data: transactions, error: txError } = await supabase
+        // Build base query for latest completed transaction
+        let query = supabase
           .from('transactions')
           .select(`
             *,
@@ -49,10 +44,16 @@ const PaymentSuccess = () => {
               distillery:distilleries(name)
             )
           `)
-          .eq('buyer_id', user.id)
           .eq('status', 'completed')
           .order('created_at', { ascending: false })
           .limit(1);
+
+        // If we know the user, narrow results to their transactions
+        if (user) {
+          query = query.eq('buyer_id', user.id);
+        }
+
+        const { data: transactions, error: txError } = await query;
 
         if (txError) throw txError;
 
@@ -60,16 +61,18 @@ const PaymentSuccess = () => {
           setTransactionDetails(transactions[0]);
           setVerified(true);
           
-          // Verify ownership was created
-          const { data: ownership, error: ownershipError } = await supabase
-            .from('cask_ownership')
-            .select('id')
-            .eq('cask_id', transactions[0].cask_id)
-            .eq('owner_id', user.id)
-            .single();
-            
-          if (ownershipError || !ownership) {
-            console.warn('Ownership record not found yet, but transaction is completed');
+          // If user is known, verify ownership was created
+          if (user) {
+            const { data: ownership, error: ownershipError } = await supabase
+              .from('cask_ownership')
+              .select('id')
+              .eq('cask_id', transactions[0].cask_id)
+              .eq('owner_id', user.id)
+              .maybeSingle();
+              
+            if (ownershipError || !ownership) {
+              console.warn('Ownership record not found yet, but transaction is completed');
+            }
           }
         } else {
           setError('Payment verification in progress. Please check your portfolio in a few minutes.');
