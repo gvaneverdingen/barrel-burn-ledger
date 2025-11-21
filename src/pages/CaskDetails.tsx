@@ -89,7 +89,7 @@ const CaskDetails = () => {
     if (id) {
       fetchCaskDetails(id);
     }
-  }, [id]);
+  }, [id, user]);
 
   useEffect(() => {
     if (cask && user) {
