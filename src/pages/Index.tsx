@@ -1,4 +1,5 @@
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,6 +10,15 @@ import angelShareLogo from '@/assets/angel-share-horizontal-logo.png';
 const Index = () => {
   const { user, userRole, signOut, loading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Redirect Stripe success callbacks that land on home to the payment verification page
+  useEffect(() => {
+    const sessionId = searchParams.get('session_id');
+    if (sessionId) {
+      navigate(`/payment-success?session_id=${encodeURIComponent(sessionId)}`, { replace: true });
+    }
+  }, [searchParams, navigate]);
 
   // Allow access without authentication
 
