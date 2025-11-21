@@ -221,8 +221,8 @@ const Marketplace = () => {
           acquisition_price: listing.cask_ownership?.acquisition_price,
           roi: roi,
           blockchain_hash: cask?.blockchain_hash,
-          seller_name: listing.profiles && listing.profiles.length > 0 
-            ? `${listing.profiles[0].first_name} ${listing.profiles[0].last_name}` 
+          seller_name: listing.profiles 
+            ? `${listing.profiles.first_name} ${listing.profiles.last_name}` 
             : 'Anonymous'
         };
       });
