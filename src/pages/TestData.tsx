@@ -62,11 +62,21 @@ const TestDataCreator = () => {
                   Generate Test Data
                 </CardTitle>
                 <CardDescription>
-                  This will create comprehensive test data including:
+                  This will create comprehensive test data and fix any incomplete records:
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <h4 className="font-medium">Automated Fixes:</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Populate missing pricing data on existing casks</li>
+                      <li>• Fill in volume and ABV for incomplete records</li>
+                      <li>• Mark completed casks as available for sale</li>
+                      <li>• Ensure all data relationships are valid</li>
+                    </ul>
+                  </div>
+                  
                   <div className="space-y-2">
                     <h4 className="font-medium">Test Distillery:</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
@@ -76,7 +86,9 @@ const TestDataCreator = () => {
                       <li>• Specializes in premium single malt whisky</li>
                     </ul>
                   </div>
-                  
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <h4 className="font-medium">Cask Varieties:</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
@@ -88,26 +100,36 @@ const TestDataCreator = () => {
                       <li>• Virgin American Oak</li>
                     </ul>
                   </div>
+                  
+                  <div className="space-y-2">
+                    <h4 className="font-medium">Additional Data:</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Sample cask ownerships for users</li>
+                      <li>• Active secondary market listings</li>
+                      <li>• Realistic pricing and markup data</li>
+                      <li>• Complete blockchain verification</li>
+                    </ul>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
-                  <h4 className="font-medium">30 Premium Single Malt Casks:</h4>
+                  <h4 className="font-medium">35 Premium Single Malt Casks:</h4>
                   <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• 30 complete casks + 5 incomplete (for testing data management)</li>
                     <li>• Highland Heritage Single Malt 12-21 Year aged expressions</li>
                     <li>• Volume range: 190-209 liters per cask</li>
                     <li>• ABV range: 58-62% cask strength</li>
                     <li>• Price range: £76,000 - £220,000 per cask</li>
                     <li>• Realistic tasting notes based on cask type and age</li>
                     <li>• Stored across 3 Highland warehouses</li>
-                    <li>• All casks available for purchase with blockchain verification</li>
                   </ul>
                 </div>
 
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    This will create test data that you can immediately browse in the marketplace, 
-                    view individual cask details, and test the purchase flow.
+                    This will fix any existing incomplete data and create comprehensive test data 
+                    for the marketplace, portfolios, and secondary market listings.
                   </AlertDescription>
                 </Alert>
 
@@ -131,25 +153,38 @@ const TestDataCreator = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {result.incomplete_casks_fixed > 0 && (
+                          <div>
+                            <Badge variant="secondary">Casks Fixed</Badge>
+                            <p className="text-2xl font-bold mt-1">{result.incomplete_casks_fixed}</p>
+                          </div>
+                        )}
                         <div>
-                          <Badge variant="secondary">Distilleries Created</Badge>
-                          <p className="text-2xl font-bold mt-1">{result.distilleries}</p>
+                          <Badge variant="secondary">Distilleries</Badge>
+                          <p className="text-2xl font-bold mt-1">{result.new_distilleries || result.distilleries}</p>
                         </div>
                         <div>
-                          <Badge variant="secondary">Casks Created</Badge>
-                          <p className="text-2xl font-bold mt-1">{result.casks}</p>
+                          <Badge variant="secondary">New Casks</Badge>
+                          <p className="text-2xl font-bold mt-1">{result.new_casks || result.casks}</p>
+                        </div>
+                        <div>
+                          <Badge variant="outline">Total Available</Badge>
+                          <p className="text-2xl font-bold mt-1">{(result.incomplete_casks_fixed || 0) + (result.new_casks || result.casks || 0)}</p>
                         </div>
                       </div>
                       
                       <div className="mt-4 space-y-2">
                         <p className="text-sm font-medium">Next Steps:</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                           <Button variant="outline" size="sm" onClick={() => window.location.href = '/marketplace'}>
                             Browse Marketplace
                           </Button>
-                          <Button variant="outline" size="sm" onClick={() => window.location.href = '/admin'}>
-                            View Admin Dashboard
+                          <Button variant="outline" size="sm" onClick={() => window.location.href = '/admin/cask-data'}>
+                            Manage Cask Data
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => window.location.href = '/admin/dashboard'}>
+                            Admin Dashboard
                           </Button>
                         </div>
                       </div>
