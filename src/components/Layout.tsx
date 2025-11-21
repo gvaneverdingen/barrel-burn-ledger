@@ -53,7 +53,14 @@ export const Layout = ({ children }: LayoutProps) => {
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
 
+    console.log('Layout payment redirect check', {
+      pathname: location.pathname,
+      search: location.search,
+      sessionId,
+    });
+
     if (sessionId && location.pathname !== '/payment-success') {
+      console.log('Redirecting to /payment-success with session_id from URL');
       navigate(`/payment-success?session_id=${encodeURIComponent(sessionId)}`, { replace: true });
       return;
     }
@@ -63,15 +70,19 @@ export const Layout = ({ children }: LayoutProps) => {
     if (location.pathname === '/') {
       try {
         const raw = localStorage.getItem('arigi_pending_payment');
+        console.log('Pending payment marker on / route:', raw);
+
         if (raw) {
           const marker = JSON.parse(raw) as { caskId?: string; createdAt?: number };
           const createdAt = marker?.createdAt ?? 0;
           const FIFTEEN_MINUTES = 15 * 60 * 1000;
 
           if (Date.now() - createdAt < FIFTEEN_MINUTES) {
+            console.log('Recent pending payment detected, redirecting to /payment-success');
             localStorage.removeItem('arigi_pending_payment');
             navigate('/payment-success', { replace: true });
           } else {
+            console.log('Pending payment marker expired, clearing');
             localStorage.removeItem('arigi_pending_payment');
           }
         }
