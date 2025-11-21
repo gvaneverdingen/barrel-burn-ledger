@@ -324,8 +324,6 @@ const CaskDetails = () => {
           amount: Math.round((cask?.total_price || 0) * 100), // Convert to cents
           currency: 'usd',
           caskName: cask?.spirit_name,
-          userId: user.id,
-          userEmail: user.email,
         }
       });
 

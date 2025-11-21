@@ -40,8 +40,20 @@ serve(async (req) => {
       throw new Error("User not authenticated");
     }
 
-    // TODO: Add admin role verification here
-    // For now, we'll assume authenticated users can approve transactions
+    // Verify user has administrator role
+    const { data: isAdmin, error: roleError } = await supabaseService
+      .rpc('has_role', { _user_id: user.id, _role: 'administrator' });
+
+    if (roleError) {
+      console.error("Role check error:", roleError);
+      throw new Error("Failed to verify admin permissions");
+    }
+
+    if (!isAdmin) {
+      throw new Error("Unauthorized: Administrator role required");
+    }
+
+    console.log("Admin authorization verified for user:", user.id);
 
     // Parse request body
     const { transactionId, action, reason } = await req.json();
