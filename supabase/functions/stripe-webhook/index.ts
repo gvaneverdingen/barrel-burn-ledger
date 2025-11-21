@@ -187,7 +187,7 @@ serve(async (req) => {
                 <p><strong>Spirit Name:</strong> ${transaction.cask.spirit_name}</p>
                 <p><strong>Cask Number:</strong> ${transaction.cask.cask_number}</p>
                 <p><strong>Volume:</strong> ${transaction.volume_liters}L</p>
-                <p><strong>Amount Paid:</strong> $${(transaction.total_amount / 100).toFixed(2)}</p>
+                <p><strong>Amount Paid:</strong> $${transaction.total_amount.toFixed(2)}</p>
                 <p><strong>Transaction ID:</strong> ${transactionId}</p>
               </div>
               <p>Your cask ownership will be recorded on the blockchain within 24 hours.</p>
@@ -217,8 +217,8 @@ serve(async (req) => {
                 <p><strong>Spirit Name:</strong> ${transaction.cask.spirit_name}</p>
                 <p><strong>Cask Number:</strong> ${transaction.cask.cask_number}</p>
                 <p><strong>Volume:</strong> ${transaction.volume_liters}L</p>
-                <p><strong>Sale Amount:</strong> $${(transaction.total_amount / 100).toFixed(2)}</p>
-                <p><strong>Your Payout:</strong> $${((transaction.seller_amount || transaction.total_amount * 0.885) / 100).toFixed(2)}</p>
+                <p><strong>Sale Amount:</strong> $${transaction.total_amount.toFixed(2)}</p>
+                <p><strong>Your Payout:</strong> $${(transaction.seller_amount || transaction.total_amount * 0.885).toFixed(2)}</p>
                 <p><strong>Transaction ID:</strong> ${transactionId}</p>
               </div>
               <p>The payout will be processed according to your payment schedule.</p>
