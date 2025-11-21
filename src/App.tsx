@@ -31,6 +31,7 @@ const Profile = lazy(() => import("./pages/Profile"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
 const Admin = lazy(() => import("./pages/Admin"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
+const CaskDataManagement = lazy(() => import("./pages/admin/CaskDataManagement"));
 const TestData = lazy(() => import("./pages/TestData"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -212,7 +213,15 @@ const AppRoutes = () => {
               } 
             />
             <Route 
-              path="/test-data" 
+              path="/admin/cask-data" 
+              element={
+                <RoleBasedRoute allowedRoles={['administrator']}>
+                  <CaskDataManagement />
+                </RoleBasedRoute>
+              } 
+            />
+            <Route 
+              path="/test-data"
               element={
                 <RoleBasedRoute allowedRoles={['administrator']}>
                   <TestData />
