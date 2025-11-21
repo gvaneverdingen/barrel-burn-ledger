@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, MapPin, Calendar, Droplets, Gauge, DollarSign, Wine, Building, Hash, Shield, Loader2 } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Droplets, Gauge, DollarSign, Wine, Building, Hash, Shield, Loader2, X } from "lucide-react";
 import caskDetailImage from "@/assets/cask-detail.jpg";
 import singleCask from "@/assets/single-cask.jpg";
 import { CaskImageGallery } from "@/components/CaskImageGallery";
@@ -69,6 +69,9 @@ const CaskDetails = () => {
   const [purchasing, setPurchasing] = useState(false);
   const [imageRefreshTrigger, setImageRefreshTrigger] = useState(0);
   const [canManageImages, setCanManageImages] = useState(false);
+  const [activeSaleId, setActiveSaleId] = useState<string | null>(null);
+  const [isOwnerSale, setIsOwnerSale] = useState(false);
+  const [cancellingSale, setCancellingSale] = useState(false);
   
 
   useEffect(() => {
@@ -105,6 +108,38 @@ const CaskDetails = () => {
 
   const handleImageUploaded = () => {
     setImageRefreshTrigger(prev => prev + 1);
+  };
+
+  const handleCancelSale = async () => {
+    if (!activeSaleId || !user) return;
+    
+    setCancellingSale(true);
+    try {
+      const { error } = await supabase
+        .from("cask_sales")
+        .update({ status: "cancelled" })
+        .eq("id", activeSaleId)
+        .eq("seller_id", user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Sale Cancelled",
+        description: "Your cask listing has been removed from the marketplace.",
+      });
+
+      // Redirect to portfolio after cancellation
+      navigate('/portfolio');
+    } catch (error) {
+      console.error('Error cancelling sale:', error);
+      toast({
+        title: "Error",
+        description: "Failed to cancel the sale listing. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setCancellingSale(false);
+    }
   };
 
   const fetchCaskDetails = async (caskId: string) => {
@@ -160,6 +195,21 @@ const CaskDetails = () => {
           sale_id: saleData.id,
           seller: saleData.ownership.profiles
         } as CaskDetails;
+
+        setActiveSaleId(saleData.id);
+        
+        // Check if current user owns this sale listing
+        if (user) {
+          const { data: saleOwnerData } = await supabase
+            .from('cask_sales')
+            .select('seller_id')
+            .eq('id', saleData.id)
+            .single();
+          
+          if (saleOwnerData?.seller_id === user.id) {
+            setIsOwnerSale(true);
+          }
+        }
 
         setCask(finalCaskData);
         return;
@@ -622,7 +672,7 @@ const CaskDetails = () => {
                   </div>
                 </div>
 
-                {user && userRole !== "distillery" && (
+                {user && userRole !== "distillery" && !isOwnerSale && (
                   <Button 
                     className="w-full" 
                     onClick={handlePurchaseClick}
@@ -636,6 +686,28 @@ const CaskDetails = () => {
                       </>
                     ) : (
                       'Purchase Cask'
+                    )}
+                  </Button>
+                )}
+
+                {isOwnerSale && (
+                  <Button 
+                    variant="outline"
+                    className="w-full border-red-500/20 text-red-600 hover:bg-red-500/10" 
+                    onClick={handleCancelSale}
+                    size="lg"
+                    disabled={cancellingSale}
+                  >
+                    {cancellingSale ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Cancelling...
+                      </>
+                    ) : (
+                      <>
+                        <X className="mr-2 h-4 w-4" />
+                        Cancel Sale
+                      </>
                     )}
                   </Button>
                 )}
