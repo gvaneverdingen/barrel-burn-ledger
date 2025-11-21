@@ -52,16 +52,26 @@ export const Layout = ({ children }: LayoutProps) => {
   // redirect to the dedicated payment verification page.
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
+    const referrer = typeof document !== 'undefined' ? document.referrer : '';
 
     console.log('Layout payment redirect check', {
       pathname: location.pathname,
       search: location.search,
       sessionId,
+      referrer,
     });
 
     if (sessionId && location.pathname !== '/payment-success') {
       console.log('Redirecting to /payment-success with session_id from URL');
       navigate(`/payment-success?session_id=${encodeURIComponent(sessionId)}`, { replace: true });
+      return;
+    }
+
+    // If we just came back from Stripe checkout without a session_id,
+    // detect the Stripe referrer and send the user to verification.
+    if (!sessionId && location.pathname === '/' && referrer.includes('checkout.stripe.com')) {
+      console.log('Detected Stripe referrer, redirecting to /payment-success without session_id');
+      navigate('/payment-success', { replace: true });
       return;
     }
 
@@ -90,7 +100,7 @@ export const Layout = ({ children }: LayoutProps) => {
         console.warn('Error handling pending payment marker', e);
       }
     }
-  }, [searchParams, location.pathname, navigate]);
+  }, [searchParams, location.pathname, location.search, navigate]);
 
   return (
     <div className="flex min-h-screen w-full">
