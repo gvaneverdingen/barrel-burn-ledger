@@ -21,9 +21,7 @@ const PaymentSuccess = () => {
   useEffect(() => {
     const verifyPayment = async () => {
       if (!sessionId) {
-        setError('Missing payment information');
-        setVerifying(false);
-        return;
+        console.warn('PaymentSuccess: no session_id in URL, falling back to latest completed transaction lookup');
       }
 
       setVerifying(true);
@@ -195,10 +193,12 @@ const PaymentSuccess = () => {
                   </div>
                 )}
                 
-                <div className="bg-muted p-4 rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-2">Stripe Session ID</p>
-                  <p className="font-mono text-xs break-all">{sessionId}</p>
-                </div>
+                {sessionId && (
+                  <div className="bg-muted p-4 rounded-lg">
+                    <p className="text-sm text-muted-foreground mb-2">Stripe Session ID</p>
+                    <p className="font-mono text-xs break-all">{sessionId}</p>
+                  </div>
+                )}
 
               <div className="space-y-4">
                 <h3 className="font-semibold">What happens next?</h3>

@@ -52,8 +52,32 @@ export const Layout = ({ children }: LayoutProps) => {
   // redirect to the dedicated payment verification page.
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
+
     if (sessionId && location.pathname !== '/payment-success') {
       navigate(`/payment-success?session_id=${encodeURIComponent(sessionId)}`, { replace: true });
+      return;
+    }
+
+    // Fallback: if we recently initiated a payment but Stripe did not include
+    // a session_id in the URL, send the user to the verification page once.
+    if (location.pathname === '/') {
+      try {
+        const raw = localStorage.getItem('arigi_pending_payment');
+        if (raw) {
+          const marker = JSON.parse(raw) as { caskId?: string; createdAt?: number };
+          const createdAt = marker?.createdAt ?? 0;
+          const FIFTEEN_MINUTES = 15 * 60 * 1000;
+
+          if (Date.now() - createdAt < FIFTEEN_MINUTES) {
+            localStorage.removeItem('arigi_pending_payment');
+            navigate('/payment-success', { replace: true });
+          } else {
+            localStorage.removeItem('arigi_pending_payment');
+          }
+        }
+      } catch (e) {
+        console.warn('Error handling pending payment marker', e);
+      }
     }
   }, [searchParams, location.pathname, navigate]);
 
