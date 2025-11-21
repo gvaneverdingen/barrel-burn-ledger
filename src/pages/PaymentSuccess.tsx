@@ -4,18 +4,53 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Home, Eye, Package } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import angelShareLogo from '@/assets/angel-share-logo.png';
+import { supabase } from '@/integrations/supabase/client';
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [transaction, setTransaction] = useState<any>(null);
   const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
-    // Here you could verify the payment with your backend
-    // and update the transaction status if needed
-  }, [sessionId]);
+    const verifyPayment = async () => {
+      if (!sessionId) {
+        navigate('/marketplace');
+        return;
+      }
+
+      try {
+        // Verify the session belongs to current user and get transaction details
+        const { data: transactions, error } = await supabase
+          .from('transactions')
+          .select(`
+            *,
+            cask:casks(
+              spirit_name,
+              cask_number,
+              distillery:distilleries(name)
+            )
+          `)
+          .eq('status', 'completed')
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        if (error) throw error;
+
+        if (transactions && transactions.length > 0) {
+          setTransaction(transactions[0]);
+        }
+      } catch (error) {
+        console.error('Error verifying payment:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyPayment();
+  }, [sessionId, navigate]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -62,9 +97,26 @@ const PaymentSuccess = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="bg-muted p-4 rounded-lg">
-                <p className="text-sm text-muted-foreground mb-2">Transaction ID</p>
-                <p className="font-mono text-sm">{sessionId}</p>
+              <div className="bg-muted p-4 rounded-lg space-y-2">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Transaction ID</p>
+                  <p className="font-mono text-sm">{transaction?.id || sessionId}</p>
+                </div>
+                {transaction && (
+                  <>
+                    <div className="pt-2 border-t">
+                      <p className="text-sm text-muted-foreground mb-1">Cask</p>
+                      <p className="font-semibold">{transaction.cask?.spirit_name}</p>
+                      <p className="text-sm text-muted-foreground">#{transaction.cask?.cask_number}</p>
+                    </div>
+                    <div className="pt-2 border-t">
+                      <p className="text-sm text-muted-foreground mb-1">Amount Paid</p>
+                      <p className="font-semibold text-lg">
+                        ${transaction.total_amount?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="space-y-4">
