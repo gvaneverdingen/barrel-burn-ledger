@@ -281,6 +281,50 @@ export type Database = {
           },
         ]
       }
+      counter_offers: {
+        Row: {
+          counter_price_per_liter: number
+          counter_total_price: number
+          counter_volume_liters: number | null
+          created_at: string
+          id: string
+          message: string | null
+          original_offer_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          counter_price_per_liter: number
+          counter_total_price: number
+          counter_volume_liters?: number | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          original_offer_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          counter_price_per_liter?: number
+          counter_total_price?: number
+          counter_volume_liters?: number | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          original_offer_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "counter_offers_original_offer_id_fkey"
+            columns: ["original_offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       distilleries: {
         Row: {
           created_at: string
@@ -363,6 +407,86 @@ export type Database = {
           percentage?: number | null
         }
         Relationships: []
+      }
+      offers: {
+        Row: {
+          buyer_id: string
+          cask_id: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          message: string | null
+          offer_type: string
+          offered_price_per_liter: number
+          offered_total_price: number
+          sale_listing_id: string | null
+          seller_id: string
+          status: string
+          updated_at: string
+          volume_liters: number
+        }
+        Insert: {
+          buyer_id: string
+          cask_id: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          message?: string | null
+          offer_type: string
+          offered_price_per_liter: number
+          offered_total_price: number
+          sale_listing_id?: string | null
+          seller_id: string
+          status?: string
+          updated_at?: string
+          volume_liters: number
+        }
+        Update: {
+          buyer_id?: string
+          cask_id?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          message?: string | null
+          offer_type?: string
+          offered_price_per_liter?: number
+          offered_total_price?: number
+          sale_listing_id?: string | null
+          seller_id?: string
+          status?: string
+          updated_at?: string
+          volume_liters?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offers_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offers_cask_id_fkey"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offers_sale_listing_id_fkey"
+            columns: ["sale_listing_id"]
+            isOneToOne: false
+            referencedRelation: "cask_sales"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offers_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payouts: {
         Row: {

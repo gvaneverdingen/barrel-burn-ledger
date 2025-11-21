@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users, Database, Link, Route, Heart, LayoutDashboard } from "lucide-react"
+import { Home, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users, Database, Link, Route, Heart, LayoutDashboard, HandCoins } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 
@@ -20,6 +20,7 @@ const publicItems = [
   { title: "My Profile", url: "/consumer-journey", icon: Route },
   { title: "Marketplace", url: "/marketplace", icon: Package },
   { title: "Wishlist", url: "/wishlist", icon: Heart },
+  { title: "My Offers", url: "/offers", icon: HandCoins },
 ]
 
 const adminItems = [

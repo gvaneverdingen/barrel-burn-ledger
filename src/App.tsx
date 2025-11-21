@@ -22,6 +22,7 @@ import Auth from "./pages/Auth";
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Marketplace = lazy(() => import("./pages/Marketplace"));
 const Wishlist = lazy(() => import("./pages/Wishlist"));
+const Offers = lazy(() => import("./pages/Offers"));
 const Comparison = lazy(() => import("./pages/Comparison"));
 const Reports = lazy(() => import("./pages/Reports"));
 const CaskDetails = lazy(() => import("./pages/CaskDetails"));
@@ -120,6 +121,7 @@ const AppRoutes = () => {
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/cask/:id" element={<CaskDetails />} />
             <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/offers" element={<Offers />} />
             <Route path="/comparison" element={<Comparison />} />
             
             {/* User Profile and Portfolio - Available to consumers and others */}
