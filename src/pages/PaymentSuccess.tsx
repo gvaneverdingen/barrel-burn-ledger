@@ -20,11 +20,19 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     const verifyPayment = async () => {
-      if (!sessionId || !user) {
+      if (!sessionId) {
         setError('Missing payment information');
         setVerifying(false);
         return;
       }
+
+      // Wait for authenticated user before verifying payment
+      if (!user) {
+        return;
+      }
+
+      setVerifying(true);
+      setError(null);
 
       try {
         // Give webhook a moment to process if needed
