@@ -99,12 +99,13 @@ const AppRoutes = () => {
       </div>
     }>
       <Routes>
-        {/* Auth pages without layout */}
+        {/* Auth and payment pages without layout */}
         <Route path="/auth" element={<Auth />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-      
-      {/* All other routes with layout */}
-      <Route path="/*" element={
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        
+        {/* All other routes with layout */}
+        <Route path="/*" element={
         <Layout>
           <Routes>
             <Route path="/" element={<Index />} />
@@ -237,7 +238,6 @@ const AppRoutes = () => {
               } 
             />
             
-            <Route path="/payment-success" element={<PaymentSuccess />} />
             
             {/* Distillery Routes - Distillery and Admin only */}
             <Route 
