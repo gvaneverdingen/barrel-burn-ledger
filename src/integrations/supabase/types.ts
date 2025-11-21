@@ -155,6 +155,13 @@ export type Database = {
             referencedRelation: "cask_ownership"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "cask_sales_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       cask_types: {
