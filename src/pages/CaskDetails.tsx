@@ -270,8 +270,16 @@ const CaskDetails = () => {
 
       if (data?.url) {
         console.log('Redirecting to Stripe checkout:', data.url);
-        // Redirect in the same window so user returns to success page
-        window.location.href = data.url;
+        // Use top-level navigation to avoid iframe/X-Frame-Options issues
+        try {
+          if (window.top) {
+            window.top.location.href = data.url;
+          } else {
+            window.location.href = data.url;
+          }
+        } catch {
+          window.location.href = data.url;
+        }
       } else {
         console.error('No payment URL returned');
         throw new Error('No payment URL returned');
