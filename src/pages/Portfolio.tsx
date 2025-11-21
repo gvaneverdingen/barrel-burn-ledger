@@ -26,13 +26,13 @@ interface CaskOwnership {
     spirit_name: string;
     cask_number: string;
     distillation_date: string;
-    current_volume_liters: number;
-    alcohol_percentage: number;
-    price_per_liter: number;
-    total_price: number;
-    warehouse_location: string;
-    tasting_notes: string;
-    expected_maturation_years: number;
+    current_volume_liters: number | null;
+    alcohol_percentage: number | null;
+    price_per_liter: number | null;
+    total_price: number | null;
+    warehouse_location: string | null;
+    tasting_notes: string | null;
+    expected_maturation_years: number | null;
     distilleries: {
       name: string;
       location: string;
@@ -204,7 +204,8 @@ const Portfolio = () => {
 
       if (salesError) throw salesError;
 
-      setOwnerships(ownershipData || []);
+      const safeOwnerships = (ownershipData || []).filter((o: any) => o.casks);
+      setOwnerships(safeOwnerships as CaskOwnership[]);
       setTransactions(transactionData || []);
       setActiveSales(salesData || []);
     } catch (err: any) {
@@ -250,7 +251,8 @@ const Portfolio = () => {
 
   const calculatePortfolioValue = () => {
     return ownerships.reduce((total, ownership) => {
-      const currentValue = ownership.casks.price_per_liter * ownership.volume_liters;
+      const pricePerLiter = ownership.casks?.price_per_liter ?? 0;
+      const currentValue = pricePerLiter * ownership.volume_liters;
       return total + currentValue;
     }, 0);
   };
@@ -456,7 +458,7 @@ const Portfolio = () => {
                               <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground font-medium">Current Value</p>
                                 <p className="text-xl font-bold luxury-text-gradient">
-                                  {formatPrice(ownership.casks.price_per_liter * ownership.volume_liters)}
+                                  {formatPrice((ownership.casks?.price_per_liter ?? 0) * ownership.volume_liters)}
                                 </p>
                               </div>
                               <div className="space-y-1">

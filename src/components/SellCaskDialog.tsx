@@ -158,7 +158,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
               </div>
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4 text-primary" />
-                <span>Current: ${ownership.casks.price_per_liter}/L</span>
+                <span>Current: ${ownership.casks?.price_per_liter ?? 0}/L</span>
               </div>
             </div>
           </div>
