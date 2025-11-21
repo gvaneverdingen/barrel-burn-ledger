@@ -17,14 +17,35 @@ serve(async (req) => {
   try {
     console.log("=== PAYMENT CREATION STARTED v3.0 ===");
     
-    // Parse request body first to get user info
-    const requestBody = await req.json();
-    const { caskId, amount, currency = "usd", caskName, userId, userEmail } = requestBody;
-    
-    console.log("Request data received:", { caskId, amount, currency, caskName, userId, userEmail });
+    // Get authenticated user from JWT token
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new Error("No authorization header");
+    }
 
-    if (!caskId || !amount || !caskName || !userId || !userEmail) {
-      const errorMsg = "Missing required parameters: caskId, amount, caskName, userId, or userEmail";
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+    );
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
+    
+    if (authError || !user) {
+      console.error("Authentication error:", authError);
+      throw new Error("User not authenticated");
+    }
+
+    console.log("User authenticated:", { id: user.id, email: user.email });
+    
+    // Parse request body for cask info only
+    const requestBody = await req.json();
+    const { caskId, amount, currency = "usd", caskName } = requestBody;
+    
+    console.log("Request data received:", { caskId, amount, currency, caskName });
+
+    if (!caskId || !amount || !caskName) {
+      const errorMsg = "Missing required parameters: caskId, amount, or caskName";
       console.error("Validation error:", errorMsg);
       throw new Error(errorMsg);
     }
@@ -37,14 +58,6 @@ serve(async (req) => {
     );
 
     console.log("Supabase service client created successfully");
-
-    // Use user info from request body (works for both regular and Magic wallet users)
-    const user = {
-      id: userId,
-      email: userEmail
-    };
-
-    console.log("User authenticated:", user);
 
     // Get cask details for transaction
     console.log("Fetching cask details for ID:", caskId);
