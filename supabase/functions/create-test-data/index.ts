@@ -82,8 +82,8 @@ serve(async (req) => {
     const testCasks = [];
     
     if (caskTypes && caskTypes.length > 0) {
-      // Create 30 single malt whisky casks with realistic variations
-      for (let i = 0; i < 30; i++) {
+      // Create 25 complete casks + 5 incomplete casks for testing
+      for (let i = 0; i < 35; i++) {
         const caskTypeIndex = i % caskTypes.length;
         const caskType = caskTypes[caskTypeIndex];
         const age = 12 + Math.floor(i / 3); // Ages from 12 to 21 years
@@ -91,6 +91,9 @@ serve(async (req) => {
         const abv = 58 + (i % 5); // ABV between 58-62%
         const basePricePerLiter = 400 + (age * 50) + (i % 5) * 100; // Price varies by age and cask
         const totalPrice = Math.round(volume * basePricePerLiter);
+        
+        // For the last 5 casks, create incomplete pricing data (should be marked unavailable)
+        const isIncomplete = i >= 30;
         
         testCasks.push({
           id: crypto.randomUUID(),
@@ -100,11 +103,11 @@ serve(async (req) => {
           cask_number: `HH-SM-${String(i + 1).padStart(3, '0')}-2024`,
           distillation_date: `${2024 - age}-${String(Math.floor(i / 2.5) % 12 + 1).padStart(2, '0')}-01`,
           expected_maturation_years: age,
-          current_volume_liters: volume,
-          alcohol_percentage: abv,
-          price_per_liter: basePricePerLiter,
-          total_price: totalPrice,
-          available_for_sale: true,
+          current_volume_liters: isIncomplete ? null : volume,
+          alcohol_percentage: isIncomplete ? null : abv,
+          price_per_liter: isIncomplete ? null : basePricePerLiter,
+          total_price: isIncomplete ? null : totalPrice,
+          available_for_sale: !isIncomplete,
           warehouse_location: `Highland Warehouse ${Math.floor(i / 10) + 1}`,
           tasting_notes: `Exceptional ${age}-year-old Highland single malt matured in ${caskType.name}. ${getTastingNotes(caskType.name, age)}`,
           blockchain_id: `HH-${String(i + 1).padStart(3, '0')}`,
