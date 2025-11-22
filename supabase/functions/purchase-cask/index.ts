@@ -129,18 +129,33 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
-    // Create payment intent
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: totalAmount,
-      currency: "usd",
+    // Create Stripe checkout session for resale purchase
+    const session = await stripe.checkout.sessions.create({
       customer: customerId,
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `${sale.cask_ownership.casks.spirit_name}`,
+              description: `${sale.volume_for_sale_liters}L cask - ${sale.cask_ownership.casks.distilleries.name}`,
+            },
+            unit_amount: totalAmount,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com') || 'http://localhost:5173'}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com') || 'http://localhost:5173'}/cask/${sale.cask_ownership.cask_id}`,
       metadata: {
         sale_id: saleId,
         buyer_id: user.id,
         seller_id: sale.seller_id,
         cask_id: sale.cask_ownership.cask_id,
+        transaction_type: 'peer_to_peer_sale',
       },
-      description: `Purchase of ${sale.volume_for_sale_liters}L of ${sale.cask_ownership.casks.spirit_name}`,
     });
 
     // Create transaction record
@@ -159,7 +174,7 @@ serve(async (req) => {
         seller_amount: sellerAmount / 100,
         transaction_type: "peer_to_peer_sale",
         sale_listing_id: saleId,
-        stripe_payment_intent_id: paymentIntent.id,
+        stripe_payment_intent_id: session.payment_intent as string,
         status: "pending",
       })
       .select()
@@ -172,11 +187,8 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({
-        client_secret: paymentIntent.client_secret,
+        url: session.url,
         transaction_id: transaction.id,
-        amount: totalAmount,
-        platform_fee: platformFee,
-        seller_amount: sellerAmount,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
