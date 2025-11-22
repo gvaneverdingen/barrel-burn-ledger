@@ -525,12 +525,16 @@ const CaskDetails = () => {
             if (window.self !== window.top) {
               // In Lovable preview or other iframe: open Stripe in a new tab
               window.open(data.url, '_blank', 'noopener,noreferrer');
+              // Reset button state so the page doesn't appear stuck in preview
+              setPurchasing(false);
             } else {
               // In real app: navigate in the current window
               window.location.href = data.url;
             }
           } catch (e) {
             console.warn('Stripe redirect fallback in current window', e);
+            // Ensure we don't leave the button in a loading state if redirect fails
+            setPurchasing(false);
             window.location.href = data.url;
           }
         } else {
@@ -551,7 +555,7 @@ const CaskDetails = () => {
         } catch (e) {
           console.warn('Unable to write pending payment marker', e);
         }
-
+ 
         const { data, error } = await supabase.functions.invoke('create-payment', {
           body: {
             caskId: cask?.id,
@@ -560,15 +564,15 @@ const CaskDetails = () => {
             caskName: cask?.spirit_name,
           }
         });
-
+ 
         console.log('Payment function response:', { data, error });
-
+ 
         if (error) {
           console.error('Payment function returned error:', error);
           setPurchasing(false);
           throw new Error(error.message || 'Payment function error');
         }
-
+ 
         if (data?.url) {
           console.log('Redirecting to Stripe checkout:', data.url);
           
@@ -577,12 +581,16 @@ const CaskDetails = () => {
             if (window.self !== window.top) {
               // In Lovable preview or other iframe: open Stripe in a new tab
               window.open(data.url, '_blank', 'noopener,noreferrer');
+              // Reset button state so the page doesn't appear stuck in preview
+              setPurchasing(false);
             } else {
               // In real app: navigate in the current window
               window.location.href = data.url;
             }
           } catch (e) {
             console.warn('Stripe redirect fallback in current window', e);
+            // Ensure we don't leave the button in a loading state if redirect fails
+            setPurchasing(false);
             window.location.href = data.url;
           }
         } else {
@@ -604,9 +612,9 @@ const CaskDetails = () => {
       }
       
       toast({
-        title: "Payment Error",
+        title: 'Payment Error',
         description: errorMessage,
-        variant: "destructive",
+        variant: 'destructive',
       });
     }
   };
