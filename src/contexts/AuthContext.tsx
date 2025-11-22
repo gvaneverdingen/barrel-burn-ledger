@@ -67,7 +67,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const refreshUserData = async () => {
-    if (!user) return;
+    if (!user) {
+      console.log('refreshUserData: No user, skipping');
+      return;
+    }
     
     try {
       console.log('refreshUserData called for user:', user.id, 'isMagicUser:', !!user.user_metadata?.wallet_address);
@@ -79,6 +82,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('user_id', user.id)
         .maybeSingle();
       
+      console.log('refreshUserData: Role fetched:', roleData?.role);
+      
       // Fetch profile data separately
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -88,6 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (error) {
         console.error('Error fetching user profile:', error);
+        setLoading(false);
         return;
       }
       
@@ -95,7 +101,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (profile) {
         if (roleData) {
+          console.log('Setting user role to:', roleData.role);
           setUserRole(roleData.role as UserRole);
+        } else {
+          console.log('No role data found, defaulting to consumer');
+          setUserRole('consumer');
         }
         const isComplete = !!(profile.first_name && profile.last_name && profile.date_of_birth);
         console.log('🔍 AuthContext refreshUserData complete check:', { 
@@ -114,8 +124,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUserRole('consumer');
         setProfileComplete(false);
       }
+      
+      // Ensure loading is set to false after data fetch
+      setLoading(false);
     } catch (error) {
       console.error('Error refreshing user data:', error);
+      setLoading(false);
     }
   };
 

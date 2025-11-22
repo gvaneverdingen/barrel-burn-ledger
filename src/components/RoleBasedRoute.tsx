@@ -15,7 +15,10 @@ const RoleBasedRoute = ({
 }: RoleBasedRouteProps) => {
   const { userRole, loading } = useAuth();
 
+  console.log('RoleBasedRoute:', { userRole, loading, allowedRoles });
+
   if (loading) {
+    console.log('RoleBasedRoute: Still loading...');
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -28,15 +31,18 @@ const RoleBasedRoute = ({
 
   // Administrator can access everything
   if (userRole === 'administrator') {
+    console.log('RoleBasedRoute: Administrator access granted');
     return <>{children}</>;
   }
 
   // Check if user role is in allowed roles
   if (userRole && allowedRoles.includes(userRole)) {
+    console.log('RoleBasedRoute: Access granted for role:', userRole);
     return <>{children}</>;
   }
 
   // If not allowed, redirect
+  console.log('RoleBasedRoute: Access denied, redirecting to:', redirectTo);
   return <Navigate to={redirectTo} replace />;
 };
 
