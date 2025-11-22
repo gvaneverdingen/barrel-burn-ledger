@@ -64,6 +64,7 @@ interface Cask {
 
 interface UnifiedListing {
   id: string;
+  cask_id: string;
   spirit_name: string;
   cask_number: string;
   distillation_date: string;
@@ -189,6 +190,7 @@ const Marketplace = () => {
         )
         .map(cask => ({
           id: cask.id,
+          cask_id: cask.id,
           spirit_name: cask.spirit_name,
           cask_number: cask.cask_number,
           distillation_date: cask.distillation_date,
@@ -225,6 +227,7 @@ const Marketplace = () => {
 
           return {
             id: listing.id,
+            cask_id: listing.cask_ownership?.cask_id,
             spirit_name: cask.spirit_name,
             cask_number: cask.cask_number,
             distillation_date: cask.distillation_date || '',
@@ -463,7 +466,7 @@ const Marketplace = () => {
                         className="mobile-touch-target h-8 w-8 p-0"
                         onClick={(e) => {
                           e.stopPropagation();
-                          addToWishlist(listing.is_resale ? listing.ownership_id || listing.id : listing.id);
+                          addToWishlist(listing.cask_id);
                         }}
                       >
                         <Heart className="h-4 w-4" />
@@ -523,7 +526,7 @@ const Marketplace = () => {
                     <Button 
                       size="sm" 
                       className="flex-1"
-                      onClick={() => navigate(`/cask/${listing.is_resale ? listing.ownership_id : listing.id}`)}
+                      onClick={() => navigate(`/cask/${listing.cask_id}`)}
                     >
                       <Eye className="h-3 w-3 mr-1" />
                       View Details
@@ -629,15 +632,15 @@ const Marketplace = () => {
           open={offerDialogOpen}
           onOpenChange={setOfferDialogOpen}
           listing={{
-            id: selectedOfferListing.is_resale ? selectedOfferListing.ownership_id || selectedOfferListing.id : selectedOfferListing.id,
-            cask_id: selectedOfferListing.id,
-            seller_id: selectedOfferListing.seller_id,
-            spirit_name: selectedOfferListing.spirit_name,
-            cask_number: selectedOfferListing.cask_number,
-            current_volume_liters: selectedOfferListing.current_volume_liters || 0,
-            price_per_liter: selectedOfferListing.price_per_liter || 0,
-            total_price: selectedOfferListing.total_price || 0,
-          }}
+             id: selectedOfferListing.is_resale ? selectedOfferListing.ownership_id || selectedOfferListing.id : selectedOfferListing.id,
+             cask_id: selectedOfferListing.cask_id,
+             seller_id: selectedOfferListing.seller_id,
+             spirit_name: selectedOfferListing.spirit_name,
+             cask_number: selectedOfferListing.cask_number,
+             current_volume_liters: selectedOfferListing.current_volume_liters || 0,
+             price_per_liter: selectedOfferListing.price_per_liter || 0,
+             total_price: selectedOfferListing.total_price || 0,
+           }}
         />
       )}
     </div>
