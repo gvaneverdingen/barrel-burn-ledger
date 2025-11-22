@@ -121,19 +121,21 @@ serve(async (req) => {
       }
 
       // Mark cask as unavailable after purchase
-      const { error: caskUpdateError } = await supabaseService
+      const { data: updatedCask, error: caskUpdateError } = await supabaseService
         .from('casks')
         .update({ available_for_sale: false })
-        .eq('id', caskId);
+        .eq('id', caskId)
+        .select();
 
       if (caskUpdateError) {
         console.error("Error updating cask availability:", caskUpdateError);
+        throw new Error(`Failed to update cask availability: ${caskUpdateError.message}`);
       } else {
-        console.log("Cask marked as unavailable");
+        console.log("Cask marked as unavailable successfully:", updatedCask);
       }
 
       // Create payout records for distillery
-      const { error: payoutError } = await supabaseService
+      const { data: payoutData, error: payoutError } = await supabaseService
         .from('payouts')
         .insert({
           transaction_id: transactionId,
@@ -143,12 +145,14 @@ serve(async (req) => {
           fee_type: 'distillery_fee',
           status: 'pending_payout',
           description: `Primary market sale of cask ${transaction.cask.cask_number}`
-        });
+        })
+        .select();
 
       if (payoutError) {
         console.error("Error creating distillery payout:", payoutError);
+        throw new Error(`Failed to create distillery payout: ${payoutError.message}`);
       } else {
-        console.log("Distillery payout record created");
+        console.log("Distillery payout record created successfully:", payoutData);
       }
 
       // Send confirmation emails
@@ -196,12 +200,18 @@ serve(async (req) => {
             </div>
           `;
 
-          await resend.emails.send({
-            from: 'Angel Share <noreply@angelshare.com>',
+          const buyerEmailResult = await resend.emails.send({
+            from: 'Angel Share <onboarding@resend.dev>',
             to: [buyerProfile.email],
             subject: 'Cask Purchase Confirmed - Angel Share',
             html: buyerEmailHtml,
           });
+          
+          if (buyerEmailResult.error) {
+            console.error("Error sending buyer email:", buyerEmailResult.error);
+          } else {
+            console.log("Buyer confirmation email sent successfully:", buyerEmailResult.data?.id);
+          }
           console.log("Buyer confirmation email sent");
         }
 
@@ -226,12 +236,18 @@ serve(async (req) => {
             </div>
           `;
 
-          await resend.emails.send({
-            from: 'Angel Share <noreply@angelshare.com>',
+          const distilleryEmailResult = await resend.emails.send({
+            from: 'Angel Share <onboarding@resend.dev>',
             to: [distilleryProfile.email],
             subject: 'Cask Sale Notification - Angel Share',
             html: distilleryEmailHtml,
           });
+          
+          if (distilleryEmailResult.error) {
+            console.error("Error sending distillery email:", distilleryEmailResult.error);
+          } else {
+            console.log("Distillery notification email sent successfully:", distilleryEmailResult.data?.id);
+          }
           console.log("Distillery notification email sent");
         }
       } catch (emailError) {
