@@ -43,16 +43,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('🔍 AuthContext: Checking profile completeness for user:', userId);
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('first_name, last_name')
+        .select('first_name, last_name, date_of_birth')
         .eq('id', userId)
         .maybeSingle();
       
       console.log('🔍 AuthContext: Profile data:', profile, 'Error:', error);
       
-      const isComplete = !!(profile?.first_name && profile?.last_name);
+      const isComplete = !!(profile?.first_name && profile?.last_name && profile?.date_of_birth);
       console.log('🔍 AuthContext: Profile complete check:', {
         first_name: profile?.first_name,
         last_name: profile?.last_name,
+        date_of_birth: profile?.date_of_birth,
         isComplete
       });
       
@@ -81,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Fetch profile data separately
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('first_name, last_name')
+        .select('first_name, last_name, date_of_birth')
         .eq('id', user.id)
         .maybeSingle();
       
@@ -96,11 +97,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (roleData) {
           setUserRole(roleData.role as UserRole);
         }
-        const isComplete = !!(profile.first_name && profile.last_name);
+        const isComplete = !!(profile.first_name && profile.last_name && profile.date_of_birth);
         console.log('🔍 AuthContext refreshUserData complete check:', { 
           userId: user.id, 
           first_name: profile.first_name,
           last_name: profile.last_name,
+          date_of_birth: profile.date_of_birth,
           isComplete,
           isMagicUser: !!user.user_metadata?.wallet_address 
         });
@@ -244,7 +246,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Simplified profile fetch logic
           const { data: profile } = await supabase
             .from('profiles')
-            .select('first_name, last_name, id, email')
+            .select('first_name, last_name, id, email, date_of_birth')
             .eq('id', magicUser.id)
             .maybeSingle();
           
@@ -253,7 +255,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             profile,
             roleData,
             profileExists: !!profile,
-            isComplete: !!(profile?.first_name && profile?.last_name)
+            isComplete: !!(profile?.first_name && profile?.last_name && profile?.date_of_birth)
           });
           
           setUser(magicUser);
@@ -262,7 +264,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (roleData) {
               setUserRole(roleData.role as UserRole);
             }
-            setProfileComplete(!!(profile.first_name && profile.last_name));
+            setProfileComplete(!!(profile.first_name && profile.last_name && profile.date_of_birth));
           } else {
             setUserRole('consumer');
             setProfileComplete(false);

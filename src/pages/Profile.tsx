@@ -8,10 +8,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
-import { User, Settings, Save, ArrowLeft } from 'lucide-react';
+import { User, Settings, Save, ArrowLeft, CalendarIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface UserProfile {
   id: string;
@@ -19,6 +23,7 @@ interface UserProfile {
   first_name: string | null;
   last_name: string | null;
   company_name: string | null;
+  date_of_birth: string | null;
   verification_status: string | null;
   created_at: string;
   updated_at: string;
@@ -35,6 +40,7 @@ const Profile = () => {
     first_name: '',
     last_name: '',
     company_name: '',
+    date_of_birth: undefined as Date | undefined,
   });
 
   useEffect(() => {
@@ -105,6 +111,7 @@ const Profile = () => {
           first_name: data.first_name || '',
           last_name: data.last_name || '',
           company_name: data.company_name || '',
+          date_of_birth: data.date_of_birth ? new Date(data.date_of_birth) : undefined,
         });
       }
     } catch (error) {
@@ -125,6 +132,7 @@ const Profile = () => {
           first_name: formData.first_name || null,
           last_name: formData.last_name || null,
           company_name: formData.company_name || null,
+          date_of_birth: formData.date_of_birth ? formData.date_of_birth.toISOString().split('T')[0] : null,
         })
         .eq('id', user.id);
 
@@ -348,8 +356,48 @@ const Profile = () => {
                             {profile?.last_name || 'Not provided'}
                           </div>
                         )}
-                      </div>
-                    </div>
+                       </div>
+                     </div>
+
+                     <div className="space-y-2">
+                       <Label>Date of Birth</Label>
+                       {isEditing ? (
+                         <Popover>
+                           <PopoverTrigger asChild>
+                             <Button
+                               variant="outline"
+                               className={cn(
+                                 "w-full justify-start text-left font-normal",
+                                 !formData.date_of_birth && "text-muted-foreground"
+                               )}
+                             >
+                               <CalendarIcon className="mr-2 h-4 w-4" />
+                               {formData.date_of_birth ? (
+                                 format(formData.date_of_birth, "PPP")
+                               ) : (
+                                 <span>Pick your date of birth</span>
+                               )}
+                             </Button>
+                           </PopoverTrigger>
+                           <PopoverContent className="w-auto p-0" align="start">
+                             <Calendar
+                               mode="single"
+                               selected={formData.date_of_birth}
+                               onSelect={(date) => setFormData(prev => ({ ...prev, date_of_birth: date }))}
+                               disabled={(date) =>
+                                 date > new Date() || date < new Date("1900-01-01")
+                               }
+                               initialFocus
+                               className={cn("p-3 pointer-events-auto")}
+                             />
+                           </PopoverContent>
+                         </Popover>
+                       ) : (
+                         <div className="text-sm bg-muted/50 px-3 py-2 rounded-md">
+                           {profile?.date_of_birth ? format(new Date(profile.date_of_birth), "PPP") : 'Not provided'}
+                         </div>
+                       )}
+                     </div>
 
                     {(userRole === 'distillery' || userRole === 'investor') && (
                       <div className="space-y-2">
@@ -388,6 +436,7 @@ const Profile = () => {
                             first_name: profile?.first_name || '',
                             last_name: profile?.last_name || '',
                             company_name: profile?.company_name || '',
+                            date_of_birth: profile?.date_of_birth ? new Date(profile.date_of_birth) : undefined,
                           });
                         }}
                         disabled={isSaving}
