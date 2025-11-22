@@ -7,7 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
-import { User, ArrowRight } from 'lucide-react';
+import { User, ArrowRight, CalendarIcon } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 const ProfileCompletion = () => {
   const { user, userRole, refreshUserData } = useAuth();
@@ -18,6 +22,7 @@ const ProfileCompletion = () => {
     first_name: '',
     last_name: '',
     company_name: '',
+    date_of_birth: undefined as Date | undefined,
   });
 
   // Check if profile is already complete on component mount
@@ -29,17 +34,18 @@ const ProfileCompletion = () => {
         console.log('🔍 ProfileCompletion: Checking existing profile for user:', user.id);
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('first_name, last_name, company_name')
+          .select('first_name, last_name, company_name, date_of_birth')
           .eq('id', user.id)
           .maybeSingle();
         
         console.log('🔍 ProfileCompletion: Existing profile check:', { profile, error });
         
         if (profile) {
-          const isComplete = !!(profile.first_name && profile.last_name);
+          const isComplete = !!(profile.first_name && profile.last_name && profile.date_of_birth);
           console.log('🔍 ProfileCompletion: Profile completeness:', {
             first_name: profile.first_name,
             last_name: profile.last_name,
+            date_of_birth: profile.date_of_birth,
             isComplete
           });
           
@@ -56,6 +62,7 @@ const ProfileCompletion = () => {
             first_name: profile.first_name || '',
             last_name: profile.last_name || '',
             company_name: profile.company_name || '',
+            date_of_birth: profile.date_of_birth ? new Date(profile.date_of_birth) : undefined,
           });
         }
       } catch (error) {
@@ -90,10 +97,10 @@ const ProfileCompletion = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!user || !formData.first_name.trim() || !formData.last_name.trim()) {
+    if (!user || !formData.first_name.trim() || !formData.last_name.trim() || !formData.date_of_birth) {
       toast({
         title: "Missing Information",
-        description: "Please fill in both first and last name.",
+        description: "Please fill in first name, last name, and date of birth.",
         variant: "destructive",
       });
       return;
@@ -136,6 +143,7 @@ const ProfileCompletion = () => {
                 first_name: formData.first_name.trim(),
                 last_name: formData.last_name.trim(),
                 company_name: formData.company_name.trim() || null,
+                date_of_birth: formData.date_of_birth.toISOString().split('T')[0],
               })
               .eq('id', user.id);
 
@@ -167,6 +175,7 @@ const ProfileCompletion = () => {
               first_name: formData.first_name.trim(),
               last_name: formData.last_name.trim(),
               company_name: formData.company_name.trim() || null,
+              date_of_birth: formData.date_of_birth.toISOString().split('T')[0],
             });
 
           if (error) {
@@ -189,6 +198,7 @@ const ProfileCompletion = () => {
             first_name: formData.first_name.trim(),
             last_name: formData.last_name.trim(),
             company_name: formData.company_name.trim() || null,
+            date_of_birth: formData.date_of_birth.toISOString().split('T')[0],
           })
           .eq('id', user.id);
 
@@ -279,6 +289,42 @@ const ProfileCompletion = () => {
                 placeholder="Enter your last name"
                 required
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label>
+                Date of Birth <span className="text-red-500">*</span>
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !formData.date_of_birth && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {formData.date_of_birth ? (
+                      format(formData.date_of_birth, "PPP")
+                    ) : (
+                      <span>Pick your date of birth</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={formData.date_of_birth}
+                    onSelect={(date) => setFormData(prev => ({ ...prev, date_of_birth: date }))}
+                    disabled={(date) =>
+                      date > new Date() || date < new Date("1900-01-01")
+                    }
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             {(userRole === 'distillery' || userRole === 'investor') && (
