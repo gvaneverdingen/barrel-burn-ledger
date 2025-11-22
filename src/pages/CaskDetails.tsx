@@ -433,66 +433,95 @@ const CaskDetails = () => {
 
     setPurchasing(true);
 
-    console.log('User data being sent to payment:', {
-      userId: user.id,
-      userEmail: user.email,
-      caskId: cask?.id,
-      amount: Math.round((cask?.total_price || 0) * 100)
-    });
-
     try {
-      // Mark that a payment flow has been initiated. This is used as a
-      // fallback in case Stripe does not return a session_id in the URL.
-      try {
-        localStorage.setItem('arigi_pending_payment', JSON.stringify({
-          caskId: cask?.id,
-          createdAt: Date.now(),
-        }));
-      } catch (e) {
-        console.warn('Unable to write pending payment marker', e);
-      }
-
-      console.log('Attempting to call create-payment function...');
-      
-      const { data, error } = await supabase.functions.invoke('create-payment', {
-        body: {
-          caskId: cask?.id,
-          amount: Math.round((cask?.total_price || 0) * 100), // Convert to cents
-          currency: 'usd',
-          caskName: cask?.spirit_name,
-        }
-      });
-
-      console.log('Payment function response:', { data, error });
-
-      if (error) {
-        console.error('Payment function returned error:', error);
-        setPurchasing(false);
-        throw new Error(error.message || 'Payment function error');
-      }
-
-      if (data?.url) {
-        console.log('Redirecting to Stripe checkout:', data.url);
+      // Check if this is a resale (peer-to-peer) or primary market purchase
+      if (activeSaleId) {
+        // This is a resale - use purchase-cask function
+        console.log('Processing resale purchase for sale:', activeSaleId);
         
-        // Try to redirect in the top-level window (outside iframe if in preview)
-        // This ensures the user goes through the full payment flow and returns to success page
-        try {
-          if (window.top && window.top !== window.self) {
-            // In an iframe, try to break out to top window
-            window.top.location.href = data.url;
-          } else {
-            // Not in iframe, use regular redirect
+        const { data, error } = await supabase.functions.invoke('purchase-cask', {
+          body: {
+            saleId: activeSaleId,
+          }
+        });
+
+        console.log('Purchase-cask response:', { data, error });
+
+        if (error) {
+          console.error('Purchase-cask error:', error);
+          setPurchasing(false);
+          throw new Error(error.message || 'Failed to process resale purchase');
+        }
+
+        if (data?.url) {
+          console.log('Redirecting to Stripe checkout:', data.url);
+          
+          // Redirect to Stripe checkout
+          try {
+            if (window.top && window.top !== window.self) {
+              window.top.location.href = data.url;
+            } else {
+              window.location.href = data.url;
+            }
+          } catch (e) {
+            console.warn('Could not access top window, redirecting in current window', e);
             window.location.href = data.url;
           }
-        } catch (e) {
-          // If we can't access window.top (security restrictions), fall back to current window
-          console.warn('Could not access top window, redirecting in current window', e);
-          window.location.href = data.url;
+        } else {
+          console.error('No payment URL returned from purchase-cask');
+          setPurchasing(false);
+          throw new Error('Payment setup failed');
         }
       } else {
-        console.error('No payment URL returned');
-        setPurchasing(false);
-        throw new Error('No payment URL returned');
+        // This is a primary market purchase - use create-payment function
+        console.log('Processing primary market purchase');
+        
+        // Mark that a payment flow has been initiated
+        try {
+          localStorage.setItem('arigi_pending_payment', JSON.stringify({
+            caskId: cask?.id,
+            createdAt: Date.now(),
+          }));
+        } catch (e) {
+          console.warn('Unable to write pending payment marker', e);
+        }
+
+        const { data, error } = await supabase.functions.invoke('create-payment', {
+          body: {
+            caskId: cask?.id,
+            amount: Math.round((cask?.total_price || 0) * 100), // Convert to cents
+            currency: 'usd',
+            caskName: cask?.spirit_name,
+          }
+        });
+
+        console.log('Payment function response:', { data, error });
+
+        if (error) {
+          console.error('Payment function returned error:', error);
+          setPurchasing(false);
+          throw new Error(error.message || 'Payment function error');
+        }
+
+        if (data?.url) {
+          console.log('Redirecting to Stripe checkout:', data.url);
+          
+          // Try to redirect in the top-level window (outside iframe if in preview)
+          try {
+            if (window.top && window.top !== window.self) {
+              window.top.location.href = data.url;
+            } else {
+              window.location.href = data.url;
+            }
+          } catch (e) {
+            console.warn('Could not access top window, redirecting in current window', e);
+            window.location.href = data.url;
+          }
+        } else {
+          console.error('No payment URL returned');
+          setPurchasing(false);
+          throw new Error('No payment URL returned');
+        }
       }
     } catch (error) {
       console.error('Payment process failed:', error);
