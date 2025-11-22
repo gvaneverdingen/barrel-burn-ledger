@@ -13,17 +13,36 @@ const RoleBasedRoute = ({
   allowedRoles, 
   redirectTo = '/' 
 }: RoleBasedRouteProps) => {
-  const { userRole, loading } = useAuth();
+  const { user, userRole, loading } = useAuth();
 
-  console.log('RoleBasedRoute:', { userRole, loading, allowedRoles });
+  console.log('RoleBasedRoute:', { 
+    hasUser: !!user, 
+    userRole, 
+    loading, 
+    allowedRoles 
+  });
 
+  // If still loading, show loading state
   if (loading) {
-    console.log('RoleBasedRoute: Still loading...');
+    console.log('RoleBasedRoute: Still loading auth...');
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
           <p className="mt-2 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If user is authenticated but role hasn't loaded yet, wait
+  if (user && !userRole) {
+    console.log('RoleBasedRoute: User authenticated but role not loaded yet...');
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Loading user data...</p>
         </div>
       </div>
     );
@@ -41,7 +60,7 @@ const RoleBasedRoute = ({
     return <>{children}</>;
   }
 
-  // If not allowed, redirect
+  // If not authenticated or not allowed, redirect
   console.log('RoleBasedRoute: Access denied, redirecting to:', redirectTo);
   return <Navigate to={redirectTo} replace />;
 };
