@@ -1,16 +1,51 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Zod validation schema
+const ApproveTransactionSchema = z.object({
+  transactionId: z.string().uuid("Invalid transaction ID format"),
+  action: z.enum(["approve", "reject"], {
+    errorMap: () => ({ message: "Action must be 'approve' or 'reject'" })
+  }),
+  reason: z.string().max(500, "Reason must be 500 characters or less").optional(),
+});
+
+// Sanitize error messages for production
+function sanitizeError(error: unknown, isDev: boolean): string {
+  if (isDev) {
+    return error instanceof Error ? error.message : String(error);
+  }
+  
+  // In production, return generic messages for security
+  if (error instanceof Error) {
+    // Only expose specific validation errors
+    if (error.message.includes("Invalid") || error.message.includes("must be")) {
+      return error.message;
+    }
+    // Generic messages for internal errors
+    if (error.message.includes("not found")) {
+      return "Resource not found";
+    }
+    if (error.message.includes("Unauthorized") || error.message.includes("permissions")) {
+      return "Unauthorized access";
+    }
+  }
+  return "An error occurred processing your request";
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const isDev = Deno.env.get("ENVIRONMENT") !== "production";
 
   try {
     console.log("Transaction approval function called");
@@ -55,16 +90,17 @@ serve(async (req) => {
 
     console.log("Admin authorization verified for user:", user.id);
 
-    // Parse request body
-    const { transactionId, action, reason } = await req.json();
-    
-    if (!transactionId || !action) {
-      throw new Error("Missing required parameters: transactionId and action");
+    // Parse and validate request body
+    const requestBody = await req.json();
+    const validationResult = ApproveTransactionSchema.safeParse(requestBody);
+
+    if (!validationResult.success) {
+      const errors = validationResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(", ");
+      console.error("Validation error:", errors);
+      throw new Error(`Validation failed: ${errors}`);
     }
 
-    if (!['approve', 'reject'].includes(action)) {
-      throw new Error("Action must be 'approve' or 'reject'");
-    }
+    const { transactionId, action, reason } = validationResult.data;
 
     console.log(`Processing ${action} for transaction:`, transactionId);
 
@@ -81,6 +117,7 @@ serve(async (req) => {
       .single();
 
     if (transactionError || !transaction) {
+      console.error("Transaction fetch error:", transactionError);
       throw new Error("Transaction not found");
     }
 
@@ -99,7 +136,8 @@ serve(async (req) => {
         .eq('id', transactionId);
 
       if (rejectError) {
-        throw rejectError;
+        console.error("Reject error:", rejectError);
+        throw new Error("Failed to reject transaction");
       }
 
       // TODO: Initiate Stripe refund here
@@ -150,7 +188,8 @@ serve(async (req) => {
         .eq('id', transactionId);
 
       if (approveError) {
-        throw approveError;
+        console.error("Approve error:", approveError);
+        throw new Error("Failed to approve transaction");
       }
 
       // Process payouts based on transaction type
@@ -180,24 +219,18 @@ serve(async (req) => {
         })
         .eq('id', transactionId);
 
-      return new Response(JSON.stringify({
-        success: false,
-        error: "Transaction approved but blockchain logging failed",
-        transactionId: transactionId
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
-      });
+      throw new Error("Transaction approved but blockchain logging failed");
     }
 
   } catch (error) {
     console.error("Transaction approval error:", error);
+    const sanitizedError = sanitizeError(error, isDev);
     return new Response(JSON.stringify({ 
-      error: (error as Error).message,
+      error: sanitizedError,
       success: false 
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
+      status: error instanceof Error && error.message.includes("Unauthorized") ? 403 : 500,
     });
   }
 });

@@ -1,17 +1,46 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface CreateSaleRequest {
-  ownershipId: string;
-  askingPricePerLiter: number;
-  volumeForSale: number;
-  notes?: string;
-  expiresInDays?: number;
+// Zod validation schema
+const CreateCaskSaleSchema = z.object({
+  ownershipId: z.string().uuid("Invalid ownership ID format"),
+  askingPricePerLiter: z.number().positive("Price per liter must be positive").max(100000, "Price exceeds maximum allowed"),
+  volumeForSale: z.number().positive("Volume must be positive").max(10000, "Volume exceeds maximum allowed"),
+  notes: z.string().max(1000, "Notes must be 1000 characters or less").optional(),
+  expiresInDays: z.number().int("Expiry days must be an integer").positive("Expiry days must be positive").max(365, "Maximum expiry is 365 days").optional(),
+  userId: z.string().uuid("Invalid user ID format").optional(),
+});
+
+// Sanitize error messages for production
+function sanitizeError(error: unknown, isDev: boolean): string {
+  if (isDev) {
+    return error instanceof Error ? error.message : String(error);
+  }
+  
+  // In production, return generic messages for security
+  if (error instanceof Error) {
+    // Only expose specific validation errors
+    if (error.message.includes("Invalid") || error.message.includes("must be") || error.message.includes("required")) {
+      return error.message;
+    }
+    // Generic messages for internal errors
+    if (error.message.includes("not found") || error.message.includes("insufficient permissions")) {
+      return "Invalid ownership record";
+    }
+    if (error.message.includes("not authenticated")) {
+      return "Authentication required";
+    }
+    if (error.message.includes("Cannot sell more") || error.message.includes("already an active sale")) {
+      return error.message;
+    }
+  }
+  return "An error occurred creating the sale listing";
 }
 
 serve(async (req) => {
@@ -19,9 +48,20 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const isDev = Deno.env.get("ENVIRONMENT") !== "production";
+
   try {
-    const requestBody: CreateSaleRequest & { userId?: string } = await req.json();
-    const { ownershipId, askingPricePerLiter, volumeForSale, notes, expiresInDays, userId } = requestBody;
+    // Parse and validate request body
+    const requestBody = await req.json();
+    const validationResult = CreateCaskSaleSchema.safeParse(requestBody);
+
+    if (!validationResult.success) {
+      const errors = validationResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(", ");
+      console.error("Validation error:", errors);
+      throw new Error(`Validation failed: ${errors}`);
+    }
+
+    const { ownershipId, askingPricePerLiter, volumeForSale, notes, expiresInDays, userId } = validationResult.data;
 
     let authenticatedUserId: string;
     
@@ -111,6 +151,7 @@ serve(async (req) => {
       .single();
 
     if (ownershipError || !ownership) {
+      console.error("Ownership validation error:", ownershipError);
       throw new Error("Invalid ownership record or insufficient permissions");
     }
 
@@ -149,7 +190,8 @@ serve(async (req) => {
       .single();
 
     if (saleError) {
-      throw new Error(`Failed to create sale listing: ${saleError.message}`);
+      console.error("Sale creation error:", saleError);
+      throw new Error("Failed to create sale listing");
     }
 
     // Send sale created email notification in background
@@ -217,10 +259,9 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Error creating cask sale:", error);
+    const sanitizedError = sanitizeError(error, isDev);
     return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Unknown error occurred" 
-      }),
+      JSON.stringify({ error: sanitizedError }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 400,

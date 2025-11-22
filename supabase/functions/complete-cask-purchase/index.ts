@@ -1,20 +1,47 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface CompleteRequest {
-  paymentIntentId: string;
+// Zod validation schema
+const CompleteRequestSchema = z.object({
+  paymentIntentId: z.string().min(1, "Payment intent ID is required").startsWith("pi_", "Invalid payment intent ID format"),
+});
+
+// Sanitize error messages for production
+function sanitizeError(error: unknown, isDev: boolean): string {
+  if (isDev) {
+    return error instanceof Error ? error.message : String(error);
+  }
+  
+  // In production, return generic messages for security
+  if (error instanceof Error) {
+    // Only expose specific validation errors
+    if (error.message.includes("Invalid") || error.message.includes("must be") || error.message.includes("required")) {
+      return error.message;
+    }
+    // Generic messages for internal errors
+    if (error.message.includes("not found")) {
+      return "Transaction not found";
+    }
+    if (error.message.includes("Payment not successful")) {
+      return "Payment not successful";
+    }
+  }
+  return "An error occurred completing your purchase";
 }
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const isDev = Deno.env.get("ENVIRONMENT") !== "production";
 
   try {
     const supabaseService = createClient(
@@ -23,7 +50,17 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    const { paymentIntentId }: CompleteRequest = await req.json();
+    // Parse and validate request body
+    const requestBody = await req.json();
+    const validationResult = CompleteRequestSchema.safeParse(requestBody);
+
+    if (!validationResult.success) {
+      const errors = validationResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(", ");
+      console.error("Validation error:", errors);
+      throw new Error(`Validation failed: ${errors}`);
+    }
+
+    const { paymentIntentId } = validationResult.data;
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
@@ -54,6 +91,7 @@ serve(async (req) => {
       .single();
 
     if (transactionError || !transaction) {
+      console.error("Transaction fetch error:", transactionError);
       throw new Error("Transaction not found");
     }
 
@@ -67,6 +105,7 @@ serve(async (req) => {
       .eq("id", transaction.id);
 
     if (updateTransactionError) {
+      console.error("Transaction update error:", updateTransactionError);
       throw new Error("Failed to update transaction");
     }
 
@@ -77,6 +116,7 @@ serve(async (req) => {
       .eq("id", saleId);
 
     if (updateSaleError) {
+      console.error("Sale update error:", updateSaleError);
       throw new Error("Failed to update sale status");
     }
 
@@ -96,6 +136,7 @@ serve(async (req) => {
         .eq("id", originalOwnership.id);
 
       if (updateOwnershipError) {
+        console.error("Ownership update error:", updateOwnershipError);
         throw new Error("Failed to update seller ownership");
       }
     } else {
@@ -106,6 +147,7 @@ serve(async (req) => {
         .eq("id", originalOwnership.id);
 
       if (deactivateOwnershipError) {
+        console.error("Ownership deactivate error:", deactivateOwnershipError);
         throw new Error("Failed to deactivate seller ownership");
       }
     }
@@ -124,6 +166,7 @@ serve(async (req) => {
       });
 
     if (createOwnershipError) {
+      console.error("Ownership creation error:", createOwnershipError);
       throw new Error("Failed to create buyer ownership");
     }
 
@@ -240,10 +283,9 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Error completing purchase:", error);
+    const sanitizedError = sanitizeError(error, isDev);
     return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Unknown error occurred" 
-      }),
+      JSON.stringify({ error: sanitizedError }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 400,
