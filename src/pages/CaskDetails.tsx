@@ -520,15 +520,17 @@ const CaskDetails = () => {
         if (data?.url) {
           console.log('Redirecting to Stripe checkout:', data.url);
           
-          // Redirect to Stripe checkout
+          // Redirect to Stripe checkout (handle iframe preview vs. real app)
           try {
-            if (window.top && window.top !== window.self) {
-              window.top.location.href = data.url;
+            if (window.self !== window.top) {
+              // In Lovable preview or other iframe: open Stripe in a new tab
+              window.open(data.url, '_blank', 'noopener,noreferrer');
             } else {
+              // In real app: navigate in the current window
               window.location.href = data.url;
             }
           } catch (e) {
-            console.warn('Could not access top window, redirecting in current window', e);
+            console.warn('Stripe redirect fallback in current window', e);
             window.location.href = data.url;
           }
         } else {
@@ -570,15 +572,17 @@ const CaskDetails = () => {
         if (data?.url) {
           console.log('Redirecting to Stripe checkout:', data.url);
           
-          // Try to redirect in the top-level window (outside iframe if in preview)
+          // Redirect to Stripe checkout (handle iframe preview vs. real app)
           try {
-            if (window.top && window.top !== window.self) {
-              window.top.location.href = data.url;
+            if (window.self !== window.top) {
+              // In Lovable preview or other iframe: open Stripe in a new tab
+              window.open(data.url, '_blank', 'noopener,noreferrer');
             } else {
+              // In real app: navigate in the current window
               window.location.href = data.url;
             }
           } catch (e) {
-            console.warn('Could not access top window, redirecting in current window', e);
+            console.warn('Stripe redirect fallback in current window', e);
             window.location.href = data.url;
           }
         } else {
