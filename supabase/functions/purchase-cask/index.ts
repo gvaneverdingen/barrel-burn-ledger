@@ -100,18 +100,6 @@ serve(async (req) => {
       throw new Error("Cannot purchase your own cask");
     }
 
-    // Get seller profile for Stripe account
-    const { data: sellerProfile } = await supabaseClient
-      .from("profiles")
-      .select("email")
-      .eq("id", sale.seller_id)
-      .single();
-
-    if (!sellerProfile) {
-      console.error("Seller profile not found");
-      throw new Error("Seller profile not found");
-    }
-
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
     });
