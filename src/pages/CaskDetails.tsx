@@ -98,6 +98,20 @@ const CaskDetails = () => {
       return;
     }
 
+    // Try to hydrate from localStorage immediately so the user never sees a blank page
+    try {
+      const cached = localStorage.getItem("arigi_last_cask");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && parsed.id === id) {
+          console.log("[CaskDetails] Using cached cask details from localStorage");
+          setCask(parsed);
+        }
+      }
+    } catch (error) {
+      console.warn("[CaskDetails] Failed to read cached cask details", error);
+    }
+
     // Set a safety timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
       console.error('[CaskDetails] Loading timeout - forcing loading=false');
@@ -472,6 +486,15 @@ const CaskDetails = () => {
       return;
     }
 
+    // Cache the current cask details so returning from checkout can render instantly
+    try {
+      if (cask) {
+        localStorage.setItem('arigi_last_cask', JSON.stringify(cask));
+      }
+    } catch (error) {
+      console.warn('[CaskDetails] Failed to cache cask details', error);
+    }
+
     setPurchasing(true);
 
     try {
@@ -584,7 +607,7 @@ const CaskDetails = () => {
     }
   };
 
-  if (loading) {
+  if (loading && !cask) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
         <div className="container mx-auto px-4 py-8">
