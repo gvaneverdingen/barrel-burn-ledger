@@ -18,10 +18,10 @@ function Calendar({
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{
-        caption_dropdowns: "flex gap-2",
-        dropdown: "bg-background border border-input rounded-md px-2 py-1 text-sm",
-        dropdown_year: "flex-1",
-        dropdown_month: "flex-1",
+        caption_dropdowns: "flex gap-2 justify-center mb-2",
+        dropdown: "bg-background border border-input rounded-md px-3 py-1.5 text-sm font-medium hover:bg-accent hover:border-accent-foreground/20 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+        dropdown_year: "flex-1 min-w-[100px]",
+        dropdown_month: "flex-1 min-w-[120px]",
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
