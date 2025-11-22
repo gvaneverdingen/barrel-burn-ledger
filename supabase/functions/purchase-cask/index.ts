@@ -52,6 +52,12 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
+    const supabaseService = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
+
     const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
     const { data: userData } = await supabaseClient.auth.getUser(token);
@@ -74,7 +80,7 @@ serve(async (req) => {
     const { saleId } = validationResult.data;
 
     // Get sale details with ownership and cask information
-    const { data: sale, error: saleError } = await supabaseClient
+    const { data: sale, error: saleError } = await supabaseService
       .from("cask_sales")
       .select(`
         *,
@@ -147,7 +153,7 @@ serve(async (req) => {
     });
 
     // Create transaction record
-    const { data: transaction, error: transactionError } = await supabaseClient
+    const { data: transaction, error: transactionError } = await supabaseService
       .from("transactions")
       .insert({
         cask_id: sale.cask_ownership.cask_id,
