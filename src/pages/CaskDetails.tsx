@@ -232,7 +232,7 @@ const CaskDetails = () => {
         return;
       }
 
-      // If no active resale, fetch original cask data (without requiring available_for_sale)
+      // If no active resale, fetch original cask data (may not exist or be accessible due to RLS)
       const { data: caskData, error: caskError } = await supabase
         .from("casks")
         .select(`
@@ -253,9 +253,19 @@ const CaskDetails = () => {
           )
         `)
         .eq("id", caskId)
-        .single();
+        .maybeSingle();
 
       if (caskError) throw caskError;
+
+      if (!caskData) {
+        console.warn("Cask not found or not accessible due to RLS:", { caskId });
+        toast({
+          title: "Cask unavailable",
+          description: "This cask could not be found or is not accessible.",
+        });
+        navigate("/marketplace");
+        return;
+      }
 
       setCask({
         ...caskData,
