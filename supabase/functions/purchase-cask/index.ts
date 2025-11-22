@@ -148,7 +148,7 @@ serve(async (req) => {
         buyer_id: user.id,
         seller_id: sale.seller_id,
         cask_id: sale.cask_ownership.cask_id,
-        transaction_type: 'peer_to_peer_sale',
+        transaction_type: 'purchase',
       },
     });
 
@@ -166,7 +166,7 @@ serve(async (req) => {
         platform_fee: platformFee / 100,
         distillery_fee: 0,
         seller_amount: sellerAmount / 100,
-        transaction_type: "peer_to_peer_sale",
+        transaction_type: "purchase",
         sale_listing_id: saleId,
         stripe_payment_intent_id: session.payment_intent as string,
         status: "pending",
