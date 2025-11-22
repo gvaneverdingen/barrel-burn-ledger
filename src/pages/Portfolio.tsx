@@ -145,10 +145,12 @@ const Portfolio = () => {
 
   const fetchPortfolioData = async () => {
     try {
+      console.log("🔄 Fetching portfolio data...");
       setLoading(true);
       setError(null);
       
       if (!user?.id) {
+        console.warn("⚠️ No user ID found while fetching portfolio data");
         setError("Please log in to view your portfolio");
         setLoading(false);
         return;
@@ -184,7 +186,10 @@ const Portfolio = () => {
         .eq("owner_id", user?.id)
         .eq("is_active", true);
 
-      if (ownershipError) throw ownershipError;
+      if (ownershipError) {
+        console.error("❌ Error fetching ownership data:", ownershipError);
+        throw ownershipError;
+      }
 
       // Fetch transaction history
       const { data: transactionData, error: transactionError } = await supabase
@@ -200,7 +205,10 @@ const Portfolio = () => {
         .eq("buyer_id", user?.id)
         .order("created_at", { ascending: false });
 
-      if (transactionError) throw transactionError;
+      if (transactionError) {
+        console.error("❌ Error fetching transaction history:", transactionError);
+        throw transactionError;
+      }
 
       // Fetch active sales listings
       const { data: salesData, error: salesError } = await supabase
@@ -222,17 +230,27 @@ const Portfolio = () => {
         .eq("status", "active")
         .order("listing_date", { ascending: false });
 
-      if (salesError) throw salesError;
+      if (salesError) {
+        console.error("❌ Error fetching active sales:", salesError);
+        throw salesError;
+      }
 
       const safeOwnerships = (ownershipData || []).filter((o: any) => o.casks && o.casks.spirit_name);
       const safeTransactions = (transactionData || []).filter((t: any) => t.casks && t.casks.spirit_name);
       const safeSales = (salesData || []).filter((s: any) => s.cask_ownership?.casks && s.cask_ownership.casks.spirit_name);
       
+      console.log("✅ Portfolio data loaded:", {
+        ownershipCount: safeOwnerships.length,
+        transactionCount: safeTransactions.length,
+        salesCount: safeSales.length,
+      });
+
       setOwnerships(safeOwnerships as CaskOwnership[]);
       setTransactions(safeTransactions);
       setActiveSales(safeSales);
     } catch (err: any) {
-      setError(err.message);
+      console.error("🚨 Error loading portfolio data:", err);
+      setError(err?.message || "Failed to load portfolio data. Please try again.");
     } finally {
       setLoading(false);
     }
