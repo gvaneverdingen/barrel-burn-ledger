@@ -90,14 +90,20 @@ const CaskDetails = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [sellerId, setSellerId] = useState<string | null>(null);
   
-
   useEffect(() => {
+    console.log('[CaskDetails] useEffect triggered', { id, userId: user?.id });
     if (id) {
       fetchCaskDetails(id);
+    } else {
+      console.warn('[CaskDetails] No cask ID found in route params');
     }
   }, [id, user]);
 
   useEffect(() => {
+    console.log('[CaskDetails] Secondary effect for permissions/offers', {
+      hasCask: !!cask,
+      userId: user?.id,
+    });
     if (cask && user) {
       checkImageManagementPermissions();
       fetchOffers();
@@ -270,18 +276,25 @@ const CaskDetails = () => {
 
 
   const fetchCaskDetails = async (caskId: string) => {
+    console.log('[CaskDetails] Fetching cask details for ID:', caskId);
+    setLoading(true);
     try {
       // First, try to find active resale listing for this cask
-      const { data: ownershipData } = await supabase
+      const { data: ownershipData, error: ownershipError } = await supabase
         .from('cask_ownership')
         .select('id')
         .eq('cask_id', caskId)
         .eq('is_active', true)
         .maybeSingle();
 
+      if (ownershipError) {
+        console.error('[CaskDetails] Error fetching ownership data:', ownershipError);
+      }
+
       let saleData = null;
       if (ownershipData) {
-        const { data } = await supabase
+        console.log('[CaskDetails] Active ownership found, looking for active sale listing', ownershipData);
+        const { data, error: saleError } = await supabase
           .from('cask_sales')
           .select(`
             id,
@@ -317,10 +330,15 @@ const CaskDetails = () => {
           .eq('ownership_id', ownershipData.id)
           .maybeSingle();
         
+        if (saleError) {
+          console.error('[CaskDetails] Error fetching sale data:', saleError);
+        }
+
         saleData = data;
       }
 
       if (saleData?.ownership?.cask) {
+        console.log('[CaskDetails] Resale listing detected, building resale cask data');
         // This is a resale listing - use resale pricing
         const caskInfo = saleData.ownership.cask;
         const finalCaskData = {
@@ -344,9 +362,11 @@ const CaskDetails = () => {
         }
 
         setCask(finalCaskData);
+        console.log('[CaskDetails] Resale cask data set');
         return;
       }
 
+      console.log('[CaskDetails] No active resale listing, fetching primary cask data');
       // If no active resale, fetch original cask data (may not exist or be accessible due to RLS)
       const { data: caskData, error: caskError } = await supabase
         .from("casks")
@@ -370,10 +390,13 @@ const CaskDetails = () => {
         .eq("id", caskId)
         .maybeSingle();
 
-      if (caskError) throw caskError;
+      if (caskError) {
+        console.error('[CaskDetails] Error fetching primary cask data:', caskError);
+        throw caskError;
+      }
 
       if (!caskData) {
-        console.warn("Cask not found or not accessible due to RLS:", { caskId });
+        console.warn('[CaskDetails] Cask not found or not accessible due to RLS', { caskId });
         toast({
           title: "Cask unavailable",
           description: "This cask could not be found or is not accessible.",
@@ -382,6 +405,7 @@ const CaskDetails = () => {
         return;
       }
 
+      console.log('[CaskDetails] Primary cask data loaded');
       setCask({
         ...caskData,
         is_sale_listing: false
@@ -396,6 +420,7 @@ const CaskDetails = () => {
       });
       navigate("/marketplace");
     } finally {
+      console.log('[CaskDetails] Finished fetching cask details, setting loading=false');
       setLoading(false);
     }
   };
