@@ -18,12 +18,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { TrendingUp, TrendingDown, Package, DollarSign, Calendar, MapPin, ShoppingCart, X, Store, Loader2 } from "lucide-react";
+import { TrendingUp, TrendingDown, Package, DollarSign, Calendar, MapPin, ShoppingCart, X, Store, Loader2, Eye } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { SellCaskDialog } from "@/components/SellCaskDialog";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 interface CaskOwnership {
   id: string;
@@ -88,6 +89,7 @@ interface CaskSale {
     acquired_date: string;
     acquisition_price: number;
     casks: {
+      id: string;
       spirit_name: string;
       cask_number: string;
       distilleries: {
@@ -108,6 +110,7 @@ const Portfolio = () => {
   console.log('🟢 Portfolio - Auth state:', { user: !!user, authLoading });
   const { formatPrice } = useCurrency();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [ownerships, setOwnerships] = useState<CaskOwnership[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [activeSales, setActiveSales] = useState<CaskSale[]>([]);
@@ -207,6 +210,7 @@ const Portfolio = () => {
           cask_ownership (
             *,
             casks (
+              id,
               spirit_name,
               cask_number,
               distilleries (name, location),
@@ -468,7 +472,12 @@ const Portfolio = () => {
                       </Card>
                     ) : (
                       ownerships.map((ownership, index) => (
-                        <Card key={ownership.id} className="luxury-card hover-scale animate-fade-in group overflow-hidden" style={{ animationDelay: `${index * 0.1}s` }}>
+                        <Card 
+                          key={ownership.id} 
+                          className="luxury-card hover-scale animate-fade-in group overflow-hidden cursor-pointer" 
+                          style={{ animationDelay: `${index * 0.1}s` }}
+                          onClick={() => navigate(`/cask/${ownership.casks.id}`)}
+                        >
                           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                           <CardHeader className="relative">
                             <div className="flex justify-between items-start">
@@ -545,8 +554,21 @@ const Portfolio = () => {
                               </div>
                             )}
 
-                            {/* Sell / Cancel Buttons */}
-                            <div className="flex justify-end pt-4">
+                            {/* Action Buttons */}
+                            <div className="flex justify-between items-center pt-4 gap-3">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/cask/${ownership.casks.id}`);
+                                }}
+                                className="border-primary/20 hover:bg-primary/10"
+                              >
+                                <Eye className="h-4 w-4 mr-2" />
+                                View Details
+                              </Button>
+                              
                               {isOwnershipForSale(ownership.id) ? (
                                 <div className="flex items-center gap-3">
                                   <Badge variant="secondary" className="bg-orange-500/10 text-orange-600 border-orange-500/20">
@@ -556,7 +578,10 @@ const Portfolio = () => {
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      onClick={() => handleCancelSaleClick(getSaleIdForOwnership(ownership.id)!)}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleCancelSaleClick(getSaleIdForOwnership(ownership.id)!);
+                                      }}
                                       className="border-red-500/20 text-red-600 hover:bg-red-500/10"
                                     >
                                       <X className="h-4 w-4 mr-2" />
@@ -566,7 +591,10 @@ const Portfolio = () => {
                                 </div>
                               ) : (
                                 <Button
-                                  onClick={() => handleSellCask(ownership)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleSellCask(ownership);
+                                  }}
                                   className="luxury-button"
                                   size="sm"
                                 >
@@ -596,7 +624,12 @@ const Portfolio = () => {
                       </Card>
                     ) : (
                       activeSales.map((sale, index) => (
-                        <Card key={sale.id} className="luxury-card hover-scale animate-fade-in group overflow-hidden" style={{ animationDelay: `${index * 0.1}s` }}>
+                        <Card 
+                          key={sale.id} 
+                          className="luxury-card hover-scale animate-fade-in group overflow-hidden cursor-pointer" 
+                          style={{ animationDelay: `${index * 0.1}s` }}
+                          onClick={() => navigate(`/cask/${sale.cask_ownership.casks.id}`)}
+                        >
                           <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                           <CardHeader className="relative">
                             <div className="flex justify-between items-start">
