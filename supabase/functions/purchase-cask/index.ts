@@ -149,6 +149,8 @@ serve(async (req) => {
         seller_id: sale.seller_id,
         cask_id: sale.cask_ownership.cask_id,
         transaction_type: 'purchase',
+        caskId: sale.cask_ownership.cask_id,
+        userId: user.id,
       },
     });
 
