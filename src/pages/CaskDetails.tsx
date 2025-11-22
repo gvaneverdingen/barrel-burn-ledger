@@ -156,42 +156,54 @@ const CaskDetails = () => {
 
   const fetchCaskDetails = async (caskId: string) => {
     try {
-      // First, check for active resale listings - this should be the priority
-      const { data: saleData, error: saleError } = await supabase
-        .from('cask_sales')
-        .select(`
-          id,
-          seller_id,
-          asking_price_per_liter,
-          total_asking_price,
-          volume_for_sale_liters,
-          notes,
-          ownership:cask_ownership(
+      // First, try to find active resale listing for this cask
+      const { data: ownershipData } = await supabase
+        .from('cask_ownership')
+        .select('id')
+        .eq('cask_id', caskId)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      let saleData = null;
+      if (ownershipData) {
+        const { data } = await supabase
+          .from('cask_sales')
+          .select(`
             id,
-            cask_id,
-            profiles:profiles(first_name, last_name),
-            cask:casks(
-              *,
-              distillery:distilleries(
-                id,
-                name,
-                location,
-                description,
-                established_year,
-                verified
-              ),
-              cask_type:cask_types(
-                id,
-                name,
-                capacity_liters,
-                description
+            seller_id,
+            asking_price_per_liter,
+            total_asking_price,
+            volume_for_sale_liters,
+            notes,
+            ownership:cask_ownership(
+              id,
+              cask_id,
+              profiles:profiles(first_name, last_name),
+              cask:casks(
+                *,
+                distillery:distilleries(
+                  id,
+                  name,
+                  location,
+                  description,
+                  established_year,
+                  verified
+                ),
+                cask_type:cask_types(
+                  id,
+                  name,
+                  capacity_liters,
+                  description
+                )
               )
             )
-          )
-        `)
-        .eq('status', 'active')
-        .eq('ownership.cask_id', caskId)
-        .maybeSingle();
+          `)
+          .eq('status', 'active')
+          .eq('ownership_id', ownershipData.id)
+          .maybeSingle();
+        
+        saleData = data;
+      }
 
       if (saleData?.ownership?.cask) {
         // This is a resale listing - use resale pricing
@@ -220,7 +232,7 @@ const CaskDetails = () => {
         return;
       }
 
-      // If no active resale, fetch original cask data
+      // If no active resale, fetch original cask data (without requiring available_for_sale)
       const { data: caskData, error: caskError } = await supabase
         .from("casks")
         .select(`
@@ -241,7 +253,6 @@ const CaskDetails = () => {
           )
         `)
         .eq("id", caskId)
-        .eq("available_for_sale", true)
         .single();
 
       if (caskError) throw caskError;
