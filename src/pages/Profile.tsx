@@ -379,18 +379,21 @@ const Profile = () => {
                                )}
                              </Button>
                            </PopoverTrigger>
-                           <PopoverContent className="w-auto p-0" align="start">
-                             <Calendar
-                               mode="single"
-                               selected={formData.date_of_birth}
-                               onSelect={(date) => setFormData(prev => ({ ...prev, date_of_birth: date }))}
-                               disabled={(date) =>
-                                 date > new Date() || date < new Date("1900-01-01")
-                               }
-                               initialFocus
-                               className={cn("p-3 pointer-events-auto")}
-                             />
-                           </PopoverContent>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={formData.date_of_birth}
+                                onSelect={(date) => setFormData(prev => ({ ...prev, date_of_birth: date }))}
+                                disabled={(date) =>
+                                  date > new Date() || date < new Date("1900-01-01")
+                                }
+                                captionLayout="dropdown-buttons"
+                                fromYear={1900}
+                                toYear={new Date().getFullYear()}
+                                initialFocus
+                                className={cn("p-3 pointer-events-auto")}
+                              />
+                            </PopoverContent>
                          </Popover>
                        ) : (
                          <div className="text-sm bg-muted/50 px-3 py-2 rounded-md">
