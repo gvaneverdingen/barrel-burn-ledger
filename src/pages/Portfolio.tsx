@@ -103,7 +103,9 @@ interface CaskSale {
 }
 
 const Portfolio = () => {
-  const { user } = useAuth();
+  console.log('🟢 Portfolio component rendering');
+  const { user, loading: authLoading } = useAuth();
+  console.log('🟢 Portfolio - Auth state:', { user: !!user, authLoading });
   const { formatPrice } = useCurrency();
   const { toast } = useToast();
   const [ownerships, setOwnerships] = useState<CaskOwnership[]>([]);
@@ -118,6 +120,7 @@ const Portfolio = () => {
   const [cancellingSale, setCancellingSale] = useState(false);
 
   // Add immediate debug logging
+  console.log('🟢 Portfolio - Initial state:', { user: !!user, authLoading, loading });
   console.log("=== PORTFOLIO COMPONENT RENDER ===");
   console.log("User object:", user);
   console.log("User ID:", user?.id);

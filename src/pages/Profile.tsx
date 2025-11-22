@@ -30,7 +30,9 @@ interface UserProfile {
 }
 
 const Profile = () => {
+  console.log('🟢 Profile component rendering');
   const { user, userRole, loading } = useAuth();
+  console.log('🟢 Profile - Auth state:', { user: !!user, userRole, loading });
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
