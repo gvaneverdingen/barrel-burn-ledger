@@ -33,16 +33,16 @@ interface Offer {
 }
 
 export const OffersPanel = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [receivedOffers, setReceivedOffers] = useState<Offer[]>([]);
   const [sentOffers, setSentOffers] = useState<Offer[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    if (!authLoading && user) {
       fetchOffers();
     }
-  }, [user]);
+  }, [authLoading, user]);
 
   const fetchOffers = async () => {
     if (!user) return;
@@ -244,10 +244,18 @@ export const OffersPanel = () => {
     </Card>
   );
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center py-12">
         <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <p className="text-muted-foreground">Please sign in to view and manage your offers.</p>
       </div>
     );
   }
