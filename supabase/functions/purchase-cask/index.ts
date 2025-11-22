@@ -1,20 +1,50 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface PurchaseRequest {
-  saleId: string;
+// Zod validation schema
+const PurchaseCaskSchema = z.object({
+  saleId: z.string().uuid("Invalid sale ID format"),
+});
+
+// Sanitize error messages for production
+function sanitizeError(error: unknown, isDev: boolean): string {
+  if (isDev) {
+    return error instanceof Error ? error.message : String(error);
+  }
+  
+  // In production, return generic messages for security
+  if (error instanceof Error) {
+    // Only expose specific validation errors
+    if (error.message.includes("Invalid") || error.message.includes("must be") || error.message.includes("required")) {
+      return error.message;
+    }
+    // Generic messages for internal errors
+    if (error.message.includes("not found") || error.message.includes("no longer active")) {
+      return "Sale listing not available";
+    }
+    if (error.message.includes("not authenticated")) {
+      return "Authentication required";
+    }
+    if (error.message.includes("your own")) {
+      return "Cannot purchase your own listing";
+    }
+  }
+  return "An error occurred processing your purchase";
 }
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const isDev = Deno.env.get("ENVIRONMENT") !== "production";
 
   try {
     const supabaseClient = createClient(
@@ -31,7 +61,17 @@ serve(async (req) => {
       throw new Error("User not authenticated");
     }
 
-    const { saleId }: PurchaseRequest = await req.json();
+    // Parse and validate request body
+    const requestBody = await req.json();
+    const validationResult = PurchaseCaskSchema.safeParse(requestBody);
+
+    if (!validationResult.success) {
+      const errors = validationResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(", ");
+      console.error("Validation error:", errors);
+      throw new Error(`Validation failed: ${errors}`);
+    }
+
+    const { saleId } = validationResult.data;
 
     // Get sale details with ownership and cask information
     const { data: sale, error: saleError } = await supabaseClient
@@ -52,6 +92,7 @@ serve(async (req) => {
       .single();
 
     if (saleError || !sale) {
+      console.error("Sale fetch error:", saleError);
       throw new Error("Sale listing not found or no longer active");
     }
 
@@ -67,6 +108,7 @@ serve(async (req) => {
       .single();
 
     if (!sellerProfile) {
+      console.error("Seller profile not found");
       throw new Error("Seller profile not found");
     }
 
@@ -74,7 +116,7 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    // Calculate platform fee (let's say 5%)
+    // Calculate platform fee (5%)
     const platformFeePercent = 0.05;
     const platformFee = Math.round(sale.total_asking_price * platformFeePercent * 100); // in cents
     const totalAmount = Math.round(sale.total_asking_price * 100); // in cents
@@ -113,6 +155,7 @@ serve(async (req) => {
         total_amount: sale.total_asking_price,
         transaction_fee: platformFee / 100,
         platform_fee: platformFee / 100,
+        distillery_fee: 0,
         seller_amount: sellerAmount / 100,
         transaction_type: "peer_to_peer_sale",
         sale_listing_id: saleId,
@@ -123,7 +166,8 @@ serve(async (req) => {
       .single();
 
     if (transactionError) {
-      throw new Error(`Failed to create transaction: ${transactionError.message}`);
+      console.error("Transaction creation error:", transactionError);
+      throw new Error("Failed to create transaction");
     }
 
     return new Response(
@@ -141,10 +185,9 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Error creating purchase:", error);
+    const sanitizedError = sanitizeError(error, isDev);
     return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Unknown error occurred" 
-      }),
+      JSON.stringify({ error: sanitizedError }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 400,
