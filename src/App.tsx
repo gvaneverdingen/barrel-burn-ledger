@@ -127,22 +127,14 @@ const AppRoutes = () => {
             <Route path="/offers" element={<Offers />} />
             <Route path="/comparison" element={<Comparison />} />
             
-            {/* User Profile and Portfolio - Available to consumers and others */}
+            {/* User Profile and Portfolio - accessible to any authenticated user, data is still protected by RLS */}
             <Route 
               path="/profile" 
-              element={
-                <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
-                  <Profile />
-                </RoleBasedRoute>
-              } 
+              element={<Profile />} 
             />
             <Route 
               path="/portfolio" 
-              element={
-                <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
-                  <Portfolio />
-                </RoleBasedRoute>
-              } 
+              element={<Portfolio />} 
             />
             <Route 
               path="/reports" 
