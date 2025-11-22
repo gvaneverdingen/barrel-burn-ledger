@@ -92,12 +92,29 @@ const CaskDetails = () => {
   
   useEffect(() => {
     console.log('[CaskDetails] useEffect triggered', { id, userId: user?.id });
-    if (id) {
-      fetchCaskDetails(id);
-    } else {
+    if (!id) {
       console.warn('[CaskDetails] No cask ID found in route params');
+      setLoading(false);
+      return;
     }
-  }, [id, user]);
+
+    // Set a safety timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.error('[CaskDetails] Loading timeout - forcing loading=false');
+      setLoading(false);
+      toast({
+        title: "Loading timeout",
+        description: "The page took too long to load. Please try refreshing.",
+        variant: "destructive",
+      });
+    }, 10000); // 10 second timeout
+
+    fetchCaskDetails(id).finally(() => {
+      clearTimeout(timeoutId);
+    });
+
+    return () => clearTimeout(timeoutId);
+  }, [id]);
 
   useEffect(() => {
     console.log('[CaskDetails] Secondary effect for permissions/offers', {
@@ -277,7 +294,6 @@ const CaskDetails = () => {
 
   const fetchCaskDetails = async (caskId: string) => {
     console.log('[CaskDetails] Fetching cask details for ID:', caskId);
-    setLoading(true);
     try {
       // First, try to find active resale listing for this cask
       const { data: ownershipData, error: ownershipError } = await supabase
@@ -572,6 +588,9 @@ const CaskDetails = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
         <div className="container mx-auto px-4 py-8">
+          <div className="text-center mb-6">
+            <p className="text-sm text-muted-foreground">Loading cask details...</p>
+          </div>
           <Skeleton className="h-10 w-32 mb-6" />
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
