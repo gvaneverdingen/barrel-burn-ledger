@@ -123,6 +123,13 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
+    // Determine frontend base URL from request origin or environment
+    const originHeader = req.headers.get("origin");
+    const frontendBaseUrl = (originHeader && originHeader.startsWith("http"))
+      ? originHeader
+      : (Deno.env.get("FRONTEND_URL") || (isDev ? "http://localhost:5173" : "http://localhost:5173"));
+    const normalizedBaseUrl = frontendBaseUrl.replace(/\/$/, "");
+
     // Create Stripe checkout session for resale purchase
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -141,8 +148,8 @@ serve(async (req) => {
         },
       ],
       mode: 'payment',
-      success_url: `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com') || 'http://localhost:5173'}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com') || 'http://localhost:5173'}/cask/${sale.cask_ownership.cask_id}`,
+      success_url: `${normalizedBaseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${normalizedBaseUrl}/cask/${sale.cask_ownership.cask_id}`,
       metadata: {
         sale_id: saleId,
         buyer_id: user.id,
