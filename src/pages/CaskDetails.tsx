@@ -18,11 +18,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, MapPin, Calendar, Droplets, Gauge, DollarSign, Wine, Building, Hash, Shield, Loader2, X } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Droplets, Gauge, DollarSign, Wine, Building, Hash, Shield, Loader2, X, HandCoins, MessageSquare } from "lucide-react";
 import caskDetailImage from "@/assets/cask-detail.jpg";
 import singleCask from "@/assets/single-cask.jpg";
 import { CaskImageGallery } from "@/components/CaskImageGallery";
 import { CaskImageUpload } from "@/components/CaskImageUpload";
+import { MakeOfferDialog } from "@/components/MakeOfferDialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface CaskDetails {
   id: string;
@@ -83,6 +85,10 @@ const CaskDetails = () => {
   const [isOwnerSale, setIsOwnerSale] = useState(false);
   const [cancellingSale, setCancellingSale] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [offerDialogOpen, setOfferDialogOpen] = useState(false);
+  const [offers, setOffers] = useState<any[]>([]);
+  const [isOwner, setIsOwner] = useState(false);
+  const [sellerId, setSellerId] = useState<string | null>(null);
   
 
   useEffect(() => {
@@ -94,6 +100,8 @@ const CaskDetails = () => {
   useEffect(() => {
     if (cask && user) {
       checkImageManagementPermissions();
+      fetchOffers();
+      checkOwnership();
     }
   }, [cask, user]);
 
@@ -153,6 +161,113 @@ const CaskDetails = () => {
       setCancellingSale(false);
     }
   };
+
+  const fetchOffers = async () => {
+    if (!cask || !user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('offers')
+        .select(`
+          *,
+          buyer_profile:profiles!offers_buyer_id_fkey(first_name, last_name, email),
+          seller_profile:profiles!offers_seller_id_fkey(first_name, last_name, email)
+        `)
+        .eq('cask_id', cask.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setOffers(data || []);
+    } catch (error) {
+      console.error('Error fetching offers:', error);
+    }
+  };
+
+  const checkOwnership = async () => {
+    if (!cask || !user) return;
+
+    try {
+      // Check if user owns this cask through cask_ownership
+      const { data: ownership } = await supabase
+        .from('cask_ownership')
+        .select('id, owner_id')
+        .eq('cask_id', cask.id)
+        .eq('owner_id', user.id)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      // Check if user is the distillery owner
+      const { data: distillery } = await supabase
+        .from('distilleries')
+        .select('id, profile_id')
+        .eq('id', cask.distillery.id)
+        .maybeSingle();
+
+      const isDistilleryOwner = distillery?.profile_id === user.id;
+      const isCaskOwner = !!ownership;
+
+      setIsOwner(isDistilleryOwner || isCaskOwner);
+
+      // Set seller ID based on sale listing or distillery ownership
+      if (cask.is_sale_listing && cask.seller) {
+        setSellerId(user.id); // For resale listings, user is the seller
+      } else if (isDistilleryOwner) {
+        setSellerId(distillery.profile_id);
+      }
+    } catch (error) {
+      console.error('Error checking ownership:', error);
+    }
+  };
+
+  const handleAcceptOffer = async (offerId: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('accept-offer', {
+        body: { offerId }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Offer Accepted",
+        description: "The transaction has been initiated.",
+      });
+
+      fetchOffers();
+    } catch (error) {
+      console.error('Error accepting offer:', error);
+      toast({
+        title: "Error",
+        description: "Failed to accept offer. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRejectOffer = async (offerId: string) => {
+    try {
+      const { error } = await supabase
+        .from('offers')
+        .update({ status: 'rejected' })
+        .eq('id', offerId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Offer Rejected",
+        description: "The offer has been rejected.",
+      });
+
+      fetchOffers();
+    } catch (error) {
+      console.error('Error rejecting offer:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reject offer. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
 
   const fetchCaskDetails = async (caskId: string) => {
     try {
@@ -711,6 +826,18 @@ const CaskDetails = () => {
                   </Button>
                 )}
 
+                {user && sellerId && sellerId !== user.id && !isOwner && (
+                  <Button 
+                    variant="outline"
+                    className="w-full" 
+                    onClick={() => setOfferDialogOpen(true)}
+                    size="lg"
+                  >
+                    <HandCoins className="mr-2 h-4 w-4" />
+                    Make an Offer
+                  </Button>
+                )}
+
                 {isOwnerSale && (
                   <Button 
                     variant="outline"
@@ -790,7 +917,179 @@ const CaskDetails = () => {
             </Card>
           </div>
         </div>
+
+        {/* Offers Section - Only visible to owner */}
+        {isOwner && offers.length > 0 && (
+          <div className="container mx-auto px-6 pb-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <HandCoins className="h-5 w-5" />
+                  <span>Offers ({offers.filter((o: any) => o.status === 'pending').length} pending)</span>
+                </CardTitle>
+                <CardDescription>
+                  Review and manage offers for this cask
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="pending">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="pending">
+                      Pending ({offers.filter((o: any) => o.status === 'pending').length})
+                    </TabsTrigger>
+                    <TabsTrigger value="accepted">Accepted</TabsTrigger>
+                    <TabsTrigger value="rejected">Rejected</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="pending" className="space-y-4 mt-4">
+                    {offers.filter((o: any) => o.status === 'pending').map((offer: any) => (
+                      <Card key={offer.id}>
+                        <CardContent className="pt-6">
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <p className="font-semibold">
+                                {offer.buyer_profile?.first_name} {offer.buyer_profile?.last_name}
+                              </p>
+                              <p className="text-sm text-muted-foreground">{offer.buyer_profile?.email}</p>
+                            </div>
+                            <Badge variant="secondary">Pending</Badge>
+                          </div>
+                          <div className="grid grid-cols-3 gap-4 mb-4">
+                            <div>
+                              <p className="text-sm text-muted-foreground">Price/L</p>
+                              <p className="font-semibold">{formatPrice(offer.offered_price_per_liter)}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-muted-foreground">Volume</p>
+                              <p className="font-semibold">{offer.volume_liters}L</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-muted-foreground">Total</p>
+                              <p className="font-semibold">{formatPrice(offer.offered_total_price)}</p>
+                            </div>
+                          </div>
+                          {offer.message && (
+                            <div className="bg-muted p-3 rounded-lg mb-4">
+                              <div className="flex items-start gap-2">
+                                <MessageSquare className="h-4 w-4 text-muted-foreground mt-0.5" />
+                                <p className="text-sm">{offer.message}</p>
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex gap-2">
+                            <Button 
+                              onClick={() => handleAcceptOffer(offer.id)}
+                              className="flex-1"
+                            >
+                              Accept Offer
+                            </Button>
+                            <Button 
+                              variant="outline"
+                              onClick={() => handleRejectOffer(offer.id)}
+                              className="flex-1"
+                            >
+                              Reject
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    {offers.filter((o: any) => o.status === 'pending').length === 0 && (
+                      <p className="text-center text-muted-foreground py-8">No pending offers</p>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="accepted" className="space-y-4 mt-4">
+                    {offers.filter((o: any) => o.status === 'accepted').map((offer: any) => (
+                      <Card key={offer.id}>
+                        <CardContent className="pt-6">
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <p className="font-semibold">
+                                {offer.buyer_profile?.first_name} {offer.buyer_profile?.last_name}
+                              </p>
+                            </div>
+                            <Badge variant="default">Accepted</Badge>
+                          </div>
+                          <div className="grid grid-cols-3 gap-4">
+                            <div>
+                              <p className="text-sm text-muted-foreground">Price/L</p>
+                              <p className="font-semibold">{formatPrice(offer.offered_price_per_liter)}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-muted-foreground">Volume</p>
+                              <p className="font-semibold">{offer.volume_liters}L</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-muted-foreground">Total</p>
+                              <p className="font-semibold">{formatPrice(offer.offered_total_price)}</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    {offers.filter((o: any) => o.status === 'accepted').length === 0 && (
+                      <p className="text-center text-muted-foreground py-8">No accepted offers</p>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="rejected" className="space-y-4 mt-4">
+                    {offers.filter((o: any) => o.status === 'rejected').map((offer: any) => (
+                      <Card key={offer.id}>
+                        <CardContent className="pt-6">
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <p className="font-semibold">
+                                {offer.buyer_profile?.first_name} {offer.buyer_profile?.last_name}
+                              </p>
+                            </div>
+                            <Badge variant="destructive">Rejected</Badge>
+                          </div>
+                          <div className="grid grid-cols-3 gap-4">
+                            <div>
+                              <p className="text-sm text-muted-foreground">Price/L</p>
+                              <p className="font-semibold">{formatPrice(offer.offered_price_per_liter)}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-muted-foreground">Volume</p>
+                              <p className="font-semibold">{offer.volume_liters}L</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-muted-foreground">Total</p>
+                              <p className="font-semibold">{formatPrice(offer.offered_total_price)}</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    {offers.filter((o: any) => o.status === 'rejected').length === 0 && (
+                      <p className="text-center text-muted-foreground py-8">No rejected offers</p>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
+
+      {/* Make Offer Dialog */}
+      {cask && sellerId && (
+        <MakeOfferDialog
+          open={offerDialogOpen}
+          onOpenChange={setOfferDialogOpen}
+          listing={{
+            id: cask.id,
+            cask_id: cask.id,
+            seller_id: sellerId,
+            spirit_name: cask.spirit_name,
+            cask_number: cask.cask_number,
+            current_volume_liters: cask.current_volume_liters || 0,
+            price_per_liter: cask.price_per_liter || 0,
+            total_price: cask.total_price || 0,
+          }}
+        />
+      )}
 
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <AlertDialogContent>
