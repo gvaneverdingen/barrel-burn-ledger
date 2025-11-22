@@ -167,7 +167,6 @@ const ProfileCompletion = () => {
               first_name: formData.first_name.trim(),
               last_name: formData.last_name.trim(),
               company_name: formData.company_name.trim() || null,
-              role: 'consumer' as any, // Cast to bypass TypeScript checking for enum
             });
 
           if (error) {
