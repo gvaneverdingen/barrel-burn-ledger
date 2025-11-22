@@ -52,26 +52,60 @@ serve(async (req) => {
     // Handle successful payment
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-      const { caskId, userId, transactionId } = session.metadata || {};
+      const metadata = session.metadata || {};
+      console.log("Checkout session completed with metadata:", metadata);
 
-      if (!caskId || !userId || !transactionId) {
-        console.error("Missing metadata in session:", session.metadata);
-        throw new Error("Missing required metadata");
+      let caskId = metadata.caskId || (metadata as any).cask_id;
+      let userId = metadata.userId || (metadata as any).buyer_id;
+      let transactionId = (metadata as any).transactionId as string | undefined;
+      const saleId = (metadata as any).sale_id as string | undefined;
+      const isResale = !!saleId;
+
+      // Resolve transaction either by explicit ID or by Stripe payment_intent
+      let transaction: any = null;
+      let transactionError: any = null;
+
+      if (transactionId) {
+        console.log("Looking up transaction by ID:", transactionId);
+        const { data, error } = await supabaseService
+          .from('transactions')
+          .select('*, cask:casks(*)')
+          .eq('id', transactionId)
+          .single();
+        transaction = data;
+        transactionError = error;
+      } else if (session.payment_intent) {
+        console.log("No transactionId in metadata, looking up by payment_intent:", session.payment_intent);
+        const { data, error } = await supabaseService
+          .from('transactions')
+          .select('*, cask:casks(*)')
+          .eq('stripe_payment_intent_id', session.payment_intent as string)
+          .single();
+        transaction = data;
+        transactionError = error;
+        if (transaction) {
+          transactionId = transaction.id;
+        }
+      } else {
+        console.error("Missing transaction reference in metadata and no payment_intent on session");
+        throw new Error("Missing transaction reference");
       }
-
-      console.log("Processing payment success for transaction:", transactionId);
-
-      // Get transaction details
-      const { data: transaction, error: transactionError } = await supabaseService
-        .from('transactions')
-        .select('*, cask:casks(*)')
-        .eq('id', transactionId)
-        .single();
 
       if (transactionError || !transaction) {
         console.error("Transaction not found:", transactionError);
         throw new Error("Transaction not found");
       }
+
+      // Ensure we have caskId and userId from transaction if not in metadata
+      caskId = caskId || transaction.cask_id;
+      userId = userId || transaction.buyer_id;
+
+      if (!caskId || !userId) {
+        console.error("Missing caskId or userId after resolving metadata", { caskId, userId });
+        throw new Error("Missing required metadata");
+      }
+
+      console.log("Processing payment success for transaction:", transactionId);
 
       // Update transaction status to completed
       const { error: updateError } = await supabaseService
@@ -80,7 +114,7 @@ serve(async (req) => {
           status: 'completed',
           completed_at: new Date().toISOString()
         })
-        .eq('id', transactionId);
+        .eq('id', transactionId as string);
 
       if (updateError) {
         console.error("Error updating transaction status:", updateError);
@@ -88,6 +122,43 @@ serve(async (req) => {
       }
 
       console.log("Payment completed, creating cask ownership...");
+
+      // For resale, update sale listing and previous ownership
+      if (isResale && saleId) {
+        console.log("Processing resale transfer for sale:", saleId);
+        const { data: sale, error: saleError } = await supabaseService
+          .from('cask_sales')
+          .select('id, ownership_id, status')
+          .eq('id', saleId)
+          .single();
+
+        if (saleError || !sale) {
+          console.error("Error fetching sale record for resale:", saleError);
+          throw new Error("Resale listing not found");
+        }
+
+        const { error: saleUpdateError } = await supabaseService
+          .from('cask_sales')
+          .update({ status: 'completed' })
+          .eq('id', saleId);
+
+        if (saleUpdateError) {
+          console.error("Error updating sale status:", saleUpdateError);
+          throw new Error("Failed to update sale status");
+        }
+
+        if (sale.ownership_id) {
+          const { error: ownershipDeactivateError } = await supabaseService
+            .from('cask_ownership')
+            .update({ is_active: false })
+            .eq('id', sale.ownership_id);
+
+          if (ownershipDeactivateError) {
+            console.error("Error deactivating previous ownership:", ownershipDeactivateError);
+            // Not fatal enough to abort whole transaction
+          }
+        }
+      }
 
       // Check if ownership record already exists to avoid duplicates
       const { data: existingOwnership } = await supabaseService
@@ -134,25 +205,49 @@ serve(async (req) => {
         console.log("Cask marked as unavailable successfully:", updatedCask);
       }
 
-      // Create payout records for distillery
-      const { data: payoutData, error: payoutError } = await supabaseService
-        .from('payouts')
-        .insert({
-          transaction_id: transactionId,
-          recipient_id: transaction.seller_id, // The distillery is the seller
-          recipient_type: 'distillery',
-          amount: transaction.seller_amount || (transaction.total_amount * 0.885), // 88.5% to distillery
-          fee_type: 'distillery_fee',
-          status: 'pending_payout',
-          description: `Primary market sale of cask ${transaction.cask.cask_number}`
-        })
-        .select();
+      // Create payout record
+      if (isResale) {
+        console.log("Creating payout record for resale transaction");
+        const { data: payoutData, error: payoutError } = await supabaseService
+          .from('payouts')
+          .insert({
+            transaction_id: transactionId,
+            recipient_id: transaction.seller_id,
+            recipient_type: 'user',
+            amount: transaction.seller_amount || transaction.total_amount,
+            fee_type: 'resale_payout',
+            status: 'pending_payout',
+            description: `Secondary market sale of cask ${transaction.cask.cask_number}`
+          })
+          .select();
 
-      if (payoutError) {
-        console.error("Error creating distillery payout:", payoutError);
-        throw new Error(`Failed to create distillery payout: ${payoutError.message}`);
+        if (payoutError) {
+          console.error("Error creating resale payout:", payoutError);
+          throw new Error(`Failed to create resale payout: ${payoutError.message}`);
+        } else {
+          console.log("Resale payout record created successfully:", payoutData);
+        }
       } else {
-        console.log("Distillery payout record created successfully:", payoutData);
+        console.log("Creating payout record for primary sale");
+        const { data: payoutData, error: payoutError } = await supabaseService
+          .from('payouts')
+          .insert({
+            transaction_id: transactionId,
+            recipient_id: transaction.seller_id, // The distillery is the seller
+            recipient_type: 'distillery',
+            amount: transaction.seller_amount || (transaction.total_amount * 0.885), // 88.5% to distillery
+            fee_type: 'distillery_fee',
+            status: 'pending_payout',
+            description: `Primary market sale of cask ${transaction.cask.cask_number}`
+          })
+          .select();
+
+        if (payoutError) {
+          console.error("Error creating distillery payout:", payoutError);
+          throw new Error(`Failed to create distillery payout: ${payoutError.message}`);
+        } else {
+          console.log("Distillery payout record created successfully:", payoutData);
+        }
       }
 
       // Send confirmation emails
