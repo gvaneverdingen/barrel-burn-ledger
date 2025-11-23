@@ -139,7 +139,7 @@ serve(async (req) => {
 
         const { error: saleUpdateError } = await supabaseService
           .from('cask_sales')
-          .update({ status: 'completed' })
+          .update({ status: 'sold' })
           .eq('id', saleId);
 
         if (saleUpdateError) {
