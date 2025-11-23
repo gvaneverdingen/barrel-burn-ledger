@@ -520,13 +520,11 @@ const CaskDetails = () => {
         if (data?.url) {
           console.log('Redirecting to Stripe checkout:', data.url);
           
-          // Redirect to Stripe checkout (handle iframe preview vs. real app)
+          // Redirect to Stripe checkout (ensure full-page navigation)
           try {
             if (window.self !== window.top) {
-              // In Lovable preview or other iframe: open Stripe in a new tab
-              window.open(data.url, '_blank', 'noopener,noreferrer');
-              // Reset button state so the page doesn't appear stuck in preview
-              setPurchasing(false);
+              // In Lovable preview or other iframe: navigate the top window
+              window.top!.location.href = data.url;
             } else {
               // In real app: navigate in the current window
               window.location.href = data.url;
@@ -576,13 +574,11 @@ const CaskDetails = () => {
         if (data?.url) {
           console.log('Redirecting to Stripe checkout:', data.url);
           
-          // Redirect to Stripe checkout (handle iframe preview vs. real app)
+          // Redirect to Stripe checkout (ensure full-page navigation)
           try {
             if (window.self !== window.top) {
-              // In Lovable preview or other iframe: open Stripe in a new tab
-              window.open(data.url, '_blank', 'noopener,noreferrer');
-              // Reset button state so the page doesn't appear stuck in preview
-              setPurchasing(false);
+              // In Lovable preview or other iframe: navigate the top window
+              window.top!.location.href = data.url;
             } else {
               // In real app: navigate in the current window
               window.location.href = data.url;
