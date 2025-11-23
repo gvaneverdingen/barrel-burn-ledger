@@ -498,6 +498,19 @@ const CaskDetails = () => {
 
     setPurchasing(true);
 
+    let checkoutWindow: Window | null = null;
+
+    // Pre-open a blank checkout window so Stripe can load outside the iframe preview
+    try {
+      checkoutWindow = window.open("", "_blank");
+      if (!checkoutWindow) {
+        console.warn("Failed to open checkout window - popup likely blocked");
+      }
+    } catch (openErr) {
+      console.warn("Error opening checkout window", openErr);
+      checkoutWindow = null;
+    }
+
     try {
       // Check if this is a resale (peer-to-peer) or primary market purchase
       if (activeSaleId) {
@@ -530,6 +543,10 @@ const CaskDetails = () => {
           }
 
           setPurchasing(false);
+          if (checkoutWindow) {
+            checkoutWindow.close();
+            checkoutWindow = null;
+          }
           toast({
             title: 'Payment Error',
             description: errorMessage,
@@ -541,8 +558,14 @@ const CaskDetails = () => {
         if (data?.url) {
           console.log('Redirecting to Stripe checkout:', data.url);
 
+          if (checkoutWindow) {
+            checkoutWindow.location.href = data.url;
+            setPurchasing(false);
+            return;
+          }
+
           try {
-            // Navigate to Stripe checkout in the current window
+            // Navigate to Stripe checkout in the current window (fallback if popup blocked)
             window.location.assign(data.url);
           } catch (e) {
             console.warn('Stripe redirect failed, attempting fallback window.open', e);
@@ -561,6 +584,10 @@ const CaskDetails = () => {
         } else {
           console.error('No payment URL returned from purchase-cask');
           setPurchasing(false);
+          if (checkoutWindow) {
+            checkoutWindow.close();
+            checkoutWindow = null;
+          }
           throw new Error('Payment setup failed');
         }
       } else {
@@ -606,6 +633,10 @@ const CaskDetails = () => {
           }
 
           setPurchasing(false);
+          if (checkoutWindow) {
+            checkoutWindow.close();
+            checkoutWindow = null;
+          }
           toast({
             title: 'Payment Error',
             description: errorMessage,
@@ -617,8 +648,14 @@ const CaskDetails = () => {
         if (data?.url) {
           console.log('Redirecting to Stripe checkout:', data.url);
 
+          if (checkoutWindow) {
+            checkoutWindow.location.href = data.url;
+            setPurchasing(false);
+            return;
+          }
+
           try {
-            // Navigate to Stripe checkout in the current window
+            // Navigate to Stripe checkout in the current window (fallback if popup blocked)
             window.location.assign(data.url);
           } catch (e) {
             console.warn('Stripe redirect failed, attempting fallback window.open', e);
@@ -637,12 +674,21 @@ const CaskDetails = () => {
         } else {
           console.error('No payment URL returned');
           setPurchasing(false);
+          if (checkoutWindow) {
+            checkoutWindow.close();
+            checkoutWindow = null;
+          }
           throw new Error('No payment URL returned');
         }
       }
     } catch (error) {
       console.error('Payment process failed:', error);
       setPurchasing(false);
+      
+      if (checkoutWindow) {
+        checkoutWindow.close();
+        checkoutWindow = null;
+      }
       
       let errorMessage = 'Failed to start payment process. Please try again.';
       
