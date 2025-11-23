@@ -540,21 +540,23 @@ const CaskDetails = () => {
 
         if (data?.url) {
           console.log('Redirecting to Stripe checkout:', data.url);
-          
-          // Redirect to Stripe checkout (ensure full-page navigation)
+
           try {
-            if (window.self !== window.top) {
-              // In Lovable preview or other iframe: navigate the top window
-              window.top!.location.href = data.url;
-            } else {
-              // In real app: navigate in the current window
-              window.location.href = data.url;
-            }
+            // Navigate to Stripe checkout in the current window
+            window.location.assign(data.url);
           } catch (e) {
-            console.warn('Stripe redirect fallback in current window', e);
-            // Ensure we don't leave the button in a loading state if redirect fails
+            console.warn('Stripe redirect failed, attempting fallback window.open', e);
             setPurchasing(false);
-            window.location.href = data.url;
+            try {
+              window.open(data.url, '_blank');
+            } catch (openError) {
+              console.error('Stripe redirect window.open also failed', openError);
+              toast({
+                title: 'Payment Redirect Error',
+                description: 'We could not redirect you to Stripe. Please open the checkout link manually.',
+                variant: 'destructive',
+              });
+            }
           }
         } else {
           console.error('No payment URL returned from purchase-cask');
@@ -614,21 +616,23 @@ const CaskDetails = () => {
  
         if (data?.url) {
           console.log('Redirecting to Stripe checkout:', data.url);
-          
-          // Redirect to Stripe checkout (ensure full-page navigation)
+
           try {
-            if (window.self !== window.top) {
-              // In Lovable preview or other iframe: navigate the top window
-              window.top!.location.href = data.url;
-            } else {
-              // In real app: navigate in the current window
-              window.location.href = data.url;
-            }
+            // Navigate to Stripe checkout in the current window
+            window.location.assign(data.url);
           } catch (e) {
-            console.warn('Stripe redirect fallback in current window', e);
-            // Ensure we don't leave the button in a loading state if redirect fails
+            console.warn('Stripe redirect failed, attempting fallback window.open', e);
             setPurchasing(false);
-            window.location.href = data.url;
+            try {
+              window.open(data.url, '_blank');
+            } catch (openError) {
+              console.error('Stripe redirect window.open also failed', openError);
+              toast({
+                title: 'Payment Redirect Error',
+                description: 'We could not redirect you to Stripe. Please open the checkout link manually.',
+                variant: 'destructive',
+              });
+            }
           }
         } else {
           console.error('No payment URL returned');
