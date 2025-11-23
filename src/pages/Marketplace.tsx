@@ -289,9 +289,14 @@ const Marketplace = () => {
 
   const filteredListings = allListings
     .filter(listing => {
-      const matchesSearch = listing.spirit_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        listing.distilleries?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (listing.tasting_notes && listing.tasting_notes.toLowerCase().includes(searchTerm.toLowerCase()));
+      const lowerSearch = searchTerm.toLowerCase();
+      const distilleryName = listing.distilleries?.name?.toLowerCase() || "";
+      const tastingNotes = listing.tasting_notes?.toLowerCase() || "";
+
+      const matchesSearch =
+        listing.spirit_name.toLowerCase().includes(lowerSearch) ||
+        distilleryName.includes(lowerSearch) ||
+        tastingNotes.includes(lowerSearch);
       
       const matchesType = filterType === 'all' || 
         (filterType === 'resale' && listing.is_resale) ||
