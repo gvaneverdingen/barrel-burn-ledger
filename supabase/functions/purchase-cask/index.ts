@@ -130,7 +130,33 @@ serve(async (req) => {
       : (Deno.env.get("FRONTEND_URL") || (isDev ? "http://localhost:5173" : "http://localhost:5173"));
     const normalizedBaseUrl = frontendBaseUrl.replace(/\/$/, "");
 
-    // Create Stripe checkout session for resale purchase
+    // Create transaction record FIRST (before checkout session)
+    const { data: transaction, error: transactionError } = await supabaseService
+      .from("transactions")
+      .insert({
+        cask_id: sale.cask_ownership.cask_id,
+        buyer_id: user.id,
+        seller_id: sale.seller_id,
+        volume_liters: sale.volume_for_sale_liters,
+        price_per_liter: sale.asking_price_per_liter,
+        total_amount: sale.total_asking_price,
+        transaction_fee: platformFee / 100,
+        platform_fee: platformFee / 100,
+        distillery_fee: 0,
+        seller_amount: sellerAmount / 100,
+        transaction_type: "purchase",
+        sale_listing_id: saleId,
+        status: "pending",
+      })
+      .select()
+      .single();
+
+    if (transactionError) {
+      console.error("Transaction creation error:", transactionError);
+      throw new Error("Failed to create transaction");
+    }
+
+    // Create Stripe checkout session for resale purchase with transaction_id in metadata
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],
@@ -151,6 +177,7 @@ serve(async (req) => {
       success_url: `${normalizedBaseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${normalizedBaseUrl}/cask/${sale.cask_ownership.cask_id}`,
       metadata: {
+        transactionId: transaction.id,
         sale_id: saleId,
         buyer_id: user.id,
         seller_id: sale.seller_id,
@@ -161,32 +188,11 @@ serve(async (req) => {
       },
     });
 
-    // Create transaction record
-    const { data: transaction, error: transactionError } = await supabaseService
+    // Update transaction with payment_intent after session creation
+    await supabaseService
       .from("transactions")
-      .insert({
-        cask_id: sale.cask_ownership.cask_id,
-        buyer_id: user.id,
-        seller_id: sale.seller_id,
-        volume_liters: sale.volume_for_sale_liters,
-        price_per_liter: sale.asking_price_per_liter,
-        total_amount: sale.total_asking_price,
-        transaction_fee: platformFee / 100,
-        platform_fee: platformFee / 100,
-        distillery_fee: 0,
-        seller_amount: sellerAmount / 100,
-        transaction_type: "purchase",
-        sale_listing_id: saleId,
-        stripe_payment_intent_id: session.payment_intent as string,
-        status: "pending",
-      })
-      .select()
-      .single();
-
-    if (transactionError) {
-      console.error("Transaction creation error:", transactionError);
-      throw new Error("Failed to create transaction");
-    }
+      .update({ stripe_payment_intent_id: session.payment_intent as string })
+      .eq("id", transaction.id);
 
     return new Response(
       JSON.stringify({
