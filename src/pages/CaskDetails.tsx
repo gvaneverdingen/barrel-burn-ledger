@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { supabase } from "@/integrations/supabase/client";
+import { FunctionsHttpError } from "@supabase/supabase-js";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -513,8 +514,28 @@ const CaskDetails = () => {
 
         if (error) {
           console.error('Purchase-cask error:', error);
+          let errorMessage = 'Failed to process resale purchase.';
+
+          if (error instanceof FunctionsHttpError) {
+            try {
+              const errorData = await error.context.json();
+              if (errorData && typeof (errorData as any).error === 'string') {
+                errorMessage = (errorData as any).error;
+              }
+            } catch (parseError) {
+              console.warn('Failed to parse purchase-cask error response', parseError);
+            }
+          } else if (error instanceof Error) {
+            errorMessage = error.message || errorMessage;
+          }
+
           setPurchasing(false);
-          throw new Error(error.message || 'Failed to process resale purchase');
+          toast({
+            title: 'Payment Error',
+            description: errorMessage,
+            variant: 'destructive',
+          });
+          return;
         }
 
         if (data?.url) {
@@ -567,8 +588,28 @@ const CaskDetails = () => {
  
         if (error) {
           console.error('Payment function returned error:', error);
+          let errorMessage = 'Payment function error';
+
+          if (error instanceof FunctionsHttpError) {
+            try {
+              const errorData = await error.context.json();
+              if (errorData && typeof (errorData as any).error === 'string') {
+                errorMessage = (errorData as any).error;
+              }
+            } catch (parseError) {
+              console.warn('Failed to parse create-payment error response', parseError);
+            }
+          } else if (error instanceof Error) {
+            errorMessage = error.message || errorMessage;
+          }
+
           setPurchasing(false);
-          throw new Error(error.message || 'Payment function error');
+          toast({
+            title: 'Payment Error',
+            description: errorMessage,
+            variant: 'destructive',
+          });
+          return;
         }
  
         if (data?.url) {
