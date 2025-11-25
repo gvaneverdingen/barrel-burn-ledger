@@ -8,6 +8,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { HandCoins, Send, Clock, CheckCircle, XCircle, MessageSquare } from 'lucide-react';
 import { LoadingSpinner } from './ui/loading-spinner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface Offer {
   id: string;
@@ -37,6 +47,7 @@ export const OffersPanel = () => {
   const [receivedOffers, setReceivedOffers] = useState<Offer[]>([]);
   const [sentOffers, setSentOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(false);
+  const [offerToWithdraw, setOfferToWithdraw] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -110,12 +121,14 @@ export const OffersPanel = () => {
     }
   };
 
-  const withdrawOffer = async (offerId: string) => {
+  const withdrawOffer = async () => {
+    if (!offerToWithdraw) return;
+
     try {
       const { error } = await supabase
         .from('offers')
         .update({ status: 'withdrawn' })
-        .eq('id', offerId);
+        .eq('id', offerToWithdraw);
 
       if (error) throw error;
 
@@ -124,6 +137,8 @@ export const OffersPanel = () => {
     } catch (error) {
       console.error('Error withdrawing offer:', error);
       toast.error('Failed to withdraw offer');
+    } finally {
+      setOfferToWithdraw(null);
     }
   };
 
@@ -232,7 +247,7 @@ export const OffersPanel = () => {
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => withdrawOffer(offer.id)}
+                onClick={() => setOfferToWithdraw(offer.id)}
                 className="w-full"
               >
                 Withdraw Offer
@@ -316,6 +331,23 @@ export const OffersPanel = () => {
           )}
         </TabsContent>
       </Tabs>
+
+      <AlertDialog open={!!offerToWithdraw} onOpenChange={() => setOfferToWithdraw(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Withdraw Offer?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to withdraw this offer? This action cannot be undone and you'll need to submit a new offer if you change your mind.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={withdrawOffer}>
+              Withdraw Offer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
