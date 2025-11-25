@@ -470,7 +470,6 @@ const Portfolio = () => {
                     <TabsTrigger
                       value="transactions"
                       className="text-base font-medium"
-                      onClick={() => navigate('/transactions')}
                     >
                       Transaction History
                     </TabsTrigger>
