@@ -121,6 +121,23 @@ serve(async (req) => {
         throw updateError;
       }
 
+      // If this is an offer purchase, update the offer status to completed
+      const offerId = metadata.offer_id as string | undefined;
+      if (offerId) {
+        console.log("Updating offer status to completed for offer:", offerId);
+        const { error: offerUpdateError } = await supabaseService
+          .from('offers')
+          .update({ status: 'completed' })
+          .eq('id', offerId);
+
+        if (offerUpdateError) {
+          console.error("Error updating offer status:", offerUpdateError);
+          // Don't throw - this shouldn't fail the whole transaction
+        } else {
+          console.log("Offer status updated to completed");
+        }
+      }
+
       console.log("Payment completed, creating cask ownership...");
 
       // For resale, update sale listing and previous ownership
