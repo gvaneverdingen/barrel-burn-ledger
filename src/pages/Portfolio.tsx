@@ -467,7 +467,11 @@ const Portfolio = () => {
                     <TabsTrigger value="sales" className="text-base font-medium">
                       Active Sales ({activeSales.length})
                     </TabsTrigger>
-                    <TabsTrigger value="transactions" className="text-base font-medium">
+                    <TabsTrigger
+                      value="transactions"
+                      className="text-base font-medium"
+                      onClick={() => navigate('/transactions')}
+                    >
                       Transaction History
                     </TabsTrigger>
                   </TabsList>
