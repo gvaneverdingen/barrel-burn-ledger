@@ -106,15 +106,41 @@ export const OffersPanel = () => {
 
   const handleOfferAction = async (offerId: string, action: 'accepted' | 'rejected') => {
     try {
-      const { error } = await supabase
-        .from('offers')
-        .update({ status: action })
-        .eq('id', offerId);
+      if (action === 'accepted') {
+        // For acceptance, call the edge function to create payment session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !session) {
+          throw new Error('Not authenticated');
+        }
 
-      if (error) throw error;
+        const { data, error } = await supabase.functions.invoke('accept-offer', {
+          body: { offerId },
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        });
 
-      toast.success(`Offer ${action === 'accepted' ? 'accepted' : 'rejected'} successfully`);
-      fetchOffers();
+        if (error) throw error;
+
+        if (data?.checkout_url) {
+          // Redirect to Stripe checkout
+          toast.success('Redirecting to payment...');
+          window.location.href = data.checkout_url;
+        } else {
+          throw new Error('No checkout URL received');
+        }
+      } else {
+        // For rejection, just update the status
+        const { error } = await supabase
+          .from('offers')
+          .update({ status: action })
+          .eq('id', offerId);
+
+        if (error) throw error;
+
+        toast.success('Offer rejected');
+        fetchOffers();
+      }
     } catch (error) {
       console.error(`Error ${action} offer:`, error);
       toast.error(`Failed to ${action} offer`);
@@ -152,7 +178,9 @@ export const OffersPanel = () => {
   const getStatusBadge = (status: string) => {
     const variants: Record<string, { variant: any; icon: any }> = {
       pending: { variant: 'secondary', icon: Clock },
+      processing_payment: { variant: 'default', icon: Clock },
       accepted: { variant: 'default', icon: CheckCircle },
+      completed: { variant: 'default', icon: CheckCircle },
       rejected: { variant: 'destructive', icon: XCircle },
       withdrawn: { variant: 'outline', icon: XCircle },
       expired: { variant: 'outline', icon: Clock },
@@ -160,10 +188,12 @@ export const OffersPanel = () => {
 
     const { variant, icon: Icon } = variants[status] || variants.pending;
     
+    const statusLabel = status === 'processing_payment' ? 'Processing Payment' : status.charAt(0).toUpperCase() + status.slice(1);
+    
     return (
       <Badge variant={variant} className="flex items-center gap-1">
         <Icon className="h-3 w-3" />
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {statusLabel}
       </Badge>
     );
   };
