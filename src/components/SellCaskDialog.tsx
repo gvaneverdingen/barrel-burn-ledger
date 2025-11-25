@@ -130,7 +130,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="luxury-card max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="luxury-card max-w-md">
         <DialogHeader>
           <DialogTitle className="luxury-text-gradient">Sell Your Cask</DialogTitle>
           <DialogDescription>
@@ -138,127 +138,129 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Cask Info Summary */}
-          <div className="p-4 rounded-lg bg-muted/30 space-y-2">
-            <h4 className="font-semibold">{ownership.casks.spirit_name}</h4>
-            <p className="text-sm text-muted-foreground">
-              {ownership.casks.distilleries.name} • Cask #{ownership.casks.cask_number}
-            </p>
-            <div className="flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <Package className="h-4 w-4 text-primary" />
-                <span>You own: {ownership.volume_liters}L</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-primary" />
-                <span>Current: ${ownership.casks?.price_per_liter ?? 0}/L</span>
+        <div className="mt-4 max-h-[70vh] overflow-y-auto pr-1">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Cask Info Summary */}
+            <div className="p-4 rounded-lg bg-muted/30 space-y-2">
+              <h4 className="font-semibold">{ownership.casks.spirit_name}</h4>
+              <p className="text-sm text-muted-foreground">
+                {ownership.casks.distilleries.name} • Cask #{ownership.casks.cask_number}
+              </p>
+              <div className="flex items-center gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <Package className="h-4 w-4 text-primary" />
+                  <span>You own: {ownership.volume_liters}L</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-primary" />
+                  <span>Current: ${ownership.casks?.price_per_liter ?? 0}/L</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Volume to Sell - Read Only */}
-          <div className="p-4 rounded-lg bg-muted/50 border border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-sm font-medium">Selling Volume</Label>
+            {/* Volume to Sell - Read Only */}
+            <div className="p-4 rounded-lg bg-muted/50 border border-border">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm font-medium">Selling Volume</Label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Full cask only - partial sales not available
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Package className="h-5 w-5 text-primary" />
+                  <span className="text-2xl font-bold">{ownership.volume_liters}L</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Price Per Liter */}
+            <div className="space-y-2">
+              <Label htmlFor="pricePerLiter">
+                Asking Price per Liter ($)
+              </Label>
+              <Input
+                id="pricePerLiter"
+                type="number"
+                step="0.01"
+                min="0.01"
+                value={pricePerLiter}
+                onChange={(e) => setPricePerLiter(e.target.value)}
+                placeholder="Enter price per liter"
+                required
+              />
+            </div>
+
+            {/* Listing Duration */}
+            <div className="space-y-2">
+              <Label htmlFor="expiresInDays">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  Listing Duration
+                </div>
+              </Label>
+              <Select value={expiresInDays} onValueChange={setExpiresInDays}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7">7 days</SelectItem>
+                  <SelectItem value="14">14 days</SelectItem>
+                  <SelectItem value="30">30 days</SelectItem>
+                  <SelectItem value="60">60 days</SelectItem>
+                  <SelectItem value="0">No expiration</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Notes */}
+            <div className="space-y-2">
+              <Label htmlFor="notes">
+                Additional Notes (Optional)
+              </Label>
+              <Textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Any special notes about this cask..."
+                rows={3}
+              />
+            </div>
+
+            {/* Price Summary */}
+            {pricePerLiter && (
+              <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Total Asking Price:</span>
+                  <span className="text-xl font-bold luxury-text-gradient">
+                    ${totalPrice}
+                  </span>
+                </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Full cask only - partial sales not available
+                  For {ownership.volume_liters}L (full cask) • Platform fee (5%) will be deducted from your payout
                 </p>
               </div>
-              <div className="flex items-center gap-2">
-                <Package className="h-5 w-5 text-primary" />
-                <span className="text-2xl font-bold">{ownership.volume_liters}L</span>
-              </div>
-            </div>
-          </div>
+            )}
 
-          {/* Price Per Liter */}
-          <div className="space-y-2">
-            <Label htmlFor="pricePerLiter">
-              Asking Price per Liter ($)
-            </Label>
-            <Input
-              id="pricePerLiter"
-              type="number"
-              step="0.01"
-              min="0.01"
-              value={pricePerLiter}
-              onChange={(e) => setPricePerLiter(e.target.value)}
-              placeholder="Enter price per liter"
-              required
-            />
-          </div>
-
-          {/* Listing Duration */}
-          <div className="space-y-2">
-            <Label htmlFor="expiresInDays">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Listing Duration
-              </div>
-            </Label>
-            <Select value={expiresInDays} onValueChange={setExpiresInDays}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7">7 days</SelectItem>
-                <SelectItem value="14">14 days</SelectItem>
-                <SelectItem value="30">30 days</SelectItem>
-                <SelectItem value="60">60 days</SelectItem>
-                <SelectItem value="0">No expiration</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Notes */}
-          <div className="space-y-2">
-            <Label htmlFor="notes">
-              Additional Notes (Optional)
-            </Label>
-            <Textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Any special notes about this cask..."
-              rows={3}
-            />
-          </div>
-
-          {/* Price Summary */}
-          {pricePerLiter && (
-            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Total Asking Price:</span>
-                <span className="text-xl font-bold luxury-text-gradient">
-                  ${totalPrice}
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                For {ownership.volume_liters}L (full cask) • Platform fee (5%) will be deducted from your payout
-              </p>
-            </div>
-          )}
-
-          <DialogFooter className="gap-2">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => onOpenChange(false)}
-              disabled={loading}
-            >
-              Cancel
-            </Button>
-            <Button 
-              type="submit" 
-              disabled={loading || !pricePerLiter}
-              className="luxury-button"
-            >
-              {loading ? "Creating Listing..." : "List Full Cask for Sale"}
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter className="gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={loading || !pricePerLiter}
+                className="luxury-button"
+              >
+                {loading ? "Creating Listing..." : "List Full Cask for Sale"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </div>
       </DialogContent>
     </Dialog>
   );
