@@ -22,6 +22,7 @@ interface MakeOfferDialogProps {
     current_volume_liters: number;
     price_per_liter: number;
     total_price: number;
+    saleListingId?: string | null;
   };
 }
 
@@ -69,7 +70,7 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
     try {
       const { error } = await supabase.from('offers').insert({
         cask_id: listing.cask_id || listing.id,
-        sale_listing_id: listing.id,
+        sale_listing_id: listing.saleListingId ?? null,
         buyer_id: user.id,
         seller_id: listing.seller_id!,
         offer_type: 'buy_offer',

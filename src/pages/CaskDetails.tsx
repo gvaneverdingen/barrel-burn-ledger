@@ -1291,6 +1291,7 @@ const CaskDetails = () => {
             current_volume_liters: cask.current_volume_liters || 0,
             price_per_liter: cask.price_per_liter || 0,
             total_price: cask.total_price || 0,
+            saleListingId: activeSaleId,
           }}
         />
       )}
