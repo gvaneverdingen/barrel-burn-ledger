@@ -730,7 +730,17 @@ const Portfolio = () => {
                         </CardContent>
                       </Card>
                     ) : (
-                      transactions.map((transaction, index) => (
+                      <>
+                        <div className="flex justify-end">
+                          <Button
+                            onClick={() => navigate('/transactions')}
+                            variant="outline"
+                            className="luxury-button-outline"
+                          >
+                            View Full History
+                          </Button>
+                        </div>
+                        {transactions.map((transaction, index) => (
                         <Card key={transaction.id} className="luxury-card hover-scale animate-fade-in group" style={{ animationDelay: `${index * 0.1}s` }}>
                           <CardContent className="p-6">
                             <div className="flex justify-between items-start">
@@ -769,7 +779,8 @@ const Portfolio = () => {
                             </div>
                           </CardContent>
                         </Card>
-                      ))
+                      ))}
+                      </>
                     )}
                   </TabsContent>
                 </Tabs>
