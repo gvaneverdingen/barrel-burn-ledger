@@ -130,7 +130,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="luxury-card max-w-md">
+      <DialogContent className="luxury-card max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="luxury-text-gradient">Sell Your Cask</DialogTitle>
           <DialogDescription>
