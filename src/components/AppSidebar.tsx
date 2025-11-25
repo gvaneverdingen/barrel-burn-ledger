@@ -34,6 +34,7 @@ const adminItems = [
 const consumerItems = [
   { title: "Portfolio", url: "/portfolio", icon: BarChart3 },
   { title: "Profile", url: "/profile", icon: User },
+  { title: "Transactions", url: "/transactions", icon: CreditCard },
 ]
 
 const userItems = [
