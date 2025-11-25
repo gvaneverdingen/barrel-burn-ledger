@@ -247,8 +247,17 @@ const CaskDetails = () => {
       setIsOwner(isDistilleryOwner || isCaskOwner);
 
       // Set seller ID based on sale listing or distillery ownership
-      if (cask.is_sale_listing && cask.seller) {
-        setSellerId(user.id); // For resale listings, user is the seller
+      if (cask.is_sale_listing && activeSaleId) {
+        // For resale listings, get the seller_id from the sale
+        const { data: saleData } = await supabase
+          .from('cask_sales')
+          .select('seller_id')
+          .eq('id', activeSaleId)
+          .single();
+        
+        if (saleData?.seller_id) {
+          setSellerId(saleData.seller_id);
+        }
       } else if (isDistilleryOwner) {
         setSellerId(distillery.profile_id);
       }
