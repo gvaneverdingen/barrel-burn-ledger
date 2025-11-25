@@ -6,48 +6,81 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { CreditCard, Download, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
 
 const Transactions = () => {
   const { user } = useAuth();
 
-  const transactions = [
-    {
-      id: "TXN-001",
-      date: "2024-01-15",
-      type: "Purchase",
-      description: "Highland Single Malt - Cask #HM2024",
-      amount: "£15,000.00",
-      status: "Completed",
-      method: "Bank Transfer",
+  // Fetch transactions where user is buyer
+  const { data: purchases } = useQuery({
+    queryKey: ['user-purchases', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*, cask:casks(spirit_name, cask_number)')
+        .eq('buyer_id', user.id)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
     },
-    {
-      id: "TXN-002",
-      date: "2024-01-10",
-      type: "Storage Fee",
-      description: "Q1 2024 Storage & Insurance",
-      amount: "£250.00",
-      status: "Completed",
-      method: "Card Payment",
+    enabled: !!user?.id
+  });
+
+  // Fetch payouts where user is recipient
+  const { data: payouts } = useQuery({
+    queryKey: ['user-payouts', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const { data, error } = await supabase
+        .from('payouts')
+        .select('*, transaction:transactions(*, cask:casks(spirit_name, cask_number))')
+        .eq('recipient_id', user.id)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
     },
-    {
-      id: "TXN-003",
-      date: "2024-01-05",
-      type: "Sale",
-      description: "Speyside Single Malt - Cask #SM2023",
-      amount: "£18,500.00",
-      status: "Pending",
-      method: "Bank Transfer",
-    },
-  ];
+    enabled: !!user?.id
+  });
+
+  const allTransactions = [
+    ...(purchases || []).map(t => ({
+      id: t.id.slice(0, 8),
+      date: format(new Date(t.created_at), 'yyyy-MM-dd'),
+      type: 'Purchase',
+      description: `${t.cask?.spirit_name} - ${t.cask?.cask_number}`,
+      amount: `$${t.total_amount.toFixed(2)}`,
+      status: t.status === 'completed' ? 'Completed' : t.status === 'pending' ? 'Pending' : 'Failed',
+      method: 'Stripe'
+    })),
+    ...(payouts || []).map(p => ({
+      id: p.id.slice(0, 8),
+      date: format(new Date(p.created_at), 'yyyy-MM-dd'),
+      type: 'Sale Payout',
+      description: p.description || `${p.transaction?.cask?.spirit_name} - ${p.transaction?.cask?.cask_number}`,
+      amount: `$${p.amount.toFixed(2)}`,
+      status: p.status === 'pending_payout' ? 'Pending Payout' : p.status === 'completed' ? 'Completed' : 'Processing',
+      method: 'Bank Transfer'
+    }))
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  const totalSpent = purchases?.reduce((sum, t) => sum + (t.status === 'completed' ? Number(t.total_amount) : 0), 0) || 0;
+  const totalEarned = payouts?.reduce((sum, p) => sum + (p.status !== 'failed' ? Number(p.amount) : 0), 0) || 0;
+  const pendingPayouts = payouts?.filter(p => p.status === 'pending_payout').length || 0;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "Completed":
         return <Badge variant="default" className="bg-green-500">Completed</Badge>;
       case "Pending":
-        return <Badge variant="secondary">Pending</Badge>;
+      case "Pending Payout":
+        return <Badge variant="secondary">{status}</Badge>;
       case "Failed":
         return <Badge variant="destructive">Failed</Badge>;
+      case "Processing":
+        return <Badge className="bg-blue-500">Processing</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -97,16 +130,24 @@ const Transactions = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {transactions.map((transaction) => (
-                    <TableRow key={transaction.id}>
-                      <TableCell className="font-medium">{transaction.date}</TableCell>
-                      <TableCell>{transaction.type}</TableCell>
-                      <TableCell>{transaction.description}</TableCell>
-                      <TableCell className="font-mono">{transaction.amount}</TableCell>
-                      <TableCell>{transaction.method}</TableCell>
-                      <TableCell>{getStatusBadge(transaction.status)}</TableCell>
+                  {allTransactions.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                        No transactions yet
+                      </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    allTransactions.map((transaction) => (
+                      <TableRow key={transaction.id}>
+                        <TableCell className="font-medium">{transaction.date}</TableCell>
+                        <TableCell>{transaction.type}</TableCell>
+                        <TableCell>{transaction.description}</TableCell>
+                        <TableCell className="font-mono">{transaction.amount}</TableCell>
+                        <TableCell>{transaction.method}</TableCell>
+                        <TableCell>{getStatusBadge(transaction.status)}</TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -118,8 +159,8 @@ const Transactions = () => {
                 <CardTitle className="text-base">Total Spent</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">£15,250.00</p>
-                <p className="text-sm text-muted-foreground">This year</p>
+                <p className="text-2xl font-bold">${totalSpent.toFixed(2)}</p>
+                <p className="text-sm text-muted-foreground">All purchases</p>
               </CardContent>
             </Card>
             
@@ -128,18 +169,18 @@ const Transactions = () => {
                 <CardTitle className="text-base">Total Earned</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">£18,500.00</p>
-                <p className="text-sm text-muted-foreground">This year</p>
+                <p className="text-2xl font-bold">${totalEarned.toFixed(2)}</p>
+                <p className="text-sm text-muted-foreground">From resales</p>
               </CardContent>
             </Card>
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Pending</CardTitle>
+                <CardTitle className="text-base">Pending Payouts</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">1</p>
-                <p className="text-sm text-muted-foreground">Transaction</p>
+                <p className="text-2xl font-bold">{pendingPayouts}</p>
+                <p className="text-sm text-muted-foreground">{pendingPayouts === 1 ? 'Payout' : 'Payouts'}</p>
               </CardContent>
             </Card>
           </div>
