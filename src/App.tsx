@@ -172,11 +172,7 @@ const AppRoutes = () => {
             />
             <Route 
               path="/transactions" 
-              element={
-                <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
-                  <Transactions />
-                </RoleBasedRoute>
-              } 
+              element={<Transactions />} 
             />
             
             {/* Documentation and Help - Available to all */}
