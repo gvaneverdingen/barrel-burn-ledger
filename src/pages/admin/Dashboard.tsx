@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Package, DollarSign, TrendingUp, Warehouse } from "lucide-react";
+import { Users, Package, DollarSign, TrendingUp, Warehouse, Building2 } from "lucide-react";
 import { MetricsCards } from "@/components/admin/MetricsCards";
 import { UserManagement } from "@/components/admin/UserManagement";
 import { ListingsManagement } from "@/components/admin/ListingsManagement";
 import { OrdersManagement } from "@/components/admin/OrdersManagement";
+import DistilleryVerificationManagement from "@/components/admin/DistilleryVerificationManagement";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AdminDashboard() {
@@ -93,14 +94,19 @@ export default function AdminDashboard() {
       <MetricsCards metrics={metrics} loading={loading} />
 
       <Tabs defaultValue="users" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3 lg:w-auto">
+        <TabsList className="grid w-full grid-cols-4 lg:w-auto">
           <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="distilleries">Distilleries</TabsTrigger>
           <TabsTrigger value="listings">Listings</TabsTrigger>
           <TabsTrigger value="orders">Orders</TabsTrigger>
         </TabsList>
 
         <TabsContent value="users" className="space-y-4">
           <UserManagement onUpdate={fetchMetrics} />
+        </TabsContent>
+
+        <TabsContent value="distilleries" className="space-y-4">
+          <DistilleryVerificationManagement />
         </TabsContent>
 
         <TabsContent value="listings" className="space-y-4">

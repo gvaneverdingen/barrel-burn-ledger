@@ -47,6 +47,7 @@ const DistilleryDashboard = lazy(() => import("./pages/distillery/Dashboard"));
 const DistilleryCasks = lazy(() => import("./pages/distillery/Casks"));
 const DistilleryAnalytics = lazy(() => import("./pages/distillery/Analytics"));
 const DistilleryVerification = lazy(() => import("./pages/distillery/Verification"));
+const DistilleryOnboarding = lazy(() => import("./pages/distillery/Onboarding"));
 const BlockchainExample = lazy(() => import("./pages/BlockchainExample"));
 const BlockchainTesting = lazy(() => import("./pages/BlockchainTesting"));
 
@@ -259,6 +260,10 @@ const AppRoutes = () => {
                   <DistilleryVerification />
                 </RoleBasedRoute>
               } 
+            />
+            <Route 
+              path="/distillery/onboarding" 
+              element={<DistilleryOnboarding />} 
             />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
