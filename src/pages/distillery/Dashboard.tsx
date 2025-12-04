@@ -1,18 +1,38 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building2, Package, BarChart3, Shield, Plus, Home } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import StripeConnectCard from "@/components/distillery/StripeConnectCard";
 
 const DistilleryDashboard = () => {
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const navigate = useNavigate();
+  const [selectedDistilleryId, setSelectedDistilleryId] = useState<string | null>(null);
+  const isAdmin = userRole === 'administrator';
 
-  const { data: distillery } = useQuery({
+  // For admins: fetch all distilleries
+  const { data: allDistilleries = [] } = useQuery({
+    queryKey: ['all-distilleries'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('distilleries')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isAdmin,
+  });
+
+  // For distillery owners: fetch their distillery
+  const { data: ownDistillery } = useQuery({
     queryKey: ['distillery', user?.id],
     queryFn: async () => {
       if (!user) return null;
@@ -21,13 +41,18 @@ const DistilleryDashboard = () => {
         .from('distilleries')
         .select('*')
         .eq('profile_id', user.id)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;
     },
-    enabled: !!user,
+    enabled: !!user && !isAdmin,
   });
+
+  // Determine which distillery to show
+  const distillery = isAdmin 
+    ? allDistilleries.find(d => d.id === selectedDistilleryId) || allDistilleries[0]
+    : ownDistillery;
 
   const { data: casks } = useQuery({
     queryKey: ['distillery-casks', distillery?.id],
@@ -51,7 +76,26 @@ const DistilleryDashboard = () => {
     totalVolume: casks?.reduce((sum, c) => sum + (c.current_volume_liters || 0), 0) || 0,
   };
 
-  if (!distillery) {
+  // Admin with no distilleries in system
+  if (isAdmin && allDistilleries.length === 0) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="max-w-2xl mx-auto text-center">
+          <Building2 className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+          <h1 className="text-2xl font-bold mb-2">No Distilleries Found</h1>
+          <p className="text-muted-foreground mb-6">
+            There are no distilleries in the system yet.
+          </p>
+          <Button onClick={() => navigate('/admin/dashboard')}>
+            Go to Admin Dashboard
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Non-admin without distillery profile
+  if (!isAdmin && !distillery) {
     return (
       <div className="container mx-auto p-6">
         <div className="max-w-2xl mx-auto text-center">
@@ -60,13 +104,15 @@ const DistilleryDashboard = () => {
           <p className="text-muted-foreground mb-6">
             You need to create a distillery profile to access this dashboard.
           </p>
-          <Button onClick={() => navigate('/profile')}>
-            Create Distillery Profile
+          <Button onClick={() => navigate('/distillery/onboarding')}>
+            Apply to Become a Distillery
           </Button>
         </div>
       </div>
     );
   }
+
+  if (!distillery) return null;
 
   return (
     <div className="container mx-auto p-6">
@@ -86,7 +132,30 @@ const DistilleryDashboard = () => {
             <p className="text-muted-foreground">{distillery.location}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+          {/* Admin distillery selector */}
+          {isAdmin && allDistilleries.length > 1 && (
+            <Select 
+              value={distillery.id} 
+              onValueChange={setSelectedDistilleryId}
+            >
+              <SelectTrigger className="w-[250px]">
+                <SelectValue placeholder="Select distillery" />
+              </SelectTrigger>
+              <SelectContent>
+                {allDistilleries.map((d) => (
+                  <SelectItem key={d.id} value={d.id}>
+                    {d.name} {!d.verified && "(Unverified)"}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {isAdmin && (
+            <Badge variant="outline" className="border-primary text-primary">
+              Admin View
+            </Badge>
+          )}
           {distillery.verified ? (
             <Badge variant="default" className="bg-green-500">
               <Shield className="h-4 w-4 mr-1" />
@@ -134,8 +203,8 @@ const DistilleryDashboard = () => {
         </Card>
       </div>
 
-      {/* Stripe Connect - Only show for verified distilleries */}
-      {distillery.verified && (
+      {/* Stripe Connect - Only show for verified distilleries and non-admin view */}
+      {distillery.verified && !isAdmin && (
         <div className="mb-8">
           <StripeConnectCard />
         </div>
@@ -150,7 +219,7 @@ const DistilleryDashboard = () => {
               Manage Casks
             </CardTitle>
             <CardDescription>
-              View and manage your cask inventory
+              View and manage cask inventory
             </CardDescription>
           </CardHeader>
         </Card>
@@ -162,7 +231,7 @@ const DistilleryDashboard = () => {
               Sales Analytics
             </CardTitle>
             <CardDescription>
-              Track your sales performance
+              Track sales performance
             </CardDescription>
           </CardHeader>
         </Card>
@@ -179,17 +248,19 @@ const DistilleryDashboard = () => {
           </CardHeader>
         </Card>
 
-        <Card className="luxury-card cursor-pointer hover:shadow-gold transition-all" onClick={() => navigate('/distillery/casks/new')}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Plus className="h-5 w-5" />
-              Add Cask
-            </CardTitle>
-            <CardDescription>
-              List a new cask for sale
-            </CardDescription>
-          </CardHeader>
-        </Card>
+        {!isAdmin && (
+          <Card className="luxury-card cursor-pointer hover:shadow-gold transition-all" onClick={() => navigate('/distillery/casks/new')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Plus className="h-5 w-5" />
+                Add Cask
+              </CardTitle>
+              <CardDescription>
+                List a new cask for sale
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        )}
       </div>
     </div>
   );
