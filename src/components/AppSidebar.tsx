@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users, Database, Link, Route, Heart, LayoutDashboard, HandCoins, ClipboardList } from "lucide-react"
+import { Home, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users, Database, Link, Route, Heart, LayoutDashboard, HandCoins, ClipboardList, PlusCircle } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 
@@ -53,6 +53,9 @@ const distilleryItems = [
   { title: "Sales Analytics", url: "/distillery/analytics", icon: BarChart3 },
   { title: "Verification", url: "/distillery/verification", icon: Shield },
 ]
+
+// For non-distillery users
+const becomeDistilleryItem = { title: "Become a Distillery", url: "/distillery/onboarding", icon: PlusCircle };
 
 const supportItems = [
   { title: "Documentation", url: "/docs", icon: FileText },
@@ -244,6 +247,40 @@ export function AppSidebar() {
                   </span>
                 </NavLink>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Become a Distillery - Show for logged-in non-distillery users */}
+        {user && !isDistillery && !isAdmin && (
+          <div className="px-2 mb-6">
+            <div 
+              className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2 transition-all duration-300 ${
+                isExpanded ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              Partnerships
+            </div>
+            <div className="space-y-1">
+              <NavLink
+                to={becomeDistilleryItem.url}
+                className={({ isActive }) =>
+                  `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
+                    isActive
+                      ? 'bg-primary/10 text-primary font-medium border-l-2 border-primary'
+                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                  }`
+                }
+              >
+                <becomeDistilleryItem.icon className="h-5 w-5 flex-shrink-0" />
+                <span 
+                  className={`ml-3 whitespace-nowrap transition-all duration-300 ${
+                    isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+                  }`}
+                >
+                  {becomeDistilleryItem.title}
+                </span>
+              </NavLink>
             </div>
           </div>
         )}
