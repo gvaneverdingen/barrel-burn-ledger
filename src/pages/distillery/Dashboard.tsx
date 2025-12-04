@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import StripeConnectCard from "@/components/distillery/StripeConnectCard";
 
 const DistilleryDashboard = () => {
   const { user } = useAuth();
@@ -132,6 +133,13 @@ const DistilleryDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Stripe Connect - Only show for verified distilleries */}
+      {distillery.verified && (
+        <div className="mb-8">
+          <StripeConnectCard />
+        </div>
+      )}
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

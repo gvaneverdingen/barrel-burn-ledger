@@ -468,6 +468,8 @@ export type Database = {
           logo_url: string | null
           name: string
           profile_id: string
+          stripe_account_id: string | null
+          stripe_onboarding_complete: boolean | null
           updated_at: string
           verified: boolean | null
           website: string | null
@@ -482,6 +484,8 @@ export type Database = {
           logo_url?: string | null
           name: string
           profile_id: string
+          stripe_account_id?: string | null
+          stripe_onboarding_complete?: boolean | null
           updated_at?: string
           verified?: boolean | null
           website?: string | null
@@ -496,6 +500,8 @@ export type Database = {
           logo_url?: string | null
           name?: string
           profile_id?: string
+          stripe_account_id?: string | null
+          stripe_onboarding_complete?: boolean | null
           updated_at?: string
           verified?: boolean | null
           website?: string | null
