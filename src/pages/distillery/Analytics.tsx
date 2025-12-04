@@ -1,18 +1,39 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { BarChart3, TrendingUp, DollarSign, Package, Home, Clock, CheckCircle, Wallet } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 
 const DistilleryAnalytics = () => {
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const navigate = useNavigate();
+  const [selectedDistilleryId, setSelectedDistilleryId] = useState<string | null>(null);
+  const isAdmin = userRole === 'administrator';
 
-  const { data: distillery } = useQuery({
+  // For admins: fetch all distilleries
+  const { data: allDistilleries = [] } = useQuery({
+    queryKey: ['all-distilleries'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('distilleries')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isAdmin,
+  });
+
+  // For distillery owners: fetch their distillery
+  const { data: ownDistillery } = useQuery({
     queryKey: ['distillery', user?.id],
     queryFn: async () => {
       if (!user) return null;
@@ -26,8 +47,13 @@ const DistilleryAnalytics = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!user,
+    enabled: !!user && !isAdmin,
   });
+
+  // Determine which distillery to show
+  const distillery = isAdmin 
+    ? allDistilleries.find(d => d.id === selectedDistilleryId) || allDistilleries[0]
+    : ownDistillery;
 
   const { data: transactions = [] } = useQuery({
     queryKey: ['distillery-transactions', distillery?.id],
@@ -110,22 +136,66 @@ const DistilleryAnalytics = () => {
     { name: 'Pending', value: pendingAmount, color: 'hsl(var(--chart-2))' },
   ].filter(item => item.value > 0);
 
+  if (!distillery) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="text-center py-12">
+          <Wallet className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+          <h1 className="text-2xl font-bold mb-2">No Distillery Found</h1>
+          <p className="text-muted-foreground mb-6">
+            {isAdmin ? "No distilleries in the system yet." : "You need a distillery profile to view earnings."}
+          </p>
+          <Button onClick={() => navigate(isAdmin ? '/admin/dashboard' : '/distillery/onboarding')}>
+            {isAdmin ? 'Go to Admin Dashboard' : 'Apply to Become a Distillery'}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-6">
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold luxury-text-gradient">Earnings Dashboard</h1>
-            <p className="text-muted-foreground">Track your revenue, payouts, and financial performance</p>
+            <p className="text-muted-foreground">
+              {isAdmin ? `Viewing: ${distillery.name}` : 'Track your revenue, payouts, and financial performance'}
+            </p>
           </div>
-          <Button
-            variant="outline"
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2"
-          >
-            <Home className="h-4 w-4" />
-            Home
-          </Button>
+          <div className="flex items-center gap-4">
+            {/* Admin distillery selector */}
+            {isAdmin && allDistilleries.length > 1 && (
+              <Select 
+                value={distillery.id} 
+                onValueChange={setSelectedDistilleryId}
+              >
+                <SelectTrigger className="w-[250px]">
+                  <SelectValue placeholder="Select distillery" />
+                </SelectTrigger>
+                <SelectContent>
+                  {allDistilleries.map((d) => (
+                    <SelectItem key={d.id} value={d.id}>
+                      {d.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            {isAdmin && (
+              <Badge variant="outline" className="border-primary text-primary">
+                Admin View
+              </Badge>
+            )}
+            <Button
+              variant="outline"
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2"
+            >
+              <Home className="h-4 w-4" />
+              Home
+            </Button>
+          </div>
         </div>
       </div>
 
