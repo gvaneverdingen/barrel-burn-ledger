@@ -75,14 +75,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('refreshUserData called for user:', user.id, 'isMagicUser:', !!user.user_metadata?.wallet_address);
       
-      // Fetch role from user_roles table
-      const { data: roleData } = await supabase
+      // Fetch all roles from user_roles table and prioritize administrator
+      const { data: rolesData } = await supabase
         .from('user_roles')
         .select('role')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        .eq('user_id', user.id);
       
-      console.log('refreshUserData: Role fetched:', roleData?.role);
+      // Prioritize administrator role if user has multiple roles
+      const roles = rolesData?.map(r => r.role) || [];
+      const prioritizedRole = roles.includes('administrator') 
+        ? 'administrator' 
+        : roles[0] || null;
+      
+      console.log('refreshUserData: Roles fetched:', roles, 'Prioritized:', prioritizedRole);
       
       // Fetch profile data separately
       const { data: profile, error } = await supabase
@@ -97,12 +102,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
       
-      console.log('🔍 AuthContext refreshUserData: Profile result:', { profile, roleData, error });
+      console.log('🔍 AuthContext refreshUserData: Profile result:', { profile, prioritizedRole, error });
       
       if (profile) {
-        if (roleData) {
-          console.log('Setting user role to:', roleData.role);
-          setUserRole(roleData.role as UserRole);
+        if (prioritizedRole) {
+          console.log('Setting user role to:', prioritizedRole);
+          setUserRole(prioritizedRole as UserRole);
         } else {
           console.log('No role data found, defaulting to consumer');
           setUserRole('consumer');
