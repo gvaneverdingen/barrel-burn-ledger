@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,7 @@ import { ArrowLeft, Save, Wine } from 'lucide-react';
 const NewCask = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -122,6 +123,9 @@ const NewCask = () => {
 
       if (error) throw error;
 
+      // Invalidate casks query to refresh the list
+      await queryClient.invalidateQueries({ queryKey: ['distillery-casks'] });
+      
       toast.success('Cask created successfully!');
       navigate('/distillery/casks');
     } catch (error: any) {
