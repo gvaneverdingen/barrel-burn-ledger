@@ -30,6 +30,7 @@ const DistilleryCasks = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [mintingCaskId, setMintingCaskId] = useState<string | null>(null);
 
   const { data: distillery } = useQuery({
     queryKey: ['distillery', user?.id],
