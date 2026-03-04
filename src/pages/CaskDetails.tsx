@@ -26,6 +26,7 @@ import { CaskImageGallery } from "@/components/CaskImageGallery";
 import { CaskImageUpload } from "@/components/CaskImageUpload";
 import { MakeOfferDialog } from "@/components/MakeOfferDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import NftStatusCard from "@/components/NftStatusCard";
 
 interface CaskDetails {
   id: string;
