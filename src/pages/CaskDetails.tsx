@@ -42,6 +42,9 @@ interface CaskDetails {
   tasting_notes: string | null;
   blockchain_id: string;
   blockchain_hash: string | null;
+  nft_token_id: number | null;
+  nft_contract_address: string | null;
+  nft_minted_at: string | null;
   expected_maturation_years: number | null;
   created_at: string;
   original_cask_type: string | null;
