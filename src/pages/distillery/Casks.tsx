@@ -197,6 +197,47 @@ const DistilleryCasks = () => {
                   </div>
                 </div>
                 
+                {/* NFT Status */}
+                <div className="flex items-center justify-between pt-2 border-t">
+                  <span className="text-sm text-muted-foreground">NFT:</span>
+                  {cask.nft_token_id ? (
+                    <Badge variant="outline" className="text-green-600 border-green-600">
+                      <Coins className="h-3 w-3 mr-1" />
+                      #{cask.nft_token_id}
+                    </Badge>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      disabled={mintingCaskId === cask.id}
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        setMintingCaskId(cask.id);
+                        try {
+                          const { data, error } = await supabase.functions.invoke('mint-cask-nft', {
+                            body: { caskId: cask.id }
+                          });
+                          if (error) throw error;
+                          if (!data?.success) throw new Error(data?.error || 'Failed');
+                          toast.success(`NFT minted! Token #${data.tokenId ?? 'pending'}`);
+                        } catch (err: any) {
+                          toast.error(err.message || 'Minting failed');
+                        } finally {
+                          setMintingCaskId(null);
+                        }
+                      }}
+                      className="text-xs h-7"
+                    >
+                      {mintingCaskId === cask.id ? (
+                        <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                      ) : (
+                        <Coins className="h-3 w-3 mr-1" />
+                      )}
+                      Mint
+                    </Button>
+                  )}
+                </div>
+
                 <div className="flex gap-2 mt-4">
                   <Button 
                     variant="outline" 
