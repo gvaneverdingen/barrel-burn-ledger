@@ -94,6 +94,7 @@ const CaskDetails = () => {
   const [offers, setOffers] = useState<any[]>([]);
   const [isOwner, setIsOwner] = useState(false);
   const [sellerId, setSellerId] = useState<string | null>(null);
+  const [isMintingNft, setIsMintingNft] = useState(false);
   
   useEffect(() => {
     console.log('[CaskDetails] useEffect triggered', { id, userId: user?.id });
