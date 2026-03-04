@@ -954,27 +954,27 @@ const CaskDetails = () => {
               </CardContent>
             </Card>
 
-            {/* Blockchain Information */}
+            {/* Blockchain / NFT Status */}
+            <NftStatusCard
+              blockchainHash={cask.blockchain_hash}
+              nftTokenId={cask.nft_token_id}
+              nftContractAddress={cask.nft_contract_address}
+              nftMintedAt={cask.nft_minted_at}
+              isMinting={isMintingNft}
+              onMint={handleMintNft}
+              canMint={canManageImages && !cask.nft_token_id}
+            />
+
+            {/* Blockchain ID */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Hash className="h-5 w-5" />
-                  <span>Blockchain Verification</span>
+                  <span>Blockchain ID</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Blockchain ID</p>
-                    <p className="font-mono text-sm bg-muted p-2 rounded">{cask.blockchain_id}</p>
-                  </div>
-                  {cask.blockchain_hash && (
-                    <div>
-                      <p className="text-sm text-muted-foreground">Transaction Hash</p>
-                      <p className="font-mono text-sm bg-muted p-2 rounded break-all">{cask.blockchain_hash}</p>
-                    </div>
-                  )}
-                </div>
+                <p className="font-mono text-sm bg-muted p-2 rounded break-all">{cask.blockchain_id}</p>
               </CardContent>
             </Card>
 
