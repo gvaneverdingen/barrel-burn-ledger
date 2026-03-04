@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
@@ -26,6 +26,7 @@ import { CaskImageGallery } from "@/components/CaskImageGallery";
 import { CaskImageUpload } from "@/components/CaskImageUpload";
 import { MakeOfferDialog } from "@/components/MakeOfferDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import NftStatusCard from "@/components/NftStatusCard";
 
 interface CaskDetails {
   id: string;
@@ -41,6 +42,9 @@ interface CaskDetails {
   tasting_notes: string | null;
   blockchain_id: string;
   blockchain_hash: string | null;
+  nft_token_id: number | null;
+  nft_contract_address: string | null;
+  nft_minted_at: string | null;
   expected_maturation_years: number | null;
   created_at: string;
   original_cask_type: string | null;
@@ -90,6 +94,7 @@ const CaskDetails = () => {
   const [offers, setOffers] = useState<any[]>([]);
   const [isOwner, setIsOwner] = useState(false);
   const [sellerId, setSellerId] = useState<string | null>(null);
+  const [isMintingNft, setIsMintingNft] = useState(false);
   
   useEffect(() => {
     console.log('[CaskDetails] useEffect triggered', { id, userId: user?.id });
@@ -315,6 +320,35 @@ const CaskDetails = () => {
     }
   };
 
+  const handleMintNft = useCallback(async () => {
+    if (!cask || !user) return;
+    setIsMintingNft(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('mint-cask-nft', {
+        body: { caskId: cask.id }
+      });
+
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || 'Minting failed');
+
+      toast({
+        title: "NFT Minted Successfully! 🎉",
+        description: `Token #${data.tokenId ?? 'pending'} minted on Polygon. Tx: ${data.transactionHash?.slice(0, 10)}...`,
+      });
+
+      // Refresh cask data to show updated NFT status
+      if (id) await fetchCaskDetails(id);
+    } catch (error: any) {
+      console.error('NFT minting error:', error);
+      toast({
+        title: "Minting Failed",
+        description: error.message || "Failed to mint NFT. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsMintingNft(false);
+    }
+  }, [cask, user, id]);
 
   const fetchCaskDetails = async (caskId: string) => {
     console.log('[CaskDetails] Fetching cask details for ID:', caskId);
@@ -920,27 +954,27 @@ const CaskDetails = () => {
               </CardContent>
             </Card>
 
-            {/* Blockchain Information */}
+            {/* Blockchain / NFT Status */}
+            <NftStatusCard
+              blockchainHash={cask.blockchain_hash}
+              nftTokenId={cask.nft_token_id}
+              nftContractAddress={cask.nft_contract_address}
+              nftMintedAt={cask.nft_minted_at}
+              isMinting={isMintingNft}
+              onMint={handleMintNft}
+              canMint={canManageImages && !cask.nft_token_id}
+            />
+
+            {/* Blockchain ID */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Hash className="h-5 w-5" />
-                  <span>Blockchain Verification</span>
+                  <span>Blockchain ID</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Blockchain ID</p>
-                    <p className="font-mono text-sm bg-muted p-2 rounded">{cask.blockchain_id}</p>
-                  </div>
-                  {cask.blockchain_hash && (
-                    <div>
-                      <p className="text-sm text-muted-foreground">Transaction Hash</p>
-                      <p className="font-mono text-sm bg-muted p-2 rounded break-all">{cask.blockchain_hash}</p>
-                    </div>
-                  )}
-                </div>
+                <p className="font-mono text-sm bg-muted p-2 rounded break-all">{cask.blockchain_id}</p>
               </CardContent>
             </Card>
 

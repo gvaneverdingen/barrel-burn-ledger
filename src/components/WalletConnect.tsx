@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { useMagic } from '@/contexts/MagicContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Wallet, Mail, ExternalLink, Copy, CheckCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -25,6 +27,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
     logout,
     resetLoadingState
   } = useMagic();
+  const { user } = useAuth();
   const [email, setEmail] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -33,6 +36,50 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
   React.useEffect(() => {
     setIsConnecting(false);
   }, []);
+
+  // Save wallet to DB when wallet address changes
+  React.useEffect(() => {
+    if (isLoggedIn && walletAddress && user) {
+      saveWalletToDb(walletAddress, user.id);
+    }
+  }, [isLoggedIn, walletAddress, user]);
+
+  const saveWalletToDb = async (address: string, userId: string) => {
+    try {
+      // Check if this wallet already exists for this user
+      const { data: existing } = await supabase
+        .from('wallets')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('wallet_address', address)
+        .maybeSingle();
+
+      if (!existing) {
+        // Set all other wallets as non-primary
+        await supabase
+          .from('wallets')
+          .update({ is_primary: false })
+          .eq('user_id', userId);
+
+        // Insert new wallet as primary
+        await supabase.from('wallets').insert({
+          user_id: userId,
+          wallet_address: address,
+          wallet_type: 'magic',
+          is_primary: true,
+        });
+        console.log('Wallet saved to database:', address.slice(0, 8) + '...');
+      } else {
+        // Update last_used_at
+        await supabase
+          .from('wallets')
+          .update({ last_used_at: new Date().toISOString() })
+          .eq('id', existing.id);
+      }
+    } catch (error) {
+      console.error('Error saving wallet to DB:', error);
+    }
+  };
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();

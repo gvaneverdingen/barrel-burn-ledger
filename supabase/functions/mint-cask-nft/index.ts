@@ -3,11 +3,10 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -15,7 +14,6 @@ serve(async (req) => {
   try {
     console.log("Mint cask NFT function called");
 
-    // Create Supabase clients
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
@@ -27,7 +25,7 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    // Get authenticated user (must be a distillery)
+    // Get authenticated user
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       throw new Error("No authorization header");
@@ -40,14 +38,15 @@ serve(async (req) => {
       throw new Error("User not authenticated");
     }
 
-    // Verify user is a distillery
-    const { data: profile, error: profileError } = await supabaseService
-      .from('profiles')
+    // Verify user has distillery role (roles are in user_roles table, not profiles)
+    const { data: roleData, error: roleError } = await supabaseService
+      .from('user_roles')
       .select('role')
-      .eq('id', user.id)
-      .single();
+      .eq('user_id', user.id)
+      .eq('role', 'distillery')
+      .maybeSingle();
 
-    if (profileError || profile?.role !== 'distillery') {
+    if (roleError || !roleData) {
       throw new Error("Only distilleries can mint cask NFTs");
     }
 
@@ -82,14 +81,22 @@ serve(async (req) => {
       throw new Error("You can only mint NFTs for your own casks");
     }
 
-    if (cask.blockchain_hash) {
+    if (cask.nft_token_id !== null) {
       throw new Error("This cask has already been minted as an NFT");
     }
+
+    // Get user's wallet address
+    const { data: walletData } = await supabaseService
+      .from('wallets')
+      .select('wallet_address')
+      .eq('user_id', user.id)
+      .eq('is_primary', true)
+      .maybeSingle();
 
     // Prepare NFT metadata
     const nftMetadata = {
       name: `${cask.spirit_name} - Cask #${cask.cask_number}`,
-      description: `Premium whisky cask from ${cask.distillery.name}. ${cask.tasting_notes}`,
+      description: `Premium whisky cask from ${cask.distillery.name}. ${cask.tasting_notes || ''}`,
       image: generateCaskImageUrl(cask),
       attributes: [
         { trait_type: "Distillery", value: cask.distillery.name },
@@ -99,20 +106,23 @@ serve(async (req) => {
         { trait_type: "Volume (Liters)", value: cask.current_volume_liters },
         { trait_type: "Alcohol Percentage", value: cask.alcohol_percentage },
         { trait_type: "Maturation Years", value: cask.expected_maturation_years },
-        { trait_type: "Warehouse Location", value: cask.warehouse_location }
+        { trait_type: "Warehouse Location", value: cask.warehouse_location },
+        { trait_type: "Rarity Tier", value: cask.rarity_tier || 1 },
+        { trait_type: "Region", value: cask.region || "Unknown" },
+        { trait_type: "Single Barrel", value: cask.is_single_barrel ? "Yes" : "No" },
       ],
-      external_url: `${Deno.env.get("FRONTEND_URL") || "https://arigi.co"}/cask/${cask.id}`,
+      external_url: `https://arigi.co/cask/${cask.id}`,
       blockchain_id: cask.blockchain_id
     };
 
-    // Call blockchain logger to mint the NFT
+    // Call blockchain logger to mint the NFT on Polygon
     const mintResponse = await supabaseClient.functions.invoke('blockchain-logger', {
       body: {
         caskId: cask.id,
-        buyerId: user.id,
+        buyerId: walletData?.wallet_address || user.id,
         transactionType: 'mint',
-        volume: cask.current_volume_liters,
-        price: cask.total_price,
+        volume: cask.current_volume_liters || 0,
+        price: cask.total_price || 0,
         timestamp: Date.now(),
         metadata: nftMetadata
       }
@@ -123,12 +133,20 @@ serve(async (req) => {
       throw new Error("Failed to mint NFT on blockchain");
     }
 
-    console.log("Successfully minted cask NFT");
+    const result = mintResponse.data;
+
+    if (!result?.success) {
+      throw new Error(result?.error || "Blockchain minting failed");
+    }
+
+    console.log("Successfully minted cask NFT:", result);
 
     return new Response(JSON.stringify({
       success: true,
-      transactionHash: mintResponse.data.transactionHash,
-      blockNumber: mintResponse.data.blockNumber,
+      transactionHash: result.transactionHash,
+      blockNumber: result.blockNumber,
+      tokenId: result.tokenId,
+      contractAddress: result.contractAddress,
       metadata: nftMetadata,
       message: "Cask NFT minted successfully"
     }), {
@@ -148,9 +166,7 @@ serve(async (req) => {
   }
 });
 
-// Generate a placeholder image URL for the cask
 function generateCaskImageUrl(cask: any): string {
-  // In production, this would generate or point to actual cask images
-  const baseUrl = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b"; // Whisky barrel image
+  const baseUrl = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b";
   return `${baseUrl}?w=500&h=500&fit=crop&auto=format`;
 }
