@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { useMagic } from '@/contexts/MagicContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Wallet, Mail, ExternalLink, Copy, CheckCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
