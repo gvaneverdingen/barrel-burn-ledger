@@ -2,12 +2,13 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { ethers } from "https://esm.sh/ethers@6.8.0";
 
-// Contract ABIs (simplified - import full ABIs from artifacts in production)
+// Contract ABIs
 const CASK_NFT_ABI = [
   "function mintCask(address to, string caskId, address distillery, string spiritName, string caskNumber, uint256 volumeLiters, uint256 alcoholPercentage, uint256 distillationDate, uint8 ageYears, uint8 rarityTier, string caskType, string specialFinish, string region, bool isSingleBarrel, string tokenURI) returns (uint256)",
   "function getTokenIdByCaskId(string caskId) view returns (uint256)",
   "function ownerOf(uint256 tokenId) view returns (address)",
-  "function safeTransferFromWithPrice(address from, address to, uint256 tokenId, uint256 price)"
+  "function safeTransferFromWithPrice(address from, address to, uint256 tokenId, uint256 price)",
+  "event CaskMinted(uint256 indexed tokenId, string caskId, address indexed distillery, address indexed owner, string spiritName, string caskNumber, uint8 rarityTier)"
 ];
 
 const MARKETPLACE_ABI = [
@@ -19,7 +20,7 @@ const MARKETPLACE_ABI = [
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 interface BlockchainTransaction {
@@ -31,6 +32,7 @@ interface BlockchainTransaction {
   price: number;
   timestamp: number;
   transactionId?: string;
+  metadata?: any;
 }
 
 interface BlockchainResponse {
@@ -40,22 +42,16 @@ interface BlockchainResponse {
   tokenId?: number;
   contractAddress?: string;
   success: boolean;
+  error?: string;
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     console.log("Blockchain logger function called");
-
-    // Create Supabase clients
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-    );
 
     const supabaseService = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -64,6 +60,11 @@ serve(async (req) => {
     );
 
     // Get authenticated user
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+    );
+
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       throw new Error("No authorization header");
@@ -76,22 +77,21 @@ serve(async (req) => {
       throw new Error("User not authenticated");
     }
 
-    // Parse request body
     const transaction: BlockchainTransaction = await req.json();
     
     if (!transaction.caskId || !transaction.buyerId || !transaction.transactionType) {
       throw new Error("Missing required transaction data");
     }
 
-    console.log("Processing blockchain transaction:", transaction);
+    console.log("Processing blockchain transaction:", transaction.transactionType, "for cask:", transaction.caskId);
 
     // Execute blockchain transaction on Polygon
-    const blockchainResult = await executePolygonTransaction(transaction);
+    const blockchainResult = await executePolygonTransaction(transaction, supabaseService);
     
-    console.log("Blockchain transaction result:", blockchainResult);
+    console.log("Blockchain result:", blockchainResult.success ? "SUCCESS" : "FAILED", blockchainResult.transactionHash || blockchainResult.error);
 
     if (!blockchainResult.success) {
-      throw new Error("Blockchain transaction failed");
+      throw new Error(blockchainResult.error || "Blockchain transaction failed");
     }
 
     // Log to blockchain_logs table
@@ -101,10 +101,10 @@ serve(async (req) => {
         transaction_id: transaction.transactionId || null,
         cask_id: transaction.caskId,
         blockchain_hash: blockchainResult.transactionHash,
-        contract_address: blockchainResult.contractAddress,
-        token_id: blockchainResult.tokenId,
-        block_number: blockchainResult.blockNumber,
-        gas_used: blockchainResult.gasUsed,
+        contract_address: blockchainResult.contractAddress || null,
+        token_id: blockchainResult.tokenId || null,
+        block_number: blockchainResult.blockNumber || null,
+        gas_used: blockchainResult.gasUsed || null,
         transaction_type: transaction.transactionType,
         metadata: {
           buyerId: transaction.buyerId,
@@ -119,8 +119,22 @@ serve(async (req) => {
       console.error("Error logging to blockchain_logs:", logError);
     }
 
-    // Update the transaction record with blockchain hash
-    if (transaction.transactionType === 'purchase' && transaction.transactionId) {
+    // Update records based on transaction type
+    if (transaction.transactionType === 'mint') {
+      const { error: caskUpdateError } = await supabaseService
+        .from('casks')
+        .update({
+          blockchain_hash: blockchainResult.transactionHash,
+          nft_token_id: blockchainResult.tokenId ?? null,
+          nft_contract_address: blockchainResult.contractAddress ?? null,
+          nft_minted_at: new Date().toISOString()
+        })
+        .eq('id', transaction.caskId);
+
+      if (caskUpdateError) {
+        console.error("Error updating cask with NFT details:", caskUpdateError);
+      }
+    } else if (transaction.transactionType === 'purchase' && transaction.transactionId) {
       const { error: updateError } = await supabaseService
         .from('transactions')
         .update({
@@ -130,33 +144,17 @@ serve(async (req) => {
 
       if (updateError) {
         console.error("Error updating transaction:", updateError);
-        throw updateError;
-      }
-    } else if (transaction.transactionType === 'mint') {
-      // Update cask with NFT details
-      const { error: caskUpdateError } = await supabaseService
-        .from('casks')
-        .update({
-          blockchain_hash: blockchainResult.transactionHash,
-          nft_token_id: blockchainResult.tokenId,
-          nft_contract_address: blockchainResult.contractAddress,
-          nft_minted_at: new Date().toISOString()
-        })
-        .eq('id', transaction.caskId);
-
-      if (caskUpdateError) {
-        console.error("Error updating cask with NFT details:", caskUpdateError);
-        throw caskUpdateError;
       }
     }
-
-    console.log("Successfully logged transaction to blockchain");
 
     return new Response(JSON.stringify({
       success: true,
       transactionHash: blockchainResult.transactionHash,
       blockNumber: blockchainResult.blockNumber,
-      message: "Transaction successfully logged to blockchain"
+      tokenId: blockchainResult.tokenId,
+      contractAddress: blockchainResult.contractAddress,
+      gasUsed: blockchainResult.gasUsed,
+      message: `${transaction.transactionType} transaction logged to Polygon`
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
@@ -174,41 +172,31 @@ serve(async (req) => {
   }
 });
 
-// Execute actual blockchain transaction on Polygon using smart contracts
-async function executePolygonTransaction(transaction: BlockchainTransaction): Promise<BlockchainResponse> {
+async function executePolygonTransaction(
+  transaction: BlockchainTransaction,
+  supabaseService: any
+): Promise<BlockchainResponse> {
   try {
-    console.log("Connecting to Polygon network...", {
-      caskId: transaction.caskId,
-      transactionType: transaction.transactionType
-    });
-    
-    // Get environment variables
     const polygonRpcUrl = Deno.env.get("POLYGON_RPC_URL");
     const privateKey = Deno.env.get("POLYGON_PRIVATE_KEY");
     const nftContractAddress = Deno.env.get("CASK_NFT_CONTRACT_ADDRESS");
     const marketplaceAddress = Deno.env.get("MARKETPLACE_CONTRACT_ADDRESS");
     
-    if (!polygonRpcUrl) throw new Error("Missing POLYGON_RPC_URL");
-    if (!privateKey) throw new Error("Missing POLYGON_PRIVATE_KEY");
+    if (!polygonRpcUrl) return { transactionHash: '', success: false, error: "Missing POLYGON_RPC_URL" };
+    if (!privateKey) return { transactionHash: '', success: false, error: "Missing POLYGON_PRIVATE_KEY" };
     
-    // For now, use smart contracts if available, otherwise fall back to logging
-    const useSmartContracts = nftContractAddress && marketplaceAddress;
+    const useSmartContracts = !!nftContractAddress;
+    console.log("Mode:", useSmartContracts ? "SMART CONTRACT" : "LOGGING ONLY");
     
-    console.log("Smart contracts mode:", useSmartContracts ? "ENABLED" : "LOGGING ONLY");
-    console.log("Creating provider with RPC URL:", polygonRpcUrl.substring(0, 50) + "...");
-    
-    // Create provider and wallet
     const provider = new ethers.JsonRpcProvider(polygonRpcUrl);
     const wallet = new ethers.Wallet(privateKey, provider);
     
-    console.log("Wallet address:", wallet.address);
-    
-    // Check wallet balance
+    console.log("Wallet:", wallet.address);
     const balance = await provider.getBalance(wallet.address);
-    console.log("Wallet balance (MATIC):", ethers.formatEther(balance));
+    console.log("Balance:", ethers.formatEther(balance), "MATIC");
     
     if (balance === 0n) {
-      console.warn("Wallet has no MATIC for gas fees");
+      return { transactionHash: '', success: false, error: "Wallet has no MATIC for gas fees" };
     }
     
     let tx: any;
@@ -217,77 +205,69 @@ async function executePolygonTransaction(transaction: BlockchainTransaction): Pr
     let contractAddress: string | undefined;
     
     if (useSmartContracts && transaction.transactionType === 'mint') {
-      // Use smart contract to mint NFT
-      console.log("Minting NFT using smart contract...");
+      console.log("Minting NFT via smart contract at", nftContractAddress);
       
       const nftContract = new ethers.Contract(nftContractAddress!, CASK_NFT_ABI, wallet);
       
-      // Fetch cask data from database to get rarity attributes
+      // Fetch cask data for contract parameters
       const { data: caskData, error: caskError } = await supabaseService
         .from('casks')
-        .select('*, distilleries(id), cask_types(name)')
+        .select('*, cask_types(name)')
         .eq('id', transaction.caskId)
         .single();
       
       if (caskError || !caskData) {
-        throw new Error(`Failed to fetch cask data: ${caskError?.message}`);
+        return { transactionHash: '', success: false, error: `Cask not found: ${caskError?.message}` };
       }
       
-      // Prepare metadata (in production, this would be IPFS URI)
       const metadataUri = `ipfs://placeholder/${transaction.caskId}`;
-      
-      // Calculate age in years
       const distillationDate = new Date(caskData.distillation_date);
-      const ageYears = Math.floor((Date.now() - distillationDate.getTime()) / (1000 * 60 * 60 * 24 * 365));
+      const ageYears = Math.min(255, Math.floor((Date.now() - distillationDate.getTime()) / (1000 * 60 * 60 * 24 * 365)));
       
-      // Mint the NFT with rarity attributes
+      // Mint to the wallet address (server-side minting)
       const mintTx = await nftContract.mintCask(
-        transaction.buyerId, // to
-        transaction.caskId, // caskId
-        transaction.sellerId || wallet.address, // distillery
-        caskData.spirit_name, // spiritName
-        caskData.cask_number, // caskNumber
-        Math.floor(caskData.current_volume_liters || transaction.volume), // volumeLiters
-        Math.floor((caskData.alcohol_percentage || 63.5) * 100), // alcoholPercentage (scaled by 100)
-        Math.floor(distillationDate.getTime() / 1000), // distillationDate
-        ageYears, // ageYears
-        caskData.rarity_tier || 1, // rarityTier (default to 1 if not set)
-        caskData.cask_types?.name || "Unknown", // caskType
-        caskData.special_finish || "", // specialFinish
-        caskData.region || "", // region
-        caskData.is_single_barrel || false, // isSingleBarrel
-        metadataUri // tokenURI
+        wallet.address, // mint to platform wallet, can transfer later
+        transaction.caskId,
+        wallet.address, // distillery address placeholder
+        caskData.spirit_name,
+        caskData.cask_number,
+        Math.floor(caskData.current_volume_liters || transaction.volume),
+        Math.floor((caskData.alcohol_percentage || 63.5) * 100),
+        Math.floor(distillationDate.getTime() / 1000),
+        ageYears,
+        Math.min(5, Math.max(1, caskData.rarity_tier || 1)),
+        caskData.cask_types?.name || "Unknown",
+        caskData.special_finish || "",
+        caskData.region || "",
+        caskData.is_single_barrel || false,
+        metadataUri
       );
       
       receipt = await mintTx.wait();
       tx = mintTx;
-      
-      // Get token ID from event logs
-      const mintEvent = receipt.logs.find((log: any) => {
-        try {
-          return log.topics[0] === ethers.id("CaskMinted(uint256,string,address,address,string,string,uint8)");
-        } catch {
-          return false;
-        }
-      });
-      
-      if (mintEvent) {
-        tokenId = Number(mintEvent.topics[1]);
-        console.log("Minted token ID:", tokenId);
-      }
-      
       contractAddress = nftContractAddress;
       
+      // Parse token ID from CaskMinted event
+      const iface = new ethers.Interface(CASK_NFT_ABI);
+      for (const log of receipt.logs) {
+        try {
+          const parsed = iface.parseLog({ topics: log.topics, data: log.data });
+          if (parsed?.name === 'CaskMinted') {
+            tokenId = Number(parsed.args[0]);
+            console.log("Minted token ID:", tokenId);
+            break;
+          }
+        } catch {
+          // Not our event, skip
+        }
+      }
+      
     } else if (useSmartContracts && transaction.transactionType === 'transfer') {
-      // Use smart contract for transfer (marketplace purchase)
-      console.log("Transferring NFT using smart contract...");
+      console.log("Transferring NFT via smart contract");
       
       const nftContract = new ethers.Contract(nftContractAddress!, CASK_NFT_ABI, wallet);
-      
-      // Get token ID for cask
       tokenId = Number(await nftContract.getTokenIdByCaskId(transaction.caskId));
       
-      // Transfer with price tracking
       const transferTx = await nftContract.safeTransferFromWithPrice(
         transaction.sellerId!,
         transaction.buyerId,
@@ -300,12 +280,11 @@ async function executePolygonTransaction(transaction: BlockchainTransaction): Pr
       contractAddress = nftContractAddress;
       
     } else {
-      // Fallback to logging-only mode (current implementation)
-      console.log("Using logging-only mode (smart contracts not deployed)");
+      // Fallback: logging-only mode (embeds transaction data on-chain)
+      console.log("Logging-only mode (contracts not deployed)");
       
       const gasPrice = await provider.getFeeData();
-      
-      const transactionData = {
+      const txData = ethers.hexlify(ethers.toUtf8Bytes(JSON.stringify({
         caskId: transaction.caskId,
         buyerId: transaction.buyerId,
         sellerId: transaction.sellerId || "system",
@@ -313,13 +292,11 @@ async function executePolygonTransaction(transaction: BlockchainTransaction): Pr
         volume: transaction.volume.toString(),
         price: transaction.price.toString(),
         timestamp: transaction.timestamp
-      };
-      
-      const txData = ethers.hexlify(ethers.toUtf8Bytes(JSON.stringify(transactionData)));
+      })));
       
       tx = await wallet.sendTransaction({
         to: wallet.address,
-        value: ethers.parseEther("0"),
+        value: 0n,
         data: txData,
         gasLimit: 100000,
         gasPrice: gasPrice.gasPrice || ethers.parseUnits("30", "gwei")
@@ -328,30 +305,16 @@ async function executePolygonTransaction(transaction: BlockchainTransaction): Pr
       receipt = await Promise.race([
         tx.wait(),
         new Promise((_, reject) => 
-          setTimeout(() => reject(new Error("Transaction timeout after 60 seconds")), 60000)
+          setTimeout(() => reject(new Error("Transaction timeout after 60s")), 60000)
         )
-      ]) as ethers.TransactionReceipt;
+      ]);
     }
     
-    console.log("Transaction sent to Polygon:", {
-      hash: tx.hash,
-      to: tx.to,
-      gasLimit: tx.gasLimit?.toString()
-    });
-    
-    if (!receipt) {
-      throw new Error("Transaction receipt not available");
+    if (!receipt || receipt.status !== 1) {
+      return { transactionHash: tx?.hash || '', success: false, error: "Transaction reverted on-chain" };
     }
     
-    console.log("Transaction confirmed:", {
-      blockNumber: receipt.blockNumber,
-      gasUsed: receipt.gasUsed.toString(),
-      status: receipt.status
-    });
-    
-    if (receipt.status !== 1) {
-      throw new Error("Transaction failed on blockchain");
-    }
+    console.log("Transaction confirmed. Block:", receipt.blockNumber, "Gas:", receipt.gasUsed.toString());
     
     return {
       transactionHash: tx.hash,
@@ -363,16 +326,11 @@ async function executePolygonTransaction(transaction: BlockchainTransaction): Pr
     };
     
   } catch (error) {
-    console.error("Polygon transaction error:", {
-      message: (error as Error).message,
-      stack: (error as Error).stack,
-      caskId: transaction.caskId,
-      transactionType: transaction.transactionType
-    });
-    
+    console.error("Polygon transaction error:", (error as Error).message);
     return {
       transactionHash: '',
-      success: false
+      success: false,
+      error: (error as Error).message
     };
   }
 }
