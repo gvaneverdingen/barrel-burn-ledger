@@ -320,6 +320,35 @@ const CaskDetails = () => {
     }
   };
 
+  const handleMintNft = useCallback(async () => {
+    if (!cask || !user) return;
+    setIsMintingNft(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('mint-cask-nft', {
+        body: { caskId: cask.id }
+      });
+
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || 'Minting failed');
+
+      toast({
+        title: "NFT Minted Successfully! 🎉",
+        description: `Token #${data.tokenId ?? 'pending'} minted on Polygon. Tx: ${data.transactionHash?.slice(0, 10)}...`,
+      });
+
+      // Refresh cask data to show updated NFT status
+      if (id) await fetchCaskDetails(id);
+    } catch (error: any) {
+      console.error('NFT minting error:', error);
+      toast({
+        title: "Minting Failed",
+        description: error.message || "Failed to mint NFT. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsMintingNft(false);
+    }
+  }, [cask, user, id]);
 
   const fetchCaskDetails = async (caskId: string) => {
     console.log('[CaskDetails] Fetching cask details for ID:', caskId);
