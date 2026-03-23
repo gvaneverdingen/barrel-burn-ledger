@@ -55,6 +55,30 @@ export function MetricsCards({ metrics, loading }: MetricsCardsProps) {
       value: `${metrics.totalInventory}L`,
       icon: Warehouse,
       description: "Total cask volume"
+    },
+    {
+      title: "Platform Margin",
+      value: `£${metrics.platformFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      icon: BadgePoundSterling,
+      description: "Total platform fees earned"
+    },
+    {
+      title: "Distillery Fees",
+      value: `£${metrics.distilleryFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      icon: ArrowLeftRight,
+      description: "Total distillery fees collected"
+    },
+    {
+      title: "Completed",
+      value: metrics.completedTransactions,
+      icon: CheckCircle,
+      description: "Completed transactions"
+    },
+    {
+      title: "Pending",
+      value: metrics.pendingTransactions,
+      icon: Clock,
+      description: "Pending transactions"
     }
   ];
 

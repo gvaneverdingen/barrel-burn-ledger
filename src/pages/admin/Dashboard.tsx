@@ -76,7 +76,11 @@ export default function AdminDashboard() {
         totalOrders,
         totalRevenue,
         activeListings: activeListings || 0,
-        totalInventory: Math.round(totalInventory)
+        totalInventory: Math.round(totalInventory),
+        platformFees,
+        distilleryFees,
+        completedTransactions,
+        pendingTransactions,
       });
     } catch (error) {
       console.error('Error fetching metrics:', error);
