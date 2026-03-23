@@ -19,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, MapPin, Calendar, Droplets, Gauge, DollarSign, Wine, Building, Hash, Shield, Loader2, X, HandCoins, MessageSquare } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Droplets, Gauge, DollarSign, Wine, Building, Hash, Shield, Loader2, X, HandCoins, MessageSquare, ShoppingCart } from "lucide-react";
 import caskDetailImage from "@/assets/cask-detail.jpg";
 import singleCask from "@/assets/single-cask.jpg";
 import { CaskImageGallery } from "@/components/CaskImageGallery";
