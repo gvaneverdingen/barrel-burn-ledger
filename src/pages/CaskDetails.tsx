@@ -840,8 +840,8 @@ const CaskDetails = () => {
                      </CardTitle>
                      <CardDescription className="flex items-center space-x-2 mt-2">
                        <MapPin className="h-4 w-4" />
-                       <span>{cask.distillery.name}</span>
-                       {cask.distillery.verified && (
+                        <span>{cask.distillery?.name || 'Unknown Distillery'}</span>
+                        {cask.distillery?.verified && (
                          <Shield className="h-4 w-4 text-green-600" />
                        )}
                        {cask.is_sale_listing && cask.seller && (
