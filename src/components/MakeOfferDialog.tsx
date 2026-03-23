@@ -95,6 +95,30 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
     return pricePerLPA * (listing.alcohol_percentage / 100);
   };
 
+  const addToFavourites = async () => {
+    if (!user) return;
+    const caskId = listing.cask_id || listing.id;
+    try {
+      // Check if already in wishlist
+      const { data: existing } = await supabase
+        .from('wishlist')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('cask_id', caskId)
+        .maybeSingle();
+
+      if (!existing) {
+        await supabase.from('wishlist').insert({
+          user_id: user.id,
+          cask_id: caskId,
+          max_price: listing.total_price || 0,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to add to favourites:', err);
+    }
+  };
+
   const handleSubmitOffer = async () => {
     if (!user) {
       toast.error('Please log in to make an offer');
