@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import { DollarSign, MessageSquare, HandCoins, HelpCircle } from 'lucide-react';
 
 const sendOfferEmail = async (params: {
-  sellerEmail: string; // actually seller_id, we'll look up email
+  sellerId: string;
   spiritName: string;
   caskNumber: string;
   offerType: string;
@@ -22,24 +22,14 @@ const sendOfferEmail = async (params: {
   message?: string;
 }) => {
   try {
-    // Look up seller's email from profiles
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('email, first_name')
-      .eq('id', params.sellerEmail)
-      .single();
-
-    if (!profile?.email) return;
-
-    const idempotencyKey = `new-offer-${params.sellerEmail}-${Date.now()}`;
+    const idempotencyKey = `new-offer-${params.sellerId}-${Date.now()}`;
 
     await supabase.functions.invoke('send-transactional-email', {
       body: {
         templateName: 'new-offer-notification',
-        recipientEmail: profile.email,
+        sellerId: params.sellerId,
         idempotencyKey,
         templateData: {
-          sellerName: profile.first_name || undefined,
           spiritName: params.spiritName,
           caskNumber: params.caskNumber,
           offerType: params.offerType,
@@ -52,7 +42,6 @@ const sendOfferEmail = async (params: {
     });
   } catch (err) {
     console.error('Failed to send offer notification email:', err);
-    // Don't block the offer flow if email fails
   }
 };
 
