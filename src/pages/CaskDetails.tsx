@@ -1042,6 +1042,12 @@ const CaskDetails = () => {
                     <span>Pure Alcohol:</span>
                     <span className="font-medium">{formatLPA(caskLPA)}</span>
                   </div>
+                  {(cask as any).last_gauging_date && (
+                    <div className="flex justify-between">
+                      <span>Last Gauging:</span>
+                      <span className="font-medium">{new Date((cask as any).last_gauging_date).toLocaleDateString()}</span>
+                    </div>
+                  )}
                   <div className="text-xs text-muted-foreground pt-2 border-t">
                     <p>LPA = Litre of Pure Alcohol (volume × ABV)</p>
                   </div>
