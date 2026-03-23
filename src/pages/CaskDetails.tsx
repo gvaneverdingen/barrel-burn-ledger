@@ -1292,7 +1292,7 @@ const CaskDetails = () => {
                             </p>
                           </div>
                           <Button
-                            onClick={() => handleOfferAction(acceptedOffer.id, 'accepted')}
+                            onClick={() => handleAcceptOffer(acceptedOffer.id)}
                             className="flex items-center gap-2"
                           >
                             <ShoppingCart className="h-4 w-4" />
