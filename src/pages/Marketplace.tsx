@@ -305,7 +305,8 @@ const Marketplace = () => {
         (filterType === 'bourbon' && listing.spirit_name.toLowerCase().includes('bourbon')) ||
         (filterType === 'irish' && listing.spirit_name.toLowerCase().includes('irish'));
       
-      const matchesPrice = maxPrice === '' || (listing.price_per_liter && listing.price_per_liter <= maxPrice);
+      const listingLPA = calculatePricePerLPA(listing.total_price, listing.current_volume_liters, listing.alcohol_percentage);
+      const matchesPrice = maxPrice === '' || (listingLPA && listingLPA <= maxPrice);
       return matchesSearch && matchesType && matchesPrice;
     })
     .sort((a, b) => {
