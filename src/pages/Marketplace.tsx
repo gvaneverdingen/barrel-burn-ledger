@@ -483,11 +483,11 @@ const Marketplace = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Price per Liter</span>
-                    <span className="font-bold text-lg">{formatPrice(listing.price_per_liter || 0)}</span>
+                    <span className="text-sm text-muted-foreground">Price per LPA</span>
+                    <span className="font-bold text-lg">{formatPrice(calculatePricePerLPA(listing.total_price, listing.current_volume_liters, listing.alcohol_percentage))}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Total Price</span>
+                    <span className="text-sm text-muted-foreground">Total (per Barrel)</span>
                     <span className="font-semibold">{formatPrice(listing.total_price || 0)}</span>
                   </div>
                   <div className="flex justify-between items-center">
