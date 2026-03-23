@@ -216,6 +216,23 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
               </Select>
             </div>
 
+            {/* Last Gauging Date */}
+            <div className="space-y-2">
+              <Label htmlFor="lastGaugingDate">
+                Last Gauging Date (LPA/ABV measurement)
+              </Label>
+              <Input
+                id="lastGaugingDate"
+                type="date"
+                value={lastGaugingDate}
+                onChange={(e) => setLastGaugingDate(e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
+              />
+              <p className="text-xs text-muted-foreground">
+                Date when the LPA and ABV were last officially measured
+              </p>
+            </div>
+
             {/* Notes */}
             <div className="space-y-2">
               <Label htmlFor="notes">
