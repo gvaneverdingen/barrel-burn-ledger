@@ -1046,7 +1046,7 @@ const CaskDetails = () => {
                   </div>
                 </div>
 
-                {user && userRole !== "distillery" && !isOwnerSale && (
+                {user && userRole !== "distillery" && !isOwnerSale && !isOwner && (
                   <Button 
                     className="w-full" 
                     onClick={handlePurchaseClick}
@@ -1059,7 +1059,10 @@ const CaskDetails = () => {
                         Opening Payment...
                       </>
                     ) : (
-                      'Purchase Cask'
+                      <>
+                        <ShoppingCart className="mr-2 h-4 w-4" />
+                        Buy at Asking Price
+                      </>
                     )}
                   </Button>
                 )}
@@ -1072,7 +1075,7 @@ const CaskDetails = () => {
                     size="lg"
                   >
                     <HandCoins className="mr-2 h-4 w-4" />
-                    Make an Offer
+                    Make an Offer / Enquire
                   </Button>
                 )}
 
