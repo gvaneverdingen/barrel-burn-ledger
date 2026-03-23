@@ -681,7 +681,7 @@ const Portfolio = () => {
                                 </p>
                               </div>
                               <div className="space-y-1">
-                                <p className="text-sm text-muted-foreground font-medium">Total Price</p>
+                                <p className="text-sm text-muted-foreground font-medium">Total (per Barrel)</p>
                                 <p className="text-xl font-bold luxury-text-gradient">
                                   {formatPrice(sale.total_asking_price)}
                                 </p>
