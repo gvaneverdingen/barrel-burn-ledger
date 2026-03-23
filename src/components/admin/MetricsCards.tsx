@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Package, DollarSign, TrendingUp, Warehouse, UserCheck } from "lucide-react";
+import { Users, Package, DollarSign, TrendingUp, Warehouse, UserCheck, BadgePoundSterling, ArrowLeftRight, CheckCircle, Clock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface MetricsCardsProps {
