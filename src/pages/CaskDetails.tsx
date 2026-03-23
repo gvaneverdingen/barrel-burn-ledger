@@ -1106,7 +1106,7 @@ const CaskDetails = () => {
                   </div>
                 </div>
 
-                {user && userRole !== "distillery" && !isOwnerSale && !isOwner && (
+                {user && effectiveUserRole !== "distillery" && !isOwnerSale && !effectiveIsOwner && (
                   <Button 
                     className="w-full" 
                     onClick={handlePurchaseClick}
