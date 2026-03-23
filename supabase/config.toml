@@ -1,107 +1,96 @@
 project_id = "vnmmjmxhtbplfkdughxu"
 
+[analytics]
+  enabled = false
+  gw_port = 54329
+  port = 54327
+  vector_port = 54328
+
 [api]
-enabled = true
-port = 54321
-schemas = ["public", "graphql_public"]
-extra_search_path = ["public", "extensions"]
-max_rows = 1000
-
-[db]
-port = 54322
-shadow_port = 54320
-major_version = 15
-
-[db.pooler]
-enabled = false
-port = 54329
-pool_mode = "transaction"
-default_pool_size = 20
-max_client_conn = 100
-
-[realtime]
-enabled = true
-ip_version = "ipv6"
-port = 54323
-max_header_length = 4096
-
-[studio]
-enabled = true
-port = 54324
-api_url = "http://127.0.0.1:54321"
-openai_api_key = "env(OPENAI_API_KEY)"
-
-[inbucket]
-enabled = true
-port = 54325
-web_port = 54326
-smtp_port = 54327
-
-[storage]
-enabled = true
-port = 54328
-file_size_limit = "50MiB"
-image_transformation = { enabled = true }
+  enabled = true
+  extra_search_path = ["public", "extensions"]
+  max_rows = 1000
+  port = 54321
+  schemas = ["public", "graphql_public"]
 
 [auth]
-enabled = true
-port = 54329
-site_url = "http://localhost:3000"
-additional_redirect_urls = [
-  "https://localhost:3000",
-  "http://localhost:3000",
-  "https://127.0.0.1:3000",
-  "http://127.0.0.1:3000",
-  "https://sandbox.lovable.dev",
-  "http://sandbox.lovable.dev"
-]
-jwt_expiry = 3600
-enable_signup = true
-enable_email_confirmations = true
-enable_email_autoconfirm = false
-[auth.email]
-enable_signup = true
-double_confirm_changes = true
-enable_confirmations = true
-template = { }
+  additional_redirect_urls = ["https://localhost:3000", "http://localhost:3000", "https://127.0.0.1:3000", "http://127.0.0.1:3000", "https://sandbox.lovable.dev", "http://sandbox.lovable.dev"]
+  enable_email_autoconfirm = false
+  enable_email_confirmations = true
+  enable_signup = true
+  enabled = true
+  jwt_expiry = 3600
+  port = 54329
+  site_url = "http://localhost:3000"
+  [auth.email]
+    double_confirm_changes = true
+    enable_confirmations = true
+    enable_signup = true
+    [auth.email.template]
+  [auth.hook]
+    [auth.hook.send_email]
+      enable_phone_autoconfirm = false
+      enable_phone_confirmations = false
+      enabled = true
+      uri = "https://vnmmjmxhtbplfkdughxu.supabase.co/functions/v1/send-email"
 
-[auth.hook.send_email]
-enabled = true
-uri = "https://vnmmjmxhtbplfkdughxu.supabase.co/functions/v1/send-email"
-enable_phone_confirmations = false
-enable_phone_autoconfirm = false
+[db]
+  major_version = 15
+  port = 54322
+  shadow_port = 54320
+  [db.pooler]
+    default_pool_size = 20
+    enabled = false
+    max_client_conn = 100
+    pool_mode = "transaction"
+    port = 54329
 
 [edge_functions]
-enabled = true
-port = 54330
-import_map = "./functions/_shared/import_map.json"
+  enabled = true
+  import_map = "./functions/_shared/import_map.json"
+  port = 54330
 
-[analytics]
-enabled = false
-port = 54327
-vector_port = 54328
-gw_port = 54329
+[functions]
+  [functions.approve-transaction]
+    verify_jwt = true
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.blockchain-logger]
+    verify_jwt = true
+  [functions.create-payment]
+    verify_jwt = false
+  [functions.create-test-data]
+    verify_jwt = false
+  [functions.mint-cask-nft]
+    verify_jwt = true
+  [functions.search-market-prices]
+    verify_jwt = true
+  [functions.send-email]
+    verify_jwt = false
+  [functions.stripe-webhook]
+    verify_jwt = false
 
-[functions.create-payment]
-verify_jwt = false
+[inbucket]
+  enabled = true
+  port = 54325
+  smtp_port = 54327
+  web_port = 54326
 
-[functions.create-test-data]
-verify_jwt = false
+[realtime]
+  enabled = true
+  ip_version = "ipv6"
+  max_header_length = 4096
+  port = 54323
 
-[functions.blockchain-logger]
-verify_jwt = true
+[storage]
+  enabled = true
+  file_size_limit = "50MiB"
+  port = 54328
+  [storage.image_transformation]
+    enabled = true
 
-[functions.mint-cask-nft]
-verify_jwt = true
-
-[functions.stripe-webhook]
-verify_jwt = false
-
-[functions.approve-transaction]
-verify_jwt = true
-
-[functions.send-email]
-verify_jwt = false
-
-[functions.search-market-prices]
-verify_jwt = true
+[studio]
+  api_url = "http://127.0.0.1:54321"
+  enabled = true
+  openai_api_key = "env(OPENAI_API_KEY)"
+  port = 54324
