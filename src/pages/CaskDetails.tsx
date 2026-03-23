@@ -97,6 +97,14 @@ const CaskDetails = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [sellerId, setSellerId] = useState<string | null>(null);
   const [isMintingNft, setIsMintingNft] = useState(false);
+  const [adminViewAs, setAdminViewAs] = useState<'default' | 'distillery' | 'owner'>('default');
+
+  const isAdmin = userRole === 'administrator';
+
+  // Computed view perspective for admins
+  const effectiveIsOwner = isAdmin && adminViewAs === 'owner' ? true : isOwner;
+  const effectiveIsDistillery = isAdmin && adminViewAs === 'distillery';
+  const effectiveUserRole = isAdmin && adminViewAs !== 'default' ? adminViewAs : userRole;
   
   useEffect(() => {
     console.log('[CaskDetails] useEffect triggered', { id, userId: user?.id });
