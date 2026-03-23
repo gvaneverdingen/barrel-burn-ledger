@@ -68,6 +68,7 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
   const [offerPricePerLiter, setOfferPricePerLiter] = useState('');
   const [offerVolume, setOfferVolume] = useState(listing.current_volume_liters?.toString() || '');
   const [message, setMessage] = useState('');
+  const [lastGaugingDate, setLastGaugingDate] = useState('');
   const [enquiryMessage, setEnquiryMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
