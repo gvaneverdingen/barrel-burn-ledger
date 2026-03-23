@@ -866,7 +866,7 @@ const CaskDetails = () => {
                   <div className="flex items-center space-x-3">
                     <Calendar className="h-5 w-5 text-primary" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Age</p>
+                      <p className="text-sm text-muted-foreground">Years Matured</p>
                       <p className="font-semibold">{calculateAge(cask.distillation_date)} years</p>
                     </div>
                   </div>
