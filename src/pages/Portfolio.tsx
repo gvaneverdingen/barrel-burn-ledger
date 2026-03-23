@@ -84,6 +84,7 @@ interface CaskSale {
   expires_at: string;
   status: string;
   notes: string;
+  last_gauging_date: string | null;
   cask_ownership: {
     id: string;
     ownership_percentage: number;
