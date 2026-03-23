@@ -43,6 +43,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
   const [pricePerLiter, setPricePerLiter] = useState("");
   const [notes, setNotes] = useState("");
   const [expiresInDays, setExpiresInDays] = useState("30");
+  const [lastGaugingDate, setLastGaugingDate] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
