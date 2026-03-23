@@ -520,7 +520,7 @@ const Portfolio = () => {
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                               <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground font-medium">Your Volume</p>
-                                <p className="text-xl font-bold">{ownership.volume_liters}L</p>
+                                <p className="text-xl font-bold">{ownership.volume_liters}L ({formatLPA(calculateLPA(ownership.volume_liters, ownership.casks.alcohol_percentage))})</p>
                               </div>
                               <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground font-medium">Current Value</p>
