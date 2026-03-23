@@ -93,6 +93,7 @@ interface CaskSale {
       id: string;
       spirit_name: string;
       cask_number: string;
+      alcohol_percentage: number | null;
       distilleries: {
         name: string;
         location: string;
