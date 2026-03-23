@@ -452,7 +452,7 @@ const CaskDetails = () => {
         .from("casks")
         .select(`
           *,
-          distillery:distilleries(
+          distillery:distilleries_public(
             id,
             name,
             location,

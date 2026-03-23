@@ -161,7 +161,7 @@ const Marketplace = () => {
               blockchain_hash,
               warehouse_location,
               tasting_notes,
-              distilleries (
+              distilleries:distilleries_public (
                 name,
                 location,
                 verified
