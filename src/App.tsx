@@ -105,6 +105,7 @@ const AppRoutes = () => {
         {/* Auth and payment pages without layout */}
         <Route path="/auth" element={<Auth />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/unsubscribe" element={<Unsubscribe />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         
         {/* All other routes with layout */}
