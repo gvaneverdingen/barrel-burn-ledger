@@ -1288,7 +1288,7 @@ const CaskDetails = () => {
                           <div>
                             <p className="text-sm font-semibold">Price agreed!</p>
                             <p className="text-xs text-muted-foreground">
-                              {formatCurrency(acceptedOffer.offered_total_price)} for this cask
+                              {formatPrice(acceptedOffer.offered_total_price)} for this cask
                             </p>
                           </div>
                           <Button
