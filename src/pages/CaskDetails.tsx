@@ -378,6 +378,7 @@ const CaskDetails = () => {
             total_asking_price,
             volume_for_sale_liters,
             notes,
+            last_gauging_date,
             ownership:cask_ownership(
               id,
               cask_id,
