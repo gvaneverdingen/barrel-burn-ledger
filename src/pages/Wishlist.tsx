@@ -17,15 +17,20 @@ interface WishlistItem {
   max_price: number;
   notes: string | null;
   created_at: string;
-  // Joined cask data
   casks?: {
     id: string;
     spirit_name: string;
     cask_number: string;
     price_per_liter: number | null;
     current_volume_liters: number | null;
+    alcohol_percentage: number | null;
     total_price: number | null;
     available_for_sale: boolean | null;
+    age_years: number | null;
+    region: string | null;
+    distillation_date: string | null;
+    warehouse_location: string | null;
+    last_gauging_date: string | null;
     distilleries: {
       name: string;
       location: string | null;
