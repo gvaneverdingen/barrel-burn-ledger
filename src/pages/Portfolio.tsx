@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { calculatePricePerLPA, calculateLPA, formatLPA } from '@/utils/lpaCalculations';
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -92,6 +93,7 @@ interface CaskSale {
       id: string;
       spirit_name: string;
       cask_number: string;
+      alcohol_percentage: number | null;
       distilleries: {
         name: string;
         location: string;
@@ -221,6 +223,7 @@ const Portfolio = () => {
               id,
               spirit_name,
               cask_number,
+              alcohol_percentage,
               distilleries (name, location),
               cask_types (name, capacity_liters)
             )
@@ -519,7 +522,7 @@ const Portfolio = () => {
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                               <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground font-medium">Your Volume</p>
-                                <p className="text-xl font-bold">{ownership.volume_liters}L</p>
+                                <p className="text-xl font-bold">{ownership.volume_liters}L ({formatLPA(calculateLPA(ownership.volume_liters, ownership.casks.alcohol_percentage))})</p>
                               </div>
                               <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground font-medium">Current Value</p>
@@ -674,13 +677,13 @@ const Portfolio = () => {
                                 <p className="text-xl font-bold">{sale.volume_for_sale_liters}L</p>
                               </div>
                               <div className="space-y-1">
-                                <p className="text-sm text-muted-foreground font-medium">Price per Liter</p>
+                                <p className="text-sm text-muted-foreground font-medium">Price per LPA</p>
                                 <p className="text-xl font-bold luxury-text-gradient">
-                                  {formatPrice(sale.asking_price_per_liter)}
+                                  {formatPrice(calculatePricePerLPA(sale.total_asking_price, sale.volume_for_sale_liters, sale.cask_ownership?.casks?.alcohol_percentage ?? null))}
                                 </p>
                               </div>
                               <div className="space-y-1">
-                                <p className="text-sm text-muted-foreground font-medium">Total Price</p>
+                                <p className="text-sm text-muted-foreground font-medium">Total (per Barrel)</p>
                                 <p className="text-xl font-bold luxury-text-gradient">
                                   {formatPrice(sale.total_asking_price)}
                                 </p>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { calculatePricePerLPA, calculateLPA, formatLPA } from '@/utils/lpaCalculations';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -304,13 +305,14 @@ const Marketplace = () => {
         (filterType === 'bourbon' && listing.spirit_name.toLowerCase().includes('bourbon')) ||
         (filterType === 'irish' && listing.spirit_name.toLowerCase().includes('irish'));
       
-      const matchesPrice = maxPrice === '' || (listing.price_per_liter && listing.price_per_liter <= maxPrice);
+      const listingLPA = calculatePricePerLPA(listing.total_price, listing.current_volume_liters, listing.alcohol_percentage);
+      const matchesPrice = maxPrice === '' || (listingLPA && listingLPA <= maxPrice);
       return matchesSearch && matchesType && matchesPrice;
     })
     .sort((a, b) => {
       switch (sortBy) {
         case 'price':
-          return (a.price_per_liter || 0) - (b.price_per_liter || 0);
+          return calculatePricePerLPA(a.total_price, a.current_volume_liters, a.alcohol_percentage) - calculatePricePerLPA(b.total_price, b.current_volume_liters, b.alcohol_percentage);
         case 'name':
           return a.spirit_name.localeCompare(b.spirit_name);
         case 'roi':
@@ -416,7 +418,7 @@ const Marketplace = () => {
                 </div>
                 <Input
                   type="number"
-                  placeholder="Max price per liter"
+                  placeholder="Max price per LPA"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value === '' ? '' : Number(e.target.value))}
                   className="w-full mobile-touch-target"
@@ -481,16 +483,16 @@ const Marketplace = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Price per Liter</span>
-                    <span className="font-bold text-lg">{formatPrice(listing.price_per_liter || 0)}</span>
+                    <span className="text-sm text-muted-foreground">Price per LPA</span>
+                    <span className="font-bold text-lg">{formatPrice(calculatePricePerLPA(listing.total_price, listing.current_volume_liters, listing.alcohol_percentage))}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Total Price</span>
+                    <span className="text-sm text-muted-foreground">Total (per Barrel)</span>
                     <span className="font-semibold">{formatPrice(listing.total_price || 0)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Volume</span>
-                    <span>{listing.current_volume_liters ?? 0}L</span>
+                    <span>{listing.current_volume_liters ?? 0}L ({formatLPA(calculateLPA(listing.current_volume_liters, listing.alcohol_percentage))})</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">ABV</span>
