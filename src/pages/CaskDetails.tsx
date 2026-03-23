@@ -1337,6 +1337,7 @@ const CaskDetails = () => {
             spirit_name: cask.spirit_name,
             cask_number: cask.cask_number,
             current_volume_liters: cask.current_volume_liters || 0,
+            alcohol_percentage: cask.alcohol_percentage || 0,
             price_per_liter: cask.price_per_liter || 0,
             total_price: cask.total_price || 0,
             saleListingId: activeSaleId,
