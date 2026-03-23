@@ -64,8 +64,14 @@ const Wishlist = () => {
             cask_number,
             price_per_liter,
             current_volume_liters,
+            alcohol_percentage,
             total_price,
             available_for_sale,
+            age_years,
+            region,
+            distillation_date,
+            warehouse_location,
+            last_gauging_date,
             distilleries (
               name,
               location
