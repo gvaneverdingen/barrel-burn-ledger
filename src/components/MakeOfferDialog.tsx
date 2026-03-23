@@ -252,17 +252,27 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
             {/* Offer Price Per LPA */}
             <div className="space-y-2">
               <Label htmlFor="offerPrice">Your Offer Price per LPA</Label>
-              <div className="relative">
-                <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <div className="flex gap-2">
+                <Select value={currency} onValueChange={(value) => setCurrency(value as Currency)}>
+                  <SelectTrigger className="w-[90px] shrink-0">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {currencies.map((curr) => (
+                      <SelectItem key={curr.value} value={curr.value}>
+                        {curr.symbol} {curr.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Input
                   id="offerPrice"
                   type="number"
                   step="0.01"
                   min="0"
-                  placeholder="Enter your offer price per LPA"
+                  placeholder="Enter price per LPA"
                   value={offerPricePerLPA}
                   onChange={(e) => setOfferPricePerLPA(e.target.value)}
-                  className="pl-9"
                 />
               </div>
             </div>
