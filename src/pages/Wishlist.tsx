@@ -247,33 +247,57 @@ const Wishlist = () => {
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3">
+                {/* LPA-based pricing - same as marketplace */}
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Current Price</span>
-                  <span className="font-semibold">
-                    £{item.casks?.price_per_liter}/L
+                  <span className="text-sm text-muted-foreground">Price per LPA</span>
+                  <span className="font-bold text-lg">
+                    {formatPrice(calculatePricePerLPA(item.casks?.total_price, item.casks?.current_volume_liters, item.casks?.alcohol_percentage))}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Your Max Price</span>
-                  <span className="font-semibold text-green-600">
-                    £{item.max_price}/L
-                  </span>
+                  <span className="text-sm text-muted-foreground">Asking Price (per Cask)</span>
+                  <span className="font-semibold">{formatPrice(item.casks?.total_price || 0)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Volume</span>
-                  <span>{item.casks?.current_volume_liters}L</span>
+                  <span>{item.casks?.current_volume_liters ?? 0}L ({formatLPA(calculateLPA(item.casks?.current_volume_liters, item.casks?.alcohol_percentage))})</span>
                 </div>
-                
-                {/* Price Match Indicator */}
-                {item.casks?.available_for_sale && (item.casks?.price_per_liter ?? 0) <= item.max_price && (
-                  <Badge className="w-full bg-green-100 text-green-800 justify-center">
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                    Price Match Available!
-                  </Badge>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">ABV</span>
+                  <span>{item.casks?.alcohol_percentage ?? 0}%</span>
+                </div>
+
+                {/* Additional info */}
+                {item.casks?.age_years && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground flex items-center gap-1">
+                      <Calendar className="h-3 w-3" /> Age
+                    </span>
+                    <span>{item.casks.age_years} years</span>
+                  </div>
                 )}
-                
-                {!item.casks?.available_for_sale && (
+                {item.casks?.region && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground flex items-center gap-1">
+                      <MapPin className="h-3 w-3" /> Region
+                    </span>
+                    <span>{item.casks.region}</span>
+                  </div>
+                )}
+                {item.casks?.warehouse_location && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Warehouse</span>
+                    <span className="text-sm">{item.casks.warehouse_location}</span>
+                  </div>
+                )}
+
+                {/* Availability */}
+                {item.casks?.available_for_sale ? (
+                  <Badge variant="default" className="w-full justify-center">
+                    Available for Purchase
+                  </Badge>
+                ) : (
                   <Badge variant="secondary" className="w-full justify-center">
                     Not Available
                   </Badge>
@@ -293,11 +317,6 @@ const Wishlist = () => {
                   >
                     View Details
                   </Button>
-                   {item.casks?.available_for_sale && (item.casks?.price_per_liter ?? 0) <= item.max_price && (
-                    <Button size="sm" variant="outline">
-                      Buy Now
-                    </Button>
-                  )}
                 </div>
                 
                 <div className="text-xs text-muted-foreground">
