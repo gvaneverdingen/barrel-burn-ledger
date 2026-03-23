@@ -18,7 +18,11 @@ export default function AdminDashboard() {
     totalOrders: 0,
     totalRevenue: 0,
     activeListings: 0,
-    totalInventory: 0
+    totalInventory: 0,
+    platformFees: 0,
+    distilleryFees: 0,
+    completedTransactions: 0,
+    pendingTransactions: 0,
   });
   const [loading, setLoading] = useState(true);
 
