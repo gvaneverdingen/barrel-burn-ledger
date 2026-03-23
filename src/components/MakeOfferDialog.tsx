@@ -199,6 +199,7 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
     setOfferPricePerLiter('');
     setOfferVolume(listing.current_volume_liters?.toString() || '');
     setMessage('');
+    setLastGaugingDate('');
     setEnquiryMessage('');
   };
 
