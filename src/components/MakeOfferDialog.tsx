@@ -73,7 +73,7 @@ interface MakeOfferDialogProps {
 
 export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialogProps) => {
   const { user } = useAuth();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, currency, setCurrency } = useCurrency();
   const [activeTab, setActiveTab] = useState<string>('offer');
   const [offerPricePerLPA, setOfferPricePerLPA] = useState('');
   const [message, setMessage] = useState('');
