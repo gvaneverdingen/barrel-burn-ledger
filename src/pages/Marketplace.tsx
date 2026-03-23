@@ -646,6 +646,7 @@ const Marketplace = () => {
              current_volume_liters: selectedOfferListing.current_volume_liters || 0,
              price_per_liter: selectedOfferListing.price_per_liter || 0,
              total_price: selectedOfferListing.total_price || 0,
+             saleListingId: selectedOfferListing.is_resale ? selectedOfferListing.id : null,
            }}
         />
       )}
