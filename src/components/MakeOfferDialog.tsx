@@ -7,10 +7,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { useCurrency } from '@/contexts/CurrencyContext';
+import { Currency, useCurrency } from '@/contexts/CurrencyContext';
 import { calculateLPA, calculatePricePerLPA, formatLPA } from '@/utils/lpaCalculations';
 import { toast } from 'sonner';
-import { DollarSign, MessageSquare, HandCoins, HelpCircle } from 'lucide-react';
+import { MessageSquare, HandCoins, HelpCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const currencies: { value: Currency; label: string; symbol: string }[] = [
+  { value: 'USD', label: 'USD', symbol: '$' },
+  { value: 'EUR', label: 'EUR', symbol: '€' },
+  { value: 'GBP', label: 'GBP', symbol: '£' },
+  { value: 'JPY', label: 'JPY', symbol: '¥' },
+];
 
 const sendOfferEmail = async (params: {
   sellerId: string;
