@@ -176,6 +176,7 @@ const Portfolio = () => {
             warehouse_location,
             tasting_notes,
             expected_maturation_years,
+            last_gauging_date,
             distilleries (
               name,
               location
