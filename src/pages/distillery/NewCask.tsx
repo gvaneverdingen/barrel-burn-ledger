@@ -33,6 +33,7 @@ const NewCask = () => {
     quality_grade: '',
     expected_maturation_years: '',
     available_for_sale: false,
+    last_gauging_date: '',
   });
 
   // Fetch distillery for the current user
@@ -117,6 +118,7 @@ const NewCask = () => {
           quality_grade: formData.quality_grade || null,
           expected_maturation_years: parseInt(formData.expected_maturation_years) || null,
           available_for_sale: formData.available_for_sale,
+          last_gauging_date: formData.last_gauging_date || null,
         })
         .select()
         .single();
@@ -273,6 +275,18 @@ const NewCask = () => {
                       onChange={handleInputChange}
                       placeholder="e.g., 63.5"
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="last_gauging_date">Last Gauging Date</Label>
+                    <Input
+                      id="last_gauging_date"
+                      name="last_gauging_date"
+                      type="date"
+                      value={formData.last_gauging_date}
+                      onChange={handleInputChange}
+                      max={new Date().toISOString().split('T')[0]}
+                    />
+                    <p className="text-xs text-muted-foreground">Date when LPA and ABV were last measured</p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="price_per_liter">Price per Liter (£)</Label>

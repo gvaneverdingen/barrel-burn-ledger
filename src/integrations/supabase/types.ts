@@ -316,6 +316,7 @@ export type Database = {
           has_been_finished: boolean | null
           id: string
           is_single_barrel: boolean | null
+          last_gauging_date: string | null
           nft_contract_address: string | null
           nft_minted_at: string | null
           nft_token_id: number | null
@@ -350,6 +351,7 @@ export type Database = {
           has_been_finished?: boolean | null
           id?: string
           is_single_barrel?: boolean | null
+          last_gauging_date?: string | null
           nft_contract_address?: string | null
           nft_minted_at?: string | null
           nft_token_id?: number | null
@@ -384,6 +386,7 @@ export type Database = {
           has_been_finished?: boolean | null
           id?: string
           is_single_barrel?: boolean | null
+          last_gauging_date?: string | null
           nft_contract_address?: string | null
           nft_minted_at?: string | null
           nft_token_id?: number | null
