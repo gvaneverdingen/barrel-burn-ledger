@@ -7,10 +7,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { useCurrency } from '@/contexts/CurrencyContext';
+import { Currency, useCurrency } from '@/contexts/CurrencyContext';
 import { calculateLPA, calculatePricePerLPA, formatLPA } from '@/utils/lpaCalculations';
 import { toast } from 'sonner';
-import { DollarSign, MessageSquare, HandCoins, HelpCircle } from 'lucide-react';
+import { MessageSquare, HandCoins, HelpCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const currencies: { value: Currency; label: string; symbol: string }[] = [
+  { value: 'USD', label: 'USD', symbol: '$' },
+  { value: 'EUR', label: 'EUR', symbol: '€' },
+  { value: 'GBP', label: 'GBP', symbol: '£' },
+  { value: 'JPY', label: 'JPY', symbol: '¥' },
+];
 
 const sendOfferEmail = async (params: {
   sellerId: string;
@@ -65,7 +73,7 @@ interface MakeOfferDialogProps {
 
 export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialogProps) => {
   const { user } = useAuth();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, currency, setCurrency } = useCurrency();
   const [activeTab, setActiveTab] = useState<string>('offer');
   const [offerPricePerLPA, setOfferPricePerLPA] = useState('');
   const [message, setMessage] = useState('');
@@ -244,17 +252,27 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
             {/* Offer Price Per LPA */}
             <div className="space-y-2">
               <Label htmlFor="offerPrice">Your Offer Price per LPA</Label>
-              <div className="relative">
-                <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <div className="flex gap-2">
+                <Select value={currency} onValueChange={(value) => setCurrency(value as Currency)}>
+                  <SelectTrigger className="w-[90px] shrink-0">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {currencies.map((curr) => (
+                      <SelectItem key={curr.value} value={curr.value}>
+                        {curr.symbol} {curr.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Input
                   id="offerPrice"
                   type="number"
                   step="0.01"
                   min="0"
-                  placeholder="Enter your offer price per LPA"
+                  placeholder="Enter price per LPA"
                   value={offerPricePerLPA}
                   onChange={(e) => setOfferPricePerLPA(e.target.value)}
-                  className="pl-9"
                 />
               </div>
             </div>
