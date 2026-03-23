@@ -1,0 +1,1 @@
+ALTER TABLE public.offers ADD COLUMN last_gauging_date date NULL;

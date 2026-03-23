@@ -286,6 +286,21 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
               </div>
             )}
 
+            {/* Last Gauging Date */}
+            <div className="space-y-2">
+              <Label htmlFor="gaugingDate">Last Gauging Date (LPA/ABV measurement)</Label>
+              <Input
+                id="gaugingDate"
+                type="date"
+                value={lastGaugingDate}
+                onChange={(e) => setLastGaugingDate(e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
+              />
+              <p className="text-xs text-muted-foreground">
+                Date when the LPA and ABV were last measured
+              </p>
+            </div>
+
             {/* Optional Message */}
             <div className="space-y-2">
               <Label htmlFor="offerMessage">Message to Seller (Optional)</Label>
