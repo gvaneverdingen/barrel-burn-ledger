@@ -157,6 +157,8 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
 
       if (error) throw error;
 
+      await addToFavourites();
+
       sendOfferEmail({
         sellerId: listing.seller_id!,
         spiritName: listing.spirit_name,
