@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { calculatePricePerLPA, calculateLPA, formatLPA } from '@/utils/lpaCalculations';
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
