@@ -128,6 +128,7 @@ export function ListingsManagement() {
                 <TableHead>Seller</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead>Volume</TableHead>
+                <TableHead>Last Gauging</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Listed Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
