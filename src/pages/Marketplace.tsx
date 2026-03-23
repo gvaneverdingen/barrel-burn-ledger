@@ -128,7 +128,7 @@ const Marketplace = () => {
         .from('casks')
         .select(`
           *,
-          distilleries (
+          distilleries:distilleries_public (
             name,
             location,
             verified,
