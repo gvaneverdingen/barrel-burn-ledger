@@ -492,7 +492,7 @@ const Marketplace = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Volume</span>
-                    <span>{listing.current_volume_liters ?? 0}L</span>
+                    <span>{listing.current_volume_liters ?? 0}L ({formatLPA(calculateLPA(listing.current_volume_liters, listing.alcohol_percentage))})</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">ABV</span>
