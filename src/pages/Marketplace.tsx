@@ -500,6 +500,12 @@ const Marketplace = () => {
                     <span className="text-sm text-muted-foreground">ABV</span>
                     <span>{listing.alcohol_percentage ?? 0}%</span>
                   </div>
+                  {listing.last_gauging_date && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Last Gauging</span>
+                      <span className="text-sm">{new Date(listing.last_gauging_date).toLocaleDateString()}</span>
+                    </div>
+                  )}
                   
                   {listing.is_resale && listing.roi !== undefined && (
                     <div className="flex justify-between items-center">
