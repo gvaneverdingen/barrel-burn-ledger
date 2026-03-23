@@ -60,7 +60,7 @@ interface CaskDetails {
     description: string;
     established_year: number;
     verified: boolean;
-  };
+  } | null;
   cask_type: {
     id: string;
     name: string;
