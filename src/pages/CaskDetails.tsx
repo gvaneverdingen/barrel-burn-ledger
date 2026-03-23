@@ -1032,7 +1032,7 @@ const CaskDetails = () => {
                   <div className="text-3xl font-bold text-primary">
                     {formatPrice(cask.total_price || 0)}
                   </div>
-                  <p className="text-sm text-muted-foreground">Total Investment</p>
+                  <p className="text-sm text-muted-foreground">Asking Price (per Cask)</p>
                 </div>
                 
                 <div className="space-y-2 text-sm">
@@ -1043,11 +1043,7 @@ const CaskDetails = () => {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Volume:</span>
-                    <span className="font-medium">{cask.current_volume_liters || 0}L</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Pure Alcohol:</span>
+                    <span>LPA:</span>
                     <span className="font-medium">{formatLPA(caskLPA)}</span>
                   </div>
                   {cask?.last_gauging_date && (
@@ -1341,6 +1337,7 @@ const CaskDetails = () => {
             spirit_name: cask.spirit_name,
             cask_number: cask.cask_number,
             current_volume_liters: cask.current_volume_liters || 0,
+            alcohol_percentage: cask.alcohol_percentage || 0,
             price_per_liter: cask.price_per_liter || 0,
             total_price: cask.total_price || 0,
             saleListingId: activeSaleId,

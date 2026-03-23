@@ -655,6 +655,7 @@ const Marketplace = () => {
              spirit_name: selectedOfferListing.spirit_name,
              cask_number: selectedOfferListing.cask_number,
              current_volume_liters: selectedOfferListing.current_volume_liters || 0,
+             alcohol_percentage: selectedOfferListing.alcohol_percentage || 0,
              price_per_liter: selectedOfferListing.price_per_liter || 0,
              total_price: selectedOfferListing.total_price || 0,
              saleListingId: selectedOfferListing.is_resale ? selectedOfferListing.id : null,
