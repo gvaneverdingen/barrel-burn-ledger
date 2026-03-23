@@ -27,17 +27,18 @@ export const InviteEmail = ({
 }: InviteEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>You've been invited to join {siteName}</Preview>
+    <Preview>You've been invited to join ARIGI</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Text style={brand}>ARIGI</Text>
         <Heading style={h1}>You've been invited</Heading>
         <Text style={text}>
           You've been invited to join{' '}
           <Link href={siteUrl} style={link}>
-            <strong>{siteName}</strong>
+            <strong>ARIGI</strong>
           </Link>
-          . Click the button below to accept the invitation and create your
-          account.
+          — the premium whisky cask marketplace. Click below to accept and
+          create your account.
         </Text>
         <Button style={button} href={confirmationUrl}>
           Accept Invitation
@@ -53,27 +54,36 @@ export const InviteEmail = ({
 
 export default InviteEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
-const h1 = {
-  fontSize: '22px',
+const main = { backgroundColor: '#ffffff', fontFamily: "'Georgia', 'Times New Roman', serif" }
+const container = { padding: '40px 25px', maxWidth: '560px', margin: '0 auto' }
+const brand = {
+  fontSize: '14px',
   fontWeight: 'bold' as const,
-  color: '#000000',
+  color: '#D4A843',
+  letterSpacing: '3px',
+  textTransform: 'uppercase' as const,
+  margin: '0 0 30px',
+}
+const h1 = {
+  fontSize: '24px',
+  fontWeight: 'bold' as const,
+  color: '#212830',
   margin: '0 0 20px',
 }
 const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
+  fontSize: '15px',
+  color: '#677078',
+  lineHeight: '1.6',
   margin: '0 0 25px',
 }
-const link = { color: 'inherit', textDecoration: 'underline' }
+const link = { color: '#D4A843', textDecoration: 'underline' }
 const button = {
-  backgroundColor: '#000000',
-  color: '#ffffff',
+  backgroundColor: '#D4A843',
+  color: '#212830',
   fontSize: '14px',
-  borderRadius: '8px',
-  padding: '12px 20px',
+  fontWeight: 'bold' as const,
+  borderRadius: '12px',
+  padding: '14px 28px',
   textDecoration: 'none',
 }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }

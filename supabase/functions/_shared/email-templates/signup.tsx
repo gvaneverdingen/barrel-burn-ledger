@@ -29,23 +29,24 @@ export const SignupEmail = ({
 }: SignupEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email for {siteName}</Preview>
+    <Preview>Confirm your email for ARIGI</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Confirm your email</Heading>
+        <Text style={brand}>ARIGI</Text>
+        <Heading style={h1}>Welcome to ARIGI</Heading>
         <Text style={text}>
-          Thanks for signing up for{' '}
+          Thanks for joining{' '}
           <Link href={siteUrl} style={link}>
-            <strong>{siteName}</strong>
+            <strong>ARIGI</strong>
           </Link>
-          !
+          — the premium whisky cask marketplace.
         </Text>
         <Text style={text}>
           Please confirm your email address (
           <Link href={`mailto:${recipient}`} style={link}>
             {recipient}
           </Link>
-          ) by clicking the button below:
+          ) to get started:
         </Text>
         <Button style={button} href={confirmationUrl}>
           Verify Email
@@ -60,27 +61,36 @@ export const SignupEmail = ({
 
 export default SignupEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
-const h1 = {
-  fontSize: '22px',
+const main = { backgroundColor: '#ffffff', fontFamily: "'Georgia', 'Times New Roman', serif" }
+const container = { padding: '40px 25px', maxWidth: '560px', margin: '0 auto' }
+const brand = {
+  fontSize: '14px',
   fontWeight: 'bold' as const,
-  color: '#000000',
+  color: '#D4A843',
+  letterSpacing: '3px',
+  textTransform: 'uppercase' as const,
+  margin: '0 0 30px',
+}
+const h1 = {
+  fontSize: '24px',
+  fontWeight: 'bold' as const,
+  color: '#212830',
   margin: '0 0 20px',
 }
 const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
+  fontSize: '15px',
+  color: '#677078',
+  lineHeight: '1.6',
   margin: '0 0 25px',
 }
-const link = { color: 'inherit', textDecoration: 'underline' }
+const link = { color: '#D4A843', textDecoration: 'underline' }
 const button = {
-  backgroundColor: '#000000',
-  color: '#ffffff',
+  backgroundColor: '#D4A843',
+  color: '#212830',
   fontSize: '14px',
-  borderRadius: '8px',
-  padding: '12px 20px',
+  fontWeight: 'bold' as const,
+  borderRadius: '12px',
+  padding: '14px 28px',
   textDecoration: 'none',
 }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
