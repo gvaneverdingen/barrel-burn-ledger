@@ -251,7 +251,8 @@ const Marketplace = () => {
             blockchain_hash: cask.blockchain_hash,
             seller_name: listing.profiles 
               ? `${listing.profiles.first_name} ${listing.profiles.last_name}` 
-              : 'Anonymous'
+              : 'Anonymous',
+            last_gauging_date: listing.last_gauging_date
           };
         });
 
