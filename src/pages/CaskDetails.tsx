@@ -1263,7 +1263,7 @@ const CaskDetails = () => {
                               <p className="text-sm">{offer.message}</p>
                               {offer.offer_type !== 'enquiry' && (
                                 <p className="text-xs font-medium text-primary mt-1">
-                                  Offer: {formatCurrency(offer.offered_total_price)}
+                                  Offer: {formatPrice(offer.offered_total_price)}
                                 </p>
                               )}
                               <p className="text-[10px] text-muted-foreground mt-1">
