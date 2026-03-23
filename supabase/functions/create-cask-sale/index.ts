@@ -186,6 +186,7 @@ serve(async (req) => {
         volume_for_sale_liters: volumeForSale,
         notes,
         expires_at: expiresAt,
+        last_gauging_date: lastGaugingDate || null,
       })
       .select()
       .single();
