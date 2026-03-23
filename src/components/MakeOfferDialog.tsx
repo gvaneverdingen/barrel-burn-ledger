@@ -4,11 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { toast } from 'sonner';
-import { DollarSign, MessageSquare } from 'lucide-react';
+import { DollarSign, MessageSquare, HandCoins, HelpCircle } from 'lucide-react';
 
 interface MakeOfferDialogProps {
   open: boolean;
@@ -29,9 +30,11 @@ interface MakeOfferDialogProps {
 export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialogProps) => {
   const { user } = useAuth();
   const { formatPrice } = useCurrency();
+  const [activeTab, setActiveTab] = useState<string>('offer');
   const [offerPricePerLiter, setOfferPricePerLiter] = useState('');
   const [offerVolume, setOfferVolume] = useState(listing.current_volume_liters?.toString() || '');
   const [message, setMessage] = useState('');
+  const [enquiryMessage, setEnquiryMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const calculateTotalPrice = () => {
@@ -40,7 +43,7 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
     return pricePerLiter * volume;
   };
 
-  const handleSubmit = async () => {
+  const handleSubmitOffer = async () => {
     if (!user) {
       toast.error('Please log in to make an offer');
       return;
@@ -83,13 +86,9 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
 
       if (error) throw error;
 
-      toast.success('Offer submitted successfully!');
+      toast.success('Offer submitted successfully! The seller will be notified.');
       onOpenChange(false);
-      
-      // Reset form
-      setOfferPricePerLiter('');
-      setOfferVolume(listing.current_volume_liters?.toString() || '');
-      setMessage('');
+      resetForm();
     } catch (error) {
       console.error('Error submitting offer:', error);
       toast.error('Failed to submit offer. Please try again.');
@@ -98,112 +97,240 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
     }
   };
 
+  const handleSubmitEnquiry = async () => {
+    if (!user) {
+      toast.error('Please log in to send an enquiry');
+      return;
+    }
+
+    if (!enquiryMessage.trim()) {
+      toast.error('Please enter your question');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Create an offer with type 'enquiry' at 0 price to represent an information request
+      const { error } = await supabase.from('offers').insert({
+        cask_id: listing.cask_id || listing.id,
+        sale_listing_id: listing.saleListingId ?? null,
+        buyer_id: user.id,
+        seller_id: listing.seller_id!,
+        offer_type: 'enquiry',
+        offered_price_per_liter: 0,
+        offered_total_price: 0,
+        volume_liters: listing.current_volume_liters || 0,
+        message: enquiryMessage,
+        status: 'pending'
+      });
+
+      if (error) throw error;
+
+      toast.success('Enquiry sent! The seller will respond shortly.');
+      onOpenChange(false);
+      resetForm();
+    } catch (error) {
+      console.error('Error submitting enquiry:', error);
+      toast.error('Failed to send enquiry. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const resetForm = () => {
+    setOfferPricePerLiter('');
+    setOfferVolume(listing.current_volume_liters?.toString() || '');
+    setMessage('');
+    setEnquiryMessage('');
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
-          <DialogTitle>Make an Offer</DialogTitle>
+          <DialogTitle>Interested in this cask?</DialogTitle>
           <DialogDescription>
-            Submit your offer for {listing.spirit_name} - {listing.cask_number}
+            {listing.spirit_name} — Cask #{listing.cask_number}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          {/* Current Listing Price */}
-          <div className="bg-muted p-4 rounded-lg">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-muted-foreground">Current Asking Price</span>
-              <span className="font-semibold">{formatPrice(listing.price_per_liter)}/L</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Total Asking Price</span>
-              <span className="font-semibold">{formatPrice(listing.total_price)}</span>
-            </div>
-          </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="offer" className="flex items-center gap-1.5">
+              <HandCoins className="h-4 w-4" />
+              Make an Offer
+            </TabsTrigger>
+            <TabsTrigger value="enquiry" className="flex items-center gap-1.5">
+              <HelpCircle className="h-4 w-4" />
+              Ask a Question
+            </TabsTrigger>
+          </TabsList>
 
-          {/* Offer Price Per Liter */}
-          <div className="space-y-2">
-            <Label htmlFor="offerPrice">Your Offer Price per Liter</Label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="offerPrice"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="Enter your offer price per liter"
-                value={offerPricePerLiter}
-                onChange={(e) => setOfferPricePerLiter(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-          </div>
-
-          {/* Volume */}
-          <div className="space-y-2">
-            <Label htmlFor="volume">
-              Volume (Liters) - Max: {listing.current_volume_liters}L
-            </Label>
-            <Input
-              id="volume"
-              type="number"
-              step="0.1"
-              min="0"
-              max={listing.current_volume_liters || undefined}
-              placeholder="Enter volume"
-              value={offerVolume}
-              onChange={(e) => setOfferVolume(e.target.value)}
-            />
-          </div>
-
-          {/* Total Offer Price */}
-          {offerPricePerLiter && offerVolume && (
-            <div className="bg-primary/10 p-4 rounded-lg">
+          {/* Make an Offer Tab */}
+          <TabsContent value="offer" className="space-y-4 mt-4">
+            {/* Current Listing Price */}
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm text-muted-foreground">Current Asking Price</span>
+                <span className="font-semibold">{formatPrice(listing.price_per_liter)}/L</span>
+              </div>
               <div className="flex justify-between items-center">
-                <span className="font-semibold">Your Total Offer</span>
-                <span className="text-lg font-bold text-primary">
-                  {formatPrice(calculateTotalPrice())}
-                </span>
+                <span className="text-sm text-muted-foreground">Total Asking Price</span>
+                <span className="font-semibold">{formatPrice(listing.total_price)}</span>
               </div>
             </div>
-          )}
 
-          {/* Optional Message */}
-          <div className="space-y-2">
-            <Label htmlFor="message">Message (Optional)</Label>
-            <div className="relative">
-              <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Textarea
-                id="message"
-                placeholder="Add a message to the seller..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="pl-9 min-h-[80px]"
-                maxLength={500}
+            {/* Offer Price Per Liter */}
+            <div className="space-y-2">
+              <Label htmlFor="offerPrice">Your Offer Price per Liter</Label>
+              <div className="relative">
+                <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="offerPrice"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="Enter your offer price per liter"
+                  value={offerPricePerLiter}
+                  onChange={(e) => setOfferPricePerLiter(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+            </div>
+
+            {/* Volume */}
+            <div className="space-y-2">
+              <Label htmlFor="volume">
+                Volume (Liters) — Max: {listing.current_volume_liters}L
+              </Label>
+              <Input
+                id="volume"
+                type="number"
+                step="0.1"
+                min="0"
+                max={listing.current_volume_liters || undefined}
+                placeholder="Enter volume"
+                value={offerVolume}
+                onChange={(e) => setOfferVolume(e.target.value)}
               />
             </div>
-            <p className="text-xs text-muted-foreground text-right">
-              {message.length}/500 characters
-            </p>
-          </div>
-        </div>
 
-        <div className="flex gap-3 justify-end">
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={isSubmitting || !offerPricePerLiter || !offerVolume}
-          >
-            {isSubmitting ? 'Submitting...' : 'Submit Offer'}
-          </Button>
-        </div>
+            {/* Total Offer Price */}
+            {offerPricePerLiter && offerVolume && (
+              <div className="bg-primary/10 p-4 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold">Your Total Offer</span>
+                  <span className="text-lg font-bold text-primary">
+                    {formatPrice(calculateTotalPrice())}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Optional Message */}
+            <div className="space-y-2">
+              <Label htmlFor="offerMessage">Message to Seller (Optional)</Label>
+              <div className="relative">
+                <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Textarea
+                  id="offerMessage"
+                  placeholder="E.g. 'Would you consider a lower price for bulk?'"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className="pl-9 min-h-[80px]"
+                  maxLength={500}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground text-right">
+                {message.length}/500 characters
+              </p>
+            </div>
+
+            <div className="flex gap-3 justify-end pt-2">
+              <Button
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSubmitOffer}
+                disabled={isSubmitting || !offerPricePerLiter || !offerVolume}
+              >
+                {isSubmitting ? 'Submitting...' : 'Submit Offer'}
+              </Button>
+            </div>
+          </TabsContent>
+
+          {/* Ask a Question Tab */}
+          <TabsContent value="enquiry" className="space-y-4 mt-4">
+            <div className="bg-muted p-4 rounded-lg space-y-2">
+              <p className="text-sm text-muted-foreground">
+                Have questions before making an offer? Ask the seller about provenance, tasting notes, storage conditions, or anything else about this cask.
+              </p>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Listed at</span>
+                <span className="font-semibold">{formatPrice(listing.total_price)}</span>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <p className="text-xs font-medium text-muted-foreground mb-2">Common questions:</p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  'What are the tasting notes?',
+                  'Is there a sample available?',
+                  'What is the storage history?',
+                  'Can you share provenance docs?',
+                ].map((q) => (
+                  <Button
+                    key={q}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="text-xs h-7"
+                    onClick={() => setEnquiryMessage((prev) => prev ? `${prev}\n${q}` : q)}
+                  >
+                    {q}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="enquiry">Your Question</Label>
+              <Textarea
+                id="enquiry"
+                placeholder="Write your question to the seller..."
+                value={enquiryMessage}
+                onChange={(e) => setEnquiryMessage(e.target.value)}
+                className="min-h-[120px]"
+                maxLength={1000}
+              />
+              <p className="text-xs text-muted-foreground text-right">
+                {enquiryMessage.length}/1000 characters
+              </p>
+            </div>
+
+            <div className="flex gap-3 justify-end pt-2">
+              <Button
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSubmitEnquiry}
+                disabled={isSubmitting || !enquiryMessage.trim()}
+              >
+                {isSubmitting ? 'Sending...' : 'Send Enquiry'}
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
