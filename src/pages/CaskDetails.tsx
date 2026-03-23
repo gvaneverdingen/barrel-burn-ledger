@@ -1167,6 +1167,54 @@ const CaskDetails = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Message History - only shown when there are messages */}
+            {user && offers.filter((o: any) => o.message).length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <MessageSquare className="h-5 w-5" />
+                    <span>Message History</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Messages exchanged about this cask
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4 max-h-[400px] overflow-y-auto">
+                    {offers
+                      .filter((o: any) => o.message)
+                      .sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+                      .map((offer: any) => {
+                        const isBuyer = offer.buyer_id === user?.id;
+                        const senderName = isBuyer
+                          ? 'You'
+                          : `${offer.buyer_profile?.first_name || ''} ${offer.buyer_profile?.last_name || ''}`.trim() || 'Buyer';
+                        
+                        return (
+                          <div key={offer.id} className={`flex flex-col ${isBuyer ? 'items-end' : 'items-start'}`}>
+                            <div className={`max-w-[85%] rounded-lg p-3 ${isBuyer ? 'bg-primary/10' : 'bg-muted'}`}>
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-xs font-semibold">{senderName}</span>
+                                <Badge variant="outline" className="text-[10px] h-4 px-1">
+                                  {offer.offer_type === 'enquiry' ? 'Enquiry' : 'Offer'}
+                                </Badge>
+                              </div>
+                              <p className="text-sm">{offer.message}</p>
+                              <p className="text-[10px] text-muted-foreground mt-1">
+                                {new Date(offer.created_at).toLocaleDateString(undefined, {
+                                  month: 'short', day: 'numeric', year: 'numeric',
+                                  hour: '2-digit', minute: '2-digit'
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
 
