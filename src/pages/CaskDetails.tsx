@@ -388,7 +388,7 @@ const CaskDetails = () => {
               profiles:profiles(first_name, last_name),
               cask:casks(
                 *,
-                distillery:distilleries_public(
+                distillery:distilleries(
                   id,
                   name,
                   location,
@@ -452,7 +452,7 @@ const CaskDetails = () => {
         .from("casks")
         .select(`
           *,
-          distillery:distilleries_public(
+          distillery:distilleries(
             id,
             name,
             location,

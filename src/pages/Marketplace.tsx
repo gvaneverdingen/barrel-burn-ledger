@@ -128,7 +128,7 @@ const Marketplace = () => {
         .from('casks')
         .select(`
           *,
-          distilleries:distilleries_public (
+          distilleries (
             name,
             location,
             verified,
@@ -161,7 +161,7 @@ const Marketplace = () => {
               blockchain_hash,
               warehouse_location,
               tasting_notes,
-              distilleries:distilleries_public (
+              distilleries (
                 name,
                 location,
                 verified
