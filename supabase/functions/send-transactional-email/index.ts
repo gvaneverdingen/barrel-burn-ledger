@@ -50,6 +50,7 @@ Deno.serve(async (req) => {
   // Parse request body
   let templateName: string
   let recipientEmail: string
+  let sellerId: string | null = null
   let idempotencyKey: string
   let messageId: string
   let templateData: Record<string, any> = {}
