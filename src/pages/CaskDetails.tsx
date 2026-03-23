@@ -532,6 +532,47 @@ const CaskDetails = () => {
     });
   };
 
+        {/* Admin View Toggle */}
+        {isAdmin && (
+          <Card className="mb-6 border-primary/30 bg-primary/5">
+            <CardContent className="py-3 px-4">
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-semibold">Admin View:</span>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant={adminViewAs === 'default' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setAdminViewAs('default')}
+                  >
+                    Default
+                  </Button>
+                  <Button
+                    variant={adminViewAs === 'distillery' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setAdminViewAs('distillery')}
+                  >
+                    Distillery View
+                  </Button>
+                  <Button
+                    variant={adminViewAs === 'owner' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setAdminViewAs('owner')}
+                  >
+                    Owner View
+                  </Button>
+                </div>
+                {adminViewAs !== 'default' && (
+                  <Badge variant="outline" className="text-xs">
+                    Viewing as {adminViewAs === 'distillery' ? 'Distillery' : 'Cask Owner'}
+                  </Badge>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
   const handlePurchaseClick = async () => {
     console.log('Purchase click - User:', user);
