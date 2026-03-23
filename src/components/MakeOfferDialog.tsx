@@ -116,6 +116,7 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
         offered_total_price: totalPrice,
         volume_liters: volume,
         message: message || null,
+        last_gauging_date: lastGaugingDate || null,
         status: 'pending'
       });
 
