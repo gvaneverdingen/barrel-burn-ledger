@@ -678,7 +678,7 @@ const Portfolio = () => {
                               <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground font-medium">Price per LPA</p>
                                 <p className="text-xl font-bold luxury-text-gradient">
-                                  {formatPrice(calculatePricePerLPA(sale.total_asking_price, sale.volume_for_sale_liters, sale.cask_ownership?.casks ? (sale.cask_ownership.casks as any).alcohol_percentage : null))}
+                                  {formatPrice(calculatePricePerLPA(sale.total_asking_price, sale.volume_for_sale_liters, sale.cask_ownership?.casks?.alcohol_percentage ?? null))}
                                 </p>
                               </div>
                               <div className="space-y-1">
