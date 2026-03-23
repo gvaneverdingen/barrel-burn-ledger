@@ -158,6 +158,11 @@ export function ListingsManagement() {
                       <TableCell>£{listing.total_asking_price?.toLocaleString()}</TableCell>
                       <TableCell>{listing.volume_for_sale_liters}L</TableCell>
                       <TableCell>
+                        {listing.last_gauging_date 
+                          ? format(new Date(listing.last_gauging_date), 'MMM dd, yyyy')
+                          : '—'}
+                      </TableCell>
+                      <TableCell>
                         <Badge variant={
                           listing.status === 'active' ? 'default' :
                           listing.status === 'sold' ? 'secondary' : 'outline'

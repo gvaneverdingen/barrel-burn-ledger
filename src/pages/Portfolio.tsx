@@ -700,6 +700,12 @@ const Portfolio = () => {
                                 <p className="text-sm text-muted-foreground font-medium">Listed</p>
                                 <p className="text-xl font-bold">{format(new Date(sale.listing_date), 'MMM dd, yyyy')}</p>
                               </div>
+                              {sale.last_gauging_date && (
+                                <div className="space-y-1">
+                                  <p className="text-sm text-muted-foreground font-medium">Last Gauging</p>
+                                  <p className="text-xl font-bold">{new Date(sale.last_gauging_date).toLocaleDateString()}</p>
+                                </div>
+                              )}
                             </div>
 
                             {sale.expires_at && (

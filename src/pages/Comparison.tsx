@@ -47,6 +47,7 @@ const Comparison = () => {
     { label: 'Expected Maturation', key: (cask: any) => cask.expected_maturation_years ? `${cask.expected_maturation_years} years` : 'N/A' },
     { label: 'Volume', key: (cask: any) => cask.current_volume_liters ? `${cask.current_volume_liters}L` : 'N/A' },
     { label: 'ABV', key: (cask: any) => cask.alcohol_percentage ? `${cask.alcohol_percentage}%` : 'N/A' },
+    { label: 'Last Gauging', key: (cask: any) => cask.last_gauging_date ? new Date(cask.last_gauging_date).toLocaleDateString() : 'N/A' },
     { label: 'Cask Type', key: (cask: any) => cask.cask_type?.name || 'N/A' },
     { label: 'Capacity', key: (cask: any) => cask.cask_type?.capacity_liters ? `${cask.cask_type.capacity_liters}L` : 'N/A' },
     { label: 'Price per Liter', key: (cask: any) => cask.price_per_liter ? formatPrice(Number(cask.price_per_liter)) : 'N/A' },
