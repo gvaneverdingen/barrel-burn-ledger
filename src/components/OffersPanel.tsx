@@ -305,7 +305,8 @@ export const OffersPanel = () => {
         )}
       </CardContent>
     </Card>
-  );
+    );
+  };
 
   if (authLoading || loading) {
     return (
