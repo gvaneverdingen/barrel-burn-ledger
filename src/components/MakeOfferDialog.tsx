@@ -184,6 +184,15 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
 
       if (error) throw error;
 
+      // Send email notification to seller
+      sendOfferEmail({
+        sellerEmail: listing.seller_id!,
+        spiritName: listing.spirit_name,
+        caskNumber: listing.cask_number,
+        offerType: 'enquiry',
+        message: enquiryMessage,
+      });
+
       toast.success('Enquiry sent! The seller will respond shortly.');
       onOpenChange(false);
       resetForm();
