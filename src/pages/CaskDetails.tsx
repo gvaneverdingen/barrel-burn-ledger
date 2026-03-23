@@ -1254,8 +1254,18 @@ const CaskDetails = () => {
                                 <Badge variant="outline" className="text-[10px] h-4 px-1">
                                   {offer.offer_type === 'enquiry' ? 'Enquiry' : 'Offer'}
                                 </Badge>
+                                {offer.status === 'accepted' && (
+                                  <Badge variant="default" className="text-[10px] h-4 px-1">
+                                    <CheckCircle className="h-2.5 w-2.5 mr-0.5" /> Agreed
+                                  </Badge>
+                                )}
                               </div>
                               <p className="text-sm">{offer.message}</p>
+                              {offer.offer_type !== 'enquiry' && (
+                                <p className="text-xs font-medium text-primary mt-1">
+                                  Offer: {formatCurrency(offer.offered_total_price)}
+                                </p>
+                              )}
                               <p className="text-[10px] text-muted-foreground mt-1">
                                 {new Date(offer.created_at).toLocaleDateString(undefined, {
                                   month: 'short', day: 'numeric', year: 'numeric',
@@ -1267,6 +1277,31 @@ const CaskDetails = () => {
                         );
                       })}
                   </div>
+
+                  {/* Buy button when an offer has been accepted */}
+                  {(() => {
+                    const acceptedOffer = offers.find((o: any) => o.status === 'accepted' && o.buyer_id === user?.id);
+                    if (!acceptedOffer) return null;
+                    return (
+                      <div className="mt-4 p-4 rounded-lg border border-primary/30 bg-primary/5">
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <p className="text-sm font-semibold">Price agreed!</p>
+                            <p className="text-xs text-muted-foreground">
+                              {formatCurrency(acceptedOffer.offered_total_price)} for this cask
+                            </p>
+                          </div>
+                          <Button
+                            onClick={() => handleOfferAction(acceptedOffer.id, 'accepted')}
+                            className="flex items-center gap-2"
+                          >
+                            <ShoppingCart className="h-4 w-4" />
+                            Buy Now
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </CardContent>
               </Card>
             )}
