@@ -222,6 +222,7 @@ const Portfolio = () => {
               id,
               spirit_name,
               cask_number,
+              alcohol_percentage,
               distilleries (name, location),
               cask_types (name, capacity_liters)
             )
