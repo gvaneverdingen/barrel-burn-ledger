@@ -882,6 +882,15 @@ const CaskDetails = () => {
                       <p className="font-semibold">{cask.alcohol_percentage || 0}%</p>
                     </div>
                   </div>
+                  {cask.last_gauging_date && (
+                    <div className="flex items-center space-x-3 mt-3">
+                      <Calendar className="h-5 w-5 text-primary" />
+                      <div>
+                        <p className="text-sm text-muted-foreground">Last Gauging</p>
+                        <p className="font-semibold">{new Date(cask.last_gauging_date).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-center space-x-3">
                     <Wine className="h-5 w-5 text-primary" />
                     <div>

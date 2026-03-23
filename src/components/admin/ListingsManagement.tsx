@@ -128,6 +128,7 @@ export function ListingsManagement() {
                 <TableHead>Seller</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead>Volume</TableHead>
+                <TableHead>Last Gauging</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Listed Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -136,11 +137,11 @@ export function ListingsManagement() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center">Loading...</TableCell>
+                  <TableCell colSpan={9} className="text-center">Loading...</TableCell>
                 </TableRow>
               ) : filteredListings.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center">No listings found</TableCell>
+                  <TableCell colSpan={9} className="text-center">No listings found</TableCell>
                 </TableRow>
               ) : (
                 filteredListings.map((listing) => {
@@ -156,6 +157,11 @@ export function ListingsManagement() {
                       </TableCell>
                       <TableCell>£{listing.total_asking_price?.toLocaleString()}</TableCell>
                       <TableCell>{listing.volume_for_sale_liters}L</TableCell>
+                      <TableCell>
+                        {listing.last_gauging_date 
+                          ? format(new Date(listing.last_gauging_date), 'MMM dd, yyyy')
+                          : '—'}
+                      </TableCell>
                       <TableCell>
                         <Badge variant={
                           listing.status === 'active' ? 'default' :

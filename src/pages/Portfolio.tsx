@@ -45,6 +45,7 @@ interface CaskOwnership {
     warehouse_location: string | null;
     tasting_notes: string | null;
     expected_maturation_years: number | null;
+    last_gauging_date: string | null;
     distilleries: {
       name: string;
       location: string;
@@ -83,6 +84,7 @@ interface CaskSale {
   expires_at: string;
   status: string;
   notes: string;
+  last_gauging_date: string | null;
   cask_ownership: {
     id: string;
     ownership_percentage: number;
@@ -175,6 +177,7 @@ const Portfolio = () => {
             warehouse_location,
             tasting_notes,
             expected_maturation_years,
+            last_gauging_date,
             distilleries (
               name,
               location
@@ -538,6 +541,12 @@ const Portfolio = () => {
                                 <p className="text-sm text-muted-foreground font-medium">Acquired</p>
                                 <p className="text-xl font-bold">{format(new Date(ownership.acquired_date), 'MMM dd, yyyy')}</p>
                               </div>
+                              {ownership.casks.last_gauging_date && (
+                                <div className="space-y-1">
+                                  <p className="text-sm text-muted-foreground font-medium">Last Gauging</p>
+                                  <p className="text-xl font-bold">{new Date(ownership.casks.last_gauging_date).toLocaleDateString()}</p>
+                                </div>
+                              )}
                             </div>
                             
                             <div className="space-y-3">
@@ -692,6 +701,12 @@ const Portfolio = () => {
                                 <p className="text-sm text-muted-foreground font-medium">Listed</p>
                                 <p className="text-xl font-bold">{format(new Date(sale.listing_date), 'MMM dd, yyyy')}</p>
                               </div>
+                              {sale.last_gauging_date && (
+                                <div className="space-y-1">
+                                  <p className="text-sm text-muted-foreground font-medium">Last Gauging</p>
+                                  <p className="text-xl font-bold">{new Date(sale.last_gauging_date).toLocaleDateString()}</p>
+                                </div>
+                              )}
                             </div>
 
                             {sale.expires_at && (
