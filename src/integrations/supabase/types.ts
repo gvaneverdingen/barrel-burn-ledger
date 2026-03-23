@@ -597,6 +597,7 @@ export type Database = {
           created_at: string
           expires_at: string | null
           id: string
+          last_gauging_date: string | null
           message: string | null
           offer_type: string
           offered_price_per_liter: number
@@ -613,6 +614,7 @@ export type Database = {
           created_at?: string
           expires_at?: string | null
           id?: string
+          last_gauging_date?: string | null
           message?: string | null
           offer_type: string
           offered_price_per_liter: number
@@ -629,6 +631,7 @@ export type Database = {
           created_at?: string
           expires_at?: string | null
           id?: string
+          last_gauging_date?: string | null
           message?: string | null
           offer_type?: string
           offered_price_per_liter?: number
