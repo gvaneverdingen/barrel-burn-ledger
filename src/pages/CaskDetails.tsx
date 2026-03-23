@@ -20,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, MapPin, Calendar, Droplets, Gauge, DollarSign, Wine, Building, Hash, Shield, Loader2, X, HandCoins, MessageSquare, ShoppingCart } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Droplets, Gauge, DollarSign, Wine, Building, Hash, Shield, Loader2, X, HandCoins, MessageSquare, ShoppingCart, Eye } from "lucide-react";
 import caskDetailImage from "@/assets/cask-detail.jpg";
 import singleCask from "@/assets/single-cask.jpg";
 import { CaskImageGallery } from "@/components/CaskImageGallery";
@@ -97,6 +97,14 @@ const CaskDetails = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [sellerId, setSellerId] = useState<string | null>(null);
   const [isMintingNft, setIsMintingNft] = useState(false);
+  const [adminViewAs, setAdminViewAs] = useState<'default' | 'distillery' | 'owner'>('default');
+
+  const isAdmin = userRole === 'administrator';
+
+  // Computed view perspective for admins
+  const effectiveIsOwner = isAdmin && adminViewAs === 'owner' ? true : isOwner;
+  const effectiveIsDistillery = isAdmin && adminViewAs === 'distillery';
+  const effectiveUserRole = isAdmin && adminViewAs !== 'default' ? adminViewAs : userRole;
   
   useEffect(() => {
     console.log('[CaskDetails] useEffect triggered', { id, userId: user?.id });
@@ -152,6 +160,12 @@ const CaskDetails = () => {
 
   const checkImageManagementPermissions = async () => {
     if (!cask || !user) return;
+
+    // Admins can always manage images
+    if (userRole === 'administrator') {
+      setCanManageImages(true);
+      return;
+    }
 
     try {
       // Check if the user owns this cask through their distillery
@@ -524,7 +538,6 @@ const CaskDetails = () => {
     });
   };
 
-
   const handlePurchaseClick = async () => {
     console.log('Purchase click - User:', user);
     
@@ -808,6 +821,48 @@ const CaskDetails = () => {
           </Link>
         </Button>
 
+        {/* Admin View Toggle */}
+        {isAdmin && (
+          <Card className="mb-6 border-primary/30 bg-primary/5">
+            <CardContent className="py-3 px-4">
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-semibold">Admin View:</span>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant={adminViewAs === 'default' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setAdminViewAs('default')}
+                  >
+                    Default
+                  </Button>
+                  <Button
+                    variant={adminViewAs === 'distillery' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setAdminViewAs('distillery')}
+                  >
+                    Distillery View
+                  </Button>
+                  <Button
+                    variant={adminViewAs === 'owner' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setAdminViewAs('owner')}
+                  >
+                    Owner View
+                  </Button>
+                </div>
+                {adminViewAs !== 'default' && (
+                  <Badge variant="outline" className="text-xs">
+                    Viewing as {adminViewAs === 'distillery' ? 'Distillery' : 'Cask Owner'}
+                  </Badge>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
@@ -1057,7 +1112,7 @@ const CaskDetails = () => {
                   </div>
                 </div>
 
-                {user && userRole !== "distillery" && !isOwnerSale && !isOwner && (
+                {user && effectiveUserRole !== "distillery" && !isOwnerSale && !effectiveIsOwner && (
                   <Button 
                     className="w-full" 
                     onClick={handlePurchaseClick}
@@ -1078,7 +1133,7 @@ const CaskDetails = () => {
                   </Button>
                 )}
 
-                {user && sellerId && sellerId !== user.id && !isOwner && (
+                {user && sellerId && sellerId !== user.id && !effectiveIsOwner && (
                   <Button 
                     variant="outline"
                     className="w-full" 
@@ -1113,7 +1168,7 @@ const CaskDetails = () => {
                   </Button>
                 )}
                 
-                {user && userRole === "distillery" && (
+                {user && effectiveUserRole === "distillery" && (
                   <Button 
                     className="w-full" 
                     variant="outline"
@@ -1218,8 +1273,8 @@ const CaskDetails = () => {
           </div>
         </div>
 
-        {/* Offers Section - Only visible to owner */}
-        {isOwner && offers.length > 0 && (
+        {/* Offers Section - Only visible to owner or admin in owner view */}
+        {(effectiveIsOwner || isOwner) && offers.length > 0 && (
           <div className="container mx-auto px-6 pb-8">
             <Card>
               <CardHeader>
