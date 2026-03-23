@@ -869,7 +869,7 @@ const CaskDetails = () => {
                     <Droplets className="h-5 w-5 text-primary" />
                     <div>
                       <p className="text-sm text-muted-foreground">Volume</p>
-                      <p className="font-semibold">{cask.current_volume_liters || 0}L</p>
+                      <p className="font-semibold">{cask.current_volume_liters || 0}L ({formatLPA(caskLPA)})</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
