@@ -74,6 +74,7 @@ interface CaskDetails {
     first_name?: string;
     last_name?: string;
   };
+  last_gauging_date?: string | null;
 }
 
 const CaskDetails = () => {
