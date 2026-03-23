@@ -18,7 +18,11 @@ export default function AdminDashboard() {
     totalOrders: 0,
     totalRevenue: 0,
     activeListings: 0,
-    totalInventory: 0
+    totalInventory: 0,
+    platformFees: 0,
+    distilleryFees: 0,
+    completedTransactions: 0,
+    pendingTransactions: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -44,10 +48,14 @@ export default function AdminDashboard() {
       // Fetch orders count and revenue
       const { data: transactions } = await supabase
         .from('transactions')
-        .select('total_amount');
+        .select('total_amount, platform_fee, distillery_fee, status');
 
       const totalOrders = transactions?.length || 0;
       const totalRevenue = transactions?.reduce((sum, t) => sum + Number(t.total_amount), 0) || 0;
+      const platformFees = transactions?.reduce((sum, t) => sum + Number(t.platform_fee || 0), 0) || 0;
+      const distilleryFees = transactions?.reduce((sum, t) => sum + Number(t.distillery_fee || 0), 0) || 0;
+      const completedTransactions = transactions?.filter(t => t.status === 'completed').length || 0;
+      const pendingTransactions = transactions?.filter(t => t.status === 'pending').length || 0;
 
       // Fetch active listings
       const { count: activeListings } = await supabase
@@ -68,7 +76,11 @@ export default function AdminDashboard() {
         totalOrders,
         totalRevenue,
         activeListings: activeListings || 0,
-        totalInventory: Math.round(totalInventory)
+        totalInventory: Math.round(totalInventory),
+        platformFees,
+        distilleryFees,
+        completedTransactions,
+        pendingTransactions,
       });
     } catch (error) {
       console.error('Error fetching metrics:', error);
