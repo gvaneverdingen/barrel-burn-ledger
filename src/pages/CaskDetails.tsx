@@ -851,7 +851,7 @@ const CaskDetails = () => {
                      {formatPrice(cask.total_price || 0)}
                    </div>
                     <div className="text-sm text-muted-foreground">
-                      {formatPrice(cask.price_per_liter || 0)}/L
+                      {formatPrice(caskPricePerLPA)}/LPA
                     </div>
                   </div>
                 </div>
