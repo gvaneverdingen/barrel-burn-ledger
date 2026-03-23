@@ -99,6 +99,7 @@ interface UnifiedListing {
   roi?: number;
   blockchain_hash?: string;
   seller_name?: string;
+  last_gauging_date?: string | null;
 }
 
 const Marketplace = () => {
