@@ -141,7 +141,7 @@ export function ListingsManagement() {
                 </TableRow>
               ) : filteredListings.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center">No listings found</TableCell>
+                  <TableCell colSpan={9} className="text-center">No listings found</TableCell>
                 </TableRow>
               ) : (
                 filteredListings.map((listing) => {
