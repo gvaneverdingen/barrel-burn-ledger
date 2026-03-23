@@ -40,6 +40,7 @@ interface WishlistItem {
 
 const Wishlist = () => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
