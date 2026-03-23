@@ -45,6 +45,7 @@ interface CaskOwnership {
     warehouse_location: string | null;
     tasting_notes: string | null;
     expected_maturation_years: number | null;
+    last_gauging_date: string | null;
     distilleries: {
       name: string;
       location: string;
