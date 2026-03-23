@@ -210,7 +210,10 @@ export const OffersPanel = () => {
     return null;
   };
 
-  const renderOfferCard = (offer: Offer, isReceived: boolean) => (
+  const renderOfferCard = (offer: Offer, isReceived: boolean) => {
+    const isEnquiry = offer.offer_type === 'enquiry';
+    
+    return (
     <Card key={offer.id} className="mb-4">
       <CardHeader>
         <div className="flex justify-between items-start">
@@ -222,7 +225,10 @@ export const OffersPanel = () => {
               Cask #{offer.cask?.cask_number} • {offer.cask?.distillery?.name}
             </CardDescription>
           </div>
-          {getStatusBadge(offer.status)}
+          <div className="flex flex-col items-end gap-1">
+            {getStatusBadge(offer.status)}
+            {getOfferTypeBadge(offer.offer_type)}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
