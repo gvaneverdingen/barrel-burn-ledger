@@ -1027,21 +1027,21 @@ const CaskDetails = () => {
                 
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span>Price per Liter:</span>
-                    <span className="font-medium">{formatPrice(cask.price_per_liter || 0)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Price per Liter (100% ASL):</span>
+                    <span>Price per LPA:</span>
                     <span className="font-bold text-primary">
-                      {formatPrice(calculatePricePerLiterASL(cask.price_per_liter, cask.alcohol_percentage))}
+                      {formatPrice(caskPricePerLPA)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Volume:</span>
                     <span className="font-medium">{cask.current_volume_liters || 0}L</span>
                   </div>
+                  <div className="flex justify-between">
+                    <span>Pure Alcohol:</span>
+                    <span className="font-medium">{formatLPA(caskLPA)}</span>
+                  </div>
                   <div className="text-xs text-muted-foreground pt-2 border-t">
-                    <p>ASL = Alcohol Strength by Liter</p>
+                    <p>LPA = Litre of Pure Alcohol (volume × ABV)</p>
                   </div>
                 </div>
 
