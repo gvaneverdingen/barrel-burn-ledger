@@ -198,6 +198,18 @@ export const OffersPanel = () => {
     );
   };
 
+  const getOfferTypeBadge = (offerType: string) => {
+    if (offerType === 'enquiry') {
+      return (
+        <Badge variant="outline" className="flex items-center gap-1 text-xs">
+          <MessageSquare className="h-3 w-3" />
+          Enquiry
+        </Badge>
+      );
+    }
+    return null;
+  };
+
   const renderOfferCard = (offer: Offer, isReceived: boolean) => (
     <Card key={offer.id} className="mb-4">
       <CardHeader>
