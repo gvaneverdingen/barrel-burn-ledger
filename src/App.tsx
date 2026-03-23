@@ -51,6 +51,7 @@ const DistilleryOnboarding = lazy(() => import("./pages/distillery/Onboarding"))
 const DistilleryNewCask = lazy(() => import("./pages/distillery/NewCask"));
 const BlockchainExample = lazy(() => import("./pages/BlockchainExample"));
 const BlockchainTesting = lazy(() => import("./pages/BlockchainTesting"));
+const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
