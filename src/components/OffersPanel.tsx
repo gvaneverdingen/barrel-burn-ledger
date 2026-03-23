@@ -198,7 +198,22 @@ export const OffersPanel = () => {
     );
   };
 
-  const renderOfferCard = (offer: Offer, isReceived: boolean) => (
+  const getOfferTypeBadge = (offerType: string) => {
+    if (offerType === 'enquiry') {
+      return (
+        <Badge variant="outline" className="flex items-center gap-1 text-xs">
+          <MessageSquare className="h-3 w-3" />
+          Enquiry
+        </Badge>
+      );
+    }
+    return null;
+  };
+
+  const renderOfferCard = (offer: Offer, isReceived: boolean) => {
+    const isEnquiry = offer.offer_type === 'enquiry';
+    
+    return (
     <Card key={offer.id} className="mb-4">
       <CardHeader>
         <div className="flex justify-between items-start">
@@ -210,10 +225,14 @@ export const OffersPanel = () => {
               Cask #{offer.cask?.cask_number} • {offer.cask?.distillery?.name}
             </CardDescription>
           </div>
-          {getStatusBadge(offer.status)}
+          <div className="flex flex-col items-end gap-1">
+            {getStatusBadge(offer.status)}
+            {getOfferTypeBadge(offer.offer_type)}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        {!isEnquiry && (
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-sm text-muted-foreground">Offer Price/L</p>
@@ -238,6 +257,19 @@ export const OffersPanel = () => {
             </p>
           </div>
         </div>
+        )}
+        {isEnquiry && (
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-muted-foreground">
+              {isReceived ? 'From' : 'To'}
+            </p>
+            <p className="font-semibold">
+              {isReceived
+                ? `${offer.buyer_profile?.first_name || 'Unknown'} ${offer.buyer_profile?.last_name || ''}`
+                : `${offer.seller_profile?.first_name || 'Unknown'} ${offer.seller_profile?.last_name || ''}`}
+            </p>
+          </div>
+        )}
 
         {offer.message && (
           <div className="bg-muted p-3 rounded-lg">
@@ -287,7 +319,8 @@ export const OffersPanel = () => {
         )}
       </CardContent>
     </Card>
-  );
+    );
+  };
 
   if (authLoading || loading) {
     return (

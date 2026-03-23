@@ -534,12 +534,13 @@ const Marketplace = () => {
                       onClick={() => navigate(`/cask/${listing.cask_id}`)}
                     >
                       <Eye className="h-3 w-3 mr-1" />
-                      View Details
+                      View
                     </Button>
                     {listing.seller_id && listing.seller_id !== user?.id && (
                       <Button 
                         size="sm" 
                         variant="outline"
+                        className="flex-1"
                         onClick={(e) => {
                           e.stopPropagation();
                           if (!user) {
@@ -645,6 +646,7 @@ const Marketplace = () => {
              current_volume_liters: selectedOfferListing.current_volume_liters || 0,
              price_per_liter: selectedOfferListing.price_per_liter || 0,
              total_price: selectedOfferListing.total_price || 0,
+             saleListingId: selectedOfferListing.is_resale ? selectedOfferListing.id : null,
            }}
         />
       )}
