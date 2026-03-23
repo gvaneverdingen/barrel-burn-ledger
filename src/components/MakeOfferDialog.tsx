@@ -11,6 +11,51 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import { toast } from 'sonner';
 import { DollarSign, MessageSquare, HandCoins, HelpCircle } from 'lucide-react';
 
+const sendOfferEmail = async (params: {
+  sellerEmail: string; // actually seller_id, we'll look up email
+  spiritName: string;
+  caskNumber: string;
+  offerType: string;
+  offeredTotalPrice?: string;
+  offeredPricePerLiter?: string;
+  volumeLiters?: string;
+  message?: string;
+}) => {
+  try {
+    // Look up seller's email from profiles
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('email, first_name')
+      .eq('id', params.sellerEmail)
+      .single();
+
+    if (!profile?.email) return;
+
+    const idempotencyKey = `new-offer-${params.sellerEmail}-${Date.now()}`;
+
+    await supabase.functions.invoke('send-transactional-email', {
+      body: {
+        templateName: 'new-offer-notification',
+        recipientEmail: profile.email,
+        idempotencyKey,
+        templateData: {
+          sellerName: profile.first_name || undefined,
+          spiritName: params.spiritName,
+          caskNumber: params.caskNumber,
+          offerType: params.offerType,
+          offeredTotalPrice: params.offeredTotalPrice,
+          offeredPricePerLiter: params.offeredPricePerLiter,
+          volumeLiters: params.volumeLiters,
+          message: params.message,
+        },
+      },
+    });
+  } catch (err) {
+    console.error('Failed to send offer notification email:', err);
+    // Don't block the offer flow if email fails
+  }
+};
+
 interface MakeOfferDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
