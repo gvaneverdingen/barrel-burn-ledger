@@ -540,6 +540,12 @@ const Portfolio = () => {
                                 <p className="text-sm text-muted-foreground font-medium">Acquired</p>
                                 <p className="text-xl font-bold">{format(new Date(ownership.acquired_date), 'MMM dd, yyyy')}</p>
                               </div>
+                              {ownership.casks.last_gauging_date && (
+                                <div className="space-y-1">
+                                  <p className="text-sm text-muted-foreground font-medium">Last Gauging</p>
+                                  <p className="text-xl font-bold">{new Date(ownership.casks.last_gauging_date).toLocaleDateString()}</p>
+                                </div>
+                              )}
                             </div>
                             
                             <div className="space-y-3">
