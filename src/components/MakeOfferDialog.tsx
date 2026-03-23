@@ -86,6 +86,18 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
 
       if (error) throw error;
 
+      // Send email notification to seller
+      sendOfferEmail({
+        sellerEmail: listing.seller_id!,
+        spiritName: listing.spirit_name,
+        caskNumber: listing.cask_number,
+        offerType: 'buy_offer',
+        offeredTotalPrice: totalPrice.toLocaleString(),
+        offeredPricePerLiter: pricePerLiter.toLocaleString(),
+        volumeLiters: volume.toString(),
+        message: message || undefined,
+      });
+
       toast.success('Offer submitted successfully! The seller will be notified.');
       onOpenChange(false);
       resetForm();
