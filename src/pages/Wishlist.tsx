@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { supabase } from '@/integrations/supabase/client';
+import { calculateLPA, calculatePricePerLPA, formatLPA } from '@/utils/lpaCalculations';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Heart, Search, Filter, TrendingUp, Bell, Plus, Trash2 } from 'lucide-react';
+import { Heart, Search, Filter, TrendingUp, Bell, Plus, Trash2, MapPin, Droplets, Gauge, Calendar } from 'lucide-react';
 
 interface WishlistItem {
   id: string;
