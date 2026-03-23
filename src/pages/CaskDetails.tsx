@@ -507,11 +507,9 @@ const CaskDetails = () => {
   };
 
 
-  // Calculate price per liter at 100% alcohol strength (ASL)
-  const calculatePricePerLiterASL = (pricePerLiter: number | null, alcoholPercentage: number | null) => {
-    if (!pricePerLiter || !alcoholPercentage || alcoholPercentage === 0) return pricePerLiter || 0;
-    return pricePerLiter / (alcoholPercentage / 100);
-  };
+  // Calculate price per LPA (Litre of Pure Alcohol)
+  const caskPricePerLPA = calculatePricePerLPA(cask?.total_price, cask?.current_volume_liters, cask?.alcohol_percentage);
+  const caskLPA = calculateLPA(cask?.current_volume_liters, cask?.alcohol_percentage);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
