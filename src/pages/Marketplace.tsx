@@ -312,7 +312,7 @@ const Marketplace = () => {
     .sort((a, b) => {
       switch (sortBy) {
         case 'price':
-          return (a.price_per_liter || 0) - (b.price_per_liter || 0);
+          return calculatePricePerLPA(a.total_price, a.current_volume_liters, a.alcohol_percentage) - calculatePricePerLPA(b.total_price, b.current_volume_liters, b.alcohol_percentage);
         case 'name':
           return a.spirit_name.localeCompare(b.spirit_name);
         case 'roi':
