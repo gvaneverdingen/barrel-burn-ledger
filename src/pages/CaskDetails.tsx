@@ -1148,8 +1148,8 @@ const CaskDetails = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">{cask.distillery.name}</h3>
-                  {cask.distillery.verified && (
+                  <h3 className="font-semibold">{cask.distillery?.name || 'Unknown'}</h3>
+                  {cask.distillery?.verified && (
                     <Badge variant="outline" className="text-green-600 border-green-600">
                       <Shield className="h-3 w-3 mr-1" />
                       Verified
@@ -1160,15 +1160,15 @@ const CaskDetails = () => {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Location:</span>
-                    <span>{cask.distillery.location}</span>
+                    <span>{cask.distillery?.location || 'N/A'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Established:</span>
-                    <span>{cask.distillery.established_year}</span>
+                    <span>{cask.distillery?.established_year || 'N/A'}</span>
                   </div>
                 </div>
 
-                {cask.distillery.description && (
+                {cask.distillery?.description && (
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {cask.distillery.description}
                   </p>
