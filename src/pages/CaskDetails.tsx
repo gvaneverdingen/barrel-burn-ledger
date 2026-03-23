@@ -243,11 +243,12 @@ const CaskDetails = () => {
         .maybeSingle();
 
       // Check if user is the distillery owner
-      const { data: distillery } = await supabase
+      const isDistilleryOwnerCheck = cask.distillery?.id ? await supabase
         .from('distilleries')
         .select('id, profile_id')
         .eq('id', cask.distillery.id)
-        .maybeSingle();
+        .maybeSingle() : { data: null };
+      const distillery = isDistilleryOwnerCheck.data;
 
       const isDistilleryOwner = distillery?.profile_id === user.id;
       const isCaskOwner = !!ownership;
