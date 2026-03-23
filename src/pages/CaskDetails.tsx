@@ -1162,7 +1162,7 @@ const CaskDetails = () => {
                   </Button>
                 )}
                 
-                {user && userRole === "distillery" && (
+                {user && effectiveUserRole === "distillery" && (
                   <Button 
                     className="w-full" 
                     variant="outline"
