@@ -68,7 +68,6 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
   const [offerPricePerLiter, setOfferPricePerLiter] = useState('');
   const [offerVolume, setOfferVolume] = useState(listing.current_volume_liters?.toString() || '');
   const [message, setMessage] = useState('');
-  const [lastGaugingDate, setLastGaugingDate] = useState('');
   const [enquiryMessage, setEnquiryMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -116,7 +115,6 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
         offered_total_price: totalPrice,
         volume_liters: volume,
         message: message || null,
-        last_gauging_date: lastGaugingDate || null,
         status: 'pending'
       });
 
@@ -199,7 +197,6 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
     setOfferPricePerLiter('');
     setOfferVolume(listing.current_volume_liters?.toString() || '');
     setMessage('');
-    setLastGaugingDate('');
     setEnquiryMessage('');
   };
 
@@ -285,21 +282,6 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
                 </div>
               </div>
             )}
-
-            {/* Last Gauging Date */}
-            <div className="space-y-2">
-              <Label htmlFor="gaugingDate">Last Gauging Date (LPA/ABV measurement)</Label>
-              <Input
-                id="gaugingDate"
-                type="date"
-                value={lastGaugingDate}
-                onChange={(e) => setLastGaugingDate(e.target.value)}
-                max={new Date().toISOString().split('T')[0]}
-              />
-              <p className="text-xs text-muted-foreground">
-                Date when the LPA and ABV were last measured
-              </p>
-            </div>
 
             {/* Optional Message */}
             <div className="space-y-2">

@@ -378,6 +378,7 @@ const CaskDetails = () => {
             total_asking_price,
             volume_for_sale_liters,
             notes,
+            last_gauging_date,
             ownership:cask_ownership(
               id,
               cask_id,
@@ -423,6 +424,7 @@ const CaskDetails = () => {
           total_price: Number(saleData.total_asking_price),
           current_volume_liters: Number(saleData.volume_for_sale_liters),
           tasting_notes: saleData.notes || caskInfo.tasting_notes,
+          last_gauging_date: saleData.last_gauging_date,
           // Add sale metadata
           is_sale_listing: true,
           sale_id: saleData.id,
@@ -1040,6 +1042,12 @@ const CaskDetails = () => {
                     <span>Pure Alcohol:</span>
                     <span className="font-medium">{formatLPA(caskLPA)}</span>
                   </div>
+                  {(cask as any).last_gauging_date && (
+                    <div className="flex justify-between">
+                      <span>Last Gauging:</span>
+                      <span className="font-medium">{new Date((cask as any).last_gauging_date).toLocaleDateString()}</span>
+                    </div>
+                  )}
                   <div className="text-xs text-muted-foreground pt-2 border-t">
                     <p>LPA = Litre of Pure Alcohol (volume × ABV)</p>
                   </div>

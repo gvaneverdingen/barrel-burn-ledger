@@ -43,6 +43,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
   const [pricePerLiter, setPricePerLiter] = useState("");
   const [notes, setNotes] = useState("");
   const [expiresInDays, setExpiresInDays] = useState("30");
+  const [lastGaugingDate, setLastGaugingDate] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,6 +91,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
           volumeForSale: volumeNum,
           notes: notes.trim() || undefined,
           expiresInDays: expiresNum > 0 ? expiresNum : undefined,
+          lastGaugingDate: lastGaugingDate || undefined,
           // Include userId for Magic wallet users
           ...(user.user_metadata?.wallet_address && { userId: user.id }),
         },
@@ -110,6 +112,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
       setPricePerLiter("");
       setNotes("");
       setExpiresInDays("30");
+      setLastGaugingDate("");
     } catch (error: any) {
       console.error("Error creating sale:", error);
       toast({
@@ -211,6 +214,23 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
                   <SelectItem value="0">No expiration</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Last Gauging Date */}
+            <div className="space-y-2">
+              <Label htmlFor="lastGaugingDate">
+                Last Gauging Date (LPA/ABV measurement)
+              </Label>
+              <Input
+                id="lastGaugingDate"
+                type="date"
+                value={lastGaugingDate}
+                onChange={(e) => setLastGaugingDate(e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
+              />
+              <p className="text-xs text-muted-foreground">
+                Date when the LPA and ABV were last officially measured
+              </p>
             </div>
 
             {/* Notes */}

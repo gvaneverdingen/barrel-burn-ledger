@@ -15,6 +15,7 @@ const CreateCaskSaleSchema = z.object({
   notes: z.string().max(1000, "Notes must be 1000 characters or less").optional(),
   expiresInDays: z.number().int("Expiry days must be an integer").positive("Expiry days must be positive").max(365, "Maximum expiry is 365 days").optional(),
   userId: z.string().uuid("Invalid user ID format").optional(),
+  lastGaugingDate: z.string().optional(),
 });
 
 // Sanitize error messages for production
@@ -61,7 +62,7 @@ serve(async (req) => {
       throw new Error(`Validation failed: ${errors}`);
     }
 
-    const { ownershipId, askingPricePerLiter, volumeForSale, notes, expiresInDays, userId } = validationResult.data;
+    const { ownershipId, askingPricePerLiter, volumeForSale, notes, expiresInDays, userId, lastGaugingDate } = validationResult.data;
 
     let authenticatedUserId: string;
     
@@ -185,6 +186,7 @@ serve(async (req) => {
         volume_for_sale_liters: volumeForSale,
         notes,
         expires_at: expiresAt,
+        last_gauging_date: lastGaugingDate || null,
       })
       .select()
       .single();
