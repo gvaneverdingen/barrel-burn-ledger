@@ -33,6 +33,7 @@ const NewCask = () => {
     quality_grade: '',
     expected_maturation_years: '',
     available_for_sale: false,
+    last_gauging_date: '',
   });
 
   // Fetch distillery for the current user
