@@ -1267,8 +1267,8 @@ const CaskDetails = () => {
           </div>
         </div>
 
-        {/* Offers Section - Only visible to owner */}
-        {isOwner && offers.length > 0 && (
+        {/* Offers Section - Only visible to owner or admin in owner view */}
+        {(effectiveIsOwner || isOwner) && offers.length > 0 && (
           <div className="container mx-auto px-6 pb-8">
             <Card>
               <CardHeader>
