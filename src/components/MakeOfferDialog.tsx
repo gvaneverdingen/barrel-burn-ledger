@@ -175,7 +175,7 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
 
       // Send email notification to seller
       sendOfferEmail({
-        sellerEmail: listing.seller_id!,
+        sellerId: listing.seller_id!,
         spiritName: listing.spirit_name,
         caskNumber: listing.cask_number,
         offerType: 'enquiry',
