@@ -51,6 +51,7 @@ const DistilleryOnboarding = lazy(() => import("./pages/distillery/Onboarding"))
 const DistilleryNewCask = lazy(() => import("./pages/distillery/NewCask"));
 const BlockchainExample = lazy(() => import("./pages/BlockchainExample"));
 const BlockchainTesting = lazy(() => import("./pages/BlockchainTesting"));
+const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -104,6 +105,7 @@ const AppRoutes = () => {
         {/* Auth and payment pages without layout */}
         <Route path="/auth" element={<Auth />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/unsubscribe" element={<Unsubscribe />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         
         {/* All other routes with layout */}
