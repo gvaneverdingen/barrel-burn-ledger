@@ -60,7 +60,7 @@ interface CaskDetails {
     description: string;
     established_year: number;
     verified: boolean;
-  };
+  } | null;
   cask_type: {
     id: string;
     name: string;
@@ -155,6 +155,7 @@ const CaskDetails = () => {
 
     try {
       // Check if the user owns this cask through their distillery
+      if (!cask.distillery?.id) return;
       const { data, error } = await supabase
         .from('distilleries')
         .select('id')
@@ -242,11 +243,12 @@ const CaskDetails = () => {
         .maybeSingle();
 
       // Check if user is the distillery owner
-      const { data: distillery } = await supabase
+      const isDistilleryOwnerCheck = cask.distillery?.id ? await supabase
         .from('distilleries')
         .select('id, profile_id')
         .eq('id', cask.distillery.id)
-        .maybeSingle();
+        .maybeSingle() : { data: null };
+      const distillery = isDistilleryOwnerCheck.data;
 
       const isDistilleryOwner = distillery?.profile_id === user.id;
       const isCaskOwner = !!ownership;
@@ -386,7 +388,7 @@ const CaskDetails = () => {
               profiles:profiles(first_name, last_name),
               cask:casks(
                 *,
-                distillery:distilleries(
+                distillery:distilleries_public(
                   id,
                   name,
                   location,
@@ -450,7 +452,7 @@ const CaskDetails = () => {
         .from("casks")
         .select(`
           *,
-          distillery:distilleries(
+          distillery:distilleries_public(
             id,
             name,
             location,
@@ -838,8 +840,8 @@ const CaskDetails = () => {
                      </CardTitle>
                      <CardDescription className="flex items-center space-x-2 mt-2">
                        <MapPin className="h-4 w-4" />
-                       <span>{cask.distillery.name}</span>
-                       {cask.distillery.verified && (
+                        <span>{cask.distillery?.name || 'Unknown Distillery'}</span>
+                        {cask.distillery?.verified && (
                          <Shield className="h-4 w-4 text-green-600" />
                        )}
                        {cask.is_sale_listing && cask.seller && (
@@ -1146,8 +1148,8 @@ const CaskDetails = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">{cask.distillery.name}</h3>
-                  {cask.distillery.verified && (
+                  <h3 className="font-semibold">{cask.distillery?.name || 'Unknown'}</h3>
+                  {cask.distillery?.verified && (
                     <Badge variant="outline" className="text-green-600 border-green-600">
                       <Shield className="h-3 w-3 mr-1" />
                       Verified
@@ -1158,15 +1160,15 @@ const CaskDetails = () => {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Location:</span>
-                    <span>{cask.distillery.location}</span>
+                    <span>{cask.distillery?.location || 'N/A'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Established:</span>
-                    <span>{cask.distillery.established_year}</span>
+                    <span>{cask.distillery?.established_year || 'N/A'}</span>
                   </div>
                 </div>
 
-                {cask.distillery.description && (
+                {cask.distillery?.description && (
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {cask.distillery.description}
                   </p>
