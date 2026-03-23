@@ -120,7 +120,28 @@ Deno.serve(async (req) => {
   // Create Supabase client with service role (bypasses RLS)
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-  // 2. Check suppression list (fail-closed: if we can't verify, don't send)
+  // If sellerId is provided instead of recipientEmail, look up the email
+  if (!recipientEmail && sellerId) {
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('email, first_name')
+      .eq('id', sellerId)
+      .single()
+
+    if (profileError || !profile?.email) {
+      console.error('Failed to look up seller email', { sellerId, error: profileError })
+      return new Response(
+        JSON.stringify({ error: 'Could not resolve recipient email from sellerId' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    recipientEmail = profile.email
+    if (!templateData.sellerName && profile.first_name) {
+      templateData.sellerName = profile.first_name
+    }
+  }
+
   const { data: suppressed, error: suppressionError } = await supabase
     .from('suppressed_emails')
     .select('id')
