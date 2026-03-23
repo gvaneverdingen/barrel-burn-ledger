@@ -118,6 +118,7 @@ const NewCask = () => {
           quality_grade: formData.quality_grade || null,
           expected_maturation_years: parseInt(formData.expected_maturation_years) || null,
           available_for_sale: formData.available_for_sale,
+          last_gauging_date: formData.last_gauging_date || null,
         })
         .select()
         .single();
