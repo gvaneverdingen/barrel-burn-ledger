@@ -155,6 +155,7 @@ const CaskDetails = () => {
 
     try {
       // Check if the user owns this cask through their distillery
+      if (!cask.distillery?.id) return;
       const { data, error } = await supabase
         .from('distilleries')
         .select('id')
