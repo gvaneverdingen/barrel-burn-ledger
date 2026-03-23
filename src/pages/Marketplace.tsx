@@ -211,7 +211,8 @@ const Marketplace = () => {
           distilleries: cask.distilleries,
           cask_types: cask.cask_types,
           is_resale: false,
-          seller_id: cask.distilleries?.profile_id // Add seller_id from distillery profile
+          seller_id: cask.distilleries?.profile_id,
+          last_gauging_date: cask.last_gauging_date
         }));
 
       // Transform secondary listings to unified format - filter out incomplete ones
