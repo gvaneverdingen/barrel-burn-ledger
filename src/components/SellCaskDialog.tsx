@@ -91,6 +91,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
           volumeForSale: volumeNum,
           notes: notes.trim() || undefined,
           expiresInDays: expiresNum > 0 ? expiresNum : undefined,
+          lastGaugingDate: lastGaugingDate || undefined,
           // Include userId for Magic wallet users
           ...(user.user_metadata?.wallet_address && { userId: user.id }),
         },
