@@ -10,6 +10,10 @@ interface MetricsCardsProps {
     totalRevenue: number;
     activeListings: number;
     totalInventory: number;
+    platformFees: number;
+    distilleryFees: number;
+    completedTransactions: number;
+    pendingTransactions: number;
   };
   loading: boolean;
 }
