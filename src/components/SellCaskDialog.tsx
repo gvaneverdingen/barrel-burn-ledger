@@ -112,6 +112,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
       setPricePerLiter("");
       setNotes("");
       setExpiresInDays("30");
+      setLastGaugingDate("");
     } catch (error: any) {
       console.error("Error creating sale:", error);
       toast({
