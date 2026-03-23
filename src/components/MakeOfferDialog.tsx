@@ -11,6 +11,40 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import { toast } from 'sonner';
 import { DollarSign, MessageSquare, HandCoins, HelpCircle } from 'lucide-react';
 
+const sendOfferEmail = async (params: {
+  sellerId: string;
+  spiritName: string;
+  caskNumber: string;
+  offerType: string;
+  offeredTotalPrice?: string;
+  offeredPricePerLiter?: string;
+  volumeLiters?: string;
+  message?: string;
+}) => {
+  try {
+    const idempotencyKey = `new-offer-${params.sellerId}-${Date.now()}`;
+
+    await supabase.functions.invoke('send-transactional-email', {
+      body: {
+        templateName: 'new-offer-notification',
+        sellerId: params.sellerId,
+        idempotencyKey,
+        templateData: {
+          spiritName: params.spiritName,
+          caskNumber: params.caskNumber,
+          offerType: params.offerType,
+          offeredTotalPrice: params.offeredTotalPrice,
+          offeredPricePerLiter: params.offeredPricePerLiter,
+          volumeLiters: params.volumeLiters,
+          message: params.message,
+        },
+      },
+    });
+  } catch (err) {
+    console.error('Failed to send offer notification email:', err);
+  }
+};
+
 interface MakeOfferDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -86,6 +120,18 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
 
       if (error) throw error;
 
+      // Send email notification to seller
+      sendOfferEmail({
+        sellerId: listing.seller_id!,
+        spiritName: listing.spirit_name,
+        caskNumber: listing.cask_number,
+        offerType: 'buy_offer',
+        offeredTotalPrice: totalPrice.toLocaleString(),
+        offeredPricePerLiter: pricePerLiter.toLocaleString(),
+        volumeLiters: volume.toString(),
+        message: message || undefined,
+      });
+
       toast.success('Offer submitted successfully! The seller will be notified.');
       onOpenChange(false);
       resetForm();
@@ -126,6 +172,15 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
       });
 
       if (error) throw error;
+
+      // Send email notification to seller
+      sendOfferEmail({
+        sellerId: listing.seller_id!,
+        spiritName: listing.spirit_name,
+        caskNumber: listing.cask_number,
+        offerType: 'enquiry',
+        message: enquiryMessage,
+      });
 
       toast.success('Enquiry sent! The seller will respond shortly.');
       onOpenChange(false);
