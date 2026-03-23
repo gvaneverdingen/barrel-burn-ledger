@@ -1127,7 +1127,7 @@ const CaskDetails = () => {
                   </Button>
                 )}
 
-                {user && sellerId && sellerId !== user.id && !isOwner && (
+                {user && sellerId && sellerId !== user.id && !effectiveIsOwner && (
                   <Button 
                     variant="outline"
                     className="w-full" 
