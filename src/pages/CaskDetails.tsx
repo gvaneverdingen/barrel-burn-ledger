@@ -936,10 +936,6 @@ const CaskDetails = () => {
                         <span>{cask.cask_type.capacity_liters}L</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Current Volume:</span>
-                        <span>{cask.current_volume_liters || 0}L</span>
-                      </div>
-                      <div className="flex justify-between">
                         <span className="text-muted-foreground">Fill Level:</span>
                         <span>{cask.current_volume_liters && cask.cask_type.capacity_liters ? Math.round((cask.current_volume_liters / cask.cask_type.capacity_liters) * 100) : 0}%</span>
                       </div>
