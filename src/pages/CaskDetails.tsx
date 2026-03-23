@@ -919,8 +919,8 @@ const CaskDetails = () => {
                         <span>{formatDate(cask.distillation_date)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Expected Maturation:</span>
-                        <span>{cask.expected_maturation_years || 'N/A'} years</span>
+                        <span className="text-muted-foreground">Years Matured:</span>
+                        <span>{calculateAge(cask.distillation_date)} years</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Warehouse Location:</span>
