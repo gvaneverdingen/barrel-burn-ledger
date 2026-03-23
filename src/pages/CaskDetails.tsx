@@ -388,7 +388,7 @@ const CaskDetails = () => {
               profiles:profiles(first_name, last_name),
               cask:casks(
                 *,
-                distillery:distilleries(
+                distillery:distilleries_public(
                   id,
                   name,
                   location,
