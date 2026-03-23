@@ -161,6 +161,12 @@ const CaskDetails = () => {
   const checkImageManagementPermissions = async () => {
     if (!cask || !user) return;
 
+    // Admins can always manage images
+    if (userRole === 'administrator') {
+      setCanManageImages(true);
+      return;
+    }
+
     try {
       // Check if the user owns this cask through their distillery
       if (!cask.distillery?.id) return;
