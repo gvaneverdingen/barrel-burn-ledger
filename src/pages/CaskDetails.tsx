@@ -424,6 +424,7 @@ const CaskDetails = () => {
           total_price: Number(saleData.total_asking_price),
           current_volume_liters: Number(saleData.volume_for_sale_liters),
           tasting_notes: saleData.notes || caskInfo.tasting_notes,
+          last_gauging_date: saleData.last_gauging_date,
           // Add sale metadata
           is_sale_listing: true,
           sale_id: saleData.id,
