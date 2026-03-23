@@ -232,6 +232,7 @@ export const OffersPanel = () => {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        {!isEnquiry && (
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-sm text-muted-foreground">Offer Price/L</p>
@@ -256,6 +257,19 @@ export const OffersPanel = () => {
             </p>
           </div>
         </div>
+        )}
+        {isEnquiry && (
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-muted-foreground">
+              {isReceived ? 'From' : 'To'}
+            </p>
+            <p className="font-semibold">
+              {isReceived
+                ? `${offer.buyer_profile?.first_name || 'Unknown'} ${offer.buyer_profile?.last_name || ''}`
+                : `${offer.seller_profile?.first_name || 'Unknown'} ${offer.seller_profile?.last_name || ''}`}
+            </p>
+          </div>
+        )}
 
         {offer.message && (
           <div className="bg-muted p-3 rounded-lg">
