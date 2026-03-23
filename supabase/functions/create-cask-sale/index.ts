@@ -15,6 +15,7 @@ const CreateCaskSaleSchema = z.object({
   notes: z.string().max(1000, "Notes must be 1000 characters or less").optional(),
   expiresInDays: z.number().int("Expiry days must be an integer").positive("Expiry days must be positive").max(365, "Maximum expiry is 365 days").optional(),
   userId: z.string().uuid("Invalid user ID format").optional(),
+  lastGaugingDate: z.string().optional(),
 });
 
 // Sanitize error messages for production
