@@ -1,0 +1,1 @@
+ALTER TABLE public.casks ADD COLUMN last_gauging_date date NULL;
