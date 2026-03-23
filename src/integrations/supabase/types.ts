@@ -417,6 +417,13 @@ export type Database = {
             referencedRelation: "distilleries"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "casks_distillery_id_fkey"
+            columns: ["distillery_id"]
+            isOneToOne: false
+            referencedRelation: "distilleries_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       counter_offers: {
@@ -972,7 +979,53 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      distilleries_public: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          established_year: number | null
+          id: string | null
+          location: string | null
+          logo_url: string | null
+          name: string | null
+          profile_id: string | null
+          verified: boolean | null
+          website: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          established_year?: number | null
+          id?: string | null
+          location?: string | null
+          logo_url?: string | null
+          name?: string | null
+          profile_id?: string | null
+          verified?: boolean | null
+          website?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          established_year?: number | null
+          id?: string | null
+          location?: string | null
+          logo_url?: string | null
+          name?: string | null
+          profile_id?: string | null
+          verified?: boolean | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "distilleries_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       has_role: {
