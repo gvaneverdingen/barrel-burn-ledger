@@ -4,11 +4,11 @@
   "description": "Smart contracts for Angel Share cask NFT marketplace",
   "scripts": {
     "compile": "hardhat compile",
-    "deploy:mumbai": "hardhat run deploy.js --network mumbai",
+    "deploy:amoy": "hardhat run deploy.js --network amoy",
     "deploy:polygon": "hardhat run deploy.js --network polygon",
     "deploy:local": "hardhat run deploy.js --network hardhat",
     "test": "hardhat test",
-    "verify:mumbai": "hardhat verify --network mumbai",
+    "verify:amoy": "hardhat verify --network amoy",
     "verify:polygon": "hardhat verify --network polygon"
   },
   "devDependencies": {
