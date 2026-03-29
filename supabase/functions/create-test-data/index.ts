@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 serve(async (req) => {
@@ -12,13 +12,48 @@ serve(async (req) => {
   }
 
   try {
+    // === AUTH CHECK: Only administrators can create test data ===
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+    );
+
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401,
+      });
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
+
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401,
+      });
+    }
+
     const supabaseServiceRole = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
       { auth: { persistSession: false } }
     );
 
-    console.log("Starting comprehensive test data population...");
+    // Verify admin role
+    const { data: isAdmin } = await supabaseServiceRole
+      .rpc('has_role', { _user_id: user.id, _role: 'administrator' });
+
+    if (!isAdmin) {
+      return new Response(JSON.stringify({ error: "Forbidden: Administrator role required" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 403,
+      });
+    }
+
+    console.log("Admin authorized, starting test data population...");
 
     // Get existing cask types
     const { data: caskTypes, error: caskTypesError } = await supabaseServiceRole
@@ -26,7 +61,6 @@ serve(async (req) => {
       .select("*");
 
     if (caskTypesError) {
-      console.log("Cask types error:", caskTypesError);
       throw caskTypesError;
     }
 
@@ -37,11 +71,10 @@ serve(async (req) => {
       .limit(5);
 
     if (usersError) {
-      console.log("Users fetch error:", usersError);
       throw usersError;
     }
 
-    const adminUserId = "99e289e8-cf01-4277-bbe2-b99b088a4166";
+    const adminUserId = user.id;
     const buyerUserId = existingUsers && existingUsers.length > 1 
       ? existingUsers.find(u => u.id !== adminUserId)?.id || existingUsers[0].id
       : existingUsers?.[0]?.id || adminUserId;
@@ -56,7 +89,6 @@ serve(async (req) => {
     let distillery = existingDistillery;
 
     if (!existingDistillery) {
-      // Create a test distillery for the admin user
       const testDistillery = {
         id: crypto.randomUUID(),
         profile_id: adminUserId,
@@ -76,26 +108,17 @@ serve(async (req) => {
         .single();
 
       if (distilleryError) {
-        console.log("Distillery insert error:", distilleryError);
         throw distilleryError;
       }
 
       distillery = newDistillery;
-      console.log("Created distillery:", distillery.name);
 
-      // Assign distillery role to admin if not already assigned
-      const { error: roleError } = await supabaseServiceRole
+      await supabaseServiceRole
         .from("user_roles")
         .upsert({ user_id: adminUserId, role: 'distillery' }, { onConflict: 'user_id,role' });
-      
-      if (roleError) {
-        console.log("Role assignment error (may already exist):", roleError);
-      }
-    } else {
-      console.log("Using existing distillery:", distillery.name);
     }
 
-    // Create casks for the distillery if none exist
+    // Create casks if none exist
     const { data: existingCasks } = await supabaseServiceRole
       .from("casks")
       .select("id")
@@ -129,7 +152,7 @@ serve(async (req) => {
             total_price: totalPrice,
             available_for_sale: true,
             warehouse_location: `Warehouse ${Math.floor(i / 3) + 1}`,
-            tasting_notes: `Exceptional ${age}-year-old Speyside single malt. Rich and complex.`,
+            tasting_notes: `Exceptional ${age}-year-old Speyside single malt.`,
             blockchain_id: `SPG-${String(i + 1).padStart(3, '0')}`,
             blockchain_hash: `0xspg${i.toString(16).padStart(2, '0')}${'0'.repeat(36)}`
           });
@@ -141,29 +164,20 @@ serve(async (req) => {
         .insert(testCasks)
         .select();
 
-      if (casksError) {
-        console.log("Casks insert error:", casksError);
-        throw casksError;
-      }
-
+      if (casksError) throw casksError;
       casks = newCasks || [];
-      console.log("Created casks:", casks.length);
     } else {
       const { data: allCasks } = await supabaseServiceRole
         .from("casks")
         .select("*")
         .eq("distillery_id", distillery.id);
       casks = allCasks || [];
-      console.log("Using existing casks:", casks.length);
     }
 
-    // Create test transactions and payouts for the distillery
-    console.log("Creating test transactions and payouts...");
-    
+    // Create test transactions and payouts
     const transactions = [];
     const payouts = [];
     
-    // Create 8 completed transactions over the past 6 months
     for (let i = 0; i < 8; i++) {
       const cask = casks[i % casks.length];
       if (!cask) continue;
@@ -201,8 +215,6 @@ serve(async (req) => {
         created_at: transactionDate.toISOString()
       });
 
-      // Create payout for this transaction
-      const payoutStatus = i < 5 ? 'completed' : 'pending_payout';
       payouts.push({
         id: crypto.randomUUID(),
         transaction_id: transactionId,
@@ -210,36 +222,17 @@ serve(async (req) => {
         recipient_type: 'distillery',
         fee_type: 'seller_payout',
         amount: sellerAmount,
-        status: payoutStatus,
-        processed_at: payoutStatus === 'completed' ? transactionDate.toISOString() : null,
+        status: i < 5 ? 'completed' : 'pending_payout',
+        processed_at: i < 5 ? transactionDate.toISOString() : null,
         created_at: transactionDate.toISOString()
       });
     }
 
-    // Insert transactions
     if (transactions.length > 0) {
-      const { error: txError } = await supabaseServiceRole
-        .from("transactions")
-        .insert(transactions);
-
-      if (txError) {
-        console.log("Transactions insert error:", txError);
-      } else {
-        console.log("Created transactions:", transactions.length);
-      }
+      await supabaseServiceRole.from("transactions").insert(transactions);
     }
-
-    // Insert payouts
     if (payouts.length > 0) {
-      const { error: payoutError } = await supabaseServiceRole
-        .from("payouts")
-        .insert(payouts);
-
-      if (payoutError) {
-        console.log("Payouts insert error:", payoutError);
-      } else {
-        console.log("Created payouts:", payouts.length);
-      }
+      await supabaseServiceRole.from("payouts").insert(payouts);
     }
 
     return new Response(JSON.stringify({ 
@@ -259,8 +252,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Error creating test data:", error);
     return new Response(JSON.stringify({ 
-      error: (error as Error).message,
-      details: error
+      error: "An error occurred processing your request"
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
