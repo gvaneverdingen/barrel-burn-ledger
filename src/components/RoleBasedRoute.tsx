@@ -21,7 +21,7 @@ const RoleBasedRoute = ({
 
   // If still loading, show loading state
   if (loading) {
-    console.log('RoleBasedRoute: Still loading auth...');
+    if (import.meta.env.DEV) console.log('RoleBasedRoute: Still loading auth...');
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -34,7 +34,7 @@ const RoleBasedRoute = ({
 
   // If user is authenticated but role hasn't loaded yet, wait
   if (user && !userRole) {
-    console.log('RoleBasedRoute: User authenticated but role not loaded yet...');
+    if (import.meta.env.DEV) console.log('RoleBasedRoute: User authenticated but role not loaded yet...');
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -47,18 +47,18 @@ const RoleBasedRoute = ({
 
   // Administrator can access everything
   if (userRole === 'administrator') {
-    console.log('RoleBasedRoute: Administrator access granted');
+    if (import.meta.env.DEV) console.log('RoleBasedRoute: Administrator access granted');
     return <>{children}</>;
   }
 
   // Check if user role is in allowed roles
   if (userRole && allowedRoles.includes(userRole)) {
-    console.log('RoleBasedRoute: Access granted for role:', userRole);
+    if (import.meta.env.DEV) console.log('RoleBasedRoute: Access granted for role:', userRole);
     return <>{children}</>;
   }
 
   // If not authenticated or not allowed, redirect
-  console.log('RoleBasedRoute: Access denied, redirecting to:', redirectTo);
+  if (import.meta.env.DEV) console.log('RoleBasedRoute: Access denied, redirecting to:', redirectTo);
   return <Navigate to={redirectTo} replace />;
 };
 
