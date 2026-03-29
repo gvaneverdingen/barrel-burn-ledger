@@ -314,6 +314,51 @@ serve(async (req) => {
         }
       }
 
+      // Mint NFT and log to blockchain
+      try {
+        console.log("Triggering blockchain NFT mint for cask:", caskId);
+        
+        const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+        const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+        
+        const blockchainResponse = await fetch(`${supabaseUrl}/functions/v1/blockchain-logger`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${serviceRoleKey}`,
+          },
+          body: JSON.stringify({
+            caskId: caskId,
+            buyerId: userId,
+            sellerId: isResale ? transaction.seller_id : transaction.cask.distillery_id,
+            transactionType: isResale ? 'purchase' : 'mint',
+            volume: transaction.volume_liters,
+            price: transaction.total_amount,
+            timestamp: Date.now(),
+            transactionId: transactionId,
+            metadata: {
+              spiritName: transaction.cask.spirit_name,
+              caskNumber: transaction.cask.cask_number,
+              isPrimarySale: !isResale,
+            }
+          }),
+        });
+
+        const blockchainResult = await blockchainResponse.json();
+        
+        if (blockchainResult.success) {
+          console.log("Blockchain transaction successful:", blockchainResult.transactionHash);
+          if (blockchainResult.tokenId !== undefined) {
+            console.log("NFT Token ID:", blockchainResult.tokenId);
+          }
+        } else {
+          console.error("Blockchain transaction failed (non-fatal):", blockchainResult.error);
+        }
+      } catch (blockchainError) {
+        console.error("Error calling blockchain-logger (non-fatal):", blockchainError);
+        // Don't throw - blockchain failure shouldn't fail the purchase
+      }
+
       // Send confirmation emails
       try {
         const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string);
