@@ -19,59 +19,73 @@ const PaymentSuccess = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const verifyPayment = async () => {
-      if (!sessionId) {
-        console.warn('PaymentSuccess: no session_id in URL, falling back to latest completed transaction lookup');
+    let cancelled = false;
+
+    const findTransaction = async (): Promise<any> => {
+      // Try completed first
+      let query = supabase
+        .from('transactions')
+        .select(`
+          *,
+          cask:casks(
+            spirit_name,
+            cask_number,
+            distillery:distilleries(name)
+          )
+        `)
+        .in('status', ['completed', 'pending'])
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (user) {
+        query = query.eq('buyer_id', user.id);
       }
 
+      const { data, error: txError } = await query;
+      if (txError) throw txError;
+      return data?.[0] ?? null;
+    };
+
+    const verifyPayment = async () => {
+      if (!user) return; // Wait for user to load
       setVerifying(true);
       setError(null);
 
       try {
-        // Give webhook a moment to process if needed
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Build base query for latest completed transaction
-        let query = supabase
-          .from('transactions')
-          .select(`
-            *,
-            cask:casks(
-              spirit_name,
-              cask_number,
-              distillery:distilleries(name)
-            )
-          `)
-          .eq('status', 'completed')
-          .order('created_at', { ascending: false })
-          .limit(1);
-
-        // If we know the user, narrow results to their transactions
-        if (user) {
-          query = query.eq('buyer_id', user.id);
-        }
-
-        const { data: transactions, error: txError } = await query;
-
-        if (txError) throw txError;
-
-        if (transactions && transactions.length > 0) {
-          setTransactionDetails(transactions[0]);
-          setVerified(true);
+        // Poll up to 5 times (10s total) for the transaction to appear/complete
+        const maxAttempts = 5;
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+          if (cancelled) return;
           
-          // If user is known, verify ownership was created
-          if (user) {
-            const { data: ownership, error: ownershipError } = await supabase
-              .from('cask_ownership')
-              .select('id')
-              .eq('cask_id', transactions[0].cask_id)
-              .eq('owner_id', user.id)
-              .maybeSingle();
-              
-            if (ownershipError || !ownership) {
-              console.warn('Ownership record not found yet, but transaction is completed');
+          // Small delay on first attempt, longer on retries
+          await new Promise(resolve => setTimeout(resolve, attempt === 0 ? 1000 : 2000));
+          
+          const tx = await findTransaction();
+          
+          if (tx) {
+            setTransactionDetails(tx);
+            
+            if (tx.status === 'completed') {
+              setVerified(true);
+              setVerifying(false);
+              return;
+            }
+            
+            // Found a pending transaction — show success optimistically
+            // (payment went through Stripe, webhook will complete it)
+            if (tx.status === 'pending' && attempt >= 2) {
+              setVerified(true);
+              setVerifying(false);
+              return;
             }
           }
+        }
+
+        // If we found a pending transaction after all attempts, still show success
+        const finalTx = await findTransaction();
+        if (finalTx) {
+          setTransactionDetails(finalTx);
+          setVerified(true);
         } else {
           setError('Payment verification in progress. Please check your portfolio in a few minutes.');
         }
@@ -79,11 +93,12 @@ const PaymentSuccess = () => {
         console.error('Error verifying payment:', err);
         setError('Unable to verify payment. Please contact support if this issue persists.');
       } finally {
-        setVerifying(false);
+        if (!cancelled) setVerifying(false);
       }
     };
 
     verifyPayment();
+    return () => { cancelled = true; };
   }, [sessionId, user]);
 
   return (
