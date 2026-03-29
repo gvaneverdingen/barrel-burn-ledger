@@ -342,7 +342,7 @@ serve(async (req) => {
         if (buyerProfile?.email) {
           const buyerEmailHtml = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h1 style="color: #8B4513;">Purchase Confirmed!</h1>
+              <h1 style="color: #D4A843;">Purchase Confirmed!</h1>
               <p>Dear ${buyerProfile.first_name || 'Valued Customer'},</p>
               <p>Your whisky cask purchase has been confirmed!</p>
               <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
@@ -354,15 +354,15 @@ serve(async (req) => {
                 <p><strong>Transaction ID:</strong> ${transactionId}</p>
               </div>
               <p>Your cask ownership will be recorded on the blockchain within 24 hours.</p>
-              <p>Visit your portfolio to track your investment: <a href="https://your-domain.com/portfolio">View Portfolio</a></p>
-              <p>Best regards,<br>The Angel Share Team</p>
+              <p>Visit your portfolio to track your investment: <a href="https://barrel-burn-ledger.lovable.app/portfolio">View Portfolio</a></p>
+              <p>Best regards,<br>The ARIGI Team</p>
             </div>
           `;
 
           const buyerEmailResult = await resend.emails.send({
             from: 'ARIGI <noreply@notify.arigi.eu>',
             to: [buyerProfile.email],
-            subject: 'Cask Purchase Confirmed - Angel Share',
+            subject: 'Cask Purchase Confirmed - ARIGI',
             html: buyerEmailHtml,
           });
           
@@ -378,9 +378,9 @@ serve(async (req) => {
         if (distilleryProfile?.email) {
           const distilleryEmailHtml = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h1 style="color: #8B4513;">Cask Sold!</h1>
+              <h1 style="color: #D4A843;">Cask Sold!</h1>
               <p>Dear ${distillery?.name},</p>
-              <p>One of your casks has been sold on the Angel Share marketplace!</p>
+              <p>One of your casks has been sold on the ARIGI marketplace!</p>
               <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="margin-top: 0;">Sale Details</h3>
                 <p><strong>Spirit Name:</strong> ${transaction.cask.spirit_name}</p>
@@ -391,14 +391,14 @@ serve(async (req) => {
                 <p><strong>Transaction ID:</strong> ${transactionId}</p>
               </div>
               <p>The payout will be processed according to your payment schedule.</p>
-              <p>Best regards,<br>The Angel Share Team</p>
+              <p>Best regards,<br>The ARIGI Team</p>
             </div>
           `;
 
           const distilleryEmailResult = await resend.emails.send({
             from: 'ARIGI <noreply@notify.arigi.eu>',
             to: [distilleryProfile.email],
-            subject: 'Cask Sale Notification - Angel Share',
+            subject: 'Cask Sale Notification - ARIGI',
             html: distilleryEmailHtml,
           });
           
