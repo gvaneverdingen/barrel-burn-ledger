@@ -360,7 +360,7 @@ serve(async (req) => {
           `;
 
           const buyerEmailResult = await resend.emails.send({
-            from: 'Angel Share <onboarding@resend.dev>',
+            from: 'ARIGI <noreply@notify.arigi.eu>',
             to: [buyerProfile.email],
             subject: 'Cask Purchase Confirmed - Angel Share',
             html: buyerEmailHtml,
@@ -396,7 +396,7 @@ serve(async (req) => {
           `;
 
           const distilleryEmailResult = await resend.emails.send({
-            from: 'Angel Share <onboarding@resend.dev>',
+            from: 'ARIGI <noreply@notify.arigi.eu>',
             to: [distilleryProfile.email],
             subject: 'Cask Sale Notification - Angel Share',
             html: distilleryEmailHtml,
