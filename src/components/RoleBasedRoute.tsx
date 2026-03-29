@@ -15,12 +15,9 @@ const RoleBasedRoute = ({
 }: RoleBasedRouteProps) => {
   const { user, userRole, loading } = useAuth();
 
-  console.log('RoleBasedRoute:', { 
-    hasUser: !!user, 
-    userRole, 
-    loading, 
-    allowedRoles 
-  });
+  if (import.meta.env.DEV) {
+    console.log('RoleBasedRoute:', { hasUser: !!user, userRole, loading, allowedRoles });
+  }
 
   // If still loading, show loading state
   if (loading) {
