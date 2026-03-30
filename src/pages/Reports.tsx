@@ -46,6 +46,7 @@ interface LicenseStatus {
 
 const Reports = () => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const [report, setReport] = useState<PortfolioReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [generatingReport, setGeneratingReport] = useState(false);
