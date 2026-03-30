@@ -1093,25 +1093,25 @@ const CaskDetails = () => {
                 </div>
                 
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Price per LPA:</span>
-                    <span className="font-bold text-primary">
-                      {formatPrice(caskPricePerLPA)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>LPA:</span>
-                    <span className="font-medium">{formatLPA(caskLPA)}</span>
-                  </div>
                   {cask?.last_gauging_date && (
-                    <div className="flex justify-between">
-                      <span>Last Gauging:</span>
-                      <span className="font-medium">{new Date(cask.last_gauging_date).toLocaleDateString()}</span>
-                    </div>
+                    <>
+                      <div className="flex justify-between">
+                        <span>LPA:</span>
+                        <span className="font-medium">{formatLPA(caskLPA)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>ABV:</span>
+                        <span className="font-medium">{cask.alcohol_percentage}%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Last Gauging:</span>
+                        <span className="font-medium">{new Date(cask.last_gauging_date).toLocaleDateString()}</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground pt-2 border-t">
+                        <p>LPA = Litre of Pure Alcohol (volume × ABV)</p>
+                      </div>
+                    </>
                   )}
-                  <div className="text-xs text-muted-foreground pt-2 border-t">
-                    <p>LPA = Litre of Pure Alcohol (volume × ABV)</p>
-                  </div>
                 </div>
 
                 {user && effectiveUserRole !== "distillery" && !isOwnerSale && !effectiveIsOwner && (
