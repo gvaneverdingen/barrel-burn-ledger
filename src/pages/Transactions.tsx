@@ -62,7 +62,7 @@ const Transactions = () => {
       date: format(new Date(p.created_at), 'yyyy-MM-dd'),
       type: 'Sale Payout',
       description: p.description || `${p.transaction?.cask?.spirit_name} - ${p.transaction?.cask?.cask_number}`,
-      amount: `$${p.amount.toFixed(2)}`,
+      amount: formatPrice(p.amount),
       status: p.status === 'pending_payout' ? 'Pending Payout' : p.status === 'completed' ? 'Completed' : 'Processing',
       method: 'Bank Transfer'
     }))
