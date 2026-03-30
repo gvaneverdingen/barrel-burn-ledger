@@ -250,7 +250,7 @@ export const MatchmakingSystem = () => {
                 </div>
                 <div>
                   <span className="text-sm text-muted-foreground">Price per Barrel:</span>
-                  <p className="font-medium">{formatCurrency(offer.pricePerBarrel.min)} - {formatCurrency(offer.pricePerBarrel.max)}</p>
+                  <p className="font-medium">{formatPrice(offer.pricePerBarrel.min)} - {formatPrice(offer.pricePerBarrel.max)}</p>
                 </div>
               </div>
 
