@@ -222,7 +222,7 @@ const DistilleryAnalytics = () => {
             <Clock className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-amber-500">£{pendingAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div className="text-2xl font-bold text-amber-500">{formatPrice(pendingAmount)}</div>
             <p className="text-xs text-muted-foreground">
               {pendingPayouts.length} payouts awaiting transfer
             </p>
