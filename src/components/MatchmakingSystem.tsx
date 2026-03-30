@@ -3,9 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Handshake, MessageCircle, TrendingUp, Clock } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Offer {
   id: string;
@@ -26,6 +28,13 @@ export const MatchmakingSystem = () => {
   const { user } = useAuth();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
+  const [showOfferDialog, setShowOfferDialog] = useState(false);
+  const [showContactDialog, setShowContactDialog] = useState(false);
+  const [offerMessage, setOfferMessage] = useState('');
+  const [offerPrice, setOfferPrice] = useState('');
+  const [offerVolume, setOfferVolume] = useState('');
+  const [contactMessage, setContactMessage] = useState('');
   const [newOffer, setNewOffer] = useState({
     type: 'buy_request' as 'buy_request' | 'sell_offer',
     spiritType: '',
@@ -109,6 +118,48 @@ export const MatchmakingSystem = () => {
       priceMax: '',
       description: '',
     });
+  };
+
+  const handleMakeOffer = (offer: Offer) => {
+    if (!user) {
+      toast({ title: "Authentication Required", description: "Please sign in to make an offer.", variant: "destructive" });
+      return;
+    }
+    setSelectedOffer(offer);
+    setOfferPrice(String(offer.priceRange.min));
+    setOfferVolume(String(offer.volumeRange.min));
+    setOfferMessage('');
+    setShowOfferDialog(true);
+  };
+
+  const handleSubmitOffer = () => {
+    if (!offerPrice || !offerVolume) {
+      toast({ title: "Missing Information", description: "Please enter a price and volume.", variant: "destructive" });
+      return;
+    }
+    toast({ title: "Offer Sent!", description: `Your offer of $${Number(offerPrice).toLocaleString()} for ${offerVolume}L has been sent to ${selectedOffer?.userName}.` });
+    setShowOfferDialog(false);
+    setSelectedOffer(null);
+  };
+
+  const handleContact = (offer: Offer) => {
+    if (!user) {
+      toast({ title: "Authentication Required", description: "Please sign in to contact.", variant: "destructive" });
+      return;
+    }
+    setSelectedOffer(offer);
+    setContactMessage('');
+    setShowContactDialog(true);
+  };
+
+  const handleSendMessage = () => {
+    if (!contactMessage.trim()) {
+      toast({ title: "Missing Message", description: "Please enter a message.", variant: "destructive" });
+      return;
+    }
+    toast({ title: "Message Sent!", description: `Your message has been sent to ${selectedOffer?.userName}.` });
+    setShowContactDialog(false);
+    setSelectedOffer(null);
   };
 
   const formatCurrency = (amount: number) => {
@@ -281,11 +332,11 @@ export const MatchmakingSystem = () => {
                   <span>Expires in 25 days</span>
                 </div>
                 <div className="flex space-x-2">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => handleContact(offer)}>
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Contact
                   </Button>
-                  <Button size="sm">
+                  <Button size="sm" onClick={() => handleMakeOffer(offer)}>
                     <Handshake className="h-4 w-4 mr-2" />
                     Make Offer
                   </Button>
@@ -295,6 +346,58 @@ export const MatchmakingSystem = () => {
           </Card>
         ))}
       </div>
+
+      {/* Make Offer Dialog */}
+      <Dialog open={showOfferDialog} onOpenChange={setShowOfferDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Make an Offer</DialogTitle>
+            <DialogDescription>
+              Respond to {selectedOffer?.userName}'s {selectedOffer?.type === 'buy_request' ? 'buy request' : 'sell offer'} for {selectedOffer?.spiritType}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Price ($)</label>
+                <Input type="number" value={offerPrice} onChange={(e) => setOfferPrice(e.target.value)} placeholder="Total price" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Volume (L)</label>
+                <Input type="number" value={offerVolume} onChange={(e) => setOfferVolume(e.target.value)} placeholder="Volume in liters" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Message (optional)</label>
+              <Textarea value={offerMessage} onChange={(e) => setOfferMessage(e.target.value)} placeholder="Add a note to your offer..." />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowOfferDialog(false)}>Cancel</Button>
+            <Button onClick={handleSubmitOffer}>Send Offer</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Contact Dialog */}
+      <Dialog open={showContactDialog} onOpenChange={setShowContactDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Contact {selectedOffer?.userName}</DialogTitle>
+            <DialogDescription>
+              Send a message about their {selectedOffer?.spiritType} {selectedOffer?.type === 'buy_request' ? 'buy request' : 'listing'}
+            </DialogDescription>
+          </DialogHeader>
+          <div>
+            <label className="block text-sm font-medium mb-1">Your Message</label>
+            <Textarea value={contactMessage} onChange={(e) => setContactMessage(e.target.value)} placeholder="Write your message..." className="h-32" />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowContactDialog(false)}>Cancel</Button>
+            <Button onClick={handleSendMessage}>Send Message</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
