@@ -149,7 +149,7 @@ export function OrdersManagement() {
                     <TableCell>
                       {order.seller?.first_name} {order.seller?.last_name}
                     </TableCell>
-                    <TableCell>£{order.total_amount?.toLocaleString()}</TableCell>
+                    <TableCell>{formatPrice(order.total_amount)}</TableCell>
                     <TableCell>{order.volume_liters}L</TableCell>
                     <TableCell>
                       <Badge variant={

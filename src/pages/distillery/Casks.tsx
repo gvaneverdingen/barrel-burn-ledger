@@ -191,7 +191,7 @@ const DistilleryCasks = () => {
                   </div>
                   <div className="flex justify-between font-semibold">
                     <span>Total Price:</span>
-                    <span>£{cask.total_price}</span>
+                    <span>{formatPrice(cask.total_price)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Location:</span>

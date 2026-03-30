@@ -235,7 +235,7 @@ const DistilleryAnalytics = () => {
             <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-500">£{completedAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div className="text-2xl font-bold text-green-500">{formatPrice(completedAmount)}</div>
             <p className="text-xs text-muted-foreground">
               {completedPayouts.length} transfers completed
             </p>

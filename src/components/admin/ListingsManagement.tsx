@@ -157,7 +157,7 @@ export function ListingsManagement() {
                       <TableCell>
                         {listing.profiles?.first_name} {listing.profiles?.last_name}
                       </TableCell>
-                      <TableCell>£{listing.total_asking_price?.toLocaleString()}</TableCell>
+                      <TableCell>{formatPrice(listing.total_asking_price)}</TableCell>
                       <TableCell>{listing.volume_for_sale_liters}L</TableCell>
                       <TableCell>
                         {listing.last_gauging_date 

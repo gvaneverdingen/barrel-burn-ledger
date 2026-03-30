@@ -88,7 +88,7 @@ const Insights = () => {
                   <Activity className="h-4 w-4 text-primary" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-primary">£2.1M</div>
+                  <div className="text-2xl font-bold text-primary">{formatPrice(2100000)}</div>
                   <p className="text-xs text-muted-foreground">
                     +8.3% from last week
                   </p>

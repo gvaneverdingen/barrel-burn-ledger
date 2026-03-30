@@ -340,7 +340,7 @@ const Reports = () => {
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold">£{transaction.total_amount.toLocaleString()}</p>
+                        <p className="font-semibold">{formatPrice(transaction.total_amount)}</p>
                         <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'}>
                           {transaction.status}
                         </Badge>
