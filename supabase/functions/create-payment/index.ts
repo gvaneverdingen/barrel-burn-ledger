@@ -41,6 +41,28 @@ function sanitizeError(error: unknown, isDev: boolean): string {
   return "An error occurred processing your payment";
 }
 
+function getBaseUrl(req: Request): string {
+  const origin = req.headers.get("origin");
+  if (origin) {
+    try {
+      return new URL(origin).origin;
+    } catch {
+      // fall through to referer/default
+    }
+  }
+
+  const referer = req.headers.get("referer");
+  if (referer) {
+    try {
+      return new URL(referer).origin;
+    } catch {
+      // fall through to default
+    }
+  }
+
+  return "https://barrel-burn-ledger.lovable.app";
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -188,6 +210,7 @@ serve(async (req) => {
 
     // Create a one-time payment session
     console.log("Creating Stripe checkout session...");
+    const baseUrl = getBaseUrl(req);
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -205,8 +228,8 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
-      success_url: "https://7a41cf81-dfb2-478b-9e01-dcdb07248a90.lovableproject.com/payment-success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "https://7a41cf81-dfb2-478b-9e01-dcdb07248a90.lovableproject.com/",
+      success_url: `${baseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}&transaction_id=${transaction.id}`,
+      cancel_url: `${baseUrl}/`,
       metadata: {
         caskId: caskId,
         userId: user.id,
