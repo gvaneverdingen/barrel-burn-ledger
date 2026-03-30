@@ -427,7 +427,7 @@ const Marketplace = () => {
                 </div>
                 <Input
                   type="number"
-                  placeholder="Max price per LPA"
+                  placeholder="Max price per cask"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value === '' ? '' : Number(e.target.value))}
                   className="w-full mobile-touch-target"
