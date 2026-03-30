@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,6 +12,7 @@ import { format } from "date-fns";
 
 export function OrdersManagement() {
   const { toast } = useToast();
+  const { formatPrice } = useCurrency();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -147,7 +149,7 @@ export function OrdersManagement() {
                     <TableCell>
                       {order.seller?.first_name} {order.seller?.last_name}
                     </TableCell>
-                    <TableCell>£{order.total_amount?.toLocaleString()}</TableCell>
+                    <TableCell>{formatPrice(order.total_amount)}</TableCell>
                     <TableCell>{order.volume_liters}L</TableCell>
                     <TableCell>
                       <Badge variant={

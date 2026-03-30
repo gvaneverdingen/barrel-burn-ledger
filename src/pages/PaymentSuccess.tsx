@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Home, Eye, Package, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { supabase } from '@/integrations/supabase/client';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import angelShareLogo from '@/assets/angel-share-logo.png';
@@ -12,6 +13,7 @@ const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const sessionId = searchParams.get('session_id');
   const [verifying, setVerifying] = useState(true);
   const [verified, setVerified] = useState(false);
@@ -202,7 +204,7 @@ const PaymentSuccess = () => {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Amount Paid:</span>
-                        <span className="font-medium">${transactionDetails.total_amount.toFixed(2)}</span>
+                        <span className="font-medium">{formatPrice(transactionDetails.total_amount)}</span>
                       </div>
                     </div>
                   </div>

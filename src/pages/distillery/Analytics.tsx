@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, TrendingUp, DollarSign, Package, Home, Clock, CheckCircle, Wallet } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +14,7 @@ import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 
 const DistilleryAnalytics = () => {
   const { user, userRole } = useAuth();
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const [selectedDistilleryId, setSelectedDistilleryId] = useState<string | null>(null);
   const isAdmin = userRole === 'administrator';
@@ -207,7 +209,7 @@ const DistilleryAnalytics = () => {
             <DollarSign className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">£{totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div className="text-2xl font-bold">{formatPrice(totalRevenue)}</div>
             <p className="text-xs text-muted-foreground">
               From {totalTransactions} sales
             </p>
@@ -220,7 +222,7 @@ const DistilleryAnalytics = () => {
             <Clock className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-amber-500">£{pendingAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div className="text-2xl font-bold text-amber-500">{formatPrice(pendingAmount)}</div>
             <p className="text-xs text-muted-foreground">
               {pendingPayouts.length} payouts awaiting transfer
             </p>
@@ -233,7 +235,7 @@ const DistilleryAnalytics = () => {
             <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-500">£{completedAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div className="text-2xl font-bold text-green-500">{formatPrice(completedAmount)}</div>
             <p className="text-xs text-muted-foreground">
               {completedPayouts.length} transfers completed
             </p>
@@ -277,14 +279,14 @@ const DistilleryAnalytics = () => {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis dataKey="month" className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-                  <YAxis className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(value) => `£${value.toLocaleString()}`} />
+                  <YAxis className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(value) => formatPrice(value)} />
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: 'hsl(var(--card))', 
                       border: '1px solid hsl(var(--border))',
                       borderRadius: '8px'
                     }}
-                    formatter={(value: number) => [`£${value.toLocaleString()}`, 'Revenue']}
+                    formatter={(value: number) => [formatPrice(value), 'Revenue']}
                   />
                   <Area 
                     type="monotone" 
@@ -333,7 +335,7 @@ const DistilleryAnalytics = () => {
                         border: '1px solid hsl(var(--border))',
                         borderRadius: '8px'
                       }}
-                      formatter={(value: number) => [`£${value.toLocaleString()}`, '']}
+                      formatter={(value: number) => [formatPrice(value), '']}
                     />
                   </PieChart>
                 </ResponsiveContainer>

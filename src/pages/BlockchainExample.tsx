@@ -3,8 +3,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Copy } from "lucide-react";
 import { toast } from "sonner";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 export default function BlockchainExample() {
+  const { formatPrice } = useCurrency();
   // Example of a completed transaction that would be registered on blockchain
   const exampleTransaction = {
     id: "dcfcd033-dfa7-4158-ba64-e09d5fa87c89",
@@ -56,7 +58,7 @@ export default function BlockchainExample() {
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Amount</label>
-                <p className="text-lg font-semibold">${(exampleTransaction.total_amount / 100).toFixed(2)}</p>
+                <p className="text-lg font-semibold">{formatPrice(exampleTransaction.total_amount / 100)}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Status</label>

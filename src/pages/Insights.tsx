@@ -1,11 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { TrendingUp, BarChart3, DollarSign, Activity } from 'lucide-react';
 import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 
 const Insights = () => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
 
   return (
     <SidebarProvider>
@@ -56,7 +58,7 @@ const Insights = () => {
                   <DollarSign className="h-4 w-4 text-accent" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-accent">£15,240</div>
+                  <div className="text-2xl font-bold text-accent">{formatPrice(15240)}</div>
                   <p className="text-xs text-muted-foreground">
                     +5.2% from last month
                   </p>
@@ -86,7 +88,7 @@ const Insights = () => {
                   <Activity className="h-4 w-4 text-primary" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-primary">£2.1M</div>
+                  <div className="text-2xl font-bold text-primary">{formatPrice(2100000)}</div>
                   <p className="text-xs text-muted-foreground">
                     +8.3% from last week
                   </p>

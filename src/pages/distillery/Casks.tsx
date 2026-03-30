@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Package, Plus, Search, Edit, Eye, Coins, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +28,7 @@ interface Cask {
 
 const DistilleryCasks = () => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -185,11 +187,11 @@ const DistilleryCasks = () => {
                   </div>
                   <div className="flex justify-between">
                     <span>Price per L:</span>
-                    <span>£{cask.price_per_liter}</span>
+                    <span>{formatPrice(cask.price_per_liter)}</span>
                   </div>
                   <div className="flex justify-between font-semibold">
                     <span>Total Price:</span>
-                    <span>£{cask.total_price}</span>
+                    <span>{formatPrice(cask.total_price)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Location:</span>

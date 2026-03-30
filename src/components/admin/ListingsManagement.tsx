@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { format } from "date-fns";
 
 export function ListingsManagement() {
   const { toast } = useToast();
+  const { formatPrice } = useCurrency();
   const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -155,7 +157,7 @@ export function ListingsManagement() {
                       <TableCell>
                         {listing.profiles?.first_name} {listing.profiles?.last_name}
                       </TableCell>
-                      <TableCell>£{listing.total_asking_price?.toLocaleString()}</TableCell>
+                      <TableCell>{formatPrice(listing.total_asking_price)}</TableCell>
                       <TableCell>{listing.volume_for_sale_liters}L</TableCell>
                       <TableCell>
                         {listing.last_gauging_date 

@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Package, DollarSign, TrendingUp, Warehouse, UserCheck, BadgePoundSterling, ArrowLeftRight, CheckCircle, Clock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface MetricsCardsProps {
   metrics: {
@@ -19,6 +20,7 @@ interface MetricsCardsProps {
 }
 
 export function MetricsCards({ metrics, loading }: MetricsCardsProps) {
+  const { formatPrice } = useCurrency();
   const cards = [
     {
       title: "Total Consumers",
@@ -40,7 +42,7 @@ export function MetricsCards({ metrics, loading }: MetricsCardsProps) {
     },
     {
       title: "Total Revenue",
-      value: `£${metrics.totalRevenue.toLocaleString()}`,
+      value: formatPrice(metrics.totalRevenue),
       icon: DollarSign,
       description: "Platform revenue"
     },
@@ -58,13 +60,13 @@ export function MetricsCards({ metrics, loading }: MetricsCardsProps) {
     },
     {
       title: "Platform Margin",
-      value: `£${metrics.platformFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      value: formatPrice(metrics.platformFees),
       icon: BadgePoundSterling,
       description: "Total platform fees earned"
     },
     {
       title: "Distillery Fees",
-      value: `£${metrics.distilleryFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      value: formatPrice(metrics.distilleryFees),
       icon: ArrowLeftRight,
       description: "Total distillery fees collected"
     },

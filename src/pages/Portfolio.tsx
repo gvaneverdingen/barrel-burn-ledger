@@ -415,7 +415,7 @@ const Portfolio = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="text-3xl font-bold luxury-text-gradient">
-                        ${calculatePortfolioValue().toLocaleString()}
+                        {formatPrice(calculatePortfolioValue())}
                       </div>
                       <p className="text-xs text-muted-foreground mt-2">Current market value</p>
                     </CardContent>
@@ -430,7 +430,7 @@ const Portfolio = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="text-3xl font-bold">
-                        ${calculateTotalInvestment().toLocaleString()}
+                        {formatPrice(calculateTotalInvestment())}
                       </div>
                       <p className="text-xs text-muted-foreground mt-2">Total invested capital</p>
                     </CardContent>
@@ -781,7 +781,7 @@ const Portfolio = () => {
                               </div>
                               <div className="text-right space-y-2">
                                 <p className="text-2xl font-bold luxury-text-gradient">
-                                  ${transaction.total_amount.toLocaleString()}
+                                  {formatPrice(transaction.total_amount)}
                                 </p>
                                 <p className="text-sm text-muted-foreground font-medium">
                                   {transaction.volume_liters}L

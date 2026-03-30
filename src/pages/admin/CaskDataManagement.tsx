@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +44,7 @@ interface EditingData {
 }
 
 export default function CaskDataManagement() {
+  const { formatPrice } = useCurrency();
   const queryClient = useQueryClient();
   const [selectedCasks, setSelectedCasks] = useState<string[]>([]);
   const [editingCaskId, setEditingCaskId] = useState<string | null>(null);
@@ -317,7 +319,7 @@ export default function CaskDataManagement() {
                               />
                             ) : (
                               <span className={cask.price_per_liter === null ? 'text-red-500' : ''}>
-                                {cask.price_per_liter !== null ? `$${cask.price_per_liter}` : 'Missing'}
+                                {cask.price_per_liter !== null ? formatPrice(cask.price_per_liter) : 'Missing'}
                               </span>
                             )}
                           </TableCell>
@@ -336,7 +338,7 @@ export default function CaskDataManagement() {
                               />
                             ) : (
                               <span className={cask.total_price === null ? 'text-red-500' : ''}>
-                                {cask.total_price !== null ? `$${cask.total_price}` : 'Missing'}
+                                {cask.total_price !== null ? formatPrice(cask.total_price) : 'Missing'}
                               </span>
                             )}
                           </TableCell>

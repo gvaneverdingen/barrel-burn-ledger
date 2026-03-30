@@ -6,12 +6,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { CreditCard, Download, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 
 const Transactions = () => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
 
   // Fetch transactions where user is buyer
   const { data: purchases } = useQuery({
@@ -51,7 +53,7 @@ const Transactions = () => {
       date: format(new Date(t.created_at), 'yyyy-MM-dd'),
       type: 'Purchase',
       description: `${t.cask?.spirit_name} - ${t.cask?.cask_number}`,
-      amount: `$${t.total_amount.toFixed(2)}`,
+      amount: formatPrice(t.total_amount),
       status: t.status === 'completed' ? 'Completed' : t.status === 'pending' ? 'Pending' : 'Failed',
       method: 'Stripe'
     })),
@@ -60,7 +62,7 @@ const Transactions = () => {
       date: format(new Date(p.created_at), 'yyyy-MM-dd'),
       type: 'Sale Payout',
       description: p.description || `${p.transaction?.cask?.spirit_name} - ${p.transaction?.cask?.cask_number}`,
-      amount: `$${p.amount.toFixed(2)}`,
+      amount: formatPrice(p.amount),
       status: p.status === 'pending_payout' ? 'Pending Payout' : p.status === 'completed' ? 'Completed' : 'Processing',
       method: 'Bank Transfer'
     }))
@@ -159,7 +161,7 @@ const Transactions = () => {
                 <CardTitle className="text-base">Total Spent</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">${totalSpent.toFixed(2)}</p>
+                <p className="text-2xl font-bold">{formatPrice(totalSpent)}</p>
                 <p className="text-sm text-muted-foreground">All purchases</p>
               </CardContent>
             </Card>
@@ -169,7 +171,7 @@ const Transactions = () => {
                 <CardTitle className="text-base">Total Earned</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">${totalEarned.toFixed(2)}</p>
+                <p className="text-2xl font-bold">{formatPrice(totalEarned)}</p>
                 <p className="text-sm text-muted-foreground">From resales</p>
               </CardContent>
             </Card>

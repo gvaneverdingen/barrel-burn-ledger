@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -45,6 +46,7 @@ interface LicenseStatus {
 
 const Reports = () => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const [report, setReport] = useState<PortfolioReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [generatingReport, setGeneratingReport] = useState(false);
@@ -228,7 +230,7 @@ const Reports = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Portfolio Value</p>
-                <p className="text-2xl font-bold">£{report.totalValue.toLocaleString()}</p>
+                <p className="text-2xl font-bold">{formatPrice(report.totalValue)}</p>
               </div>
               <DollarSign className="h-8 w-8 text-green-500" />
             </div>
@@ -240,7 +242,7 @@ const Reports = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total Investment</p>
-                <p className="text-2xl font-bold">£{report.totalInvestment.toLocaleString()}</p>
+                <p className="text-2xl font-bold">{formatPrice(report.totalInvestment)}</p>
               </div>
               <BarChart3 className="h-8 w-8 text-blue-500" />
             </div>
@@ -253,7 +255,7 @@ const Reports = () => {
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Unrealized Gains</p>
                 <p className={`text-2xl font-bold ${report.unrealizedGains >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  £{report.unrealizedGains.toLocaleString()}
+                  {formatPrice(report.unrealizedGains)}
                 </p>
               </div>
               <TrendingUp className="h-8 w-8 text-green-500" />
@@ -338,7 +340,7 @@ const Reports = () => {
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold">£{transaction.total_amount.toLocaleString()}</p>
+                        <p className="font-semibold">{formatPrice(transaction.total_amount)}</p>
                         <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'}>
                           {transaction.status}
                         </Badge>

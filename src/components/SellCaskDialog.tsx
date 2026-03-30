@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { DollarSign, Package, Calendar } from "lucide-react";
 
 interface CaskOwnership {
@@ -39,6 +40,9 @@ interface SellCaskDialogProps {
 export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }: SellCaskDialogProps) {
   const { toast } = useToast();
   const { user, session } = useAuth();
+  const { formatPrice, currency } = useCurrency();
+  const currencySymbols: Record<string, string> = { USD: '$', EUR: '€', GBP: '£', JPY: '¥' };
+  const sym = currencySymbols[currency] || currency;
   const [loading, setLoading] = useState(false);
   const [pricePerLiter, setPricePerLiter] = useState("");
   const [notes, setNotes] = useState("");
@@ -156,7 +160,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
                 </div>
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4 text-primary" />
-                  <span>Current: ${ownership.casks?.price_per_liter ?? 0}/L</span>
+                  <span>Current: {formatPrice(ownership.casks?.price_per_liter ?? 0)}/L</span>
                 </div>
               </div>
             </div>
@@ -180,7 +184,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
             {/* Price Per Liter */}
             <div className="space-y-2">
               <Label htmlFor="pricePerLiter">
-                Asking Price per Liter ($)
+                Asking Price per Liter ({sym})
               </Label>
               <Input
                 id="pricePerLiter"
@@ -253,7 +257,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Total Asking Price:</span>
                   <span className="text-xl font-bold luxury-text-gradient">
-                    ${totalPrice}
+                    {formatPrice(Number(totalPrice))}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">

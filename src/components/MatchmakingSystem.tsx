@@ -112,7 +112,7 @@ export const MatchmakingSystem = () => {
       toast({ title: "Missing Information", description: "Please enter a price per barrel.", variant: "destructive" });
       return;
     }
-    toast({ title: "Offer Sent!", description: `Your offer of $${Number(offerPrice).toLocaleString()} per barrel has been sent to ${selectedOffer?.userName}.` });
+    toast({ title: "Offer Sent!", description: `Your offer of ${formatPrice(Number(offerPrice))} per barrel has been sent to ${selectedOffer?.userName}.` });
     setShowOfferDialog(false);
     setSelectedOffer(null);
   };
