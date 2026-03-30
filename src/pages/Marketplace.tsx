@@ -309,14 +309,13 @@ const Marketplace = () => {
         (filterType === 'bourbon' && listing.spirit_name.toLowerCase().includes('bourbon')) ||
         (filterType === 'irish' && listing.spirit_name.toLowerCase().includes('irish'));
       
-      const listingLPA = calculatePricePerLPA(listing.total_price, listing.current_volume_liters, listing.alcohol_percentage);
-      const matchesPrice = maxPrice === '' || (listingLPA && listingLPA <= maxPrice);
+      const matchesPrice = maxPrice === '' || ((listing.total_price || 0) <= maxPrice);
       return matchesSearch && matchesType && matchesPrice;
     })
     .sort((a, b) => {
       switch (sortBy) {
         case 'price':
-          return calculatePricePerLPA(a.total_price, a.current_volume_liters, a.alcohol_percentage) - calculatePricePerLPA(b.total_price, b.current_volume_liters, b.alcohol_percentage);
+          return (a.total_price || 0) - (b.total_price || 0);
         case 'name':
           return a.spirit_name.localeCompare(b.spirit_name);
         case 'roi':
