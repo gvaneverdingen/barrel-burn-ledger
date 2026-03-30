@@ -117,16 +117,15 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
       return;
     }
 
-    if (!offerPricePerLPA) {
-      toast.error('Please enter your offer price per LPA');
+    if (!offerTotalPrice) {
+      toast.error('Please enter your offer price per cask');
       return;
     }
 
-    const pricePerLPA = parseFloat(offerPricePerLPA);
-    const totalPrice = calculateTotalOffer();
+    const totalPrice = parseFloat(offerTotalPrice);
     const pricePerLiter = calculatePricePerLiter();
 
-    if (pricePerLPA <= 0) {
+    if (totalPrice <= 0) {
       toast.error('Price must be greater than 0');
       return;
     }
