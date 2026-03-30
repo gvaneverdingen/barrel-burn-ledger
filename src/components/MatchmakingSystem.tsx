@@ -27,7 +27,9 @@ interface Offer {
 
 export const MatchmakingSystem = () => {
   const { user } = useAuth();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, currency } = useCurrency();
+  const currencySymbols: Record<string, string> = { USD: '$', EUR: '€', GBP: '£', JPY: '¥' };
+  const sym = currencySymbols[currency] || currency;
   const [offers, setOffers] = useState<Offer[]>([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
