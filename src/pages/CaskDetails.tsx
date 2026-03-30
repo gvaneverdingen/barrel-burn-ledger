@@ -1346,18 +1346,14 @@ const CaskDetails = () => {
                             </div>
                             <Badge variant="secondary">Pending</Badge>
                           </div>
-                          <div className="grid grid-cols-3 gap-4 mb-4">
+                          <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
-                              <p className="text-sm text-muted-foreground">Price/L</p>
-                              <p className="font-semibold">{formatPrice(offer.offered_price_per_liter)}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Volume</p>
-                              <p className="font-semibold">{offer.volume_liters}L</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Total</p>
+                              <p className="text-sm text-muted-foreground">Offer per Cask</p>
                               <p className="font-semibold">{formatPrice(offer.offered_total_price)}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-muted-foreground">Status</p>
+                              <p className="font-semibold">Pending</p>
                             </div>
                           </div>
                           {offer.message && (
