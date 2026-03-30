@@ -58,7 +58,7 @@ const Insights = () => {
                   <DollarSign className="h-4 w-4 text-accent" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-accent">£15,240</div>
+                  <div className="text-2xl font-bold text-accent">{formatPrice(15240)}</div>
                   <p className="text-xs text-muted-foreground">
                     +5.2% from last month
                   </p>
