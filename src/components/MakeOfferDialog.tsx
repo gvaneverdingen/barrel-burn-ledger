@@ -75,24 +75,16 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
   const { user } = useAuth();
   const { formatPrice, currency, setCurrency } = useCurrency();
   const [activeTab, setActiveTab] = useState<string>('offer');
-  const [offerPricePerLPA, setOfferPricePerLPA] = useState('');
+  const [offerTotalPrice, setOfferTotalPrice] = useState('');
   const [message, setMessage] = useState('');
   const [enquiryMessage, setEnquiryMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const lpa = calculateLPA(listing.current_volume_liters, listing.alcohol_percentage);
-  const askingPricePerLPA = calculatePricePerLPA(listing.total_price, listing.current_volume_liters, listing.alcohol_percentage);
-
-  const calculateTotalOffer = () => {
-    const pricePerLPA = parseFloat(offerPricePerLPA) || 0;
-    return pricePerLPA * (lpa || 0);
-  };
-
-  // Convert LPA price back to per-liter for DB storage
+  // Convert total offer to per-liter for DB storage
   const calculatePricePerLiter = () => {
-    const pricePerLPA = parseFloat(offerPricePerLPA) || 0;
-    if (!listing.alcohol_percentage || listing.alcohol_percentage === 0) return pricePerLPA;
-    return pricePerLPA * (listing.alcohol_percentage / 100);
+    const total = parseFloat(offerTotalPrice) || 0;
+    if (!listing.current_volume_liters || listing.current_volume_liters === 0) return total;
+    return total / listing.current_volume_liters;
   };
 
   const addToFavourites = async () => {
