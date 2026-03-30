@@ -63,7 +63,7 @@ serve(async (req) => {
       throw new Error(`Validation failed: ${errors}`);
     }
 
-    const { ownershipId, askingPricePerLiter, volumeForSale, notes, expiresInDays, userId, lastGaugingDate } = validationResult.data;
+    const { ownershipId, askingPricePerLiter, totalAskingPrice: providedTotal, volumeForSale, notes, expiresInDays, userId, lastGaugingDate } = validationResult.data;
 
     let authenticatedUserId: string;
     
