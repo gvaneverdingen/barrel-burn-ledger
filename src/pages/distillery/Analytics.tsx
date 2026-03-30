@@ -209,7 +209,7 @@ const DistilleryAnalytics = () => {
             <DollarSign className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">£{totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div className="text-2xl font-bold">{formatPrice(totalRevenue)}</div>
             <p className="text-xs text-muted-foreground">
               From {totalTransactions} sales
             </p>
