@@ -297,7 +297,7 @@ export const MatchmakingSystem = () => {
               </div>
             )}
             <div>
-              <label className="block text-sm font-medium mb-1">Your Price per Barrel ($)</label>
+              <label className="block text-sm font-medium mb-1">Your Price per Barrel ({sym})</label>
               <Input type="number" value={offerPrice} onChange={(e) => setOfferPrice(e.target.value)} placeholder="e.g., 20000" />
             </div>
             <div>
