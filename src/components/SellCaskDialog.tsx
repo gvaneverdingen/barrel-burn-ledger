@@ -182,19 +182,19 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
               </div>
             </div>
 
-            {/* Price Per Liter */}
+            {/* Total Asking Price per Cask */}
             <div className="space-y-2">
-              <Label htmlFor="pricePerLiter">
-                Asking Price per Liter ({sym})
+              <Label htmlFor="totalAskingPrice">
+                Total Asking Price per Cask ({sym})
               </Label>
               <Input
-                id="pricePerLiter"
+                id="totalAskingPrice"
                 type="number"
                 step="0.01"
                 min="0.01"
-                value={pricePerLiter}
-                onChange={(e) => setPricePerLiter(e.target.value)}
-                placeholder="Enter price per liter"
+                value={totalAskingPrice}
+                onChange={(e) => setTotalAskingPrice(e.target.value)}
+                placeholder="Enter total asking price for this cask"
                 required
               />
             </div>
