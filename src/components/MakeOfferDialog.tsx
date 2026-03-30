@@ -258,19 +258,11 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
                 <span className="text-sm text-muted-foreground">Asking Price (per Cask)</span>
                 <span className="font-semibold">{formatPrice(listing.total_price)}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Price per LPA</span>
-                <span className="font-semibold">{formatPrice(askingPricePerLPA)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">LPA</span>
-                <span className="font-semibold">{formatLPA(lpa)}</span>
-              </div>
             </div>
 
-            {/* Offer Price Per LPA */}
+            {/* Offer Price Per Cask */}
             <div className="space-y-2">
-              <Label htmlFor="offerPrice">Your Offer Price per LPA</Label>
+              <Label htmlFor="offerPrice">Your Offer (per Cask)</Label>
               <div className="flex gap-2">
                 <Select value={currency} onValueChange={(value) => setCurrency(value as Currency)}>
                   <SelectTrigger className="w-[90px] shrink-0">
@@ -289,24 +281,12 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
                   type="number"
                   step="0.01"
                   min="0"
-                  placeholder="Enter price per LPA"
-                  value={offerPricePerLPA}
-                  onChange={(e) => setOfferPricePerLPA(e.target.value)}
+                  placeholder="Enter total price per cask"
+                  value={offerTotalPrice}
+                  onChange={(e) => setOfferTotalPrice(e.target.value)}
                 />
               </div>
             </div>
-
-            {/* Total Offer Price */}
-            {offerPricePerLPA && (
-              <div className="bg-primary/10 p-4 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold">Your Total Offer (per Cask)</span>
-                  <span className="text-lg font-bold text-primary">
-                    {formatPrice(calculateTotalOffer())}
-                  </span>
-                </div>
-              </div>
-            )}
 
             {/* Optional Message */}
             <div className="space-y-2">
