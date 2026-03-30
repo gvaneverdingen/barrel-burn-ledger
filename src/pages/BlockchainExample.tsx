@@ -58,7 +58,7 @@ export default function BlockchainExample() {
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Amount</label>
-                <p className="text-lg font-semibold">${(exampleTransaction.total_amount / 100).toFixed(2)}</p>
+                <p className="text-lg font-semibold">{formatPrice(exampleTransaction.total_amount / 100)}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Status</label>
