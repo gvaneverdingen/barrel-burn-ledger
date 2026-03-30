@@ -633,6 +633,10 @@ const Marketplace = () => {
           )}
         </TabsContent>
 
+        <TabsContent value="map" className="space-y-6">
+          <CaskWorldMap listings={allListings} formatPrice={formatPrice} />
+        </TabsContent>
+
         <TabsContent value="matchmaking" className="space-y-6">
           <MatchmakingSystem />
         </TabsContent>
