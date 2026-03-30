@@ -268,7 +268,7 @@ export const MatchmakingSystem = () => {
                   </Button>
                   <Button size="sm" onClick={() => handleMakeOffer(offer)}>
                     <Handshake className="h-4 w-4 mr-2" />
-                    Make Offer
+                    {offer.type === 'buy_request' ? 'Sell My Cask' : 'Make Offer'}
                   </Button>
                 </div>
               </div>
