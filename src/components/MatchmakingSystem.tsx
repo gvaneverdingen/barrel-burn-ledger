@@ -332,11 +332,11 @@ export const MatchmakingSystem = () => {
                   <span>Expires in 25 days</span>
                 </div>
                 <div className="flex space-x-2">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => handleContact(offer)}>
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Contact
                   </Button>
-                  <Button size="sm">
+                  <Button size="sm" onClick={() => handleMakeOffer(offer)}>
                     <Handshake className="h-4 w-4 mr-2" />
                     Make Offer
                   </Button>
@@ -346,6 +346,58 @@ export const MatchmakingSystem = () => {
           </Card>
         ))}
       </div>
+
+      {/* Make Offer Dialog */}
+      <Dialog open={showOfferDialog} onOpenChange={setShowOfferDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Make an Offer</DialogTitle>
+            <DialogDescription>
+              Respond to {selectedOffer?.userName}'s {selectedOffer?.type === 'buy_request' ? 'buy request' : 'sell offer'} for {selectedOffer?.spiritType}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Price ($)</label>
+                <Input type="number" value={offerPrice} onChange={(e) => setOfferPrice(e.target.value)} placeholder="Total price" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Volume (L)</label>
+                <Input type="number" value={offerVolume} onChange={(e) => setOfferVolume(e.target.value)} placeholder="Volume in liters" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Message (optional)</label>
+              <Textarea value={offerMessage} onChange={(e) => setOfferMessage(e.target.value)} placeholder="Add a note to your offer..." />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowOfferDialog(false)}>Cancel</Button>
+            <Button onClick={handleSubmitOffer}>Send Offer</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Contact Dialog */}
+      <Dialog open={showContactDialog} onOpenChange={setShowContactDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Contact {selectedOffer?.userName}</DialogTitle>
+            <DialogDescription>
+              Send a message about their {selectedOffer?.spiritType} {selectedOffer?.type === 'buy_request' ? 'buy request' : 'listing'}
+            </DialogDescription>
+          </DialogHeader>
+          <div>
+            <label className="block text-sm font-medium mb-1">Your Message</label>
+            <Textarea value={contactMessage} onChange={(e) => setContactMessage(e.target.value)} placeholder="Write your message..." className="h-32" />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowContactDialog(false)}>Cancel</Button>
+            <Button onClick={handleSendMessage}>Send Message</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
