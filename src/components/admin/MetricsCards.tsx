@@ -42,7 +42,7 @@ export function MetricsCards({ metrics, loading }: MetricsCardsProps) {
     },
     {
       title: "Total Revenue",
-      value: `£${metrics.totalRevenue.toLocaleString()}`,
+      value: formatPrice(metrics.totalRevenue),
       icon: DollarSign,
       description: "Platform revenue"
     },
