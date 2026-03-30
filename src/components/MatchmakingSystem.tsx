@@ -16,7 +16,7 @@ interface Offer {
   userName: string;
   spiritType: string;
   ageRange: { min: number; max: number };
-  volumeRange: { min: number; max: number };
+  abvRange: { min: number; max: number };
   priceRange: { min: number; max: number };
   location?: string;
   description: string;
