@@ -338,7 +338,7 @@ export default function CaskDataManagement() {
                               />
                             ) : (
                               <span className={cask.total_price === null ? 'text-red-500' : ''}>
-                                {cask.total_price !== null ? `$${cask.total_price}` : 'Missing'}
+                                {cask.total_price !== null ? formatPrice(cask.total_price) : 'Missing'}
                               </span>
                             )}
                           </TableCell>
