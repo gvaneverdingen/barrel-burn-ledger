@@ -911,7 +911,7 @@ const CaskDetails = () => {
                      {formatPrice(cask.total_price || 0)}
                    </div>
                     <div className="text-sm text-muted-foreground">
-                      {formatPrice(caskPricePerLPA)}/LPA
+                      per Cask
                     </div>
                   </div>
                 </div>
@@ -925,28 +925,30 @@ const CaskDetails = () => {
                       <p className="font-semibold">{calculateAge(cask.distillation_date)} years</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Droplets className="h-5 w-5 text-primary" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">LPA</p>
-                      <p className="font-semibold">{formatLPA(caskLPA)}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Gauge className="h-5 w-5 text-primary" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">ABV</p>
-                      <p className="font-semibold">{cask.alcohol_percentage || 0}%</p>
-                    </div>
-                  </div>
                   {cask.last_gauging_date && (
-                    <div className="flex items-center space-x-3 mt-3">
-                      <Calendar className="h-5 w-5 text-primary" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Last Gauging</p>
-                        <p className="font-semibold">{new Date(cask.last_gauging_date).toLocaleDateString()}</p>
+                    <>
+                      <div className="flex items-center space-x-3">
+                        <Droplets className="h-5 w-5 text-primary" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">LPA</p>
+                          <p className="font-semibold">{formatLPA(caskLPA)}</p>
+                        </div>
                       </div>
-                    </div>
+                      <div className="flex items-center space-x-3">
+                        <Gauge className="h-5 w-5 text-primary" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">ABV</p>
+                          <p className="font-semibold">{cask.alcohol_percentage || 0}%</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <Calendar className="h-5 w-5 text-primary" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Last Gauging</p>
+                          <p className="font-semibold">{new Date(cask.last_gauging_date).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                    </>
                   )}
                   <div className="flex items-center space-x-3">
                     <Wine className="h-5 w-5 text-primary" />
@@ -990,10 +992,18 @@ const CaskDetails = () => {
                         <span className="text-muted-foreground">Cask Capacity:</span>
                         <span>{cask.cask_type.capacity_liters}L</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">ABV:</span>
-                        <span>{cask.alcohol_percentage ? `${cask.alcohol_percentage}%` : 'N/A'}</span>
-                      </div>
+                      {cask.last_gauging_date && (
+                        <>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">ABV:</span>
+                            <span>{cask.alcohol_percentage ? `${cask.alcohol_percentage}%` : 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Last Gauging:</span>
+                            <span>{new Date(cask.last_gauging_date).toLocaleDateString()}</span>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1091,25 +1101,25 @@ const CaskDetails = () => {
                 </div>
                 
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Price per LPA:</span>
-                    <span className="font-bold text-primary">
-                      {formatPrice(caskPricePerLPA)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>LPA:</span>
-                    <span className="font-medium">{formatLPA(caskLPA)}</span>
-                  </div>
                   {cask?.last_gauging_date && (
-                    <div className="flex justify-between">
-                      <span>Last Gauging:</span>
-                      <span className="font-medium">{new Date(cask.last_gauging_date).toLocaleDateString()}</span>
-                    </div>
+                    <>
+                      <div className="flex justify-between">
+                        <span>LPA:</span>
+                        <span className="font-medium">{formatLPA(caskLPA)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>ABV:</span>
+                        <span className="font-medium">{cask.alcohol_percentage}%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Last Gauging:</span>
+                        <span className="font-medium">{new Date(cask.last_gauging_date).toLocaleDateString()}</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground pt-2 border-t">
+                        <p>LPA = Litre of Pure Alcohol (volume × ABV)</p>
+                      </div>
+                    </>
                   )}
-                  <div className="text-xs text-muted-foreground pt-2 border-t">
-                    <p>LPA = Litre of Pure Alcohol (volume × ABV)</p>
-                  </div>
                 </div>
 
                 {user && effectiveUserRole !== "distillery" && !isOwnerSale && !effectiveIsOwner && (
@@ -1344,18 +1354,14 @@ const CaskDetails = () => {
                             </div>
                             <Badge variant="secondary">Pending</Badge>
                           </div>
-                          <div className="grid grid-cols-3 gap-4 mb-4">
+                          <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
-                              <p className="text-sm text-muted-foreground">Price/L</p>
-                              <p className="font-semibold">{formatPrice(offer.offered_price_per_liter)}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Volume</p>
-                              <p className="font-semibold">{offer.volume_liters}L</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Total</p>
+                              <p className="text-sm text-muted-foreground">Offer per Cask</p>
                               <p className="font-semibold">{formatPrice(offer.offered_total_price)}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-muted-foreground">Status</p>
+                              <p className="font-semibold">Pending</p>
                             </div>
                           </div>
                           {offer.message && (
@@ -1401,17 +1407,9 @@ const CaskDetails = () => {
                             </div>
                             <Badge variant="default">Accepted</Badge>
                           </div>
-                          <div className="grid grid-cols-3 gap-4">
+                          <div className="grid grid-cols-1 gap-4">
                             <div>
-                              <p className="text-sm text-muted-foreground">Price/L</p>
-                              <p className="font-semibold">{formatPrice(offer.offered_price_per_liter)}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Volume</p>
-                              <p className="font-semibold">{offer.volume_liters}L</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Total</p>
+                              <p className="text-sm text-muted-foreground">Offer per Cask</p>
                               <p className="font-semibold">{formatPrice(offer.offered_total_price)}</p>
                             </div>
                           </div>
@@ -1435,17 +1433,9 @@ const CaskDetails = () => {
                             </div>
                             <Badge variant="destructive">Rejected</Badge>
                           </div>
-                          <div className="grid grid-cols-3 gap-4">
+                          <div className="grid grid-cols-1 gap-4">
                             <div>
-                              <p className="text-sm text-muted-foreground">Price/L</p>
-                              <p className="font-semibold">{formatPrice(offer.offered_price_per_liter)}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Volume</p>
-                              <p className="font-semibold">{offer.volume_liters}L</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Total</p>
+                              <p className="text-sm text-muted-foreground">Offer per Cask</p>
                               <p className="font-semibold">{formatPrice(offer.offered_total_price)}</p>
                             </div>
                           </div>

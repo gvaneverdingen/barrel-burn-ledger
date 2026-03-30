@@ -44,7 +44,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
   const currencySymbols: Record<string, string> = { USD: '$', EUR: '€', GBP: '£', JPY: '¥' };
   const sym = currencySymbols[currency] || currency;
   const [loading, setLoading] = useState(false);
-  const [pricePerLiter, setPricePerLiter] = useState("");
+  const [totalAskingPrice, setTotalAskingPrice] = useState("");
   const [notes, setNotes] = useState("");
   const [expiresInDays, setExpiresInDays] = useState("30");
   const [lastGaugingDate, setLastGaugingDate] = useState("");
@@ -59,13 +59,15 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
       console.log("👤 User from context:", user);
       console.log("🏷️ Session from context:", session);
 
-      const priceNum = parseFloat(pricePerLiter);
-      const volumeNum = ownership.volume_liters; // Always sell the full volume
+      const totalPrice = parseFloat(totalAskingPrice);
+      const volumeNum = ownership.volume_liters;
       const expiresNum = parseInt(expiresInDays);
 
-      if (isNaN(priceNum) || priceNum <= 0) {
-        throw new Error("Please enter a valid price per liter");
+      if (isNaN(totalPrice) || totalPrice <= 0) {
+        throw new Error("Please enter a valid total asking price");
       }
+
+      const pricePerLiter = volumeNum > 0 ? totalPrice / volumeNum : totalPrice;
 
       // Check if we have user authentication (either regular or Magic wallet)
       if (!user?.id) {
@@ -91,7 +93,8 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
       const { data, error } = await supabase.functions.invoke("create-cask-sale", {
         body: {
           ownershipId: ownership.id,
-          askingPricePerLiter: priceNum,
+          askingPricePerLiter: pricePerLiter,
+          totalAskingPrice: totalPrice,
           volumeForSale: volumeNum,
           notes: notes.trim() || undefined,
           expiresInDays: expiresNum > 0 ? expiresNum : undefined,
@@ -113,7 +116,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
       onOpenChange(false);
       
       // Reset form
-      setPricePerLiter("");
+      setTotalAskingPrice("");
       setNotes("");
       setExpiresInDays("30");
       setLastGaugingDate("");
@@ -131,9 +134,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
 
   if (!ownership) return null;
 
-  const totalPrice = pricePerLiter 
-    ? (parseFloat(pricePerLiter) * ownership.volume_liters).toLocaleString()
-    : "0";
+  const displayTotal = totalAskingPrice ? parseFloat(totalAskingPrice) : 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -181,19 +182,19 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
               </div>
             </div>
 
-            {/* Price Per Liter */}
+            {/* Total Asking Price per Cask */}
             <div className="space-y-2">
-              <Label htmlFor="pricePerLiter">
-                Asking Price per Liter ({sym})
+              <Label htmlFor="totalAskingPrice">
+                Total Asking Price per Cask ({sym})
               </Label>
               <Input
-                id="pricePerLiter"
+                id="totalAskingPrice"
                 type="number"
                 step="0.01"
                 min="0.01"
-                value={pricePerLiter}
-                onChange={(e) => setPricePerLiter(e.target.value)}
-                placeholder="Enter price per liter"
+                value={totalAskingPrice}
+                onChange={(e) => setTotalAskingPrice(e.target.value)}
+                placeholder="Enter total asking price for this cask"
                 required
               />
             </div>
@@ -252,12 +253,12 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
             </div>
 
             {/* Price Summary */}
-            {pricePerLiter && (
+            {displayTotal > 0 && (
               <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium">Total Asking Price:</span>
+                  <span className="font-medium">Your Asking Price:</span>
                   <span className="text-xl font-bold luxury-text-gradient">
-                    {formatPrice(Number(totalPrice))}
+                    {formatPrice(displayTotal)}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -277,7 +278,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
               </Button>
               <Button
                 type="submit"
-                disabled={loading || !pricePerLiter}
+                disabled={loading || !totalAskingPrice}
                 className="luxury-button"
               >
                 {loading ? "Creating Listing..." : "List Full Cask for Sale"}

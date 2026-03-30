@@ -75,24 +75,16 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
   const { user } = useAuth();
   const { formatPrice, currency, setCurrency } = useCurrency();
   const [activeTab, setActiveTab] = useState<string>('offer');
-  const [offerPricePerLPA, setOfferPricePerLPA] = useState('');
+  const [offerTotalPrice, setOfferTotalPrice] = useState('');
   const [message, setMessage] = useState('');
   const [enquiryMessage, setEnquiryMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const lpa = calculateLPA(listing.current_volume_liters, listing.alcohol_percentage);
-  const askingPricePerLPA = calculatePricePerLPA(listing.total_price, listing.current_volume_liters, listing.alcohol_percentage);
-
-  const calculateTotalOffer = () => {
-    const pricePerLPA = parseFloat(offerPricePerLPA) || 0;
-    return pricePerLPA * (lpa || 0);
-  };
-
-  // Convert LPA price back to per-liter for DB storage
+  // Convert total offer to per-liter for DB storage
   const calculatePricePerLiter = () => {
-    const pricePerLPA = parseFloat(offerPricePerLPA) || 0;
-    if (!listing.alcohol_percentage || listing.alcohol_percentage === 0) return pricePerLPA;
-    return pricePerLPA * (listing.alcohol_percentage / 100);
+    const total = parseFloat(offerTotalPrice) || 0;
+    if (!listing.current_volume_liters || listing.current_volume_liters === 0) return total;
+    return total / listing.current_volume_liters;
   };
 
   const addToFavourites = async () => {
@@ -125,16 +117,15 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
       return;
     }
 
-    if (!offerPricePerLPA) {
-      toast.error('Please enter your offer price per LPA');
+    if (!offerTotalPrice) {
+      toast.error('Please enter your offer price per cask');
       return;
     }
 
-    const pricePerLPA = parseFloat(offerPricePerLPA);
-    const totalPrice = calculateTotalOffer();
+    const totalPrice = parseFloat(offerTotalPrice);
     const pricePerLiter = calculatePricePerLiter();
 
-    if (pricePerLPA <= 0) {
+    if (totalPrice <= 0) {
       toast.error('Price must be greater than 0');
       return;
     }
@@ -165,7 +156,7 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
         caskNumber: listing.cask_number,
         offerType: 'buy_offer',
         offeredTotalPrice: totalPrice.toLocaleString(),
-        offeredPricePerLiter: pricePerLPA.toLocaleString(),
+        offeredPricePerLiter: pricePerLiter.toLocaleString(),
         volumeLiters: listing.current_volume_liters?.toString(),
         message: message || undefined,
       });
@@ -232,7 +223,7 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
   };
 
   const resetForm = () => {
-    setOfferPricePerLPA('');
+    setOfferTotalPrice('');
     setMessage('');
     setEnquiryMessage('');
   };
@@ -267,19 +258,11 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
                 <span className="text-sm text-muted-foreground">Asking Price (per Cask)</span>
                 <span className="font-semibold">{formatPrice(listing.total_price)}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Price per LPA</span>
-                <span className="font-semibold">{formatPrice(askingPricePerLPA)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">LPA</span>
-                <span className="font-semibold">{formatLPA(lpa)}</span>
-              </div>
             </div>
 
-            {/* Offer Price Per LPA */}
+            {/* Offer Price Per Cask */}
             <div className="space-y-2">
-              <Label htmlFor="offerPrice">Your Offer Price per LPA</Label>
+              <Label htmlFor="offerPrice">Your Offer (per Cask)</Label>
               <div className="flex gap-2">
                 <Select value={currency} onValueChange={(value) => setCurrency(value as Currency)}>
                   <SelectTrigger className="w-[90px] shrink-0">
@@ -298,24 +281,12 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
                   type="number"
                   step="0.01"
                   min="0"
-                  placeholder="Enter price per LPA"
-                  value={offerPricePerLPA}
-                  onChange={(e) => setOfferPricePerLPA(e.target.value)}
+                  placeholder="Enter total price per cask"
+                  value={offerTotalPrice}
+                  onChange={(e) => setOfferTotalPrice(e.target.value)}
                 />
               </div>
             </div>
-
-            {/* Total Offer Price */}
-            {offerPricePerLPA && (
-              <div className="bg-primary/10 p-4 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold">Your Total Offer (per Cask)</span>
-                  <span className="text-lg font-bold text-primary">
-                    {formatPrice(calculateTotalOffer())}
-                  </span>
-                </div>
-              </div>
-            )}
 
             {/* Optional Message */}
             <div className="space-y-2">
@@ -346,7 +317,7 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
               </Button>
               <Button
                 onClick={handleSubmitOffer}
-                disabled={isSubmitting || !offerPricePerLPA}
+                disabled={isSubmitting || !offerTotalPrice}
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Offer'}
               </Button>

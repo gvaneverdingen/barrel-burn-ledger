@@ -309,14 +309,13 @@ const Marketplace = () => {
         (filterType === 'bourbon' && listing.spirit_name.toLowerCase().includes('bourbon')) ||
         (filterType === 'irish' && listing.spirit_name.toLowerCase().includes('irish'));
       
-      const listingLPA = calculatePricePerLPA(listing.total_price, listing.current_volume_liters, listing.alcohol_percentage);
-      const matchesPrice = maxPrice === '' || (listingLPA && listingLPA <= maxPrice);
+      const matchesPrice = maxPrice === '' || ((listing.total_price || 0) <= maxPrice);
       return matchesSearch && matchesType && matchesPrice;
     })
     .sort((a, b) => {
       switch (sortBy) {
         case 'price':
-          return calculatePricePerLPA(a.total_price, a.current_volume_liters, a.alcohol_percentage) - calculatePricePerLPA(b.total_price, b.current_volume_liters, b.alcohol_percentage);
+          return (a.total_price || 0) - (b.total_price || 0);
         case 'name':
           return a.spirit_name.localeCompare(b.spirit_name);
         case 'roi':
@@ -427,7 +426,7 @@ const Marketplace = () => {
                 </div>
                 <Input
                   type="number"
-                  placeholder="Max price per LPA"
+                  placeholder="Max price per cask"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value === '' ? '' : Number(e.target.value))}
                   className="w-full mobile-touch-target"
@@ -492,26 +491,24 @@ const Marketplace = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Price per LPA</span>
-                    <span className="font-bold text-lg">{formatPrice(calculatePricePerLPA(listing.total_price, listing.current_volume_liters, listing.alcohol_percentage))}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Total (per Barrel)</span>
-                    <span className="font-semibold">{formatPrice(listing.total_price || 0)}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Volume</span>
-                    <span>{listing.current_volume_liters ?? 0}L ({formatLPA(calculateLPA(listing.current_volume_liters, listing.alcohol_percentage))})</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">ABV</span>
-                    <span>{listing.alcohol_percentage ?? 0}%</span>
+                    <span className="text-sm text-muted-foreground">Price per Cask</span>
+                    <span className="font-bold text-lg">{formatPrice(listing.total_price || 0)}</span>
                   </div>
                   {listing.last_gauging_date && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Last Gauging</span>
-                      <span className="text-sm">{new Date(listing.last_gauging_date).toLocaleDateString()}</span>
-                    </div>
+                    <>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">ABV</span>
+                        <span>{listing.alcohol_percentage ?? 'N/A'}%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">LPA</span>
+                        <span>{formatLPA(calculateLPA(listing.current_volume_liters, listing.alcohol_percentage))}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Last Gauging</span>
+                        <span className="text-sm">{new Date(listing.last_gauging_date).toLocaleDateString()}</span>
+                      </div>
+                    </>
                   )}
                   
                   {listing.is_resale && listing.roi !== undefined && (
