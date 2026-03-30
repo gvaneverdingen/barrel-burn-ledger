@@ -28,6 +28,13 @@ export const MatchmakingSystem = () => {
   const { user } = useAuth();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
+  const [showOfferDialog, setShowOfferDialog] = useState(false);
+  const [showContactDialog, setShowContactDialog] = useState(false);
+  const [offerMessage, setOfferMessage] = useState('');
+  const [offerPrice, setOfferPrice] = useState('');
+  const [offerVolume, setOfferVolume] = useState('');
+  const [contactMessage, setContactMessage] = useState('');
   const [newOffer, setNewOffer] = useState({
     type: 'buy_request' as 'buy_request' | 'sell_offer',
     spiritType: '',
