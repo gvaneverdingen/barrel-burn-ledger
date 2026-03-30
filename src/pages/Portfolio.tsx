@@ -781,7 +781,7 @@ const Portfolio = () => {
                               </div>
                               <div className="text-right space-y-2">
                                 <p className="text-2xl font-bold luxury-text-gradient">
-                                  ${transaction.total_amount.toLocaleString()}
+                                  {formatPrice(transaction.total_amount)}
                                 </p>
                                 <p className="text-sm text-muted-foreground font-medium">
                                   {transaction.volume_liters}L
