@@ -60,7 +60,7 @@ export function MetricsCards({ metrics, loading }: MetricsCardsProps) {
     },
     {
       title: "Platform Margin",
-      value: `£${metrics.platformFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      value: formatPrice(metrics.platformFees),
       icon: BadgePoundSterling,
       description: "Total platform fees earned"
     },
