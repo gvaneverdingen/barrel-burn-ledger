@@ -278,7 +278,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
               </Button>
               <Button
                 type="submit"
-                disabled={loading || !pricePerLiter}
+                disabled={loading || !totalAskingPrice}
                 className="luxury-button"
               >
                 {loading ? "Creating Listing..." : "List Full Cask for Sale"}
