@@ -24,6 +24,7 @@ const NftStatusCard = ({
 }: NftStatusCardProps) => {
   const isMinted = !!blockchainHash && nftTokenId !== null;
   const networkName = nftContractAddress?.startsWith("0x") ? "Polygon" : "Unknown";
+  const hasBlockchainRecord = !!blockchainHash;
   
   // Use Amoy explorer for testnet (Chain ID 80002)
   const explorerBase = "https://amoy.polygonscan.com";
@@ -100,6 +101,22 @@ const NftStatusCard = ({
             <p className="text-sm text-muted-foreground">
               This cask has not been tokenized on the blockchain yet.
             </p>
+
+            {hasBlockchainRecord && blockchainHash && (
+              <div className="text-sm">
+                <span className="text-muted-foreground">Tx Hash:</span>{" "}
+                <a
+                  href={`${explorerBase}/tx/${blockchainHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-primary hover:underline text-xs"
+                >
+                  {blockchainHash.slice(0, 10)}...{blockchainHash.slice(-6)}
+                  <ExternalLink className="inline h-3 w-3 ml-1" />
+                </a>
+              </div>
+            )}
+
             {canMint && onMint && (
               <Button
                 onClick={onMint}
