@@ -289,7 +289,7 @@ export const MatchmakingSystem = () => {
           <div className="space-y-4">
             {selectedOffer && (
               <div className="rounded-md bg-muted p-3 text-sm space-y-1">
-                <p><span className="text-muted-foreground">Requested range:</span> {formatCurrency(selectedOffer.pricePerBarrel.min)} – {formatCurrency(selectedOffer.pricePerBarrel.max)} per barrel</p>
+                <p><span className="text-muted-foreground">Requested range:</span> {formatPrice(selectedOffer.pricePerBarrel.min)} – {formatPrice(selectedOffer.pricePerBarrel.max)} per barrel</p>
                 <p><span className="text-muted-foreground">ABV:</span> {selectedOffer.abvRange.min}% – {selectedOffer.abvRange.max}%</p>
                 <p><span className="text-muted-foreground">Age:</span> {selectedOffer.ageRange.min} – {selectedOffer.ageRange.max} years</p>
               </div>
