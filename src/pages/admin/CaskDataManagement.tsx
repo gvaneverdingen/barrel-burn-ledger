@@ -319,7 +319,7 @@ export default function CaskDataManagement() {
                               />
                             ) : (
                               <span className={cask.price_per_liter === null ? 'text-red-500' : ''}>
-                                {cask.price_per_liter !== null ? `$${cask.price_per_liter}` : 'Missing'}
+                                {cask.price_per_liter !== null ? formatPrice(cask.price_per_liter) : 'Missing'}
                               </span>
                             )}
                           </TableCell>
