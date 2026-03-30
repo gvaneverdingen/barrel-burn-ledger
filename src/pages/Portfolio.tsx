@@ -524,28 +524,31 @@ const Portfolio = () => {
                           <CardContent className="space-y-6 relative">
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                               <div className="space-y-1">
-                                <p className="text-sm text-muted-foreground font-medium">Your Volume</p>
-                                <p className="text-xl font-bold">{ownership.volume_liters}L ({formatLPA(calculateLPA(ownership.volume_liters, ownership.casks.alcohol_percentage))})</p>
-                              </div>
-                              <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground font-medium">Current Value</p>
                                 <p className="text-xl font-bold luxury-text-gradient">
                                   {formatPrice((ownership.casks?.price_per_liter ?? 0) * ownership.volume_liters)}
                                 </p>
-                              </div>
-                              <div className="space-y-1">
-                                <p className="text-sm text-muted-foreground font-medium">Alcohol %</p>
-                                <p className="text-xl font-bold">{ownership.casks.alcohol_percentage}%</p>
+                                <p className="text-xs text-muted-foreground">per Cask</p>
                               </div>
                               <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground font-medium">Acquired</p>
                                 <p className="text-xl font-bold">{format(new Date(ownership.acquired_date), 'MMM dd, yyyy')}</p>
                               </div>
                               {ownership.casks.last_gauging_date && (
-                                <div className="space-y-1">
-                                  <p className="text-sm text-muted-foreground font-medium">Last Gauging</p>
-                                  <p className="text-xl font-bold">{new Date(ownership.casks.last_gauging_date).toLocaleDateString()}</p>
-                                </div>
+                                <>
+                                  <div className="space-y-1">
+                                    <p className="text-sm text-muted-foreground font-medium">ABV</p>
+                                    <p className="text-xl font-bold">{ownership.casks.alcohol_percentage}%</p>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <p className="text-sm text-muted-foreground font-medium">LPA</p>
+                                    <p className="text-xl font-bold">{formatLPA(calculateLPA(ownership.volume_liters, ownership.casks.alcohol_percentage))}</p>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <p className="text-sm text-muted-foreground font-medium">Last Gauging</p>
+                                    <p className="text-xl font-bold">{new Date(ownership.casks.last_gauging_date).toLocaleDateString()}</p>
+                                  </div>
+                                </>
                               )}
                             </div>
                             
