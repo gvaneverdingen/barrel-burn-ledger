@@ -430,7 +430,7 @@ const Portfolio = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="text-3xl font-bold">
-                        ${calculateTotalInvestment().toLocaleString()}
+                        {formatPrice(calculateTotalInvestment())}
                       </div>
                       <p className="text-xs text-muted-foreground mt-2">Total invested capital</p>
                     </CardContent>
