@@ -3,8 +3,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Copy } from "lucide-react";
 import { toast } from "sonner";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 export default function BlockchainExample() {
+  const { formatPrice } = useCurrency();
   // Example of a completed transaction that would be registered on blockchain
   const exampleTransaction = {
     id: "dcfcd033-dfa7-4158-ba64-e09d5fa87c89",
