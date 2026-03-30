@@ -12,6 +12,7 @@ import { format } from "date-fns";
 
 export function OrdersManagement() {
   const { toast } = useToast();
+  const { formatPrice } = useCurrency();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
