@@ -164,7 +164,7 @@ export default function BlockchainTesting() {
                       Purchase: {tx.spirit_name}
                     </CardTitle>
                     <CardDescription>
-                      Cask #{tx.cask_number} • ${(tx.total_amount / 100).toFixed(2)}
+                      Cask #{tx.cask_number} • {formatPrice(tx.total_amount / 100)}
                     </CardDescription>
                   </div>
                   <Badge className="bg-blue-100 text-blue-800">

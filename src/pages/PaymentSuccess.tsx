@@ -204,7 +204,7 @@ const PaymentSuccess = () => {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Amount Paid:</span>
-                        <span className="font-medium">${transactionDetails.total_amount.toFixed(2)}</span>
+                        <span className="font-medium">{formatPrice(transactionDetails.total_amount)}</span>
                       </div>
                     </div>
                   </div>
