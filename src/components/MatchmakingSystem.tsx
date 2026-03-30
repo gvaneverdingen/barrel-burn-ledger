@@ -120,7 +120,49 @@ export const MatchmakingSystem = () => {
     });
   };
 
-  const formatCurrency = (amount: number) => {
+  const handleMakeOffer = (offer: Offer) => {
+    if (!user) {
+      toast({ title: "Authentication Required", description: "Please sign in to make an offer.", variant: "destructive" });
+      return;
+    }
+    setSelectedOffer(offer);
+    setOfferPrice(String(offer.priceRange.min));
+    setOfferVolume(String(offer.volumeRange.min));
+    setOfferMessage('');
+    setShowOfferDialog(true);
+  };
+
+  const handleSubmitOffer = () => {
+    if (!offerPrice || !offerVolume) {
+      toast({ title: "Missing Information", description: "Please enter a price and volume.", variant: "destructive" });
+      return;
+    }
+    toast({ title: "Offer Sent!", description: `Your offer of $${Number(offerPrice).toLocaleString()} for ${offerVolume}L has been sent to ${selectedOffer?.userName}.` });
+    setShowOfferDialog(false);
+    setSelectedOffer(null);
+  };
+
+  const handleContact = (offer: Offer) => {
+    if (!user) {
+      toast({ title: "Authentication Required", description: "Please sign in to contact.", variant: "destructive" });
+      return;
+    }
+    setSelectedOffer(offer);
+    setContactMessage('');
+    setShowContactDialog(true);
+  };
+
+  const handleSendMessage = () => {
+    if (!contactMessage.trim()) {
+      toast({ title: "Missing Message", description: "Please enter a message.", variant: "destructive" });
+      return;
+    }
+    toast({ title: "Message Sent!", description: `Your message has been sent to ${selectedOffer?.userName}.` });
+    setShowContactDialog(false);
+    setSelectedOffer(null);
+  };
+
+
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
