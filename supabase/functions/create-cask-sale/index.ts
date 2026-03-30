@@ -11,6 +11,7 @@ const corsHeaders = {
 const CreateCaskSaleSchema = z.object({
   ownershipId: z.string().uuid("Invalid ownership ID format"),
   askingPricePerLiter: z.number().positive("Price per liter must be positive").max(100000, "Price exceeds maximum allowed"),
+  totalAskingPrice: z.number().positive("Total price must be positive").max(10000000, "Price exceeds maximum allowed").optional(),
   volumeForSale: z.number().positive("Volume must be positive").max(10000, "Volume exceeds maximum allowed"),
   notes: z.string().max(1000, "Notes must be 1000 characters or less").optional(),
   expiresInDays: z.number().int("Expiry days must be an integer").positive("Expiry days must be positive").max(365, "Maximum expiry is 365 days").optional(),
