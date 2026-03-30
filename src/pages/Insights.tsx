@@ -7,6 +7,7 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 
 const Insights = () => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
 
   return (
     <SidebarProvider>
