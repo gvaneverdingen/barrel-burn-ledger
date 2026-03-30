@@ -33,6 +33,7 @@ import {
 import { MarketplaceAnalytics } from '@/components/MarketplaceAnalytics';
 import { MatchmakingSystem } from '@/components/MatchmakingSystem';
 import { MakeOfferDialog } from '@/components/MakeOfferDialog';
+import { CaskWorldMap } from '@/components/CaskWorldMap';
 
 interface Cask {
   id: string;
