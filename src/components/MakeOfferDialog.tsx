@@ -317,7 +317,7 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
               </Button>
               <Button
                 onClick={handleSubmitOffer}
-                disabled={isSubmitting || !offerPricePerLPA}
+                disabled={isSubmitting || !offerTotalPrice}
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Offer'}
               </Button>
