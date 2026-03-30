@@ -128,7 +128,25 @@ const NewCask = () => {
       // Invalidate casks query to refresh the list
       await queryClient.invalidateQueries({ queryKey: ['distillery-casks'] });
       
-      toast.success('Cask created successfully!');
+      toast.success('Cask created successfully! Minting NFT...');
+
+      // Auto-mint the cask as an NFT on Polygon
+      try {
+        const { data: mintResult, error: mintError } = await supabase.functions.invoke('mint-cask-nft', {
+          body: { caskId: data.id },
+        });
+
+        if (mintError || !mintResult?.success) {
+          console.error('Auto-mint failed:', mintError || mintResult?.error);
+          toast.error('Cask created but NFT minting failed. You can mint it later from the cask details page.');
+        } else {
+          toast.success(`NFT minted! Token #${mintResult.tokenId} on Polygon.`);
+        }
+      } catch (mintErr) {
+        console.error('Auto-mint error:', mintErr);
+        toast.error('Cask created but NFT minting failed. You can retry from the cask details page.');
+      }
+
       navigate('/distillery/casks');
     } catch (error: any) {
       console.error('Error creating cask:', error);
