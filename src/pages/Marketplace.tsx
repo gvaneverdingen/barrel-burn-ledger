@@ -491,26 +491,24 @@ const Marketplace = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Price per LPA</span>
-                    <span className="font-bold text-lg">{formatPrice(calculatePricePerLPA(listing.total_price, listing.current_volume_liters, listing.alcohol_percentage))}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Total (per Barrel)</span>
-                    <span className="font-semibold">{formatPrice(listing.total_price || 0)}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Volume</span>
-                    <span>{listing.current_volume_liters ?? 0}L ({formatLPA(calculateLPA(listing.current_volume_liters, listing.alcohol_percentage))})</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">ABV</span>
-                    <span>{listing.alcohol_percentage ?? 0}%</span>
+                    <span className="text-sm text-muted-foreground">Price per Cask</span>
+                    <span className="font-bold text-lg">{formatPrice(listing.total_price || 0)}</span>
                   </div>
                   {listing.last_gauging_date && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Last Gauging</span>
-                      <span className="text-sm">{new Date(listing.last_gauging_date).toLocaleDateString()}</span>
-                    </div>
+                    <>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">ABV</span>
+                        <span>{listing.alcohol_percentage ?? 'N/A'}%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">LPA</span>
+                        <span>{formatLPA(calculateLPA(listing.current_volume_liters, listing.alcohol_percentage))}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Last Gauging</span>
+                        <span className="text-sm">{new Date(listing.last_gauging_date).toLocaleDateString()}</span>
+                      </div>
+                    </>
                   )}
                   
                   {listing.is_resale && listing.roi !== undefined && (
