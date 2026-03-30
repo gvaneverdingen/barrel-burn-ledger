@@ -25,8 +25,8 @@ const NftStatusCard = ({
   const isMinted = !!blockchainHash && nftTokenId !== null;
   const networkName = nftContractAddress?.startsWith("0x") ? "Polygon" : "Unknown";
   
-  // Use Mumbai explorer for testnet, mainnet for production
-  const explorerBase = "https://mumbai.polygonscan.com";
+  // Use Amoy explorer for testnet (Chain ID 80002)
+  const explorerBase = "https://amoy.polygonscan.com";
 
   return (
     <Card className="border-primary/20">
