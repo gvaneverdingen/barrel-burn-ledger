@@ -13,6 +13,7 @@ import { format } from "date-fns";
 
 export function ListingsManagement() {
   const { toast } = useToast();
+  const { formatPrice } = useCurrency();
   const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
