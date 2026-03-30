@@ -255,7 +255,7 @@ const Reports = () => {
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Unrealized Gains</p>
                 <p className={`text-2xl font-bold ${report.unrealizedGains >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  £{report.unrealizedGains.toLocaleString()}
+                  {formatPrice(report.unrealizedGains)}
                 </p>
               </div>
               <TrendingUp className="h-8 w-8 text-green-500" />
