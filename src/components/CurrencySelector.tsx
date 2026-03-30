@@ -1,6 +1,6 @@
 import { Currency, useCurrency } from '@/contexts/CurrencyContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DollarSign } from 'lucide-react';
+
 
 const currencies: { value: Currency; label: string; symbol: string }[] = [
   { value: 'USD', label: 'USD', symbol: '$' },
