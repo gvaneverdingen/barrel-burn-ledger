@@ -357,10 +357,25 @@ const CaskDetails = () => {
       // Refresh cask data to show updated NFT status
       if (id) await fetchCaskDetails(id);
     } catch (error: any) {
+      let errorMessage = "Failed to mint NFT. Please try again.";
+
+      if (error instanceof FunctionsHttpError) {
+        try {
+          const errorData = await error.context.json();
+          if (errorData && typeof errorData.error === 'string') {
+            errorMessage = errorData.error;
+          }
+        } catch (parseError) {
+          console.warn('Failed to parse mint-cask-nft error response', parseError);
+        }
+      } else if (error instanceof Error) {
+        errorMessage = error.message || errorMessage;
+      }
+
       console.error('NFT minting error:', error);
       toast({
         title: "Minting Failed",
-        description: error.message || "Failed to mint NFT. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
