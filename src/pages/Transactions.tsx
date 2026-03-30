@@ -13,6 +13,7 @@ import { format } from "date-fns";
 
 const Transactions = () => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
 
   // Fetch transactions where user is buyer
   const { data: purchases } = useQuery({
