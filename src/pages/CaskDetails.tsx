@@ -992,10 +992,18 @@ const CaskDetails = () => {
                         <span className="text-muted-foreground">Cask Capacity:</span>
                         <span>{cask.cask_type.capacity_liters}L</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">ABV:</span>
-                        <span>{cask.alcohol_percentage ? `${cask.alcohol_percentage}%` : 'N/A'}</span>
-                      </div>
+                      {cask.last_gauging_date && (
+                        <>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">ABV:</span>
+                            <span>{cask.alcohol_percentage ? `${cask.alcohol_percentage}%` : 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Last Gauging:</span>
+                            <span>{new Date(cask.last_gauging_date).toLocaleDateString()}</span>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
