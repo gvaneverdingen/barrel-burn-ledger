@@ -12,9 +12,10 @@ import angelShareLogo from '@/assets/angel-share-logo.png';
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { formatPrice } = useCurrency();
   const sessionId = searchParams.get('session_id');
+  const transactionId = searchParams.get('transaction_id');
   const [verifying, setVerifying] = useState(true);
   const [verified, setVerified] = useState(false);
   const [transactionDetails, setTransactionDetails] = useState<any>(null);
@@ -24,7 +25,6 @@ const PaymentSuccess = () => {
     let cancelled = false;
 
     const findTransaction = async (): Promise<any> => {
-      // Try completed first
       let query = supabase
         .from('transactions')
         .select(`
@@ -35,9 +35,18 @@ const PaymentSuccess = () => {
             distillery:distilleries(name)
           )
         `)
-        .in('status', ['completed', 'pending'])
-        .order('created_at', { ascending: false })
-        .limit(1);
+        .in('status', ['completed', 'pending']);
+
+      if (transactionId) {
+        const { data, error: txError } = await query
+          .eq('id', transactionId)
+          .maybeSingle();
+
+        if (txError) throw txError;
+        return data ?? null;
+      }
+
+      query = query.order('created_at', { ascending: false }).limit(1);
 
       if (user) {
         query = query.eq('buyer_id', user.id);
@@ -49,9 +58,16 @@ const PaymentSuccess = () => {
     };
 
     const verifyPayment = async () => {
-      if (!user) return; // Wait for user to load
+      if (loading) return;
+
       setVerifying(true);
       setError(null);
+
+      if (!user) {
+        setError('Your payment completed, but your session was not restored after checkout. Please sign in again and open your portfolio.');
+        setVerifying(false);
+        return;
+      }
 
       try {
         // Poll up to 5 times (10s total) for the transaction to appear/complete
@@ -101,7 +117,7 @@ const PaymentSuccess = () => {
 
     verifyPayment();
     return () => { cancelled = true; };
-  }, [sessionId, user]);
+  }, [sessionId, transactionId, user, loading]);
 
   return (
     <div className="min-h-screen bg-background">
