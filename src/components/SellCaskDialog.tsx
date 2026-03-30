@@ -40,6 +40,9 @@ interface SellCaskDialogProps {
 export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }: SellCaskDialogProps) {
   const { toast } = useToast();
   const { user, session } = useAuth();
+  const { formatPrice, currency } = useCurrency();
+  const currencySymbols: Record<string, string> = { USD: '$', EUR: '€', GBP: '£', JPY: '¥' };
+  const sym = currencySymbols[currency] || currency;
   const [loading, setLoading] = useState(false);
   const [pricePerLiter, setPricePerLiter] = useState("");
   const [notes, setNotes] = useState("");
