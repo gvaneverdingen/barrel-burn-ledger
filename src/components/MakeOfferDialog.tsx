@@ -223,7 +223,7 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
   };
 
   const resetForm = () => {
-    setOfferPricePerLPA('');
+    setOfferTotalPrice('');
     setMessage('');
     setEnquiryMessage('');
   };
