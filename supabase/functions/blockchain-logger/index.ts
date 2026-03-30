@@ -18,6 +18,12 @@ const MARKETPLACE_ABI = [
   "function calculateFees(uint256 price, bool isPrimarySale) view returns (uint256 platformFee, uint256 distilleryRoyalty, uint256 sellerAmount)"
 ];
 
+const AMOY_NETWORK = { chainId: 80002, name: "amoy" };
+const FALLBACK_POLYGON_RPC_URLS = [
+  "https://polygon-amoy-bor-rpc.publicnode.com",
+  "https://polygon-amoy.drpc.org",
+];
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
@@ -43,6 +49,41 @@ interface BlockchainResponse {
   contractAddress?: string;
   success: boolean;
   error?: string;
+}
+
+function sanitizeRpcUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    return `${parsed.origin}${parsed.pathname}`;
+  } catch {
+    return url;
+  }
+}
+
+async function createPolygonProvider(primaryRpcUrl?: string) {
+  const rpcUrls = [primaryRpcUrl, ...FALLBACK_POLYGON_RPC_URLS].filter(
+    (value, index, array): value is string => Boolean(value) && array.indexOf(value) === index
+  );
+
+  let lastError: Error | null = null;
+
+  for (const rpcUrl of rpcUrls) {
+    try {
+      const provider = new ethers.JsonRpcProvider(rpcUrl, AMOY_NETWORK, { staticNetwork: true });
+      const blockNumber = await provider.getBlockNumber();
+      console.log("Connected to Polygon Amoy RPC:", sanitizeRpcUrl(rpcUrl), "Block:", blockNumber);
+      return provider;
+    } catch (error) {
+      lastError = error as Error;
+      console.warn("Polygon RPC unavailable:", sanitizeRpcUrl(rpcUrl), "-", lastError.message);
+    }
+  }
+
+  throw new Error(
+    lastError
+      ? `Unable to connect to Polygon Amoy RPC: ${lastError.message}`
+      : "Unable to connect to Polygon Amoy RPC"
+  );
 }
 
 serve(async (req) => {
@@ -184,15 +225,13 @@ async function executePolygonTransaction(
     const polygonRpcUrl = Deno.env.get("POLYGON_RPC_URL");
     const privateKey = Deno.env.get("POLYGON_PRIVATE_KEY");
     const nftContractAddress = Deno.env.get("CASK_NFT_CONTRACT_ADDRESS");
-    const marketplaceAddress = Deno.env.get("MARKETPLACE_CONTRACT_ADDRESS");
     
-    if (!polygonRpcUrl) return { transactionHash: '', success: false, error: "Missing POLYGON_RPC_URL" };
     if (!privateKey) return { transactionHash: '', success: false, error: "Missing POLYGON_PRIVATE_KEY" };
     
     const useSmartContracts = !!nftContractAddress;
     console.log("Mode:", useSmartContracts ? "SMART CONTRACT" : "LOGGING ONLY");
     
-    const provider = new ethers.JsonRpcProvider(polygonRpcUrl);
+    const provider = await createPolygonProvider(polygonRpcUrl);
     const wallet = new ethers.Wallet(privateKey, provider);
     
     console.log("Wallet:", wallet.address);

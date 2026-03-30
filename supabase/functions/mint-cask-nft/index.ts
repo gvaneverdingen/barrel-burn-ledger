@@ -42,12 +42,18 @@ serve(async (req) => {
     const { data: roleData, error: roleError } = await supabaseService
       .from('user_roles')
       .select('role')
-      .eq('user_id', user.id)
-      .eq('role', 'distillery')
-      .maybeSingle();
+      .eq('user_id', user.id);
 
-    if (roleError || !roleData) {
-      throw new Error("Only distilleries can mint cask NFTs");
+    if (roleError) {
+      throw new Error("Unable to verify mint permissions");
+    }
+
+    const roles = roleData?.map(({ role }) => role) || [];
+    const isAdministrator = roles.includes('administrator');
+    const isDistillery = roles.includes('distillery');
+
+    if (!isAdministrator && !isDistillery) {
+      throw new Error("Only distilleries or administrators can mint cask NFTs");
     }
 
     // Parse request body
@@ -77,7 +83,7 @@ serve(async (req) => {
       throw new Error("Cask not found");
     }
 
-    if (cask.distillery.profile_id !== user.id) {
+    if (!isAdministrator && cask.distillery.profile_id !== user.id) {
       throw new Error("You can only mint NFTs for your own casks");
     }
 
@@ -116,8 +122,21 @@ serve(async (req) => {
     };
 
     // Call blockchain logger to mint the NFT on Polygon
-    const mintResponse = await supabaseClient.functions.invoke('blockchain-logger', {
-      body: {
+    const blockchainLoggerUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/blockchain-logger`;
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+
+    if (!serviceRoleKey) {
+      throw new Error("Blockchain logger is not configured correctly");
+    }
+
+    const mintResponse = await fetch(blockchainLoggerUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${serviceRoleKey}`,
+        "apikey": serviceRoleKey,
+      },
+      body: JSON.stringify({
         caskId: cask.id,
         buyerId: walletData?.wallet_address || user.id,
         transactionType: 'mint',
@@ -125,15 +144,15 @@ serve(async (req) => {
         price: cask.total_price || 0,
         timestamp: Date.now(),
         metadata: nftMetadata
-      }
+      })
     });
 
-    if (mintResponse.error) {
-      console.error("Error minting NFT:", mintResponse.error);
-      throw new Error("Failed to mint NFT on blockchain");
-    }
+    const result = await mintResponse.json();
 
-    const result = mintResponse.data;
+    if (!mintResponse.ok) {
+      console.error("Error minting NFT:", result);
+      throw new Error(result?.error || "Failed to mint NFT on blockchain");
+    }
 
     if (!result?.success) {
       throw new Error(result?.error || "Blockchain minting failed");
