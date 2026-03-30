@@ -20,6 +20,7 @@ interface MetricsCardsProps {
 }
 
 export function MetricsCards({ metrics, loading }: MetricsCardsProps) {
+  const { formatPrice } = useCurrency();
   const cards = [
     {
       title: "Total Consumers",
