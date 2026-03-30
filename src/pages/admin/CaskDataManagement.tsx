@@ -44,6 +44,7 @@ interface EditingData {
 }
 
 export default function CaskDataManagement() {
+  const { formatPrice } = useCurrency();
   const queryClient = useQueryClient();
   const [selectedCasks, setSelectedCasks] = useState<string[]>([]);
   const [editingCaskId, setEditingCaskId] = useState<string | null>(null);
