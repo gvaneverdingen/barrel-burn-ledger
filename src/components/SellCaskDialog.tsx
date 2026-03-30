@@ -44,7 +44,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
   const currencySymbols: Record<string, string> = { USD: '$', EUR: '€', GBP: '£', JPY: '¥' };
   const sym = currencySymbols[currency] || currency;
   const [loading, setLoading] = useState(false);
-  const [pricePerLiter, setPricePerLiter] = useState("");
+  const [totalAskingPrice, setTotalAskingPrice] = useState("");
   const [notes, setNotes] = useState("");
   const [expiresInDays, setExpiresInDays] = useState("30");
   const [lastGaugingDate, setLastGaugingDate] = useState("");
