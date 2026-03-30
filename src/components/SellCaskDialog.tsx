@@ -93,7 +93,8 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
       const { data, error } = await supabase.functions.invoke("create-cask-sale", {
         body: {
           ownershipId: ownership.id,
-          askingPricePerLiter: priceNum,
+          askingPricePerLiter: pricePerLiter,
+          totalAskingPrice: totalPrice,
           volumeForSale: volumeNum,
           notes: notes.trim() || undefined,
           expiresInDays: expiresNum > 0 ? expiresNum : undefined,
