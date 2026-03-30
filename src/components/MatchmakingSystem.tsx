@@ -27,7 +27,9 @@ interface Offer {
 
 export const MatchmakingSystem = () => {
   const { user } = useAuth();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, currency } = useCurrency();
+  const currencySymbols: Record<string, string> = { USD: '$', EUR: '€', GBP: '£', JPY: '¥' };
+  const sym = currencySymbols[currency] || currency;
   const [offers, setOffers] = useState<Offer[]>([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
@@ -191,7 +193,7 @@ export const MatchmakingSystem = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Price per Barrel ($)</label>
+                <label className="block text-sm font-medium mb-1">Price per Barrel ({sym})</label>
                 <div className="flex space-x-2">
                   <Input placeholder="Min" type="number" value={newOffer.priceMin} onChange={(e) => setNewOffer({ ...newOffer, priceMin: e.target.value })} />
                   <Input placeholder="Max" type="number" value={newOffer.priceMax} onChange={(e) => setNewOffer({ ...newOffer, priceMax: e.target.value })} />
@@ -295,7 +297,7 @@ export const MatchmakingSystem = () => {
               </div>
             )}
             <div>
-              <label className="block text-sm font-medium mb-1">Your Price per Barrel ($)</label>
+              <label className="block text-sm font-medium mb-1">Your Price per Barrel ({sym})</label>
               <Input type="number" value={offerPrice} onChange={(e) => setOfferPrice(e.target.value)} placeholder="e.g., 20000" />
             </div>
             <div>
