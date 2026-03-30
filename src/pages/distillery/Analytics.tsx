@@ -286,7 +286,7 @@ const DistilleryAnalytics = () => {
                       border: '1px solid hsl(var(--border))',
                       borderRadius: '8px'
                     }}
-                    formatter={(value: number) => [`£${value.toLocaleString()}`, 'Revenue']}
+                    formatter={(value: number) => [formatPrice(value), 'Revenue']}
                   />
                   <Area 
                     type="monotone" 
