@@ -14,6 +14,7 @@ import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 
 const DistilleryAnalytics = () => {
   const { user, userRole } = useAuth();
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const [selectedDistilleryId, setSelectedDistilleryId] = useState<string | null>(null);
   const isAdmin = userRole === 'administrator';
