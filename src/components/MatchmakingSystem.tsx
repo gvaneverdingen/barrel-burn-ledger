@@ -193,7 +193,7 @@ export const MatchmakingSystem = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Price per Barrel ($)</label>
+                <label className="block text-sm font-medium mb-1">Price per Barrel ({sym})</label>
                 <div className="flex space-x-2">
                   <Input placeholder="Min" type="number" value={newOffer.priceMin} onChange={(e) => setNewOffer({ ...newOffer, priceMin: e.target.value })} />
                   <Input placeholder="Max" type="number" value={newOffer.priceMax} onChange={(e) => setNewOffer({ ...newOffer, priceMax: e.target.value })} />
