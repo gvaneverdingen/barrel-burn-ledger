@@ -116,7 +116,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
       onOpenChange(false);
       
       // Reset form
-      setPricePerLiter("");
+      setTotalAskingPrice("");
       setNotes("");
       setExpiresInDays("30");
       setLastGaugingDate("");
