@@ -156,7 +156,7 @@ export const MakeOfferDialog = ({ open, onOpenChange, listing }: MakeOfferDialog
         caskNumber: listing.cask_number,
         offerType: 'buy_offer',
         offeredTotalPrice: totalPrice.toLocaleString(),
-        offeredPricePerLiter: pricePerLPA.toLocaleString(),
+        offeredPricePerLiter: pricePerLiter.toLocaleString(),
         volumeLiters: listing.current_volume_liters?.toString(),
         message: message || undefined,
       });
