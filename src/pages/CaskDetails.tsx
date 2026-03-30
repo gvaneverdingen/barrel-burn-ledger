@@ -28,6 +28,7 @@ import { CaskImageUpload } from "@/components/CaskImageUpload";
 import { MakeOfferDialog } from "@/components/MakeOfferDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NftStatusCard from "@/components/NftStatusCard";
+import { SellCaskDialog } from "@/components/SellCaskDialog";
 
 interface CaskDetails {
   id: string;
@@ -98,6 +99,9 @@ const CaskDetails = () => {
   const [sellerId, setSellerId] = useState<string | null>(null);
   const [isMintingNft, setIsMintingNft] = useState(false);
   const [adminViewAs, setAdminViewAs] = useState<'default' | 'distillery' | 'owner'>('default');
+  const [sellDialogOpen, setSellDialogOpen] = useState(false);
+  const [ownershipData, setOwnershipData] = useState<any>(null);
+  const [hasActiveSale, setHasActiveSale] = useState(false);
 
   const isAdmin = userRole === 'administrator';
 
@@ -268,6 +272,27 @@ const CaskDetails = () => {
       const isCaskOwner = !!ownership;
 
       setIsOwner(isDistilleryOwner || isCaskOwner);
+      setOwnershipData(ownership);
+
+      // Check if there's an active sale listing for this cask by the current user
+      if (isCaskOwner && ownership) {
+        const { data: activeSale } = await supabase
+          .from('cask_sales')
+          .select('id, seller_id')
+          .eq('ownership_id', ownership.id)
+          .eq('status', 'active')
+          .maybeSingle();
+
+        if (activeSale) {
+          setActiveSaleId(activeSale.id);
+          setIsOwnerSale(true);
+          setHasActiveSale(true);
+        } else {
+          setHasActiveSale(false);
+        }
+      } else if (isDistilleryOwner) {
+        setHasActiveSale(false);
+      }
 
       // Set seller ID based on sale listing or distillery ownership
       if (cask.is_sale_listing && activeSaleId) {
@@ -1182,6 +1207,31 @@ const CaskDetails = () => {
                     Cancel Sale
                   </Button>
                 )}
+
+                {effectiveIsOwner && !hasActiveSale && !isOwnerSale && ownershipData && (
+                  <Button 
+                    className="w-full"
+                    onClick={() => setSellDialogOpen(true)}
+                    size="lg"
+                    variant="outline"
+                  >
+                    <DollarSign className="mr-2 h-4 w-4" />
+                    Sell This Cask
+                  </Button>
+                )}
+
+                {effectiveIsOwner && hasActiveSale && !isOwnerSale && (
+                  <Button 
+                    variant="outline"
+                    className="w-full border-red-500/20 text-red-600 hover:bg-red-500/10" 
+                    onClick={() => setShowCancelDialog(true)}
+                    size="lg"
+                    disabled={cancellingSale}
+                  >
+                    <X className="mr-2 h-4 w-4" />
+                    Cancel Sale
+                  </Button>
+                )}
                 
                 {!user && (
                   <Button 
@@ -1484,6 +1534,37 @@ const CaskDetails = () => {
             price_per_liter: cask.price_per_liter || 0,
             total_price: cask.total_price || 0,
             saleListingId: activeSaleId,
+          }}
+        />
+      )}
+
+      {ownershipData && cask && (
+        <SellCaskDialog
+          open={sellDialogOpen}
+          onOpenChange={setSellDialogOpen}
+          ownership={{
+            id: ownershipData.id,
+            ownership_percentage: 100,
+            volume_liters: cask.current_volume_liters || 0,
+            acquired_date: new Date().toISOString(),
+            acquisition_price: cask.total_price || 0,
+            casks: {
+              id: cask.id,
+              spirit_name: cask.spirit_name,
+              cask_number: cask.cask_number,
+              current_volume_liters: cask.current_volume_liters || 0,
+              price_per_liter: cask.price_per_liter || 0,
+              distilleries: {
+                name: cask.distillery?.name || 'Unknown',
+                location: cask.distillery?.location || 'Unknown',
+              },
+            },
+          }}
+          onSaleCreated={() => {
+            setSellDialogOpen(false);
+            setHasActiveSale(true);
+            toast({ title: "Listed!", description: "Your cask is now on the marketplace." });
+            if (id) fetchCaskDetails(id);
           }}
         />
       )}
