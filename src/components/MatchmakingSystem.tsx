@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Handshake, MessageCircle, Clock } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { toast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -26,6 +27,7 @@ interface Offer {
 
 export const MatchmakingSystem = () => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
@@ -133,9 +135,7 @@ export const MatchmakingSystem = () => {
     setSelectedOffer(null);
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-  };
+  // Use formatPrice from CurrencyContext for all price display
 
   return (
     <div className="space-y-6">
@@ -250,7 +250,7 @@ export const MatchmakingSystem = () => {
                 </div>
                 <div>
                   <span className="text-sm text-muted-foreground">Price per Barrel:</span>
-                  <p className="font-medium">{formatCurrency(offer.pricePerBarrel.min)} - {formatCurrency(offer.pricePerBarrel.max)}</p>
+                  <p className="font-medium">{formatPrice(offer.pricePerBarrel.min)} - {formatPrice(offer.pricePerBarrel.max)}</p>
                 </div>
               </div>
 
@@ -289,7 +289,7 @@ export const MatchmakingSystem = () => {
           <div className="space-y-4">
             {selectedOffer && (
               <div className="rounded-md bg-muted p-3 text-sm space-y-1">
-                <p><span className="text-muted-foreground">Requested range:</span> {formatCurrency(selectedOffer.pricePerBarrel.min)} – {formatCurrency(selectedOffer.pricePerBarrel.max)} per barrel</p>
+                <p><span className="text-muted-foreground">Requested range:</span> {formatPrice(selectedOffer.pricePerBarrel.min)} – {formatPrice(selectedOffer.pricePerBarrel.max)} per barrel</p>
                 <p><span className="text-muted-foreground">ABV:</span> {selectedOffer.abvRange.min}% – {selectedOffer.abvRange.max}%</p>
                 <p><span className="text-muted-foreground">Age:</span> {selectedOffer.ageRange.min} – {selectedOffer.ageRange.max} years</p>
               </div>
