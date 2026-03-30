@@ -135,9 +135,7 @@ export const MatchmakingSystem = () => {
     setSelectedOffer(null);
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-  };
+  // Use formatPrice from CurrencyContext for all price display
 
   return (
     <div className="space-y-6">
