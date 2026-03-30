@@ -230,7 +230,7 @@ const Reports = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Portfolio Value</p>
-                <p className="text-2xl font-bold">£{report.totalValue.toLocaleString()}</p>
+                <p className="text-2xl font-bold">{formatPrice(report.totalValue)}</p>
               </div>
               <DollarSign className="h-8 w-8 text-green-500" />
             </div>
