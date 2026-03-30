@@ -257,7 +257,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Total Asking Price:</span>
                   <span className="text-xl font-bold luxury-text-gradient">
-                    ${totalPrice}
+                    {formatPrice(Number(totalPrice))}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
