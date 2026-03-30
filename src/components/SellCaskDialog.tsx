@@ -59,13 +59,15 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
       console.log("👤 User from context:", user);
       console.log("🏷️ Session from context:", session);
 
-      const priceNum = parseFloat(pricePerLiter);
-      const volumeNum = ownership.volume_liters; // Always sell the full volume
+      const totalPrice = parseFloat(totalAskingPrice);
+      const volumeNum = ownership.volume_liters;
       const expiresNum = parseInt(expiresInDays);
 
-      if (isNaN(priceNum) || priceNum <= 0) {
-        throw new Error("Please enter a valid price per liter");
+      if (isNaN(totalPrice) || totalPrice <= 0) {
+        throw new Error("Please enter a valid total asking price");
       }
+
+      const pricePerLiter = volumeNum > 0 ? totalPrice / volumeNum : totalPrice;
 
       // Check if we have user authentication (either regular or Magic wallet)
       if (!user?.id) {
