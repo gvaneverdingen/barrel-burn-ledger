@@ -27,6 +27,7 @@ interface Offer {
 
 export const MatchmakingSystem = () => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
