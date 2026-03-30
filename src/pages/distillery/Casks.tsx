@@ -187,7 +187,7 @@ const DistilleryCasks = () => {
                   </div>
                   <div className="flex justify-between">
                     <span>Price per L:</span>
-                    <span>£{cask.price_per_liter}</span>
+                    <span>{formatPrice(cask.price_per_liter)}</span>
                   </div>
                   <div className="flex justify-between font-semibold">
                     <span>Total Price:</span>
