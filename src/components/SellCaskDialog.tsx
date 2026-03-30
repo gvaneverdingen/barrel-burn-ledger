@@ -134,9 +134,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
 
   if (!ownership) return null;
 
-  const totalPrice = pricePerLiter 
-    ? (parseFloat(pricePerLiter) * ownership.volume_liters).toLocaleString()
-    : "0";
+  const displayTotal = totalAskingPrice ? parseFloat(totalAskingPrice) : 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
