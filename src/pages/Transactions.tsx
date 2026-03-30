@@ -53,7 +53,7 @@ const Transactions = () => {
       date: format(new Date(t.created_at), 'yyyy-MM-dd'),
       type: 'Purchase',
       description: `${t.cask?.spirit_name} - ${t.cask?.cask_number}`,
-      amount: `$${t.total_amount.toFixed(2)}`,
+      amount: formatPrice(t.total_amount),
       status: t.status === 'completed' ? 'Completed' : t.status === 'pending' ? 'Pending' : 'Failed',
       method: 'Stripe'
     })),
