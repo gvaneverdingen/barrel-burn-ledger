@@ -13,6 +13,7 @@ const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const sessionId = searchParams.get('session_id');
   const [verifying, setVerifying] = useState(true);
   const [verified, setVerified] = useState(false);
