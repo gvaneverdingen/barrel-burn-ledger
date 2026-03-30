@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { ethers } from "https://esm.sh/ethers@6.8.0";
+import { ethers } from "https://esm.sh/ethers@6.13.4?target=deno&no-check";
 
 // Contract ABIs
 const CASK_NFT_ABI = [
@@ -69,7 +69,30 @@ async function createPolygonProvider(primaryRpcUrl?: string) {
 
   for (const rpcUrl of rpcUrls) {
     try {
-      const provider = new ethers.JsonRpcProvider(rpcUrl, AMOY_NETWORK, { staticNetwork: true });
+      const probeResponse = await fetch(rpcUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "eth_chainId",
+          params: [],
+        }),
+      });
+
+      if (!probeResponse.ok) {
+        throw new Error(`HTTP ${probeResponse.status}`);
+      }
+
+      const probePayload = await probeResponse.json();
+      const chainIdHex = probePayload?.result;
+      const chainId = typeof chainIdHex === "string" ? Number.parseInt(chainIdHex, 16) : NaN;
+
+      if (chainId !== AMOY_NETWORK.chainId) {
+        throw new Error(`Unexpected chain ID ${chainIdHex ?? "unknown"}`);
+      }
+
+      const provider = new ethers.JsonRpcProvider(rpcUrl, AMOY_NETWORK);
       const blockNumber = await provider.getBlockNumber();
       console.log("Connected to Polygon Amoy RPC:", sanitizeRpcUrl(rpcUrl), "Block:", blockNumber);
       return provider;
