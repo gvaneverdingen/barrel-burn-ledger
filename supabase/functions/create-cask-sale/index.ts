@@ -173,7 +173,7 @@ serve(async (req) => {
       throw new Error("There's already an active sale for this cask ownership");
     }
 
-    const totalAskingPrice = askingPricePerLiter * volumeForSale;
+    const totalAskingPrice = providedTotal || (askingPricePerLiter * volumeForSale);
     const expiresAt = expiresInDays ? new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000).toISOString() : null;
 
     // Create the sale listing
