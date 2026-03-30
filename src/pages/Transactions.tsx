@@ -161,7 +161,7 @@ const Transactions = () => {
                 <CardTitle className="text-base">Total Spent</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">${totalSpent.toFixed(2)}</p>
+                <p className="text-2xl font-bold">{formatPrice(totalSpent)}</p>
                 <p className="text-sm text-muted-foreground">All purchases</p>
               </CardContent>
             </Card>
