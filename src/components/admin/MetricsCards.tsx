@@ -66,7 +66,7 @@ export function MetricsCards({ metrics, loading }: MetricsCardsProps) {
     },
     {
       title: "Distillery Fees",
-      value: `£${metrics.distilleryFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      value: formatPrice(metrics.distilleryFees),
       icon: ArrowLeftRight,
       description: "Total distillery fees collected"
     },
