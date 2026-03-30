@@ -25,6 +25,7 @@ interface Transaction {
 }
 
 export default function BlockchainTesting() {
+  const { formatPrice } = useCurrency();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingTx, setProcessingTx] = useState<string | null>(null);
