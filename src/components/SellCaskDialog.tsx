@@ -253,12 +253,12 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
             </div>
 
             {/* Price Summary */}
-            {pricePerLiter && (
+            {displayTotal > 0 && (
               <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium">Total Asking Price:</span>
+                  <span className="font-medium">Your Asking Price:</span>
                   <span className="text-xl font-bold luxury-text-gradient">
-                    {formatPrice(Number(totalPrice))}
+                    {formatPrice(displayTotal)}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
