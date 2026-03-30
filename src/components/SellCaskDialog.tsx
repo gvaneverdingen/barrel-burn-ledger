@@ -184,7 +184,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
             {/* Price Per Liter */}
             <div className="space-y-2">
               <Label htmlFor="pricePerLiter">
-                Asking Price per Liter ($)
+                Asking Price per Liter ({sym})
               </Label>
               <Input
                 id="pricePerLiter"
