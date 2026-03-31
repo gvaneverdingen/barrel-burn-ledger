@@ -9,7 +9,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-type PaymentMethod = "stripe" | "native" | "usdc" | "usdt";
+type PaymentMethod = "stripe" | "usdc" | "usdt";
 type WalletSource = "magic" | "external";
 
 interface PaymentMethodDialogProps {
