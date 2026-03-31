@@ -23,6 +23,8 @@ interface CaskOwnership {
     cask_number: string;
     current_volume_liters: number;
     price_per_liter: number;
+    blockchain_hash?: string | null;
+    nft_token_id?: number | null;
     distilleries: {
       name: string;
       location: string;
