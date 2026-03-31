@@ -157,7 +157,7 @@ serve(async (req) => {
               name: `${sale.cask_ownership.casks.spirit_name}`,
               description: `${sale.volume_for_sale_liters}L cask - ${sale.cask_ownership.casks.distilleries.name}`,
             },
-            unit_amount: totalAmount,
+            unit_amount: totalAmountCents,
           },
           quantity: 1,
         },
