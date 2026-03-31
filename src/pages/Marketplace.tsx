@@ -97,7 +97,6 @@ interface UnifiedListing {
   seller_id?: string;
   ownership_id?: string;
   acquisition_price?: number;
-  roi?: number;
   blockchain_hash?: string;
   seller_name?: string;
   last_gauging_date?: string | null;
@@ -113,7 +112,7 @@ const Marketplace = () => {
   const [allListings, setAllListings] = useState<UnifiedListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'price' | 'date' | 'name' | 'roi'>('date');
+  const [sortBy, setSortBy] = useState<'price' | 'date' | 'name'>('date');
   const [filterType, setFilterType] = useState<'all' | 'scotch' | 'bourbon' | 'irish' | 'resale'>('all');
   const [maxPrice, setMaxPrice] = useState<number | ''>('');
   const [selectedTab, setSelectedTab] = useState('marketplace');
@@ -225,9 +224,6 @@ const Marketplace = () => {
         })
         .map(listing => {
           const cask = listing.cask_ownership!.casks!;
-          const roi = listing.cask_ownership?.acquisition_price 
-            ? ((listing.total_asking_price - listing.cask_ownership.acquisition_price) / listing.cask_ownership.acquisition_price) * 100
-            : 0;
 
           return {
             id: listing.id,
@@ -249,7 +245,6 @@ const Marketplace = () => {
             seller_id: listing.seller_id,
             ownership_id: listing.ownership_id,
             acquisition_price: listing.cask_ownership?.acquisition_price,
-            roi: roi,
             blockchain_hash: cask.blockchain_hash,
             seller_name: listing.profiles 
               ? `${listing.profiles.first_name} ${listing.profiles.last_name}` 
@@ -318,8 +313,6 @@ const Marketplace = () => {
           return (a.total_price || 0) - (b.total_price || 0);
         case 'name':
           return a.spirit_name.localeCompare(b.spirit_name);
-        case 'roi':
-          return (b.roi || 0) - (a.roi || 0);
         default:
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       }
@@ -408,7 +401,7 @@ const Marketplace = () => {
                       <SelectItem value="date">Newest First</SelectItem>
                       <SelectItem value="price">Price: Low to High</SelectItem>
                       <SelectItem value="name">Name A-Z</SelectItem>
-                      <SelectItem value="roi">Highest ROI</SelectItem>
+                      
                     </SelectContent>
                   </Select>
                   <Select value={filterType} onValueChange={(value: any) => setFilterType(value)}>
@@ -511,15 +504,6 @@ const Marketplace = () => {
                     </>
                   )}
                   
-                  {listing.is_resale && listing.roi !== undefined && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Potential ROI</span>
-                      <span className={`font-semibold flex items-center gap-1 ${listing.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {listing.roi >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingUp className="h-3 w-3 rotate-180" />}
-                        {listing.roi.toFixed(1)}%
-                      </span>
-                    </div>
-                  )}
                   
                   <div className="text-xs text-muted-foreground space-y-1">
                     <div className="flex items-center gap-1">
