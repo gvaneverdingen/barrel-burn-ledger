@@ -9,7 +9,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-type PaymentMethod = "stripe" | "native" | "usdc" | "usdt";
+type PaymentMethod = "stripe" | "usdc" | "usdt";
 type WalletSource = "magic" | "external";
 
 interface PaymentMethodDialogProps {
@@ -31,13 +31,6 @@ const paymentOptions: { id: PaymentMethod; label: string; icon: any; description
     icon: CreditCard,
     description: "Pay with credit/debit card via Stripe",
     badge: "Fiat",
-  },
-  {
-    id: "native",
-    label: "MATIC / POL",
-    icon: Coins,
-    description: "Pay with native Polygon token",
-    badge: "Crypto",
   },
   {
     id: "usdc",
@@ -175,19 +168,9 @@ export const PaymentMethodDialog = ({
         const provider = new ethers.BrowserProvider((window as any).ethereum);
         const signer = await provider.getSigner();
 
-        if (data.txType === "native_marketplace" || data.txType === "erc20_marketplace") {
+        if (data.txType === "erc20_marketplace") {
           const contract = new ethers.Contract(data.to, data.abi, signer);
-          const tx = data.txType === "native_marketplace"
-            ? await contract[data.functionName](...data.args, { value: BigInt(data.value) })
-            : await contract[data.functionName](...data.args);
-          txHash = tx.hash;
-          toast.info("Transaction submitted! Waiting for confirmation...");
-          await tx.wait();
-        } else if (data.txType === "native_direct") {
-          const tx = await signer.sendTransaction({
-            to: data.to,
-            value: BigInt(data.value),
-          });
+          const tx = await contract[data.functionName](...data.args);
           txHash = tx.hash;
           toast.info("Transaction submitted! Waiting for confirmation...");
           await tx.wait();
@@ -349,7 +332,7 @@ export const PaymentMethodDialog = ({
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Payment</span>
                 <Badge variant="outline" className="text-xs">
-                  {selectedMethod === "native" ? "MATIC" : selectedMethod?.toUpperCase()}
+                  {selectedMethod?.toUpperCase()}
                 </Badge>
               </div>
               <div className="flex justify-between">

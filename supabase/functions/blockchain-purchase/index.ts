@@ -10,7 +10,6 @@ const corsHeaders = {
 
 // Marketplace ABI (only the functions we need)
 const MARKETPLACE_ABI = [
-  "function purchaseCask(uint256 tokenId) external payable",
   "function purchaseCaskWithToken(uint256 tokenId) external",
   "function getListing(uint256 tokenId) external view returns (tuple(address seller, uint256 price, address paymentToken, bool active, bool isPrimarySale))",
   "function calculateFees(uint256 price, bool isPrimarySale) external pure returns (uint256 platformFee, uint256 distilleryRoyalty, uint256 sellerAmount)",
@@ -31,7 +30,7 @@ const CASKNFT_ABI = [
 
 const RequestSchema = z.object({
   saleId: z.string().uuid("Invalid sale ID"),
-  paymentMethod: z.enum(["native", "usdc", "usdt"]),
+  paymentMethod: z.enum(["usdc", "usdt"]),
   walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid wallet address"),
 });
 
@@ -176,33 +175,9 @@ serve(async (req) => {
     
     // Build transaction data based on payment method
     let txData: any;
-    let paymentTokenAddress = ethers.ZeroAddress;
 
-    if (paymentMethod === "native") {
-      // Native MATIC payment
-      // Convert USD price to MATIC equivalent (simplified — in production use Chainlink oracle)
-      // For testnet, we use a fixed rate: 1 MATIC ≈ $0.50
-      const maticPrice = 0.50; // USD per MATIC — would use oracle in production
-      const maticAmount = totalPriceDollars / maticPrice;
-      const weiAmount = ethers.parseEther(maticAmount.toFixed(18));
-
-      // If listed on-chain, use marketplace contract
-      if (listing.active) {
-        txData = {
-          method: "purchaseCask",
-          args: [tokenId],
-          value: listing.price,
-        };
-      } else {
-        // Direct transfer to platform wallet — platform handles distribution off-chain
-        txData = {
-          method: "direct_transfer",
-          to: Deno.env.get("PLATFORM_WALLET_ADDRESS"),
-          value: weiAmount,
-        };
-      }
-    } else {
-      // ERC20 stablecoin payment
+    // ERC20 stablecoin payment
+    {
       const tokenAddress = STABLECOIN_ADDRESSES[paymentMethod];
       if (!tokenAddress) throw new Error(`Unsupported token: ${paymentMethod}`);
       
@@ -262,6 +237,8 @@ serve(async (req) => {
       }
     }
 
+    const paymentTokenAddress = STABLECOIN_ADDRESSES[paymentMethod] ?? ethers.ZeroAddress;
+
     // Create a pending transaction in the database
     const platformFeeRate = 0.05;
     const platformFeeDollars = Math.round(totalPriceDollars * platformFeeRate * 100) / 100;
@@ -303,23 +280,12 @@ serve(async (req) => {
       isOnChainListing: listing.active,
     };
 
-    if (txData.method === "purchaseCask") {
-      response.txType = "native_marketplace";
-      response.to = marketplaceAddress;
-      response.value = txData.value.toString();
-      response.functionName = "purchaseCask";
-      response.args = [tokenId.toString()];
-      response.abi = ["function purchaseCask(uint256 tokenId) external payable"];
-    } else if (txData.method === "purchaseCaskWithToken") {
+    if (txData.method === "purchaseCaskWithToken") {
       response.txType = "erc20_marketplace";
       response.to = marketplaceAddress;
       response.functionName = "purchaseCaskWithToken";
       response.args = [tokenId.toString()];
       response.abi = ["function purchaseCaskWithToken(uint256 tokenId) external"];
-    } else if (txData.method === "direct_transfer") {
-      response.txType = "native_direct";
-      response.to = txData.to;
-      response.value = txData.value.toString();
     } else if (txData.method === "direct_erc20_transfer") {
       response.txType = "erc20_direct";
       response.tokenAddress = txData.tokenAddress;
@@ -333,7 +299,7 @@ serve(async (req) => {
       totalUsd: totalPriceDollars,
       platformFeeUsd: platformFeeDollars,
       sellerAmountUsd: sellerAmountDollars,
-      paymentToken: paymentTokenAddress === ethers.ZeroAddress ? "MATIC" : paymentMethod.toUpperCase(),
+      paymentToken: paymentMethod.toUpperCase(),
       paymentTokenAddress: paymentTokenAddress,
     };
 
