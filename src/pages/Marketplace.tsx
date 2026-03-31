@@ -504,15 +504,6 @@ const Marketplace = () => {
                     </>
                   )}
                   
-                  {listing.is_resale && listing.roi !== undefined && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Potential ROI</span>
-                      <span className={`font-semibold flex items-center gap-1 ${listing.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {listing.roi >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingUp className="h-3 w-3 rotate-180" />}
-                        {listing.roi.toFixed(1)}%
-                      </span>
-                    </div>
-                  )}
                   
                   <div className="text-xs text-muted-foreground space-y-1">
                     <div className="flex items-center gap-1">
