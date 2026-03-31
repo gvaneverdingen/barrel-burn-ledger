@@ -69,7 +69,7 @@ const CaskTransactionHistory = ({ caskId }: CaskTransactionHistoryProps) => {
   const statusBadge = (status: string | null) => {
     switch (status) {
       case "completed":
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Completed</Badge>;
+        return <Badge className="bg-primary/10 text-primary border-primary/20">Completed</Badge>;
       case "pending":
         return <Badge variant="secondary">Pending</Badge>;
       case "failed":

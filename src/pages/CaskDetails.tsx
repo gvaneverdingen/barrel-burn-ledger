@@ -30,6 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NftStatusCard from "@/components/NftStatusCard";
 import { SellCaskDialog } from "@/components/SellCaskDialog";
 import { PaymentMethodDialog } from "@/components/PaymentMethodDialog";
+import CaskTransactionHistory from "@/components/CaskTransactionHistory";
 
 interface CaskDetails {
   id: string;
