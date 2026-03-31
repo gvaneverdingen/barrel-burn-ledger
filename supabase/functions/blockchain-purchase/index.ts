@@ -175,33 +175,9 @@ serve(async (req) => {
     
     // Build transaction data based on payment method
     let txData: any;
-    let paymentTokenAddress = ethers.ZeroAddress;
 
-    if (paymentMethod === "native") {
-      // Native MATIC payment
-      // Convert USD price to MATIC equivalent (simplified — in production use Chainlink oracle)
-      // For testnet, we use a fixed rate: 1 MATIC ≈ $0.50
-      const maticPrice = 0.50; // USD per MATIC — would use oracle in production
-      const maticAmount = totalPriceDollars / maticPrice;
-      const weiAmount = ethers.parseEther(maticAmount.toFixed(18));
-
-      // If listed on-chain, use marketplace contract
-      if (listing.active) {
-        txData = {
-          method: "purchaseCask",
-          args: [tokenId],
-          value: listing.price,
-        };
-      } else {
-        // Direct transfer to platform wallet — platform handles distribution off-chain
-        txData = {
-          method: "direct_transfer",
-          to: Deno.env.get("PLATFORM_WALLET_ADDRESS"),
-          value: weiAmount,
-        };
-      }
-    } else {
-      // ERC20 stablecoin payment
+    // ERC20 stablecoin payment
+    {
       const tokenAddress = STABLECOIN_ADDRESSES[paymentMethod];
       if (!tokenAddress) throw new Error(`Unsupported token: ${paymentMethod}`);
       
