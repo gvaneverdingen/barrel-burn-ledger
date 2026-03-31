@@ -33,13 +33,6 @@ const paymentOptions: { id: PaymentMethod; label: string; icon: any; description
     badge: "Fiat",
   },
   {
-    id: "native",
-    label: "MATIC / POL",
-    icon: Coins,
-    description: "Pay with native Polygon token",
-    badge: "Crypto",
-  },
-  {
     id: "usdc",
     label: "USDC Stablecoin",
     icon: Coins,
