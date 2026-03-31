@@ -158,7 +158,7 @@ serve(async (req) => {
     const sellerAmount = distilleryFee;
     const sellerId = cask.distillery.profile_id;
 
-    console.log("Transaction calculations completed");
+    console.log("Fee calculations:", { totalAmount, arigiPlatformFee, transactionFee, distilleryFee, sellerAmount });
 
     const transactionData = {
       buyer_id: user.id,
