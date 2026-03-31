@@ -224,9 +224,6 @@ const Marketplace = () => {
         })
         .map(listing => {
           const cask = listing.cask_ownership!.casks!;
-          const roi = listing.cask_ownership?.acquisition_price 
-            ? ((listing.total_asking_price - listing.cask_ownership.acquisition_price) / listing.cask_ownership.acquisition_price) * 100
-            : 0;
 
           return {
             id: listing.id,
