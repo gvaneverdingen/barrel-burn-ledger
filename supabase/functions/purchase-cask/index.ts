@@ -110,25 +110,14 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    // Calculate platform fee (5%)
-    const platformFeePercent = 0.05;
-    const platformFee = Math.round(sale.total_asking_price * platformFeePercent * 100); // in cents
-    const totalAmount = Math.round(sale.total_asking_price * 100); // in cents
-    const sellerAmount = totalAmount - platformFee;
-
-    // Check if buyer has Stripe customer
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-    }
-
-    // Determine frontend base URL from request origin or environment
-    const originHeader = req.headers.get("origin");
-    const frontendBaseUrl = (originHeader && originHeader.startsWith("http"))
-      ? originHeader
-      : (Deno.env.get("FRONTEND_URL") || (isDev ? "http://localhost:5173" : "http://localhost:5173"));
-    const normalizedBaseUrl = frontendBaseUrl.replace(/\/$/, "");
+    // Resale fee structure: 5% platform fee, 95% to seller
+    // (Primary sales use 10% platform + 1.5% transaction = 11.5% total in create-payment)
+    const totalAmountDollars = sale.total_asking_price;
+    const platformFeeRate = 0.05;
+    const platformFeeDollars = Math.round(totalAmountDollars * platformFeeRate * 100) / 100;
+    const transactionFeeDollars = platformFeeDollars; // For resales, the entire fee is the platform fee
+    const sellerAmountDollars = Math.round((totalAmountDollars - platformFeeDollars) * 100) / 100;
+    const totalAmountCents = Math.round(totalAmountDollars * 100);
 
     // Create transaction record FIRST (before checkout session)
     const { data: transaction, error: transactionError } = await supabaseService
@@ -139,11 +128,11 @@ serve(async (req) => {
         seller_id: sale.seller_id,
         volume_liters: sale.volume_for_sale_liters,
         price_per_liter: sale.asking_price_per_liter,
-        total_amount: sale.total_asking_price,
-        transaction_fee: platformFee / 100,
-        platform_fee: platformFee / 100,
-        distillery_fee: 0,
-        seller_amount: sellerAmount / 100,
+        total_amount: totalAmountDollars,
+        transaction_fee: transactionFeeDollars,  // Total fees deducted (5%)
+        platform_fee: platformFeeDollars,         // ARIGI platform's cut (5%)
+        distillery_fee: 0,                        // No distillery fee on resales
+        seller_amount: sellerAmountDollars,        // 95% to seller
         transaction_type: "purchase",
         sale_listing_id: saleId,
         status: "pending",
@@ -168,7 +157,7 @@ serve(async (req) => {
               name: `${sale.cask_ownership.casks.spirit_name}`,
               description: `${sale.volume_for_sale_liters}L cask - ${sale.cask_ownership.casks.distilleries.name}`,
             },
-            unit_amount: totalAmount,
+            unit_amount: totalAmountCents,
           },
           quantity: 1,
         },
