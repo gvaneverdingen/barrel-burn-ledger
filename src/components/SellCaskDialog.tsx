@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { DollarSign, Package, Calendar, ShieldAlert, ShieldCheck } from "lucide-react";
+import { DollarSign, Package, Calendar, ShieldAlert, ShieldCheck, Info } from "lucide-react";
 
 interface CaskOwnership {
   id: string;
@@ -154,10 +155,23 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
           {!isMinted && (
             <div className="mb-4 p-4 rounded-lg bg-destructive/10 border border-destructive/30 flex items-start gap-3">
               <ShieldAlert className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
-              <div>
-                <p className="font-semibold text-destructive text-sm">NFT Not Minted</p>
+              <div className="flex-1">
+                <div className="flex items-center gap-1.5">
+                  <p className="font-semibold text-destructive text-sm">NFT Not Minted</p>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3.5 w-3.5 text-destructive/70 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[280px] text-xs leading-relaxed">
+                        <p className="font-semibold mb-1">Why is minting required?</p>
+                        <p>Every cask must be minted as an NFT on the Polygon blockchain before it can be sold. This creates a permanent, tamper-proof record of ownership and provenance — ensuring full transparency for buyers and regulatory compliance. Contact your distillery to initiate minting.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  This cask must be minted as an NFT before it can be listed for sale. All transactions must be transparently recorded on the blockchain.
+                  This cask must be minted as an NFT before it can be listed for sale.
                 </p>
               </div>
             </div>
@@ -166,6 +180,16 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
             <div className="mb-4 p-3 rounded-lg bg-green-500/10 border border-green-500/30 flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-green-500" />
               <span className="text-xs text-green-600 dark:text-green-400 font-medium">Blockchain provenance verified — ready to list</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3.5 w-3.5 text-green-500/70 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[280px] text-xs leading-relaxed">
+                    <p>This cask has been minted on the Polygon blockchain, creating an immutable record of its origin, age, and ownership history. All future transactions will be transparently logged on-chain.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           )}
           <form onSubmit={handleSubmit} className="space-y-6">
