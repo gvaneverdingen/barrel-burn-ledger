@@ -153,6 +153,20 @@ const CaskDetails = () => {
     return () => clearTimeout(timeoutId);
   }, [id]);
 
+  // Fetch user's wallet address
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase
+      .from('wallets')
+      .select('wallet_address')
+      .eq('user_id', user.id)
+      .eq('is_primary', true)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setUserWalletAddress(data.wallet_address);
+      });
+  }, [user?.id]);
+
   useEffect(() => {
     console.log('[CaskDetails] Secondary effect for permissions/offers', {
       hasCask: !!cask,
