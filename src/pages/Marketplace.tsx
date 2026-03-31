@@ -313,8 +313,6 @@ const Marketplace = () => {
           return (a.total_price || 0) - (b.total_price || 0);
         case 'name':
           return a.spirit_name.localeCompare(b.spirit_name);
-        case 'roi':
-          return (b.roi || 0) - (a.roi || 0);
         default:
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       }
