@@ -30,7 +30,7 @@ const CASKNFT_ABI = [
 
 const RequestSchema = z.object({
   saleId: z.string().uuid("Invalid sale ID"),
-  paymentMethod: z.enum(["native", "usdc", "usdt"]),
+  paymentMethod: z.enum(["usdc", "usdt"]),
   walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid wallet address"),
 });
 
