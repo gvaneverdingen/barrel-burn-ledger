@@ -29,6 +29,7 @@ import { MakeOfferDialog } from "@/components/MakeOfferDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NftStatusCard from "@/components/NftStatusCard";
 import { SellCaskDialog } from "@/components/SellCaskDialog";
+import { PaymentMethodDialog } from "@/components/PaymentMethodDialog";
 
 interface CaskDetails {
   id: string;
@@ -102,6 +103,8 @@ const CaskDetails = () => {
   const [sellDialogOpen, setSellDialogOpen] = useState(false);
   const [ownershipData, setOwnershipData] = useState<any>(null);
   const [hasActiveSale, setHasActiveSale] = useState(false);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [userWalletAddress, setUserWalletAddress] = useState<string | null>(null);
 
   const isAdmin = userRole === 'administrator';
 
@@ -149,6 +152,20 @@ const CaskDetails = () => {
 
     return () => clearTimeout(timeoutId);
   }, [id]);
+
+  // Fetch user's wallet address
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase
+      .from('wallets')
+      .select('wallet_address')
+      .eq('user_id', user.id)
+      .eq('is_primary', true)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setUserWalletAddress(data.wallet_address);
+      });
+  }, [user?.id]);
 
   useEffect(() => {
     console.log('[CaskDetails] Secondary effect for permissions/offers', {
@@ -1165,7 +1182,7 @@ const CaskDetails = () => {
                 {user && effectiveUserRole !== "distillery" && !isOwnerSale && !effectiveIsOwner && (
                   <Button 
                     className="w-full" 
-                    onClick={handlePurchaseClick}
+                    onClick={() => setPaymentDialogOpen(true)}
                     size="lg"
                     disabled={purchasing}
                   >
@@ -1596,6 +1613,20 @@ const CaskDetails = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {cask && (
+        <PaymentMethodDialog
+          open={paymentDialogOpen}
+          onOpenChange={setPaymentDialogOpen}
+          caskName={cask.spirit_name}
+          totalPrice={cask.total_price || 0}
+          saleId={activeSaleId}
+          caskId={cask.id}
+          isPrimary={!cask.is_sale_listing}
+          onStripeCheckout={handlePurchaseClick}
+          walletAddress={userWalletAddress}
+        />
+      )}
     </div>
   );
 };
