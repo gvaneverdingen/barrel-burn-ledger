@@ -284,10 +284,6 @@ serve(async (req) => {
       response.functionName = "purchaseCaskWithToken";
       response.args = [tokenId.toString()];
       response.abi = ["function purchaseCaskWithToken(uint256 tokenId) external"];
-    } else if (txData.method === "direct_transfer") {
-      response.txType = "native_direct";
-      response.to = txData.to;
-      response.value = txData.value.toString();
     } else if (txData.method === "direct_erc20_transfer") {
       response.txType = "erc20_direct";
       response.tokenAddress = txData.tokenAddress;
