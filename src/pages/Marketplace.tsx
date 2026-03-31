@@ -112,7 +112,7 @@ const Marketplace = () => {
   const [allListings, setAllListings] = useState<UnifiedListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'price' | 'date' | 'name' | 'roi'>('date');
+  const [sortBy, setSortBy] = useState<'price' | 'date' | 'name'>('date');
   const [filterType, setFilterType] = useState<'all' | 'scotch' | 'bourbon' | 'irish' | 'resale'>('all');
   const [maxPrice, setMaxPrice] = useState<number | ''>('');
   const [selectedTab, setSelectedTab] = useState('marketplace');
