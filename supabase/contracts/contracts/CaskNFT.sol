@@ -85,7 +85,7 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
      * @param specialFinish Special finishing info
      * @param region Production region
      * @param isSingleBarrel Whether this is single barrel
-     * @param tokenURI IPFS URI for metadata
+     * @param metadataURI IPFS URI for metadata
      */
     function mintCask(
         address to,
@@ -102,7 +102,7 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         string memory specialFinish,
         string memory region,
         bool isSingleBarrel,
-        string memory tokenURI
+        string memory metadataURI
     ) public onlyOwner returns (uint256) {
         require(bytes(caskId).length > 0, "CaskNFT: Cask ID cannot be empty");
         require(!mintedCaskIds[caskId], "CaskNFT: Cask already minted");
@@ -114,7 +114,7 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         _nextTokenId += 1;
 
         _safeMint(to, tokenId);
-        _setTokenURI(tokenId, tokenURI);
+        _setTokenURI(tokenId, metadataURI);
 
         // Store mappings
         mintedCaskIds[caskId] = true;
