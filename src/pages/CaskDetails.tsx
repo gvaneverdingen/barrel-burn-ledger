@@ -103,6 +103,8 @@ const CaskDetails = () => {
   const [sellDialogOpen, setSellDialogOpen] = useState(false);
   const [ownershipData, setOwnershipData] = useState<any>(null);
   const [hasActiveSale, setHasActiveSale] = useState(false);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [userWalletAddress, setUserWalletAddress] = useState<string | null>(null);
 
   const isAdmin = userRole === 'administrator';
 
