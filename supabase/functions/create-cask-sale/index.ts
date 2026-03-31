@@ -146,7 +146,7 @@ serve(async (req) => {
     // Validate the ownership record belongs to the user and has enough volume
     const { data: ownership, error: ownershipError } = await supabaseClient
       .from("cask_ownership")
-      .select("*")
+      .select("*, casks(blockchain_hash, nft_token_id, spirit_name)")
       .eq("id", ownershipId)
       .eq("owner_id", authenticatedUserId)
       .eq("is_active", true)
@@ -155,6 +155,11 @@ serve(async (req) => {
     if (ownershipError || !ownership) {
       console.error("Ownership validation error:", ownershipError);
       throw new Error("Invalid ownership record or insufficient permissions");
+    }
+
+    // Require NFT minting before sale - ensures blockchain provenance
+    if (!ownership.casks?.blockchain_hash) {
+      throw new Error("This cask must be minted as an NFT before it can be listed for sale. All transactions must be recorded on the blockchain for transparency.");
     }
 
     if (ownership.volume_liters < volumeForSale) {
