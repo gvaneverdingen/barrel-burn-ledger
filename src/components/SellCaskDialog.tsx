@@ -136,6 +136,7 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
 
   if (!ownership) return null;
 
+  const isMinted = !!ownership.casks?.blockchain_hash;
   const displayTotal = totalAskingPrice ? parseFloat(totalAskingPrice) : 0;
 
   return (
