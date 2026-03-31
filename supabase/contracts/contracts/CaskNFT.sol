@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 /**
  * @title CaskNFT
@@ -13,19 +12,20 @@ import "@openzeppelin/contracts/utils/Counters.sol";
  * Each cask is a unique NFT with metadata stored on IPFS
  */
 contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
-    using Counters for Counters.Counter;
-    
-    Counters.Counter private _tokenIdCounter;
-    
+    uint256 private _nextTokenId;
+
     // Mapping from cask ID (UUID) to token ID
     mapping(string => uint256) public caskIdToTokenId;
-    
+
+    // Tracks whether a cask ID has already been minted
+    mapping(string => bool) private mintedCaskIds;
+
     // Mapping from token ID to cask ID
     mapping(uint256 => string) public tokenIdToCaskId;
-    
+
     // Mapping from token ID to distillery address
     mapping(uint256 => address) public tokenIdToDistillery;
-    
+
     // Cask metadata structure
     struct CaskMetadata {
         string caskId;
@@ -45,10 +45,10 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         bool isSingleBarrel;
         bool exists;
     }
-    
+
     // Mapping from token ID to cask metadata
     mapping(uint256 => CaskMetadata) public caskMetadata;
-    
+
     // Events
     event CaskMinted(
         uint256 indexed tokenId,
@@ -59,16 +59,16 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         string caskNumber,
         uint8 rarityTier
     );
-    
+
     event CaskTransferred(
         uint256 indexed tokenId,
         address indexed from,
         address indexed to,
         uint256 price
     );
-    
+
     constructor() ERC721("Angel Share Cask", "ASCASK") Ownable(msg.sender) {}
-    
+
     /**
      * @dev Mint a new cask NFT
      * @param to Address to mint the NFT to
@@ -105,22 +105,23 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         string memory tokenURI
     ) public onlyOwner returns (uint256) {
         require(bytes(caskId).length > 0, "CaskNFT: Cask ID cannot be empty");
-        require(caskIdToTokenId[caskId] == 0, "CaskNFT: Cask already minted");
+        require(!mintedCaskIds[caskId], "CaskNFT: Cask already minted");
         require(to != address(0), "CaskNFT: Cannot mint to zero address");
         require(distillery != address(0), "CaskNFT: Invalid distillery address");
         require(rarityTier >= 1 && rarityTier <= 5, "CaskNFT: Invalid rarity tier");
-        
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
-        
+
+        uint256 tokenId = _nextTokenId;
+        _nextTokenId += 1;
+
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, tokenURI);
-        
+
         // Store mappings
+        mintedCaskIds[caskId] = true;
         caskIdToTokenId[caskId] = tokenId;
         tokenIdToCaskId[tokenId] = caskId;
         tokenIdToDistillery[tokenId] = distillery;
-        
+
         // Store metadata
         caskMetadata[tokenId] = CaskMetadata({
             caskId: caskId,
@@ -139,21 +140,20 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
             isSingleBarrel: isSingleBarrel,
             exists: true
         });
-        
+
         emit CaskMinted(tokenId, caskId, distillery, to, spiritName, caskNumber, rarityTier);
-        
+
         return tokenId;
     }
-    
+
     /**
      * @dev Get token ID for a cask ID
      */
     function getTokenIdByCaskId(string memory caskId) public view returns (uint256) {
-        uint256 tokenId = caskIdToTokenId[caskId];
-        require(tokenId != 0 || _ownerOf(0) != address(0), "CaskNFT: Cask not minted");
-        return tokenId;
+        require(mintedCaskIds[caskId], "CaskNFT: Cask not minted");
+        return caskIdToTokenId[caskId];
     }
-    
+
     /**
      * @dev Get cask metadata
      */
@@ -161,14 +161,14 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         require(caskMetadata[tokenId].exists, "CaskNFT: Token does not exist");
         return caskMetadata[tokenId];
     }
-    
+
     /**
      * @dev Get distillery for a token
      */
     function getDistillery(uint256 tokenId) public view returns (address) {
         return tokenIdToDistillery[tokenId];
     }
-    
+
     /**
      * @dev Override transfer to emit custom event with price
      */
@@ -181,7 +181,7 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         safeTransferFrom(from, to, tokenId);
         emit CaskTransferred(tokenId, from, to, price);
     }
-    
+
     // Required overrides
     function tokenURI(uint256 tokenId)
         public
@@ -191,7 +191,7 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
     {
         return super.tokenURI(tokenId);
     }
-    
+
     function supportsInterface(bytes4 interfaceId)
         public
         view
