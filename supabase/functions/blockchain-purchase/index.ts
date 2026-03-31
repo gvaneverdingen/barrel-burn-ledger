@@ -237,6 +237,8 @@ serve(async (req) => {
       }
     }
 
+    const paymentTokenAddress = STABLECOIN_ADDRESSES[paymentMethod] ?? ethers.ZeroAddress;
+
     // Create a pending transaction in the database
     const platformFeeRate = 0.05;
     const platformFeeDollars = Math.round(totalPriceDollars * platformFeeRate * 100) / 100;
