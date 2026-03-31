@@ -342,7 +342,7 @@ export const PaymentMethodDialog = ({
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Payment</span>
                 <Badge variant="outline" className="text-xs">
-                  {selectedMethod === "native" ? "MATIC" : selectedMethod?.toUpperCase()}
+                  {selectedMethod?.toUpperCase()}
                 </Badge>
               </div>
               <div className="flex justify-between">
