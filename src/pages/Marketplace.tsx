@@ -245,7 +245,6 @@ const Marketplace = () => {
             seller_id: listing.seller_id,
             ownership_id: listing.ownership_id,
             acquisition_price: listing.cask_ownership?.acquisition_price,
-            roi: roi,
             blockchain_hash: cask.blockchain_hash,
             seller_name: listing.profiles 
               ? `${listing.profiles.first_name} ${listing.profiles.last_name}` 
