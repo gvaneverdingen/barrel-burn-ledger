@@ -1097,6 +1097,9 @@ const CaskDetails = () => {
               canMint={canManageImages && !cask.nft_token_id}
             />
 
+            {/* Transaction History */}
+            <CaskTransactionHistory caskId={cask.id} />
+
             {/* Blockchain ID */}
             <Card>
               <CardHeader>
