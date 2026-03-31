@@ -150,6 +150,24 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
         </DialogHeader>
 
         <div className="mt-4 max-h-[70vh] overflow-y-auto pr-1">
+          {/* NFT Minting Status */}
+          {!isMinted && (
+            <div className="mb-4 p-4 rounded-lg bg-destructive/10 border border-destructive/30 flex items-start gap-3">
+              <ShieldAlert className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
+              <div>
+                <p className="font-semibold text-destructive text-sm">NFT Not Minted</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  This cask must be minted as an NFT before it can be listed for sale. All transactions must be transparently recorded on the blockchain.
+                </p>
+              </div>
+            </div>
+          )}
+          {isMinted && (
+            <div className="mb-4 p-3 rounded-lg bg-green-500/10 border border-green-500/30 flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-green-500" />
+              <span className="text-xs text-green-600 dark:text-green-400 font-medium">Blockchain provenance verified — ready to list</span>
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Cask Info Summary */}
             <div className="p-4 rounded-lg bg-muted/30 space-y-2">
