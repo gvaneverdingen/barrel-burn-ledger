@@ -225,16 +225,63 @@ serve(async (req) => {
       // Create payout record and process Stripe Connect transfer if available
       if (isResale) {
         console.log("Creating payout record for resale transaction");
+        const payoutAmount = transaction.seller_amount || (transaction.total_amount * 0.95); // 95% to seller
+        let resalePayoutStatus = 'pending_payout';
+
+        // Check if the seller has a Stripe Connect account (as a distillery)
+        const { data: sellerDistillery } = await supabaseService
+          .from('distilleries')
+          .select('id, name, stripe_account_id, stripe_onboarding_complete')
+          .eq('profile_id', transaction.seller_id)
+          .single();
+
+        // Try Stripe Connect transfer if seller has a connected account
+        if (sellerDistillery?.stripe_account_id && sellerDistillery?.stripe_onboarding_complete && session.payment_intent) {
+          try {
+            console.log("Creating Stripe Connect transfer to resale seller account:", sellerDistillery.stripe_account_id);
+            
+            const transfer = await stripe.transfers.create({
+              amount: Math.round(payoutAmount * 100), // Convert to cents
+              currency: 'usd',
+              destination: sellerDistillery.stripe_account_id,
+              transfer_group: `transaction_${transactionId}`,
+              source_transaction: session.payment_intent as string,
+              metadata: {
+                transaction_id: transactionId,
+                seller_id: transaction.seller_id,
+                cask_id: caskId,
+                type: 'resale_payout',
+              },
+            });
+
+            console.log("Resale Stripe Connect transfer created:", transfer.id);
+            resalePayoutStatus = 'transferred';
+
+            // Update transaction with transfer ID
+            await supabaseService
+              .from('transactions')
+              .update({ stripe_transfer_id: transfer.id })
+              .eq('id', transactionId);
+
+          } catch (transferError) {
+            console.error("Error creating resale Stripe Connect transfer:", transferError);
+            // Fall back to pending_payout
+          }
+        } else {
+          console.log("Resale seller does not have Stripe Connect set up, payout will be manual");
+        }
+
         const { data: payoutData, error: payoutError } = await supabaseService
           .from('payouts')
           .insert({
             transaction_id: transactionId,
             recipient_id: transaction.seller_id,
-            recipient_type: 'user',
-            amount: transaction.seller_amount || transaction.total_amount,
+            recipient_type: sellerDistillery ? 'distillery' : 'user',
+            amount: payoutAmount,
             fee_type: 'resale_payout',
-            status: 'pending_payout',
-            description: `Secondary market sale of cask ${transaction.cask.cask_number}`
+            status: resalePayoutStatus,
+            description: `Secondary market sale of cask ${transaction.cask.cask_number}`,
+            processed_at: resalePayoutStatus === 'transferred' ? new Date().toISOString() : null,
           })
           .select();
 
