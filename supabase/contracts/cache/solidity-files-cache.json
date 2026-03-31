@@ -47,8 +47,8 @@
       ]
     },
     "/dev-server/supabase/contracts/contracts/CaskNFT.sol": {
-      "lastModificationDate": 1774986651262,
-      "contentHash": "c2365346f870e5845aad3271fd05b984",
+      "lastModificationDate": 1774986776686,
+      "contentHash": "4674f3a64a979e9c8cb7ed440238fa7a",
       "sourceName": "contracts/CaskNFT.sol",
       "solcConfig": {
         "version": "0.8.27",
