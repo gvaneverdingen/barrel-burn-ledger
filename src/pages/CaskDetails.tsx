@@ -29,6 +29,7 @@ import { MakeOfferDialog } from "@/components/MakeOfferDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NftStatusCard from "@/components/NftStatusCard";
 import { SellCaskDialog } from "@/components/SellCaskDialog";
+import { PaymentMethodDialog } from "@/components/PaymentMethodDialog";
 
 interface CaskDetails {
   id: string;
