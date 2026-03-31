@@ -1613,6 +1613,20 @@ const CaskDetails = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {cask && (
+        <PaymentMethodDialog
+          open={paymentDialogOpen}
+          onOpenChange={setPaymentDialogOpen}
+          caskName={cask.spirit_name}
+          totalPrice={cask.total_price || 0}
+          saleId={activeSaleId}
+          caskId={cask.id}
+          isPrimary={!cask.is_sale_listing}
+          onStripeCheckout={handlePurchaseClick}
+          walletAddress={userWalletAddress}
+        />
+      )}
     </div>
   );
 };
