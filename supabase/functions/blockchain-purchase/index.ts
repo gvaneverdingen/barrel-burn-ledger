@@ -278,14 +278,7 @@ serve(async (req) => {
       isOnChainListing: listing.active,
     };
 
-    if (txData.method === "purchaseCask") {
-      response.txType = "native_marketplace";
-      response.to = marketplaceAddress;
-      response.value = txData.value.toString();
-      response.functionName = "purchaseCask";
-      response.args = [tokenId.toString()];
-      response.abi = ["function purchaseCask(uint256 tokenId) external payable"];
-    } else if (txData.method === "purchaseCaskWithToken") {
+    if (txData.method === "purchaseCaskWithToken") {
       response.txType = "erc20_marketplace";
       response.to = marketplaceAddress;
       response.functionName = "purchaseCaskWithToken";
