@@ -1182,7 +1182,7 @@ const CaskDetails = () => {
                 {user && effectiveUserRole !== "distillery" && !isOwnerSale && !effectiveIsOwner && (
                   <Button 
                     className="w-full" 
-                    onClick={handlePurchaseClick}
+                    onClick={() => setPaymentDialogOpen(true)}
                     size="lg"
                     disabled={purchasing}
                   >
