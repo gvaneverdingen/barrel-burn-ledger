@@ -10,7 +10,6 @@ const corsHeaders = {
 
 // Marketplace ABI (only the functions we need)
 const MARKETPLACE_ABI = [
-  "function purchaseCask(uint256 tokenId) external payable",
   "function purchaseCaskWithToken(uint256 tokenId) external",
   "function getListing(uint256 tokenId) external view returns (tuple(address seller, uint256 price, address paymentToken, bool active, bool isPrimarySale))",
   "function calculateFees(uint256 price, bool isPrimarySale) external pure returns (uint256 platformFee, uint256 distilleryRoyalty, uint256 sellerAmount)",
