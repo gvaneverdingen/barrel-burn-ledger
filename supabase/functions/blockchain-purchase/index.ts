@@ -297,7 +297,7 @@ serve(async (req) => {
       totalUsd: totalPriceDollars,
       platformFeeUsd: platformFeeDollars,
       sellerAmountUsd: sellerAmountDollars,
-      paymentToken: paymentTokenAddress === ethers.ZeroAddress ? "MATIC" : paymentMethod.toUpperCase(),
+      paymentToken: paymentMethod.toUpperCase(),
       paymentTokenAddress: paymentTokenAddress,
     };
 

@@ -158,24 +158,6 @@ contract CaskMarketplace is ReentrancyGuard, Ownable {
     }
     
     /**
-     * @dev Purchase a listed cask with native MATIC/POL
-     * @param tokenId Token ID to purchase
-     */
-    function purchaseCask(uint256 tokenId) external payable nonReentrant {
-        Listing memory listing = listings[tokenId];
-        require(listing.active, "Marketplace: Not listed");
-        require(listing.paymentToken == address(0), "Marketplace: Listing requires ERC20 payment");
-        require(msg.value >= listing.price, "Marketplace: Insufficient payment");
-        
-        _executePurchase(tokenId, listing, msg.sender);
-        
-        // Refund excess native payment
-        if (msg.value > listing.price) {
-            payable(msg.sender).sendValue(msg.value - listing.price);
-        }
-    }
-    
-    /**
      * @dev Purchase a listed cask with an approved ERC20 token
      * Buyer must approve this contract to spend the token amount first
      * @param tokenId Token ID to purchase
