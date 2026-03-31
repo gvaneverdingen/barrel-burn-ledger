@@ -299,10 +299,10 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
               </Button>
               <Button
                 type="submit"
-                disabled={loading || !totalAskingPrice}
+                disabled={loading || !totalAskingPrice || !isMinted}
                 className="luxury-button"
               >
-                {loading ? "Creating Listing..." : "List Full Cask for Sale"}
+                {loading ? "Creating Listing..." : !isMinted ? "NFT Required" : "List Full Cask for Sale"}
               </Button>
             </DialogFooter>
           </form>
