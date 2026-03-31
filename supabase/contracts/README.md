@@ -1,6 +1,6 @@
 # Angel Share Smart Contracts
 
-Smart contracts for tokenizing whisky cask ownership on Polygon blockchain.
+Smart contracts for tokenizing whisky cask ownership on Polygon.
 
 ## Contracts
 
@@ -12,21 +12,15 @@ ERC-721 NFT contract representing individual cask ownership.
 - Metadata stored on-chain and IPFS
 - Distillery tracking for royalties
 - Safe minting with validation
-- **Rarity attributes for collectibility:**
-  - `ageYears`: Current age of the cask
-  - `rarityTier`: 1-5 scale (Common to Legendary)
-  - `caskType`: Type of cask (Ex-Bourbon, Sherry, Port, etc.)
-  - `specialFinish`: Special finishing (Sauternes, Rum Cask, etc.)
-  - `region`: Production region (Speyside, Islay, Highland, etc.)
-  - `isSingleBarrel`: Whether it's a single barrel cask
+- Rarity attributes for collectibility
 
 ### CaskMarketplace.sol
 Marketplace contract for buying and selling cask NFTs.
 
 **Fee Structure:**
-- Platform Fee: 8.5% on all sales
-- Distillery Royalty: 3% on secondary sales
-- Seller Receives: 88.5% (primary) or 85.5% (secondary)
+- Platform fee: 8.5% on all sales
+- Distillery royalty: 3% on secondary sales
+- Seller receives: 88.5% (primary) or 85.5% (secondary)
 
 **Features:**
 - Automated royalty distribution
@@ -36,34 +30,37 @@ Marketplace contract for buying and selling cask NFTs.
 
 ## Setup
 
-1. **Install dependencies:**
+1. **Install dependencies**
 ```bash
 cd supabase/contracts
 npm install
 ```
 
-2. **Configure environment:**
-Create `.env` file:
+2. **Configure environment**
+Create `.env` in `supabase/contracts`:
 ```env
 POLYGON_PRIVATE_KEY=your_private_key_here
-POLYGON_RPC_URL=https://rpc-mumbai.maticvigil.com
+POLYGON_AMOY_RPC_URL=https://rpc-amoy.polygon.technology
+POLYGON_MAINNET_RPC_URL=https://polygon-rpc.com
 PLATFORM_WALLET=your_platform_wallet_address
 POLYGONSCAN_API_KEY=your_polygonscan_api_key
 ```
 
-3. **Compile contracts:**
+> `POLYGON_PRIVATE_KEY` can be provided with or without the `0x` prefix.
+
+3. **Compile contracts**
 ```bash
 npm run compile
 ```
 
 ## Deployment
 
-### Mumbai Testnet (Testing)
+### Polygon Amoy Testnet
 ```bash
-npm run deploy:mumbai
+npm run deploy:amoy
 ```
 
-### Polygon Mainnet (Production)
+### Polygon Mainnet
 ```bash
 npm run deploy:polygon
 ```
@@ -73,33 +70,38 @@ npm run deploy:polygon
 npm run deploy:local
 ```
 
+## Verification
+
+### Verify CaskNFT on Amoy
+```bash
+npm run verify:amoy -- 0x4350D374a9Eebc813bFE1e9548A4A5cF39922EDe
+```
+
+### Verify CaskMarketplace on Amoy
+```bash
+npm run verify:amoy -- 0x689672524DA7F415573A18369FAB3198b9652eFd "0x4350D374a9Eebc813bFE1e9548A4A5cF39922EDe" "0xfDd95A56e68C7236bA6d8047D51eB235B4dB94D8"
+```
+
+If you prefer the network alias, `--network amoy` still works via the custom chain config, but `polygonAmoy` is the native Hardhat network name.
+
 ## After Deployment
 
-1. **Save contract addresses** from deployment output
-
-2. **Add to Supabase Edge Function secrets:**
+1. Save the deployed contract addresses
+2. Update Supabase Edge Function secrets:
 ```bash
 CASK_NFT_CONTRACT_ADDRESS=<deployed_address>
 MARKETPLACE_CONTRACT_ADDRESS=<deployed_address>
 PLATFORM_WALLET_ADDRESS=<wallet_address>
 ```
-
-3. **Verify contracts on PolygonScan:**
-```bash
-npm run verify:mumbai <contract_address> <constructor_args>
-```
-
-4. **Update database migration** to add contract tracking columns
+3. Copy compiled ABIs from `artifacts/`
 
 ## Contract ABIs
 
 After compilation, ABIs are available in:
+```text
+artifacts/contracts/CaskNFT.sol/CaskNFT.json
+artifacts/contracts/CaskMarketplace.sol/CaskMarketplace.json
 ```
-artifacts/CaskNFT.sol/CaskNFT.json
-artifacts/CaskMarketplace.sol/CaskMarketplace.json
-```
-
-Copy these to your edge functions for interaction.
 
 ## Testing
 
@@ -108,31 +110,12 @@ Run contract tests:
 npm test
 ```
 
-## Gas Estimates
+## Security Notes
 
-### Polygon Mumbai (Testnet)
-- Mint Cask NFT: ~150,000 gas (~0.0045 MATIC at 30 gwei)
-- List for Sale: ~80,000 gas (~0.0024 MATIC)
-- Purchase: ~120,000 gas (~0.0036 MATIC)
-
-### Polygon Mainnet
-Gas costs vary with network congestion. Monitor at: https://polygonscan.com/gastracker
-
-## Security Considerations
-
-1. **Private Key Security**: Never commit private keys to version control
-2. **Multi-sig Wallet**: Use multi-sig for contract ownership in production
-3. **Audit**: Get contracts audited before mainnet deployment
-4. **Testing**: Thoroughly test on Mumbai testnet first
-5. **Upgradability**: Consider proxy patterns for future upgrades
-
-## Integration with Edge Functions
-
-The `blockchain-logger` edge function needs to be updated to:
-1. Import contract ABIs
-2. Use `ethers.Contract` instead of raw transactions
-3. Call `mintCask()` for minting
-4. Call marketplace functions for sales
+1. Never commit real private keys
+2. Use a dedicated deployer wallet
+3. Audit contracts before mainnet deployment
+4. Test thoroughly on Amoy before mainnet
 
 ## Support
 
@@ -140,4 +123,4 @@ For issues or questions, contact the development team or open an issue in the re
 
 ## License
 
-MIT License - See LICENSE file for details
+MIT License - See LICENSE file for details.
