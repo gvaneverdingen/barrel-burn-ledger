@@ -146,20 +146,17 @@ serve(async (req) => {
     
     console.log("Cask data retrieved successfully");
 
-    // Calculate fees based on transaction type
-    const totalAmount = amount / 100; // Convert to dollars
-    const arigiPlatformFee = Math.round(totalAmount * 0.10 * 100) / 100; // 10%
-    
-    console.log("Fee calculations:", { totalAmount, arigiPlatformFee });
-    
-    // For now, all sales are treated as primary sales (distillery to investor)
-    const isPrimarySale = true;
-    
-    // Primary market: Distillery → Investor
-    const distilleryFee = Math.round(totalAmount * 0.885 * 100) / 100; // 88.5% to distillery
+    // Primary sale fee structure: 10% platform + 1.5% transaction = 11.5% total, distillery gets 88.5%
+    // (Resale uses 5% platform fee, seller gets 95% — see purchase-cask function)
+    const totalAmount = amount / 100; // Convert from cents to dollars
+    const platformFeeRate = 0.10;
+    const transactionFeeRate = 0.015;
+    const distilleryRate = 0.885;
+    const arigiPlatformFee = Math.round(totalAmount * platformFeeRate * 100) / 100;
+    const transactionFee = Math.round(totalAmount * transactionFeeRate * 100) / 100;
+    const distilleryFee = Math.round(totalAmount * distilleryRate * 100) / 100;
     const sellerAmount = distilleryFee;
-    const transactionFee = Math.round(totalAmount * 0.015 * 100) / 100; // 1.5% transaction fee
-    const sellerId = cask.distillery.profile_id; // The distillery owner is the seller
+    const sellerId = cask.distillery.profile_id;
 
     console.log("Transaction calculations completed");
 
