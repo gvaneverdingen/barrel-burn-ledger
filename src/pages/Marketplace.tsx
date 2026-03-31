@@ -97,7 +97,6 @@ interface UnifiedListing {
   seller_id?: string;
   ownership_id?: string;
   acquisition_price?: number;
-  roi?: number;
   blockchain_hash?: string;
   seller_name?: string;
   last_gauging_date?: string | null;
