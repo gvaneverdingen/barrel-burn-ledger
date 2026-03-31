@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "LowLevelCall",
+  "sourceName": "@openzeppelin/contracts/utils/LowLevelCall.sol",
+  "abi": [],
+  "bytecode": "0x6080806040523460175760399081601c823930815050f35b5f80fdfe5f80fdfea2646970667358221220c2e5cee2bd0df18bf0be8591b8283d86dd542d87440cddea1a843a9cb3ab07a764736f6c634300081b0033",
+  "deployedBytecode": "0x5f80fdfea2646970667358221220c2e5cee2bd0df18bf0be8591b8283d86dd542d87440cddea1a843a9cb3ab07a764736f6c634300081b0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
