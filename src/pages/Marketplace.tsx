@@ -401,7 +401,7 @@ const Marketplace = () => {
                       <SelectItem value="date">Newest First</SelectItem>
                       <SelectItem value="price">Price: Low to High</SelectItem>
                       <SelectItem value="name">Name A-Z</SelectItem>
-                      <SelectItem value="roi">Highest ROI</SelectItem>
+                      
                     </SelectContent>
                   </Select>
                   <Select value={filterType} onValueChange={(value: any) => setFilterType(value)}>
