@@ -30,6 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NftStatusCard from "@/components/NftStatusCard";
 import { SellCaskDialog } from "@/components/SellCaskDialog";
 import { PaymentMethodDialog } from "@/components/PaymentMethodDialog";
+import CaskTransactionHistory from "@/components/CaskTransactionHistory";
 
 interface CaskDetails {
   id: string;
@@ -1095,6 +1096,9 @@ const CaskDetails = () => {
               onMint={handleMintNft}
               canMint={canManageImages && !cask.nft_token_id}
             />
+
+            {/* Transaction History */}
+            <CaskTransactionHistory caskId={cask.id} />
 
             {/* Blockchain ID */}
             <Card>
