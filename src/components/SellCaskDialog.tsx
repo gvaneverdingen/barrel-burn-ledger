@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { DollarSign, Package, Calendar } from "lucide-react";
+import { DollarSign, Package, Calendar, ShieldAlert, ShieldCheck } from "lucide-react";
 
 interface CaskOwnership {
   id: string;
