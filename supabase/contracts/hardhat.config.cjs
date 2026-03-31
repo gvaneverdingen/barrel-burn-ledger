@@ -1,6 +1,22 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
+const normalizePrivateKey = (privateKey) => {
+  if (!privateKey) return [];
+  return [privateKey.startsWith("0x") ? privateKey : `0x${privateKey}`];
+};
+
+const polygonAmoyRpcUrl =
+  process.env.POLYGON_AMOY_RPC_URL ||
+  process.env.POLYGON_RPC_URL ||
+  "https://rpc-amoy.polygon.technology";
+
+const polygonMainnetRpcUrl =
+  process.env.POLYGON_MAINNET_RPC_URL ||
+  "https://polygon-rpc.com";
+
+const accounts = normalizePrivateKey(process.env.POLYGON_PRIVATE_KEY);
+
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: {
@@ -10,31 +26,38 @@ module.exports = {
       viaIR: true,
       optimizer: {
         enabled: true,
-        runs: 200
-      }
-    }
+        runs: 200,
+      },
+    },
   },
   networks: {
     hardhat: {
-      chainId: 1337
+      chainId: 1337,
+    },
+    polygonAmoy: {
+      url: polygonAmoyRpcUrl,
+      accounts,
+      chainId: 80002,
+      gasPrice: 30000000000,
     },
     amoy: {
-      url: process.env.POLYGON_RPC_URL || "https://rpc-amoy.polygon.technology",
-      accounts: process.env.POLYGON_PRIVATE_KEY ? [process.env.POLYGON_PRIVATE_KEY] : [],
+      url: polygonAmoyRpcUrl,
+      accounts,
       chainId: 80002,
-      gasPrice: 30000000000 // 30 gwei
+      gasPrice: 30000000000,
     },
     polygon: {
-      url: process.env.POLYGON_MAINNET_RPC_URL || "https://polygon-rpc.com",
-      accounts: process.env.POLYGON_PRIVATE_KEY ? [process.env.POLYGON_PRIVATE_KEY] : [],
+      url: polygonMainnetRpcUrl,
+      accounts,
       chainId: 137,
-      gasPrice: 50000000000 // 50 gwei
-    }
+      gasPrice: 50000000000,
+    },
   },
   etherscan: {
     apiKey: {
+      polygonAmoy: process.env.POLYGONSCAN_API_KEY || "",
       amoy: process.env.POLYGONSCAN_API_KEY || "",
-      polygon: process.env.POLYGONSCAN_API_KEY || ""
+      polygon: process.env.POLYGONSCAN_API_KEY || "",
     },
     customChains: [
       {
@@ -42,15 +65,18 @@ module.exports = {
         chainId: 80002,
         urls: {
           apiURL: "https://api-amoy.polygonscan.com/api",
-          browserURL: "https://amoy.polygonscan.com"
-        }
-      }
-    ]
+          browserURL: "https://amoy.polygonscan.com",
+        },
+      },
+    ],
+  },
+  sourcify: {
+    enabled: false,
   },
   paths: {
     sources: "./contracts",
     tests: "./test",
     cache: "./cache",
-    artifacts: "./artifacts"
-  }
+    artifacts: "./artifacts",
+  },
 };
