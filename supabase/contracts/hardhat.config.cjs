@@ -60,7 +60,7 @@ module.exports = {
         network: "polygonAmoy",
         chainId: 80002,
         urls: {
-          apiURL: "https://api-amoy.polygonscan.com/api",
+          apiURL: "https://api.etherscan.io/v2/api",
           browserURL: "https://amoy.polygonscan.com",
         },
       },
