@@ -48,9 +48,9 @@ Then edit `.env` and fill in the following:
 
 ### Optional Variables:
 
-4. **POLYGONSCAN_API_KEY**
-   - For contract verification on PolygonScan
-   - Get from: https://polygonscan.com/apis
+4. **ETHERSCAN_API_KEY**
+   - Single Etherscan API V2 key used by Hardhat Verify for Polygon Amoy and Polygon mainnet
+   - Get from: https://etherscan.io/apis
    - Not required but recommended
 
 ---
@@ -187,7 +187,7 @@ The `blockchain-logger` edge function will automatically interact with your depl
 - **Solution**: Check your `.env` file - ensure POLYGON_PRIVATE_KEY has no spaces or 0x prefix
 
 ### Error: "Invalid API Key"
-- **Solution**: Verify your POLYGONSCAN_API_KEY or skip verification step
+- **Solution**: Verify your ETHERSCAN_API_KEY or skip verification step
 
 ### Gas Price Too Low
 - **Solution**: Increase `gasPrice` in `hardhat.config.js` (currently 30 gwei)

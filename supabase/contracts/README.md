@@ -43,10 +43,11 @@ POLYGON_PRIVATE_KEY=your_private_key_here
 POLYGON_AMOY_RPC_URL=https://rpc-amoy.polygon.technology
 POLYGON_MAINNET_RPC_URL=https://polygon-rpc.com
 PLATFORM_WALLET=your_platform_wallet_address
-POLYGONSCAN_API_KEY=your_polygonscan_api_key
+ETHERSCAN_API_KEY=your_etherscan_api_key
 ```
 
 > `POLYGON_PRIVATE_KEY` can be provided with or without the `0x` prefix.
+> Hardhat Verify uses Etherscan API V2 for both Polygon Amoy and Polygon mainnet; `polygonAmoy` is natively supported, so no custom explorer chain config is required.
 
 3. **Compile contracts**
 ```bash
