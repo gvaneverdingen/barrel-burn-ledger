@@ -54,7 +54,7 @@ module.exports = {
     },
   },
   etherscan: {
-    apiKey: process.env.POLYGONSCAN_API_KEY || "",
+    apiKey: process.env.POLYGONSCAN_API_KEY || "PMVWKJI1HDPKSHUAJ7ZXUA2K5XC4H7JM7P",
     customChains: [
       {
         network: "polygonAmoy",
