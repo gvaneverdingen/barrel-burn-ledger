@@ -67,3 +67,28 @@ module.exports = {
     artifacts: "./artifacts",
   },
 };
+
+{
+  "name": "angel-share-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for Angel Share cask NFT marketplace",
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy:amoy": "hardhat run deploy.cjs --network polygonAmoy",
+    "deploy:polygon": "hardhat run deploy.cjs --network polygon",
+    "deploy:local": "hardhat run deploy.cjs --network hardhat",
+    "test": "hardhat test",
+    "verify:amoy": "hardhat verify --network polygonAmoy",
+    "verify:polygon": "hardhat verify --network polygon"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.1.0",
+    "@nomicfoundation/hardhat-verify": "2.1.3",
+    "ethers": "^6.4.0",
+    "hardhat": "^2.22.8"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0",
+    "dotenv": "^16.3.1"
+  }
+}
