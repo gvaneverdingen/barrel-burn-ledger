@@ -126,16 +126,6 @@ const Portfolio = () => {
   const [saleToCancel, setSaleToCancel] = useState<string | null>(null);
   const [cancellingSale, setCancellingSale] = useState(false);
 
-  // Add immediate debug logging
-  console.log('🟢 Portfolio - Initial state:', { user: !!user, authLoading, loading });
-  console.log("=== PORTFOLIO COMPONENT RENDER ===");
-  console.log("User object:", user);
-  console.log("User ID:", user?.id);
-  console.log("User email:", user?.email);
-  console.log("Is user truthy:", !!user);
-  
-  // Force render this info on screen for debugging
-  const debugInfo = `User ID: ${user?.id || 'null'}, Email: ${user?.email || 'null'}`;
 
   useEffect(() => {
     if (user?.id) { // Check for user.id specifically, not just user
