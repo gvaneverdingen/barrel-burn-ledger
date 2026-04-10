@@ -7,6 +7,7 @@ import { CreditCard, Download, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { SignInPrompt } from "@/components/SignInPrompt";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -87,6 +88,27 @@ const Transactions = () => {
         return <Badge variant="outline">{status}</Badge>;
     }
   };
+
+  if (!user) {
+    return (
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center gap-2 px-4 border-b">
+            <SidebarTrigger className="-ml-1" />
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              <h1 className="text-xl font-semibold">Transactions</h1>
+            </div>
+          </header>
+          <SignInPrompt
+            title="Sign in to view transactions"
+            description="You need to be signed in to view your transaction history."
+          />
+        </SidebarInset>
+      </SidebarProvider>
+    );
+  }
 
   return (
     <SidebarProvider>

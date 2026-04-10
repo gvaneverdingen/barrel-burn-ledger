@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { HandCoins, Send, Clock, CheckCircle, XCircle, MessageSquare } from 'lucide-react';
 import { LoadingSpinner } from './ui/loading-spinner';
+import { SignInPrompt } from './SignInPrompt';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -332,9 +333,10 @@ export const OffersPanel = () => {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-muted-foreground">Please sign in to view and manage your offers.</p>
-      </div>
+      <SignInPrompt
+        title="Sign in to manage offers"
+        description="You need to be signed in to view and manage your offers."
+      />
     );
   }
 
