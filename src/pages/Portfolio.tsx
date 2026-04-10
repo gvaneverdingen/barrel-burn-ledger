@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { calculatePricePerLPA, calculateLPA, formatLPA } from '@/utils/lpaCalculations';
+import { calculateLPA, formatLPA } from '@/utils/lpaCalculations';
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,10 +19,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { TrendingUp, TrendingDown, Package, DollarSign, Calendar, MapPin, ShoppingCart, X, Store, Loader2, Eye } from "lucide-react";
+import { TrendingUp, TrendingDown, Package, DollarSign, Calendar, MapPin, X, Store, Loader2, Eye } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { SellCaskDialog } from "@/components/SellCaskDialog";
+import { SignInPrompt } from "@/components/SignInPrompt";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
@@ -126,16 +127,6 @@ const Portfolio = () => {
   const [saleToCancel, setSaleToCancel] = useState<string | null>(null);
   const [cancellingSale, setCancellingSale] = useState(false);
 
-  // Add immediate debug logging
-  console.log('🟢 Portfolio - Initial state:', { user: !!user, authLoading, loading });
-  console.log("=== PORTFOLIO COMPONENT RENDER ===");
-  console.log("User object:", user);
-  console.log("User ID:", user?.id);
-  console.log("User email:", user?.email);
-  console.log("Is user truthy:", !!user);
-  
-  // Force render this info on screen for debugging
-  const debugInfo = `User ID: ${user?.id || 'null'}, Email: ${user?.email || 'null'}`;
 
   useEffect(() => {
     if (user?.id) { // Check for user.id specifically, not just user
@@ -342,7 +333,6 @@ const Portfolio = () => {
   };
 
   if (!user) {
-    console.log("=== NO USER - SHOWING LOGIN MESSAGE ===");
     return (
       <SidebarProvider>
         <div className="flex min-h-screen w-full">
@@ -352,11 +342,10 @@ const Portfolio = () => {
               <SidebarTrigger />
               <h1 className="text-2xl font-bold ml-4">Portfolio</h1>
             </header>
-            <div className="p-6">
-              <Alert>
-                <AlertDescription>Please log in to view your portfolio. Current user: {JSON.stringify(user)}</AlertDescription>
-              </Alert>
-            </div>
+            <SignInPrompt
+              title="View Your Portfolio"
+              description="Sign in to track your cask investments, ownership records, and portfolio performance."
+            />
           </main>
         </div>
       </SidebarProvider>

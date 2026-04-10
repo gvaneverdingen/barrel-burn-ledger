@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ReactNode } from 'react';
+import { SignInPrompt } from '@/components/SignInPrompt';
 
 interface RoleBasedRouteProps {
   children: ReactNode;
@@ -15,13 +16,8 @@ const RoleBasedRoute = ({
 }: RoleBasedRouteProps) => {
   const { user, userRole, loading } = useAuth();
 
-  if (import.meta.env.DEV) {
-    console.log('RoleBasedRoute:', { hasUser: !!user, userRole, loading, allowedRoles });
-  }
-
   // If still loading, show loading state
   if (loading) {
-    if (import.meta.env.DEV) console.log('RoleBasedRoute: Still loading auth...');
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -32,9 +28,18 @@ const RoleBasedRoute = ({
     );
   }
 
+  // If not authenticated, show sign-in prompt instead of silent redirect
+  if (!user) {
+    return (
+      <SignInPrompt
+        title="Sign in required"
+        description="You need to be signed in to access this page."
+      />
+    );
+  }
+
   // If user is authenticated but role hasn't loaded yet, wait
-  if (user && !userRole) {
-    if (import.meta.env.DEV) console.log('RoleBasedRoute: User authenticated but role not loaded yet...');
+  if (!userRole) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -47,18 +52,15 @@ const RoleBasedRoute = ({
 
   // Administrator can access everything
   if (userRole === 'administrator') {
-    if (import.meta.env.DEV) console.log('RoleBasedRoute: Administrator access granted');
     return <>{children}</>;
   }
 
   // Check if user role is in allowed roles
-  if (userRole && allowedRoles.includes(userRole)) {
-    if (import.meta.env.DEV) console.log('RoleBasedRoute: Access granted for role:', userRole);
+  if (allowedRoles.includes(userRole)) {
     return <>{children}</>;
   }
 
-  // If not authenticated or not allowed, redirect
-  if (import.meta.env.DEV) console.log('RoleBasedRoute: Access denied, redirecting to:', redirectTo);
+  // Authenticated but wrong role — redirect
   return <Navigate to={redirectTo} replace />;
 };
 

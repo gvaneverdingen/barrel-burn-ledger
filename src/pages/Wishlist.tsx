@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Heart, Search, Filter, TrendingUp, Bell, Plus, Trash2, MapPin, Droplets, Gauge, Calendar } from 'lucide-react';
+import { SignInPrompt } from '@/components/SignInPrompt';
 
 interface WishlistItem {
   id: string;
@@ -139,6 +140,15 @@ const Wishlist = () => {
     const matchesPrice = maxPrice === '' || (item.casks.price_per_liter || 0) <= Number(maxPrice);
     return matchesSearch && matchesPrice;
   });
+
+  if (!user) {
+    return (
+      <SignInPrompt
+        title="Your Wishlist"
+        description="Sign in to save your favourite casks and get notified when they match your criteria."
+      />
+    );
+  }
 
   if (loading) {
     return (
