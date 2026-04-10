@@ -1,10 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { TrendingUp, BarChart3, DollarSign, Activity } from 'lucide-react';
 
 const Insights = () => {
-  const { user } = useAuth();
   const { formatPrice } = useCurrency();
 
   return (
