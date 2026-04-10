@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { Heart, Search, Filter, TrendingUp, Bell, Plus, Trash2, MapPin, Droplets, Gauge, Calendar } from 'lucide-react';
 import { SignInPrompt } from '@/components/SignInPrompt';
 
 interface WishlistItem {
