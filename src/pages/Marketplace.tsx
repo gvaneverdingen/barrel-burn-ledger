@@ -446,6 +446,7 @@ const Marketplace = () => {
                     className="w-full sm:w-36 mobile-touch-target"
                   />
                 </div>
+              </div>
             </CardContent>
           </Card>
         )}
