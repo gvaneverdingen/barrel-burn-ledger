@@ -430,6 +430,9 @@ const Portfolio = () => {
                   </Card>
                 </div>
 
+                {/* Portfolio Value Chart */}
+                <PortfolioValueChart ownerships={ownerships} />
+
                 {/* Enhanced Tabs */}
                 <Tabs defaultValue="holdings" className="w-full animate-fade-in" style={{ animationDelay: '0.4s' }}>
                   <TabsList className="grid w-full grid-cols-3 luxury-card">
