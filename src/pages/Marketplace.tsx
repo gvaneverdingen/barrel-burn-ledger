@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { RecentlyViewedCasks } from '@/components/RecentlyViewedCasks';
 import caskPlaceholder from '@/assets/cask-placeholder.jpg';
 import { calculatePricePerLPA, calculateLPA, formatLPA } from '@/utils/lpaCalculations';
 import { useNavigate } from 'react-router-dom';
@@ -35,7 +36,6 @@ import { MarketplaceAnalytics } from '@/components/MarketplaceAnalytics';
 import { MatchmakingSystem } from '@/components/MatchmakingSystem';
 import { MakeOfferDialog } from '@/components/MakeOfferDialog';
 import { CaskWorldMap } from '@/components/CaskWorldMap';
-import { RecentlyViewedCasks } from '@/components/RecentlyViewedCasks';
 
 interface Cask {
   id: string;
@@ -117,8 +117,6 @@ const Marketplace = () => {
   const [sortBy, setSortBy] = useState<'price' | 'date' | 'name'>('date');
   const [filterType, setFilterType] = useState<'all' | 'scotch' | 'bourbon' | 'irish' | 'resale'>('all');
   const [maxPrice, setMaxPrice] = useState<number | ''>('');
-  const [minAge, setMinAge] = useState<number | ''>('');
-  const [filterRegion, setFilterRegion] = useState('all');
   const [selectedTab, setSelectedTab] = useState('marketplace');
 
   useEffect(() => {
@@ -309,16 +307,7 @@ const Marketplace = () => {
         (filterType === 'irish' && listing.spirit_name.toLowerCase().includes('irish'));
       
       const matchesPrice = maxPrice === '' || ((listing.total_price || 0) <= maxPrice);
-
-      const caskAge = listing.distillation_date
-        ? Math.floor((Date.now() - new Date(listing.distillation_date).getTime()) / (1000 * 60 * 60 * 24 * 365.25))
-        : 0;
-      const matchesAge = minAge === '' || caskAge >= minAge;
-
-      const listingRegion = listing.distilleries?.location?.toLowerCase() || '';
-      const matchesRegion = filterRegion === 'all' || listingRegion.includes(filterRegion.toLowerCase());
-
-      return matchesSearch && matchesType && matchesPrice && matchesAge && matchesRegion;
+      return matchesSearch && matchesType && matchesPrice;
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -430,29 +419,21 @@ const Marketplace = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="grid grid-cols-2 gap-3 sm:flex sm:gap-4">
-                  <Input
-                    type="number"
-                    placeholder="Max price"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                    className="w-full sm:w-36 mobile-touch-target"
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Min age (yrs)"
-                    value={minAge}
-                    onChange={(e) => setMinAge(e.target.value === '' ? '' : Number(e.target.value))}
-                    className="w-full sm:w-36 mobile-touch-target"
-                  />
-                </div>
+                <Input
+                  type="number"
+                  placeholder="Max price per cask"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value === '' ? '' : Number(e.target.value))}
+                  className="w-full mobile-touch-target"
+                />
               </div>
             </CardContent>
           </Card>
         )}
 
+        <RecentlyViewedCasks />
+
         <TabsContent value="marketplace" className="space-y-6">
-          <RecentlyViewedCasks />
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold">Cask Marketplace</h2>
@@ -472,8 +453,8 @@ const Marketplace = () => {
               <p className="text-muted-foreground mb-4">
                 There are no casks listed for sale at the moment. Check back soon or adjust your filters.
               </p>
-              {(searchTerm || filterType !== 'all' || maxPrice !== '' || minAge !== '' || filterRegion !== 'all') && (
-                <Button variant="outline" onClick={() => { setSearchTerm(''); setFilterType('all'); setMaxPrice(''); setMinAge(''); setFilterRegion('all'); }}>
+              {(searchTerm || filterType !== 'all' || maxPrice !== '') && (
+                <Button variant="outline" onClick={() => { setSearchTerm(''); setFilterType('all'); setMaxPrice(''); }}>
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Clear Filters
                 </Button>

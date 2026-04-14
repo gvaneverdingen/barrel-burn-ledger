@@ -1,13 +1,12 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Share2, Copy, Check } from "lucide-react";
+import { Share2, Copy, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useToast } from "@/hooks/use-toast";
+} from '@/components/ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
 
 interface ShareCaskButtonProps {
   caskName: string;
@@ -16,37 +15,29 @@ interface ShareCaskButtonProps {
 
 export const ShareCaskButton = ({ caskName, caskId }: ShareCaskButtonProps) => {
   const { toast } = useToast();
-  const [copied, setCopied] = useState(false);
-
-  const shareUrl = `${window.location.origin}/cask/${caskId}`;
-  const shareText = `Check out ${caskName} on Angel Share`;
+  const url = `${window.location.origin}/cask/${caskId}`;
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
-    toast({ title: "Link copied!", description: "Cask link copied to clipboard." });
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const shareTwitter = () => {
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, "_blank");
-  };
-
-  const shareLinkedIn = () => {
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, "_blank");
-  };
-
-  const shareWhatsApp = () => {
-    window.open(`https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`, "_blank");
+    await navigator.clipboard.writeText(url);
+    toast({ title: 'Link copied to clipboard' });
   };
 
   const nativeShare = async () => {
     if (navigator.share) {
-      try {
-        await navigator.share({ title: caskName, text: shareText, url: shareUrl });
-      } catch {}
+      await navigator.share({ title: caskName, url });
+    } else {
+      copyLink();
     }
   };
+
+  const shareToX = () =>
+    window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(caskName)}&url=${encodeURIComponent(url)}`, '_blank');
+
+  const shareToLinkedIn = () =>
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+
+  const shareToWhatsApp = () =>
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${caskName} ${url}`)}`, '_blank');
 
   return (
     <DropdownMenu>
@@ -58,24 +49,14 @@ export const ShareCaskButton = ({ caskName, caskId }: ShareCaskButtonProps) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={copyLink}>
-          {copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
-          Copy Link
+          <Copy className="h-4 w-4 mr-2" /> Copy Link
         </DropdownMenuItem>
-        {typeof navigator.share === "function" && (
-          <DropdownMenuItem onClick={nativeShare}>
-            <Share2 className="h-4 w-4 mr-2" />
-            Share...
-          </DropdownMenuItem>
-        )}
-        <DropdownMenuItem onClick={shareTwitter}>
-          𝕏 Twitter
+        <DropdownMenuItem onClick={nativeShare}>
+          <ExternalLink className="h-4 w-4 mr-2" /> Share…
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={shareLinkedIn}>
-          LinkedIn
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={shareWhatsApp}>
-          WhatsApp
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={shareToX}>𝕏 Post on X</DropdownMenuItem>
+        <DropdownMenuItem onClick={shareToLinkedIn}>in LinkedIn</DropdownMenuItem>
+        <DropdownMenuItem onClick={shareToWhatsApp}>💬 WhatsApp</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
