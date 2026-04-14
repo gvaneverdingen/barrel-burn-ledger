@@ -461,7 +461,39 @@ const Marketplace = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {filteredListings.map((listing) => (
-              <Card key={listing.id} className="mobile-card hover:shadow-lg transition-all cursor-pointer touch-highlight-none active:scale-[0.98]">
+              <Card key={listing.id} className="mobile-card hover:shadow-lg transition-all cursor-pointer touch-highlight-none active:scale-[0.98] overflow-hidden">
+                <div className="relative h-36 sm:h-44 overflow-hidden bg-muted">
+                  <img 
+                    src={caskPlaceholder} 
+                    alt={listing.spirit_name}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-2 right-2 flex flex-col gap-1">
+                    {listing.distilleries?.verified && (
+                      <Badge variant="secondary" className="text-xs px-2 py-0.5 h-auto whitespace-nowrap bg-background/80 backdrop-blur-sm">
+                        <Shield className="h-3 w-3 mr-1" />
+                        Verified
+                      </Badge>
+                    )}
+                    {listing.is_resale && (
+                      <Badge variant="outline" className="text-xs px-2 py-0.5 h-auto bg-background/80 backdrop-blur-sm">
+                        Resale
+                      </Badge>
+                    )}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="absolute top-2 left-2 h-8 w-8 p-0 bg-background/60 backdrop-blur-sm hover:bg-background/80"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addToWishlist(listing.cask_id);
+                    }}
+                  >
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                </div>
                 <CardHeader className="pb-3 p-4 sm:p-6 sm:pb-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
