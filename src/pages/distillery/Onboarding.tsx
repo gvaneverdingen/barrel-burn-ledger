@@ -111,6 +111,16 @@ const DistilleryOnboarding = () => {
     }
   };
 
+  // Auth guard
+  if (!user) {
+    return (
+      <SignInPrompt
+        title="Sign in to apply"
+        description="You need to be signed in to submit a distillery application."
+      />
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="container mx-auto p-6 flex items-center justify-center min-h-[50vh]">
