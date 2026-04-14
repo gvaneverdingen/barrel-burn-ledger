@@ -82,7 +82,6 @@ const AppRoutes = () => {
 
   // If user is authenticated but profile is not complete, show profile completion
   if (user && !profileComplete) {
-    console.log('Showing ProfileCompletion - user authenticated but profile incomplete');
     return <ProfileCompletion />;
   }
 
