@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { RecentlyViewedCasks } from '@/components/RecentlyViewedCasks';
 import caskPlaceholder from '@/assets/cask-placeholder.jpg';
 import { calculatePricePerLPA, calculateLPA, formatLPA } from '@/utils/lpaCalculations';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useComparison } from '@/contexts/ComparisonContext';
@@ -505,7 +505,15 @@ const Marketplace = () => {
                         Cask #{listing.cask_number}
                       </CardDescription>
                       <CardDescription className="text-xs truncate mt-1">
-                        {listing.distilleries?.name}
+                        {listing.distillery_id ? (
+                          <Link
+                            to={`/distillery/${listing.distillery_id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="hover:text-primary hover:underline transition-colors"
+                          >
+                            {listing.distilleries?.name}
+                          </Link>
+                        ) : listing.distilleries?.name}
                       </CardDescription>
                     </div>
                   </div>
