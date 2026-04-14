@@ -6,7 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, MapPin, Calendar, Shield, Globe, Wine, Eye } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, MapPin, Calendar, Shield, Globe, Wine, Eye, Star } from 'lucide-react';
+import { ReviewList } from '@/components/ReviewList';
 import caskPlaceholder from '@/assets/cask-placeholder.jpg';
 
 interface DistilleryData {
