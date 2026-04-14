@@ -31,6 +31,8 @@ import NftStatusCard from "@/components/NftStatusCard";
 import { SellCaskDialog } from "@/components/SellCaskDialog";
 import { PaymentMethodDialog } from "@/components/PaymentMethodDialog";
 import CaskTransactionHistory from "@/components/CaskTransactionHistory";
+import { ShareCaskButton } from "@/components/ShareCaskButton";
+import { addRecentlyViewed } from "@/components/RecentlyViewedCasks";
 
 interface CaskDetails {
   id: string;
@@ -563,6 +565,15 @@ const CaskDetails = () => {
         is_sale_listing: false
       } as CaskDetails);
 
+      // Track recently viewed
+      addRecentlyViewed({
+        id: caskData.id,
+        spirit_name: caskData.spirit_name,
+        cask_number: caskData.cask_number,
+        total_price: caskData.total_price,
+        distillery_name: caskData.distillery?.name || "Unknown",
+      });
+
     } catch (error: any) {
       console.error("Error fetching cask details:", error);
       toast({
@@ -872,12 +883,15 @@ const CaskDetails = () => {
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
         <div className="container mx-auto px-4 py-8">
           
-          <Button variant="ghost" asChild className="mb-6">
-          <Link to="/marketplace">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Marketplace
-          </Link>
-        </Button>
+        <div className="flex items-center justify-between mb-6">
+          <Button variant="ghost" asChild>
+            <Link to="/marketplace">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Marketplace
+            </Link>
+          </Button>
+          {cask && <ShareCaskButton caskName={cask.spirit_name} caskId={cask.id} />}
+        </div>
 
         {/* Admin View Toggle */}
         {isAdmin && (
