@@ -505,30 +505,6 @@ const Marketplace = () => {
                         {listing.distilleries?.name}
                       </CardDescription>
                     </div>
-                    <div className="flex flex-col gap-1.5 shrink-0">
-                      {listing.distilleries?.verified && (
-                        <Badge variant="secondary" className="text-xs px-2 py-0.5 h-auto whitespace-nowrap">
-                          <Shield className="h-3 w-3 mr-1" />
-                          Verified
-                        </Badge>
-                      )}
-                      {listing.is_resale && (
-                        <Badge variant="outline" className="text-xs px-2 py-0.5 h-auto">
-                          Resale
-                        </Badge>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="mobile-touch-target h-8 w-8 p-0"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          addToWishlist(listing.cask_id);
-                        }}
-                      >
-                        <Heart className="h-4 w-4" />
-                      </Button>
-                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
