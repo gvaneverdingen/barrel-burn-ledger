@@ -372,68 +372,14 @@ const Portfolio = () => {
                   </p>
                 </div>
 
-                {/* Portfolio Summary */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="luxury-card hover-scale animate-scale-in group cursor-pointer" style={{ animationDelay: '0.1s' }}>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">Portfolio Value</CardTitle>
-                      <div className="p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                        <DollarSign className="h-5 w-5 text-primary" />
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-3xl font-bold luxury-text-gradient">
-                        {formatPrice(calculatePortfolioValue())}
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-2">Current market value</p>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card className="luxury-card hover-scale animate-scale-in group cursor-pointer" style={{ animationDelay: '0.2s' }}>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">Total Investment</CardTitle>
-                      <div className="p-2 rounded-full bg-secondary/10 group-hover:bg-secondary/20 transition-colors">
-                        <Package className="h-5 w-5 text-secondary-foreground" />
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-3xl font-bold">
-                        {formatPrice(calculateTotalInvestment())}
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-2">Total invested capital</p>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card className="luxury-card hover-scale animate-scale-in group cursor-pointer" style={{ animationDelay: '0.3s' }}>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">Return on Investment</CardTitle>
-                      <div className={`p-2 rounded-full transition-colors ${
-                        calculateROI() >= 0 
-                          ? 'bg-green-500/10 group-hover:bg-green-500/20' 
-                          : 'bg-red-500/10 group-hover:bg-red-500/20'
-                      }`}>
-                        {calculateROI() >= 0 ? (
-                          <TrendingUp className="h-5 w-5 text-green-600" />
-                        ) : (
-                          <TrendingDown className="h-5 w-5 text-red-600" />
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className={`text-3xl font-bold ${
-                        calculateROI() >= 0 ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {calculateROI().toFixed(2)}%
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {calculateROI() >= 0 ? 'Profit generated' : 'Current loss'}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
+                {/* Portfolio Summary Cards */}
+                <PortfolioSummaryCards ownerships={ownerships as any} />
 
-                {/* Portfolio Value Chart */}
-                <PortfolioValueChart ownerships={ownerships} />
+                {/* Portfolio Value Chart + Maturation Timeline */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <PortfolioValueChart ownerships={ownerships} />
+                  <MaturationTimeline ownerships={ownerships as any} />
+                </div>
 
                 {/* Enhanced Tabs */}
                 <Tabs defaultValue="holdings" className="w-full animate-fade-in" style={{ animationDelay: '0.4s' }}>
