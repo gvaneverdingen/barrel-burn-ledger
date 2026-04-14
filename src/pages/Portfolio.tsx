@@ -110,9 +110,7 @@ interface CaskSale {
 }
 
 const Portfolio = () => {
-  console.log('🟢 Portfolio component rendering');
   const { user, loading: authLoading } = useAuth();
-  console.log('🟢 Portfolio - Auth state:', { user: !!user, authLoading });
   const { formatPrice } = useCurrency();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -334,33 +332,18 @@ const Portfolio = () => {
 
   if (!user) {
     return (
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full">
-          <AppSidebar />
-          <main className="flex-1">
-            <header className="h-16 border-b flex items-center px-6">
-              <SidebarTrigger />
-              <h1 className="text-2xl font-bold ml-4">Portfolio</h1>
-            </header>
-            <SignInPrompt
-              title="View Your Portfolio"
-              description="Sign in to track your cask investments, ownership records, and portfolio performance."
-            />
-          </main>
-        </div>
-      </SidebarProvider>
+      <SignInPrompt
+        title="View Your Portfolio"
+        description="Sign in to track your cask investments, ownership records, and portfolio performance."
+      />
     );
   }
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AppSidebar />
-        <main className="flex-1 luxury-hero-bg">
-          <header className="h-16 border-b backdrop-blur-sm bg-background/80 flex items-center px-6 sticky top-0 z-10">
-            <SidebarTrigger />
-            <h1 className="text-3xl font-bold ml-4 luxury-text-gradient">Portfolio</h1>
-          </header>
+    <div className="luxury-hero-bg">
+      <div className="p-4 sm:p-6">
+        <h1 className="text-3xl font-bold luxury-text-gradient mb-6">Portfolio</h1>
+      </div>
           
           <div className="p-6 space-y-8 animate-fade-in">
             {loading ? (

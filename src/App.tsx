@@ -69,15 +69,6 @@ setupResizeObserverErrorHandler();
 const AppRoutes = () => {
   const { user, loading, profileComplete } = useAuth();
   
-  console.log('AppRoutes render:', { 
-    hasUser: !!user, 
-    loading, 
-    profileComplete, 
-    userId: user?.id,
-    userEmail: user?.email,
-    isMagicUser: !!user?.user_metadata?.wallet_address 
-  });
-  
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
