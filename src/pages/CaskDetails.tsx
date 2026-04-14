@@ -156,6 +156,13 @@ const CaskDetails = () => {
     return () => clearTimeout(timeoutId);
   }, [id]);
 
+  // Track recently viewed
+  useEffect(() => {
+    if (cask) {
+      addRecentlyViewed({ id: cask.id, name: cask.spirit_name, price: cask.total_price ?? 0 });
+    }
+  }, [cask?.id]);
+
   // Fetch user's wallet address
   useEffect(() => {
     if (!user?.id) return;
@@ -874,14 +881,15 @@ const CaskDetails = () => {
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
         <div className="container mx-auto px-4 py-8">
           
-          <Button variant="ghost" asChild className="mb-6">
-          <Link to="/marketplace">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Marketplace
-          </Link>
-        </Button>
-
-        {/* Admin View Toggle */}
+           <div className="flex items-center justify-between mb-6">
+             <Button variant="ghost" asChild>
+               <Link to="/marketplace">
+                 <ArrowLeft className="h-4 w-4 mr-2" />
+                 Back to Marketplace
+               </Link>
+             </Button>
+             {cask && <ShareCaskButton caskName={cask.spirit_name} caskId={cask.id} />}
+           </div>
         {isAdmin && (
           <Card className="mb-6 border-primary/30 bg-primary/5">
             <CardContent className="py-3 px-4">
