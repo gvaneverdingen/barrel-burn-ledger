@@ -120,7 +120,7 @@ export function AppSidebar() {
 
   return (
     <div 
-      className={`fixed left-0 top-0 h-full heritage-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out z-50 ${
+      className={`fixed left-0 top-0 h-full heritage-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out z-50 hidden lg:block ${
         isExpanded ? 'w-64' : 'w-16'
       }`}
       onMouseEnter={() => setIsExpanded(true)}
