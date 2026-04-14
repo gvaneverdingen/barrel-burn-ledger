@@ -505,7 +505,15 @@ const Marketplace = () => {
                         Cask #{listing.cask_number}
                       </CardDescription>
                       <CardDescription className="text-xs truncate mt-1">
-                        {listing.distilleries?.name}
+                        {listing.distillery_id ? (
+                          <Link
+                            to={`/distillery/${listing.distillery_id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="hover:text-primary hover:underline transition-colors"
+                          >
+                            {listing.distilleries?.name}
+                          </Link>
+                        ) : listing.distilleries?.name}
                       </CardDescription>
                     </div>
                   </div>

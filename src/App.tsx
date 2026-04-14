@@ -52,6 +52,7 @@ const DistilleryNewCask = lazy(() => import("./pages/distillery/NewCask"));
 const BlockchainExample = lazy(() => import("./pages/BlockchainExample"));
 const BlockchainTesting = lazy(() => import("./pages/BlockchainTesting"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
+const DistilleryProfile = lazy(() => import("./pages/DistilleryProfile"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -117,6 +118,7 @@ const AppRoutes = () => {
             {/* Marketplace and related features - Available to all */}
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/cask/:id" element={<CaskDetails />} />
+            <Route path="/distillery/:id" element={<DistilleryProfile />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/offers" element={<Offers />} />
             <Route path="/comparison" element={<Comparison />} />
