@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { RecentlyViewedCasks } from '@/components/RecentlyViewedCasks';
 import caskPlaceholder from '@/assets/cask-placeholder.jpg';
 import { calculatePricePerLPA, calculateLPA, formatLPA } from '@/utils/lpaCalculations';
 import { useNavigate } from 'react-router-dom';
@@ -429,6 +430,8 @@ const Marketplace = () => {
             </CardContent>
           </Card>
         )}
+
+        <RecentlyViewedCasks />
 
         <TabsContent value="marketplace" className="space-y-6">
           <div className="flex items-center justify-between">
