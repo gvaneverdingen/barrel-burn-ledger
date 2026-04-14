@@ -191,8 +191,7 @@ const Transactions = () => {
             </Card>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+    </div>
   );
 };
 
