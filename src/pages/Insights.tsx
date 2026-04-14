@@ -1,101 +1,244 @@
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrency } from '@/contexts/CurrencyContext';
-import { TrendingUp, BarChart3, DollarSign, Activity } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { TrendingUp, BarChart3, DollarSign, Activity, MapPin, Layers } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+
+interface Metrics {
+  activeListings: number;
+  avgCaskValue: number;
+  totalVolume: number;
+  totalTransactions: number;
+}
+
+interface RegionData {
+  region: string;
+  count: number;
+}
+
+interface PriceBucket {
+  label: string;
+  count: number;
+  min: number;
+}
+
+const PRICE_BUCKETS = [
+  { label: 'Under £10k', max: 10000, min: 0 },
+  { label: '£10k–50k', max: 50000, min: 10000 },
+  { label: '£50k–100k', max: 100000, min: 50000 },
+  { label: '£100k–250k', max: 250000, min: 100000 },
+  { label: '£250k+', max: Infinity, min: 250000 },
+];
 
 const Insights = () => {
   const { formatPrice } = useCurrency();
+  const [metrics, setMetrics] = useState<Metrics | null>(null);
+  const [regions, setRegions] = useState<RegionData[]>([]);
+  const [priceDist, setPriceDist] = useState<PriceBucket[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+
+      // Fetch all available casks for aggregation
+      const { data: casks } = await supabase
+        .from('casks')
+        .select('total_price, current_volume_liters, region')
+        .eq('available_for_sale', true);
+
+      const { count: txCount } = await supabase
+        .from('transactions')
+        .select('id', { count: 'exact', head: true });
+
+      if (casks) {
+        const total = casks.length;
+        const avgPrice = total > 0
+          ? casks.reduce((s, c) => s + (c.total_price || 0), 0) / total
+          : 0;
+        const totalVol = casks.reduce((s, c) => s + (c.current_volume_liters || 0), 0);
+
+        setMetrics({
+          activeListings: total,
+          avgCaskValue: Math.round(avgPrice),
+          totalVolume: Math.round(totalVol),
+          totalTransactions: txCount || 0,
+        });
+
+        // Region breakdown
+        const regionMap: Record<string, number> = {};
+        casks.forEach((c) => {
+          const r = c.region || 'Unknown';
+          regionMap[r] = (regionMap[r] || 0) + 1;
+        });
+        const regionArr = Object.entries(regionMap)
+          .map(([region, count]) => ({ region, count }))
+          .sort((a, b) => b.count - a.count);
+        setRegions(regionArr);
+
+        // Price distribution
+        const buckets = PRICE_BUCKETS.map((b) => ({
+          label: b.label,
+          min: b.min,
+          count: casks.filter((c) => {
+            const p = c.total_price || 0;
+            return p >= b.min && p < b.max;
+          }).length,
+        }));
+        setPriceDist(buckets);
+      }
+
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  const maxRegionCount = Math.max(...regions.map((r) => r.count), 1);
+  const maxPriceCount = Math.max(...priceDist.map((b) => b.count), 1);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8 space-y-6">
+        <Skeleton className="h-10 w-64" />
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-28" />
+          ))}
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <Skeleton className="h-64" />
+          <Skeleton className="h-64" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h2 className="text-3xl font-bold luxury-text-gradient mb-4">Market Insights</h2>
+        <h2 className="text-3xl font-bold heritage-text-gradient mb-2">Market Insights</h2>
         <p className="text-muted-foreground">
-          Analyze market trends and performance metrics for whisky cask investments.
+          Live analytics from the Angel Share marketplace.
         </p>
       </div>
 
       {/* Metrics Cards */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card className="luxury-card">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Market Growth
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
+              Active Listings
             </CardTitle>
-            <TrendingUp className="h-4 w-4 text-primary" />
+            <BarChart3 className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">+12.5%</div>
-            <p className="text-xs text-muted-foreground">
-              +2.1% from last month
-            </p>
+            <div className="text-xl sm:text-2xl font-bold">{metrics?.activeListings ?? 0}</div>
+            <p className="text-xs text-muted-foreground">casks for sale</p>
           </CardContent>
         </Card>
 
-        <Card className="luxury-card">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Average Cask Value
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
+              Average Value
             </CardTitle>
             <DollarSign className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-accent">{formatPrice(15240)}</div>
-            <p className="text-xs text-muted-foreground">
-              +5.2% from last month
-            </p>
+            <div className="text-xl sm:text-2xl font-bold">{formatPrice(metrics?.avgCaskValue ?? 0)}</div>
+            <p className="text-xs text-muted-foreground">per cask</p>
           </CardContent>
         </Card>
 
-        <Card className="luxury-card">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Active Listings
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
+              Total Volume
             </CardTitle>
-            <BarChart3 className="h-4 w-4 text-secondary" />
+            <Activity className="h-4 w-4 text-secondary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-secondary">2,847</div>
-            <p className="text-xs text-muted-foreground">
-              +180 new this week
-            </p>
+            <div className="text-xl sm:text-2xl font-bold">{metrics?.totalVolume?.toLocaleString() ?? 0}L</div>
+            <p className="text-xs text-muted-foreground">across all listings</p>
           </CardContent>
         </Card>
 
-        <Card className="luxury-card">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Trading Volume
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
+              Transactions
             </CardTitle>
-            <Activity className="h-4 w-4 text-primary" />
+            <TrendingUp className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{formatPrice(2100000)}</div>
-            <p className="text-xs text-muted-foreground">
-              +8.3% from last week
-            </p>
+            <div className="text-xl sm:text-2xl font-bold">{metrics?.totalTransactions ?? 0}</div>
+            <p className="text-xs text-muted-foreground">completed trades</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Coming Soon Section */}
-      <Card className="luxury-card">
-        <CardHeader>
-          <CardTitle className="text-primary">Advanced Analytics Coming Soon</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            We're building comprehensive market insights including price trends, regional performance, 
-            age-based analytics, and investment recommendations.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2 text-sm text-muted-foreground">
-            <div>• Real-time price tracking and historical performance</div>
-            <div>• Regional market analysis and distillery comparisons</div>
-            <div>• Age-based maturation value projections</div>
-            <div>• Personalized investment recommendations</div>
-            <div>• Market sentiment analysis and trend predictions</div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Charts */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Regional Distribution */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <MapPin className="h-5 w-5 text-primary" />
+              Regional Distribution
+            </CardTitle>
+            <CardDescription>Available casks by region</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {regions.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No regional data available.</p>
+            ) : (
+              regions.map((r) => (
+                <div key={r.region}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="font-medium">{r.region}</span>
+                    <span className="text-muted-foreground">{r.count}</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all"
+                      style={{ width: `${(r.count / maxRegionCount) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Price Distribution */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Layers className="h-5 w-5 text-accent" />
+              Price Distribution
+            </CardTitle>
+            <CardDescription>Number of casks by price range</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {priceDist.map((b) => (
+              <div key={b.label}>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="font-medium">{b.label}</span>
+                  <span className="text-muted-foreground">{b.count}</span>
+                </div>
+                <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-accent transition-all"
+                    style={{ width: `${(b.count / maxPriceCount) * 100}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
