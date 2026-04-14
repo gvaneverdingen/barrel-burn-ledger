@@ -375,60 +375,57 @@ const Marketplace = () => {
           </TabsTrigger>
         </TabsList>
 
-        {/* Filters */}
+        {/* Collapsible Filters */}
         {selectedTab === 'marketplace' && (
-          <Card className="mobile-card">
-            <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                <Filter className="h-4 w-4 sm:h-5 sm:w-5" />
-                Filters & Search
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
-              <div className="flex flex-col gap-3 sm:gap-4">
-                <div className="flex-1">
-                  <Input
-                    placeholder="Search spirits, distillery..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full mobile-touch-target"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-3 sm:flex sm:gap-4">
-                  <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                    <SelectTrigger className="w-full sm:w-48 mobile-touch-target">
-                      <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="date">Newest First</SelectItem>
-                      <SelectItem value="price">Price: Low to High</SelectItem>
-                      <SelectItem value="name">Name A-Z</SelectItem>
-                      
-                    </SelectContent>
-                  </Select>
-                  <Select value={filterType} onValueChange={(value: any) => setFilterType(value)}>
-                    <SelectTrigger className="w-full sm:w-40 mobile-touch-target">
-                      <SelectValue placeholder="Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Types</SelectItem>
-                      <SelectItem value="resale">Resale Only</SelectItem>
-                      <SelectItem value="scotch">Scotch</SelectItem>
-                      <SelectItem value="bourbon">Bourbon</SelectItem>
-                      <SelectItem value="irish">Irish</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Input
-                  type="number"
-                  placeholder="Max price per cask"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full mobile-touch-target"
-                />
+          <details className="group" open>
+            <summary className="flex items-center gap-2 cursor-pointer list-none p-3 sm:p-4 rounded-lg border border-border bg-card hover:bg-accent/5 transition-colors mobile-touch-target">
+              <Filter className="h-4 w-4 text-primary" />
+              <span className="font-medium text-sm sm:text-base">Filters & Search</span>
+              <Badge variant="secondary" className="ml-auto text-xs">
+                {filteredListings.length} result{filteredListings.length !== 1 ? 's' : ''}
+              </Badge>
+              <svg className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+            </summary>
+            <div className="pt-3 pb-1 px-1 space-y-3">
+              <Input
+                placeholder="Search spirits, distillery..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full mobile-touch-target"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+                  <SelectTrigger className="w-full mobile-touch-target">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="date">Newest First</SelectItem>
+                    <SelectItem value="price">Price: Low to High</SelectItem>
+                    <SelectItem value="name">Name A-Z</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={filterType} onValueChange={(value: any) => setFilterType(value)}>
+                  <SelectTrigger className="w-full mobile-touch-target">
+                    <SelectValue placeholder="Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="resale">Resale Only</SelectItem>
+                    <SelectItem value="scotch">Scotch</SelectItem>
+                    <SelectItem value="bourbon">Bourbon</SelectItem>
+                    <SelectItem value="irish">Irish</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </CardContent>
-          </Card>
+              <Input
+                type="number"
+                placeholder="Max price per cask"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value === '' ? '' : Number(e.target.value))}
+                className="w-full mobile-touch-target"
+              />
+            </div>
+          </details>
         )}
 
         <RecentlyViewedCasks />
