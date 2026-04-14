@@ -963,7 +963,9 @@ const CaskDetails = () => {
                      </CardTitle>
                      <CardDescription className="flex items-center space-x-2 mt-2">
                        <MapPin className="h-4 w-4" />
-                        <span>{cask.distillery?.name || 'Unknown Distillery'}</span>
+                        <Link to={`/distillery/${cask.distillery_id}`} className="hover:text-primary hover:underline transition-colors">
+                          {cask.distillery?.name || 'Unknown Distillery'}
+                        </Link>
                         {cask.distillery?.verified && (
                          <Shield className="h-4 w-4 text-green-600" />
                        )}
