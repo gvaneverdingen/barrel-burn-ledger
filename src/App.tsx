@@ -141,11 +141,11 @@ const AppRoutes = () => {
               } 
             />
             
-            {/* Advanced features - Restricted from consumers unless admin */}
+            {/* Advanced features - Available to all authenticated users */}
             <Route 
               path="/insights" 
               element={
-                <RoleBasedRoute allowedRoles={['investor', 'distillery', 'facilitator', 'administrator']}>
+                <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
                   <Insights />
                 </RoleBasedRoute>
               } 
