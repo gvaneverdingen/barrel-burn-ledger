@@ -167,52 +167,62 @@ const DistilleryProfile = () => {
         </CardContent>
       </Card>
 
-      {/* Available Casks */}
-      <div className="mb-6">
-        <h2 className="text-xl font-bold mb-1">Available Casks</h2>
-        <p className="text-sm text-muted-foreground">{casks.length} cask{casks.length !== 1 ? 's' : ''} currently for sale</p>
-      </div>
+      {/* Tabs: Casks + Reviews */}
+      <Tabs defaultValue="casks" className="mb-6">
+        <TabsList>
+          <TabsTrigger value="casks">Available Casks ({casks.length})</TabsTrigger>
+          <TabsTrigger value="reviews" className="gap-1">
+            <Star className="h-3.5 w-3.5" /> Reviews
+          </TabsTrigger>
+        </TabsList>
 
-      {casks.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            No casks currently available from this distillery.
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {casks.map((cask) => (
-            <Card
-              key={cask.id}
-              className="mobile-card hover:shadow-lg transition-all cursor-pointer overflow-hidden"
-              onClick={() => navigate(`/cask/${cask.id}`)}
-            >
-              <div className="relative h-36 sm:h-44 overflow-hidden bg-muted">
-                <img src={caskPlaceholder} alt={cask.spirit_name} className="w-full h-full object-cover" loading="lazy" />
-              </div>
-              <CardHeader className="pb-2 p-4">
-                <CardTitle className="text-base truncate">{cask.spirit_name}</CardTitle>
-                <CardDescription className="text-xs">Cask #{cask.cask_number}</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 p-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Price</span>
-                  <span className="font-bold">{formatPrice(cask.total_price || 0)}</span>
-                </div>
-                {cask.age_years && (
-                  <div className="flex justify-between items-center mt-1">
-                    <span className="text-sm text-muted-foreground">Age</span>
-                    <span className="text-sm">{cask.age_years} years</span>
-                  </div>
-                )}
-                <Button size="sm" className="w-full mt-3" variant="outline">
-                  <Eye className="h-4 w-4 mr-2" /> View Details
-                </Button>
+        <TabsContent value="casks" className="mt-4">
+          {casks.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center text-muted-foreground">
+                No casks currently available from this distillery.
               </CardContent>
             </Card>
-          ))}
-        </div>
-      )}
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {casks.map((cask) => (
+                <Card
+                  key={cask.id}
+                  className="mobile-card hover:shadow-lg transition-all cursor-pointer overflow-hidden"
+                  onClick={() => navigate(`/cask/${cask.id}`)}
+                >
+                  <div className="relative h-36 sm:h-44 overflow-hidden bg-muted">
+                    <img src={caskPlaceholder} alt={cask.spirit_name} className="w-full h-full object-cover" loading="lazy" />
+                  </div>
+                  <CardHeader className="pb-2 p-4">
+                    <CardTitle className="text-base truncate">{cask.spirit_name}</CardTitle>
+                    <CardDescription className="text-xs">Cask #{cask.cask_number}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-0 p-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Price</span>
+                      <span className="font-bold">{formatPrice(cask.total_price || 0)}</span>
+                    </div>
+                    {cask.age_years && (
+                      <div className="flex justify-between items-center mt-1">
+                        <span className="text-sm text-muted-foreground">Age</span>
+                        <span className="text-sm">{cask.age_years} years</span>
+                      </div>
+                    )}
+                    <Button size="sm" className="w-full mt-3" variant="outline">
+                      <Eye className="h-4 w-4 mr-2" /> View Details
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="reviews" className="mt-4">
+          {distillery && <ReviewList reviewedId={distillery.id} />}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
