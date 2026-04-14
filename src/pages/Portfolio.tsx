@@ -779,8 +779,6 @@ const Portfolio = () => {
               </>
             )}
           </div>
-        </main>
-      </div>
       
       <SellCaskDialog
         open={sellDialogOpen}
@@ -816,7 +814,7 @@ const Portfolio = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </SidebarProvider>
+    </div>
   );
 };
 
