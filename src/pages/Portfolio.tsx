@@ -20,8 +20,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { TrendingUp, TrendingDown, Package, DollarSign, Calendar, MapPin, X, Store, Loader2, Eye } from "lucide-react";
-import { AppSidebar } from "@/components/AppSidebar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { SellCaskDialog } from "@/components/SellCaskDialog";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useToast } from "@/hooks/use-toast";
@@ -110,7 +108,7 @@ interface CaskSale {
 }
 
 const Portfolio = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const { formatPrice } = useCurrency();
   const { toast } = useToast();
   const navigate = useNavigate();

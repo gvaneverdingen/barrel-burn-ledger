@@ -1,6 +1,5 @@
-import { AppSidebar } from "@/components/AppSidebar";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CreditCard, Download, Filter } from "lucide-react";
@@ -91,36 +90,19 @@ const Transactions = () => {
 
   if (!user) {
     return (
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 px-4 border-b">
-            <SidebarTrigger className="-ml-1" />
-            <div className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5" />
-              <h1 className="text-xl font-semibold">Transactions</h1>
-            </div>
-          </header>
-          <SignInPrompt
-            title="Sign in to view transactions"
-            description="You need to be signed in to view your transaction history."
-          />
-        </SidebarInset>
-      </SidebarProvider>
+      <SignInPrompt
+        title="Sign in to view transactions"
+        description="You need to be signed in to view your transaction history."
+      />
     );
   }
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 px-4 border-b">
-          <SidebarTrigger className="-ml-1" />
-          <div className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5" />
-            <h1 className="text-xl font-semibold">Transactions</h1>
-          </div>
-        </header>
+    <div className="p-6 space-y-6">
+      <div className="flex items-center gap-2 mb-4">
+        <CreditCard className="h-5 w-5" />
+        <h1 className="text-xl font-semibold">Transactions</h1>
+      </div>
         
         <div className="p-6 space-y-6">
           <div className="flex items-center justify-between">
