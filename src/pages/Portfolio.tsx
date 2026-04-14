@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { TrendingUp, TrendingDown, Package, DollarSign, Calendar, MapPin, X, Store, Loader2, Eye } from "lucide-react";
 import { SellCaskDialog } from "@/components/SellCaskDialog";
+import { PortfolioValueChart } from "@/components/PortfolioValueChart";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
