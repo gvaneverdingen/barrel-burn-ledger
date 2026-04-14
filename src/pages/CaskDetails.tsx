@@ -31,6 +31,8 @@ import NftStatusCard from "@/components/NftStatusCard";
 import { SellCaskDialog } from "@/components/SellCaskDialog";
 import { PaymentMethodDialog } from "@/components/PaymentMethodDialog";
 import CaskTransactionHistory from "@/components/CaskTransactionHistory";
+import { ShareCaskButton } from "@/components/ShareCaskButton";
+import { addRecentlyViewed } from "@/components/RecentlyViewedCasks";
 
 interface CaskDetails {
   id: string;

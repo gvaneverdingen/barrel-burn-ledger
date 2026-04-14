@@ -452,6 +452,7 @@ const Marketplace = () => {
         )}
 
         <TabsContent value="marketplace" className="space-y-6">
+          <RecentlyViewedCasks />
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold">Cask Marketplace</h2>
