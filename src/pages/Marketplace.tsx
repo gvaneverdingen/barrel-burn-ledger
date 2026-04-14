@@ -442,6 +442,22 @@ const Marketplace = () => {
             </Badge>
           </div>
 
+          {filteredListings.length === 0 && !loading && (
+            <Card className="p-8 text-center">
+              <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-semibold mb-2">No Casks Available</h3>
+              <p className="text-muted-foreground mb-4">
+                There are no casks listed for sale at the moment. Check back soon or adjust your filters.
+              </p>
+              {(searchTerm || filterType !== 'all' || maxPrice !== '') && (
+                <Button variant="outline" onClick={() => { setSearchTerm(''); setFilterType('all'); setMaxPrice(''); }}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Clear Filters
+                </Button>
+              )}
+            </Card>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {filteredListings.map((listing) => (
               <Card key={listing.id} className="mobile-card hover:shadow-lg transition-all cursor-pointer touch-highlight-none active:scale-[0.98]">
