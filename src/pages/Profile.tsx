@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
-import { User, Settings, Save, CalendarIcon } from 'lucide-react';
+import { AvatarUpload } from '@/components/AvatarUpload';
+import { Settings, Save, CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
@@ -30,6 +31,7 @@ interface UserProfile {
 const Profile = () => {
   const { user, userRole, loading } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -151,9 +153,7 @@ const Profile = () => {
     <div className="mobile-container space-y-6 pb-20 lg:pb-6">
       <div className="py-6">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-            <User className="h-6 w-6 text-primary" />
-          </div>
+          <AvatarUpload avatarUrl={avatarUrl} onUploaded={(url) => setAvatarUrl(url)} />
           <div>
             <h1 className="text-xl sm:text-2xl font-bold">Profile Settings</h1>
             <p className="text-sm text-muted-foreground">Manage your account information</p>

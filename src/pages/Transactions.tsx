@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CreditCard, Download, Filter, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { CreditCard, Download, ArrowUpRight, ArrowDownLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
@@ -106,7 +106,33 @@ const Transactions = () => {
               <p className="text-sm text-muted-foreground">Your purchase and payout history</p>
             </div>
           </div>
-          <Button variant="outline" size="sm" className="hidden sm:flex">
+          <Button
+            variant="outline"
+            size="sm"
+            className="hidden sm:flex"
+            onClick={() => {
+              if (allTransactions.length === 0) return;
+              const headers = ["ID", "Date", "Type", "Description", "Amount", "Status", "Method"];
+              const rows = allTransactions.map(tx => [
+                tx.id,
+                tx.date,
+                tx.type,
+                `"${tx.description}"`,
+                tx.amount,
+                tx.status,
+                tx.method,
+              ]);
+              const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+              const blob = new Blob([csv], { type: "text/csv" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `transactions_${new Date().toISOString().slice(0, 10)}.csv`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            disabled={allTransactions.length === 0}
+          >
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>

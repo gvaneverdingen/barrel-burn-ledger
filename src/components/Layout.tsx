@@ -8,6 +8,7 @@ import { ComparisonButton } from '@/components/ComparisonButton';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
 import { CurrencySelector } from '@/components/CurrencySelector';
 import { NotificationsBell } from '@/components/NotificationsBell';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import angelShareLogo from '@/assets/angel-share-logo.png';
 
 interface LayoutProps {
@@ -118,6 +119,7 @@ export const Layout = ({ children }: LayoutProps) => {
               </div>
               
               <div className="flex items-center space-x-2 sm:space-x-4">
+                <ThemeToggle />
                 <CurrencySelector />
                 <NotificationsBell />
                 {user ? (
