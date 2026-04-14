@@ -19,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { TrendingUp, TrendingDown, Package, DollarSign, Calendar, MapPin, X, Store, Loader2, Eye } from "lucide-react";
+import { Package, Calendar, MapPin, X, Store, Loader2, Eye } from "lucide-react";
 import { SellCaskDialog } from "@/components/SellCaskDialog";
 import { PortfolioValueChart } from "@/components/PortfolioValueChart";
 import { PortfolioSummaryCards } from "@/components/PortfolioSummaryCards";
