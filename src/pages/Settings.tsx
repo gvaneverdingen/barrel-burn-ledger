@@ -169,7 +169,7 @@ const Settings = () => {
         <TabsContent value="notifications" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Notification Preferences</CardTitle>
+              <CardTitle>In-App Notifications</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
@@ -182,16 +182,16 @@ const Settings = () => {
               <Separator />
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-medium">Market Insights</h4>
-                  <p className="text-sm text-muted-foreground">Weekly market analysis and trends</p>
+                  <h4 className="font-medium">Offer Activity</h4>
+                  <p className="text-sm text-muted-foreground">New offers, counter-offers, and acceptances</p>
                 </div>
                 <Switch defaultChecked />
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-medium">Payment Reminders</h4>
-                  <p className="text-sm text-muted-foreground">Storage fees and payment due dates</p>
+                  <h4 className="font-medium">Transaction Completions</h4>
+                  <p className="text-sm text-muted-foreground">When purchases or sales are finalised</p>
                 </div>
                 <Switch defaultChecked />
               </div>
@@ -200,6 +200,45 @@ const Settings = () => {
                 <div>
                   <h4 className="font-medium">New Opportunities</h4>
                   <p className="text-sm text-muted-foreground">Alerts about new casks matching your preferences</p>
+                </div>
+                <Switch />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Email Alerts</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Offer Emails</h4>
+                  <p className="text-sm text-muted-foreground">Email when you receive a new offer or counter-offer</p>
+                </div>
+                <Switch defaultChecked />
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Transaction Emails</h4>
+                  <p className="text-sm text-muted-foreground">Confirmation emails for completed transactions</p>
+                </div>
+                <Switch defaultChecked />
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Weekly Market Digest</h4>
+                  <p className="text-sm text-muted-foreground">Weekly summary of market trends and insights</p>
+                </div>
+                <Switch defaultChecked />
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Marketing Emails</h4>
+                  <p className="text-sm text-muted-foreground">Promotional offers and platform updates</p>
                 </div>
                 <Switch />
               </div>
