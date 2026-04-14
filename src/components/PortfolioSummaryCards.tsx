@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useCurrency } from '@/contexts/CurrencyContext';
-import { DollarSign, TrendingUp, TrendingDown, Package, Clock, Target } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, Package, Clock } from 'lucide-react';
 
 interface PortfolioSummaryCardsProps {
   ownerships: Array<{
@@ -66,7 +66,7 @@ export const PortfolioSummaryCards = ({ ownerships }: PortfolioSummaryCardsProps
       value: `${isPositive ? '+' : ''}${roi.toFixed(1)}%`,
       sub: `${formatPrice(Math.abs(currentValue - totalInvested))} ${isPositive ? 'gain' : 'loss'}`,
       badge: isPositive ? 'Profit' : 'Loss',
-      badgeVariant: isPositive ? 'default' : 'destructive' as const,
+      badgeVariant: (isPositive ? 'default' : 'destructive') as 'default' | 'destructive',
       delay: '0.15s',
     },
     {
