@@ -49,7 +49,7 @@ export const PriceAlertButton = ({ caskId, currentPrice }: PriceAlertButtonProps
     if (!user) return;
     const price = parseFloat(targetPrice);
     if (isNaN(price) || price <= 0) {
-      toast.toast({ title: 'Invalid price', description: 'Enter a valid target price.', variant: 'destructive' });
+      toast({ title: 'Invalid price', description: 'Enter a valid target price.', variant: 'destructive' });
       return;
     }
     setLoading(true);
@@ -59,11 +59,11 @@ export const PriceAlertButton = ({ caskId, currentPrice }: PriceAlertButtonProps
       } else {
         await supabase.from('price_alerts').insert({ user_id: user.id, cask_id: caskId, target_price: price, alert_type: alertType });
       }
-      toast.toast({ title: 'Price alert set', description: `You'll be notified when price goes ${alertType} £${price.toLocaleString()}` });
+      toast({ title: 'Price alert set', description: `You'll be notified when price goes ${alertType} £${price.toLocaleString()}` });
       setOpen(false);
       fetchExistingAlert();
     } catch {
-      toast.toast({ title: 'Error', description: 'Failed to save alert.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Failed to save alert.', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -75,7 +75,7 @@ export const PriceAlertButton = ({ caskId, currentPrice }: PriceAlertButtonProps
     await supabase.from('price_alerts').update({ is_active: false }).eq('id', existingAlert.id);
     setExistingAlert(null);
     setTargetPrice('');
-    toast.toast({ title: 'Alert removed' });
+    toast({ title: 'Alert removed' });
     setLoading(false);
     setOpen(false);
   };
