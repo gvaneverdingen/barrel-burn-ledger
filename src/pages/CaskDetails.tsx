@@ -33,6 +33,7 @@ import { PaymentMethodDialog } from "@/components/PaymentMethodDialog";
 import CaskTransactionHistory from "@/components/CaskTransactionHistory";
 import { ShareCaskButton } from "@/components/ShareCaskButton";
 import { addRecentlyViewed } from "@/components/RecentlyViewedCasks";
+import { PriceAlertButton } from "@/components/PriceAlertButton";
 
 interface CaskDetails {
   id: string;
@@ -888,7 +889,12 @@ const CaskDetails = () => {
                  Back to Marketplace
                </Link>
              </Button>
-             {cask && <ShareCaskButton caskName={cask.spirit_name} caskId={cask.id} />}
+             {cask && (
+               <div className="flex items-center gap-2">
+                 <PriceAlertButton caskId={cask.id} currentPrice={cask.total_price} />
+                 <ShareCaskButton caskName={cask.spirit_name} caskId={cask.id} />
+               </div>
+             )}
            </div>
         {isAdmin && (
           <Card className="mb-6 border-primary/30 bg-primary/5">
