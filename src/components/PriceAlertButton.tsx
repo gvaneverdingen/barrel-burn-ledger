@@ -29,7 +29,6 @@ export const PriceAlertButton = ({ caskId, currentPrice }: PriceAlertButtonProps
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, caskId]);
-  }, [user, caskId]);
 
   const fetchExistingAlert = async () => {
     const { data } = await supabase
