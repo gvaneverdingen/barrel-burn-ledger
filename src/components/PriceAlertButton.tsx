@@ -41,7 +41,7 @@ export const PriceAlertButton = ({ caskId, currentPrice }: PriceAlertButtonProps
     if (data) {
       setExistingAlert(data);
       setTargetPrice(String(data.target_price));
-      setAlertType(data.alert_type);
+      setAlertType(data.alert_type as 'below' | 'above');
     }
   };
 
