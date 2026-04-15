@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { PasswordStrengthIndicator } from '../../components/PasswordStrengthIndicator';
+import PasswordStrengthIndicator from '../../components/PasswordStrengthIndicator';
 
 // Simple smoke test — does the component render without crashing?
 
