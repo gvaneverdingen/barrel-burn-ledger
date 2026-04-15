@@ -7,8 +7,7 @@ import PasswordStrengthIndicator from '../../components/PasswordStrengthIndicato
 describe('PasswordStrengthIndicator', () => {
   it('renders strength feedback for a weak password', () => {
     render(<PasswordStrengthIndicator password="abc" showFeedback />);
-    // Should show some feedback text
-    expect(screen.getByText(/weak|short|must/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/weak|short|must/i).length).toBeGreaterThan(0);
   });
 
   it('renders strength feedback for a strong password', () => {
