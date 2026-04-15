@@ -16,6 +16,7 @@ interface PriceAlertButtonProps {
 
 export const PriceAlertButton = ({ caskId, currentPrice }: PriceAlertButtonProps) => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [existingAlert, setExistingAlert] = useState<any>(null);
@@ -23,7 +24,11 @@ export const PriceAlertButton = ({ caskId, currentPrice }: PriceAlertButtonProps
   const [alertType, setAlertType] = useState<'below' | 'above'>('below');
 
   useEffect(() => {
-    if (user && caskId) fetchExistingAlert();
+    if (user && caskId) {
+      fetchExistingAlert();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, caskId]);
   }, [user, caskId]);
 
   const fetchExistingAlert = async () => {
