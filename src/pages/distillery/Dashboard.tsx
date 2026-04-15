@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import StripeConnectCard from "@/components/distillery/StripeConnectCard";
+import { SalesReports } from "@/components/distillery/SalesReports";
 
 const DistilleryDashboard = () => {
   const { user, userRole } = useAuth();
@@ -262,6 +263,9 @@ const DistilleryDashboard = () => {
           </Card>
         )}
       </div>
+
+      {/* Sales Reports */}
+      <SalesReports />
     </div>
   );
 };

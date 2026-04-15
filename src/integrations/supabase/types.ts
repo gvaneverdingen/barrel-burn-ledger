@@ -111,6 +111,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "blockchain_logs_cask_id_fkey"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks_marketplace"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "blockchain_logs_transaction_id_fkey"
             columns: ["transaction_id"]
             isOneToOne: false
@@ -198,6 +205,13 @@ export type Database = {
             columns: ["cask_id"]
             isOneToOne: false
             referencedRelation: "casks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cask_ownership_cask_id_fkey"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks_marketplace"
             referencedColumns: ["id"]
           },
           {
@@ -668,6 +682,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "offers_cask_id_fkey"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks_marketplace"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "offers_sale_listing_id_fkey"
             columns: ["sale_listing_id"]
             isOneToOne: false
@@ -732,6 +753,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      price_alerts: {
+        Row: {
+          alert_type: string
+          cask_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          target_price: number
+          triggered_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_type?: string
+          cask_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          target_price: number
+          triggered_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_type?: string
+          cask_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          target_price?: number
+          triggered_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -893,6 +950,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "transactions_cask_id_fkey"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks_marketplace"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "transactions_sale_listing_id_fkey"
             columns: ["sale_listing_id"]
             isOneToOne: false
@@ -1010,6 +1074,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "fk_wishlist_cask"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks_marketplace"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fk_wishlist_user"
             columns: ["user_id"]
             isOneToOne: false
@@ -1020,6 +1091,54 @@ export type Database = {
       }
     }
     Views: {
+      casks_marketplace: {
+        Row: {
+          age_years: number | null
+          available_for_sale: boolean | null
+          cask_number: string | null
+          cask_type_capacity: number | null
+          cask_type_id: string | null
+          cask_type_name: string | null
+          distillation_date: string | null
+          distillery_id: string | null
+          expected_maturation_years: number | null
+          finishing_cask_type: string | null
+          finishing_duration_months: number | null
+          has_been_finished: boolean | null
+          id: string | null
+          is_single_barrel: boolean | null
+          quality_grade: string | null
+          rarity_tier: number | null
+          region: string | null
+          special_finish: string | null
+          spirit_name: string | null
+          tasting_notes: string | null
+          warehouse_location: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "casks_cask_type_id_fkey"
+            columns: ["cask_type_id"]
+            isOneToOne: false
+            referencedRelation: "cask_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "casks_distillery_id_fkey"
+            columns: ["distillery_id"]
+            isOneToOne: false
+            referencedRelation: "distilleries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "casks_distillery_id_fkey"
+            columns: ["distillery_id"]
+            isOneToOne: false
+            referencedRelation: "distilleries_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       distilleries_public: {
         Row: {
           created_at: string | null
