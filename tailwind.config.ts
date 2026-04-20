@@ -72,12 +72,17 @@ export default {
 			backgroundImage: {
 				'gradient-luxury': 'var(--gradient-luxury)',
 				'gradient-gold': 'var(--gradient-gold)',
+				'gradient-champagne': 'var(--gradient-champagne)',
 				'gradient-copper': 'var(--gradient-copper)',
+				'gradient-heritage': 'var(--gradient-heritage)',
+				'gradient-parchment': 'var(--gradient-parchment)',
 				'gradient-dark': 'var(--gradient-dark)',
 			},
 			boxShadow: {
 				'luxury': 'var(--shadow-luxury)',
 				'gold': 'var(--shadow-gold)',
+				'champagne': 'var(--shadow-champagne)',
+				'heritage': 'var(--shadow-heritage)',
 				'elegant': 'var(--shadow-elegant)',
 			},
 			borderRadius: {
