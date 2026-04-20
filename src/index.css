@@ -8,37 +8,37 @@
 
 @layer base {
   :root {
-    /* Light mode: warm parchment with deep navy ink */
-    --background: 38 30% 96%;
-    --foreground: 220 35% 12%;
+    /* Light mode: deep midnight navy with champagne — luxury dark-on-light hybrid */
+    --background: 222 38% 11%;
+    --foreground: 38 35% 92%;
 
-    --card: 38 35% 98%;
-    --card-foreground: 220 35% 12%;
+    --card: 222 35% 14%;
+    --card-foreground: 38 35% 92%;
 
-    --popover: 38 35% 98%;
-    --popover-foreground: 220 35% 12%;
+    --popover: 222 35% 14%;
+    --popover-foreground: 38 35% 92%;
 
     /* Champagne primary */
-    --primary: 38 55% 60%;
-    --primary-foreground: 220 35% 12%;
+    --primary: 38 60% 68%;
+    --primary-foreground: 222 40% 10%;
 
-    /* Deep navy secondary */
-    --secondary: 220 35% 18%;
-    --secondary-foreground: 38 30% 96%;
+    /* Lighter navy secondary */
+    --secondary: 220 28% 22%;
+    --secondary-foreground: 38 35% 92%;
 
     /* Warm bronze accent */
-    --accent: 32 50% 52%;
-    --accent-foreground: 220 35% 12%;
+    --accent: 32 55% 60%;
+    --accent-foreground: 222 40% 10%;
 
-    --muted: 38 15% 88%;
-    --muted-foreground: 220 15% 38%;
+    --muted: 222 25% 18%;
+    --muted-foreground: 38 15% 68%;
 
-    --destructive: 8 70% 52%;
-    --destructive-foreground: 38 30% 96%;
+    --destructive: 8 65% 55%;
+    --destructive-foreground: 38 35% 92%;
 
-    --border: 38 15% 82%;
-    --input: 38 15% 88%;
-    --ring: 38 55% 60%;
+    --border: 222 25% 22%;
+    --input: 222 25% 18%;
+    --ring: 38 60% 68%;
 
     --radius: 0.75rem;
 
