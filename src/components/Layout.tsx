@@ -38,13 +38,13 @@ export const Layout = ({ children }: LayoutProps) => {
   const getRoleColor = (role: string | null) => {
     switch (role) {
       case 'distillery':
-        return 'text-blue-600';
+        return 'text-secondary';
       case 'consumer':
-        return 'text-green-600';
+        return 'text-accent';
       case 'investor':
-        return 'text-purple-600';
+        return 'text-primary';
       case 'administrator':
-        return 'text-orange-600';
+        return 'text-primary';
       default:
         return 'text-muted-foreground';
     }
