@@ -58,9 +58,9 @@
     --shadow-heritage: 0 12px 24px -6px hsl(220 35% 18% / 0.25);
     --shadow-elegant: 0 4px 16px -4px hsl(222 45% 8% / 0.12);
 
-    /* Action Colors */
-    --action-buy: 158 50% 38%;
-    --action-alert: 15 80% 55%;
+    /* Action Colors — champagne buy, bronze alert */
+    --action-buy: 38 60% 60%;
+    --action-alert: 15 75% 55%;
 
     /* Sidebar — deep navy */
     --sidebar-background: 220 40% 10%;
