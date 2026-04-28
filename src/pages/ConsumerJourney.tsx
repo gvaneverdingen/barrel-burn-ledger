@@ -14,6 +14,7 @@ import { toast } from '@/hooks/use-toast';
 import { User, Settings, Save, Shield, CreditCard, Lock, Eye, EyeOff, Plus, Trash2, Wallet, CheckCircle, XCircle, AlertCircle, Upload, FileText, Camera } from 'lucide-react';
 import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { SelfieCapture } from '@/components/SelfieCapture';
 
 interface UserProfile {
   id: string;
@@ -67,6 +68,7 @@ const ConsumerJourney = () => {
   const [showAccountNumber, setShowAccountNumber] = useState<{[key: string]: boolean}>({});
   const [isAddingBank, setIsAddingBank] = useState(false);
   const [verificationStep, setVerificationStep] = useState(0);
+  const [selfieOpen, setSelfieOpen] = useState(false);
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -605,13 +607,38 @@ const ConsumerJourney = () => {
                       Take a selfie while holding your government ID for verification
                     </p>
                     {getDocumentStatus('selfie') === 'not_uploaded' && (
-                      <Button variant="outline" size="sm" className="w-full gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full gap-2"
+                        onClick={() => setSelfieOpen(true)}
+                      >
                         <Camera className="h-3 w-3" />
                         Take Selfie
                       </Button>
                     )}
                   </div>
                 </div>
+
+                <SelfieCapture
+                  open={selfieOpen}
+                  onOpenChange={setSelfieOpen}
+                  onCaptured={() => {
+                    // Optimistically reflect a pending selfie until backend review
+                    setVerificationDocs((prev) => {
+                      const without = prev.filter((d) => d.document_type !== 'selfie');
+                      return [
+                        ...without,
+                        {
+                          id: `local-${Date.now()}`,
+                          document_type: 'selfie',
+                          status: 'pending',
+                          uploaded_at: new Date().toISOString(),
+                        },
+                      ];
+                    });
+                  }}
+                />
 
                 {getVerificationProgress() === 100 && (
                   <Alert className="border-green-200 bg-green-50">
