@@ -52,6 +52,7 @@ interface VerificationDocument {
   status: 'pending' | 'approved' | 'rejected';
   uploaded_at: string;
   notes?: string;
+  preview_url?: string;
 }
 
 const ConsumerJourney = () => {
@@ -606,6 +607,44 @@ const ConsumerJourney = () => {
                     <p className="text-sm text-muted-foreground">
                       Take a selfie while holding your government ID for verification
                     </p>
+                    {(() => {
+                      const selfieDoc = verificationDocs.find((d) => d.document_type === 'selfie');
+                      if (selfieDoc?.preview_url) {
+                        return (
+                          <div className="space-y-2">
+                            <div className="relative w-full aspect-[4/3] rounded-md overflow-hidden border border-border/50 bg-muted">
+                              <img
+                                src={selfieDoc.preview_url}
+                                alt="Submitted selfie"
+                                className="w-full h-full object-cover"
+                              />
+                              <Badge
+                                variant="outline"
+                                className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm"
+                              >
+                                {selfieDoc.status === 'approved'
+                                  ? 'Verified'
+                                  : selfieDoc.status === 'rejected'
+                                  ? 'Rejected'
+                                  : 'Pending review'}
+                              </Badge>
+                            </div>
+                            {selfieDoc.status !== 'approved' && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full gap-2"
+                                onClick={() => setSelfieOpen(true)}
+                              >
+                                <Camera className="h-3 w-3" />
+                                Retake Selfie
+                              </Button>
+                            )}
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
                     {getDocumentStatus('selfie') === 'not_uploaded' && (
                       <Button
                         variant="outline"
@@ -623,7 +662,7 @@ const ConsumerJourney = () => {
                 <SelfieCapture
                   open={selfieOpen}
                   onOpenChange={setSelfieOpen}
-                  onCaptured={() => {
+                  onCaptured={(publicUrl) => {
                     // Optimistically reflect a pending selfie until backend review
                     setVerificationDocs((prev) => {
                       const without = prev.filter((d) => d.document_type !== 'selfie');
@@ -634,6 +673,7 @@ const ConsumerJourney = () => {
                           document_type: 'selfie',
                           status: 'pending',
                           uploaded_at: new Date().toISOString(),
+                          preview_url: publicUrl,
                         },
                       ];
                     });
