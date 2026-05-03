@@ -175,13 +175,13 @@ serve(async (req) => {
     
     // Build transaction data based on payment method
     let txData: any;
+    const paymentTokenAddress = STABLECOIN_ADDRESSES[paymentMethod] ?? ethers.ZeroAddress;
 
     // ERC20 stablecoin payment
     {
       const tokenAddress = STABLECOIN_ADDRESSES[paymentMethod];
       if (!tokenAddress) throw new Error(`Unsupported token: ${paymentMethod}`);
-      
-      paymentTokenAddress = tokenAddress;
+
       const erc20 = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
       const decimals = await erc20.decimals();
       const tokenAmount = ethers.parseUnits(totalPriceDollars.toString(), decimals);
@@ -236,8 +236,6 @@ serve(async (req) => {
         };
       }
     }
-
-    const paymentTokenAddress = STABLECOIN_ADDRESSES[paymentMethod] ?? ethers.ZeroAddress;
 
     // Create a pending transaction in the database
     const platformFeeRate = 0.05;
