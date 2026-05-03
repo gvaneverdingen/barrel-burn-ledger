@@ -52,6 +52,7 @@ interface VerificationDocument {
   status: 'pending' | 'approved' | 'rejected';
   uploaded_at: string;
   notes?: string;
+  preview_url?: string;
 }
 
 const ConsumerJourney = () => {
