@@ -29,6 +29,26 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Require service-role key — this function is intended to be called only
+    // server-to-server from other edge functions, never from the public internet.
+    const authHeader = req.headers.get("authorization") ?? "";
+    const apiKeyHeader = req.headers.get("apikey") ?? "";
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    const bearer = authHeader.toLowerCase().startsWith("bearer ")
+      ? authHeader.slice(7).trim()
+      : "";
+    const isAuthorized =
+      serviceRoleKey.length > 0 &&
+      (bearer === serviceRoleKey || apiKeyHeader === serviceRoleKey);
+
+    if (!isAuthorized) {
+      console.warn("Unauthorized send-transaction-email call");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } },
+      );
+    }
+
     const emailData: EmailRequest = await req.json();
     
     console.log("Sending transaction email:", emailData.type, "to:", emailData.recipientEmail);
