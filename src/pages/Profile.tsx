@@ -288,7 +288,7 @@ const Profile = () => {
                 )}
               </div>
 
-              {(userRole === 'distillery' || userRole === 'investor') && (
+              {userRole === 'investor' && (
                 <div className="space-y-2">
                   <Label htmlFor="company_name">Company Name</Label>
                   {isEditing ? (
