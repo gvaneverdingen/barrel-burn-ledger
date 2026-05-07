@@ -36,6 +36,7 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [hasDistillery, setHasDistillery] = useState(false);
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -46,6 +47,7 @@ const Profile = () => {
   useEffect(() => {
     if (user && !loading) {
       fetchProfile();
+      void checkDistillery();
     }
   }, [user, loading]);
 
@@ -77,6 +79,16 @@ const Profile = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const checkDistillery = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('distilleries')
+      .select('id')
+      .eq('profile_id', user.id)
+      .maybeSingle();
+    setHasDistillery(!!data);
   };
 
   const handleSave = async () => {
@@ -150,8 +162,8 @@ const Profile = () => {
     );
   }
 
-  // Distillery users get a tailored profile page focused on their distillery details
-  if (userRole === 'distillery') {
+  // Distillery users (or admins who own a distillery) get the tailored profile page
+  if (userRole === 'distillery' || hasDistillery) {
     return (
       <div className="mobile-container space-y-6 pb-20 lg:pb-6">
         <div className="py-6">
