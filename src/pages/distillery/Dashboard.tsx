@@ -50,10 +50,29 @@ const DistilleryDashboard = () => {
     enabled: !!user && !isAdmin,
   });
 
+  // Fallback demo distillery for users without their own (so the dashboard isn't empty)
+  const { data: demoDistillery } = useQuery({
+    queryKey: ['demo-distillery'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('distilleries')
+        .select('*')
+        .eq('verified', true)
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !isAdmin && !!user,
+  });
+
   // Determine which distillery to show
   const distillery = isAdmin 
     ? allDistilleries.find(d => d.id === selectedDistilleryId) || allDistilleries[0]
-    : ownDistillery;
+    : ownDistillery || demoDistillery;
+
+  const isDemo = !isAdmin && !ownDistillery && !!demoDistillery;
 
   const { data: casks } = useQuery({
     queryKey: ['distillery-casks', distillery?.id],
@@ -95,7 +114,7 @@ const DistilleryDashboard = () => {
     );
   }
 
-  // Non-admin without distillery profile
+  // Non-admin without any distillery (own or demo)
   if (!isAdmin && !distillery) {
     return (
       <div className="container mx-auto p-6">
@@ -155,6 +174,11 @@ const DistilleryDashboard = () => {
           {isAdmin && (
             <Badge variant="outline" className="border-primary text-primary">
               Admin View
+            </Badge>
+          )}
+          {isDemo && (
+            <Badge variant="outline" className="border-primary text-primary">
+              Demo Distillery
             </Badge>
           )}
           {distillery.verified ? (
