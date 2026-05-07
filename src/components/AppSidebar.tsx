@@ -239,8 +239,8 @@ export function AppSidebar() {
                   className={({ isActive }) =>
                     `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
                       isActive
-                        ? 'bg-primary/10 text-primary font-medium border-l-2 border-primary'
-                        : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                        ? 'bg-sidebar-primary/15 text-sidebar-primary font-medium border-l-2 border-sidebar-primary'
+                        : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
                     }`
                   }
                 >
