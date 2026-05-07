@@ -359,6 +359,27 @@ const Marketplace = () => {
         </div>
       </div>
 
+      {!user && (
+        <Card className="border-primary/40 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent">
+          <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="rounded-full bg-primary/20 p-2 hidden sm:block">
+                <Sparkles className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <h2 className="font-semibold text-base sm:text-lg">You're viewing a teaser preview</h2>
+                <p className="text-sm text-muted-foreground">
+                  Sign in to unlock the full marketplace, resale listings, offers, wishlist and analytics.
+                </p>
+              </div>
+            </div>
+            <Button onClick={() => navigate('/auth')} className="w-full sm:w-auto">
+              Sign in to view all casks
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4 h-auto">
           <TabsTrigger value="marketplace" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-1.5 text-xs sm:text-sm">
