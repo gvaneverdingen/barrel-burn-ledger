@@ -7,11 +7,21 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 
+const FALLBACK_DEMO_DISTILLERY = {
+  id: 'demo-verified-distillery',
+  name: 'Highland Heritage Distillery',
+  location: 'Speyside, Scotland',
+  established_year: 1898,
+  license_number: 'DEMO-SWA-1898',
+  website: 'https://highlandheritage.example.com',
+  verified: true,
+};
+
 const DistilleryVerification = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const { data: distillery } = useQuery({
+  const { data: ownDistillery } = useQuery({
     queryKey: ['distillery', user?.id],
     queryFn: async () => {
       if (!user) return null;
@@ -20,13 +30,16 @@ const DistilleryVerification = () => {
         .from('distilleries')
         .select('*')
         .eq('profile_id', user.id)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;
     },
     enabled: !!user,
   });
+
+  const distillery: any = ownDistillery || FALLBACK_DEMO_DISTILLERY;
+  const isDemo = !ownDistillery;
 
   const getVerificationStatus = () => {
     if (!distillery) return { status: 'none', text: 'No Profile', color: 'secondary' };
@@ -72,29 +85,17 @@ const DistilleryVerification = () => {
     }
   ];
 
-  if (!distillery) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="max-w-2xl mx-auto text-center">
-          <Shield className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-          <h1 className="text-2xl font-bold mb-2">No Distillery Profile</h1>
-          <p className="text-muted-foreground mb-6">
-            You need to create a distillery profile before applying for verification.
-          </p>
-          <Button onClick={() => navigate('/profile')}>
-            Create Distillery Profile
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold luxury-text-gradient">Distillery Verification</h1>
-          <p className="text-muted-foreground">Manage your verification status and requirements</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl font-bold luxury-text-gradient">Distillery Verification</h1>
+            {isDemo && <Badge variant="secondary">Demo</Badge>}
+          </div>
+          <p className="text-muted-foreground">
+            {isDemo ? `Sample verification view for ${distillery.name}` : 'Manage your verification status and requirements'}
+          </p>
         </div>
 
         {/* Status Card */}
