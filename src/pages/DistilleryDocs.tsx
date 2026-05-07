@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const Documentation = () => {
+const DistilleryDocs = () => {
   return (
     <div className="container mx-auto p-6 space-y-8 max-w-6xl">
       <header className="space-y-2">
@@ -373,4 +373,4 @@ const Documentation = () => {
   );
 };
 
-export default Documentation;
+export default DistilleryDocs;
