@@ -51,6 +51,17 @@ const DistilleryOnboarding = () => {
     Ireland: { label: "Revenue Distiller's Licence", placeholder: "e.g. DL-2024-0123", help: "Distiller's Licence issued by the Office of the Revenue Commissioners, plus Irish Whiskey GI registration where relevant." },
     USA: { label: "TTB DSP Permit Number", placeholder: "e.g. DSP-KY-12345", help: "Distilled Spirits Plant permit issued by the Alcohol and Tobacco Tax and Trade Bureau (TTB)." },
     France: { label: "Numéro d'Entrepositaire Agréé", placeholder: "e.g. FR123456789", help: "Numéro d'accise délivré par la Direction Générale des Douanes et Droits Indirects (DGDDI)." },
+    Germany: { label: "Steuerlagernummer (Hauptzollamt)", placeholder: "e.g. DE00000000000", help: "Herstellungserlaubnis und Steuerlagernummer ausgestellt vom zuständigen Hauptzollamt." },
+    Netherlands: { label: "Vergunning AGP (Douane)", placeholder: "e.g. NL/AGP/1234567", help: "Vergunning accijnsgoederenplaats (AGP) afgegeven door de Nederlandse Douane." },
+    Belgium: { label: "Vergunning Belastingentrepot (AAD&A)", placeholder: "e.g. BE/AGP/1234567", help: "Vergunning belastingentrepot uitgereikt door de Algemene Administratie van de Douane en Accijnzen." },
+    Spain: { label: "Código de Actividad y Establecimiento (CAE)", placeholder: "e.g. ES00012345AB", help: "CAE emitido por la Agencia Estatal de Administración Tributaria para depósitos fiscales." },
+    Italy: { label: "Licenza di Deposito Fiscale", placeholder: "e.g. IT00IT00012345A", help: "Codice accisa rilasciato dall'Agenzia delle Dogane e dei Monopoli." },
+    Sweden: { label: "Godkänd Upplagshavare (Skatteverket)", placeholder: "e.g. SE0000000000", help: "Godkännande som upplagshavare utfärdat av Skatteverket." },
+    Denmark: { label: "Autoriseret Oplagshaver (Skattestyrelsen)", placeholder: "e.g. DK00000000", help: "Autorisation som oplagshaver udstedt af Skattestyrelsen." },
+    Poland: { label: "Zezwolenie na Skład Podatkowy (KAS)", placeholder: "e.g. PL00000000000", help: "Zezwolenie na prowadzenie składu podatkowego wydane przez Krajową Administrację Skarbową." },
+    Austria: { label: "Steuerlagerbewilligung (Zollamt Österreich)", placeholder: "e.g. AT00000000", help: "Steuerlagerbewilligung ausgestellt vom Zollamt Österreich." },
+    Switzerland: { label: "Brennereikonzession (BAZG/EZV)", placeholder: "e.g. CH-BR-12345", help: "Konzession für Brennereien gemäss Alkoholgesetz, ausgestellt vom Bundesamt für Zoll und Grenzsicherheit." },
+    Norway: { label: "Bevilling for Alkoholproduksjon (Skatteetaten)", placeholder: "e.g. NO000000000", help: "Bevilling for produksjon av alkohol utstedt av Skatteetaten." },
     Japan: { label: "NTA Spirits Manufacturer Licence", placeholder: "e.g. 国税-12345", help: "Distilled spirits manufacturer licence issued by the National Tax Agency (国税庁)." },
     Canada: { label: "CRA Excise Spirits Licence", placeholder: "e.g. SL-12345", help: "Spirits Licence issued by the Canada Revenue Agency under the Excise Act, 2001." },
     Australia: { label: "ATO Excise Manufacturer Licence", placeholder: "e.g. EXC-12345", help: "Excise Manufacturer Licence issued by the Australian Taxation Office." },
@@ -243,8 +254,19 @@ const DistilleryOnboarding = () => {
                       <SelectItem value="UK">United Kingdom (England / Wales / NI)</SelectItem>
                       <SelectItem value="Scotland">Scotland</SelectItem>
                       <SelectItem value="Ireland">Ireland</SelectItem>
-                      <SelectItem value="USA">United States</SelectItem>
                       <SelectItem value="France">France</SelectItem>
+                      <SelectItem value="Germany">Germany</SelectItem>
+                      <SelectItem value="Netherlands">Netherlands</SelectItem>
+                      <SelectItem value="Belgium">Belgium</SelectItem>
+                      <SelectItem value="Spain">Spain</SelectItem>
+                      <SelectItem value="Italy">Italy</SelectItem>
+                      <SelectItem value="Sweden">Sweden</SelectItem>
+                      <SelectItem value="Denmark">Denmark</SelectItem>
+                      <SelectItem value="Poland">Poland</SelectItem>
+                      <SelectItem value="Austria">Austria</SelectItem>
+                      <SelectItem value="Switzerland">Switzerland</SelectItem>
+                      <SelectItem value="Norway">Norway</SelectItem>
+                      <SelectItem value="USA">United States</SelectItem>
                       <SelectItem value="Japan">Japan</SelectItem>
                       <SelectItem value="Canada">Canada</SelectItem>
                       <SelectItem value="Australia">Australia</SelectItem>
