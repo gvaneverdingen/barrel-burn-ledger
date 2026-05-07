@@ -113,7 +113,9 @@ export function AppSidebar() {
   
   const currentPublicItems = getPublicItems()
   const currentUserItems = getUserItems()
-  const currentSupportItems = getSupportItems()
+  const currentSupportItems = getSupportItems().filter(
+    (item) => user || item.url !== "/settings"
+  )
   
   const isPublicExpanded = currentPublicItems.some((i) => isActive(i.url))
   const isUserExpanded = user && currentUserItems.some((i) => isActive(i.url))
