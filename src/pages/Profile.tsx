@@ -162,8 +162,8 @@ const Profile = () => {
     );
   }
 
-  // Distillery users get a tailored profile page focused on their distillery details
-  if (userRole === 'distillery') {
+  // Distillery users (or admins who own a distillery) get the tailored profile page
+  if (userRole === 'distillery' || hasDistillery) {
     return (
       <div className="mobile-container space-y-6 pb-20 lg:pb-6">
         <div className="py-6">
