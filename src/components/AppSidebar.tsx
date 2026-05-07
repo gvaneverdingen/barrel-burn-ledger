@@ -188,7 +188,7 @@ export function AppSidebar() {
         {(user && !isConsumer) || (user && isConsumer) ? (
           <div className="px-2 mb-6">
             <div 
-              className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2 transition-all duration-300 ${
+              className={`text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-3 px-2 transition-all duration-300 font-inter ${
                 isExpanded ? 'opacity-100' : 'opacity-0'
               }`}
             >
@@ -202,8 +202,8 @@ export function AppSidebar() {
                   className={({ isActive }) =>
                     `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
                       isActive
-                        ? 'bg-primary/10 text-primary font-medium border-l-2 border-primary'
-                        : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                        ? 'bg-sidebar-primary/15 text-sidebar-primary font-medium border-l-2 border-sidebar-primary'
+                        : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
                     }`
                   }
                 >
@@ -225,7 +225,7 @@ export function AppSidebar() {
         {((user && isDistillery) || (user && isAdmin)) && (
           <div className="px-2 mb-6">
             <div 
-              className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2 transition-all duration-300 ${
+              className={`text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-3 px-2 transition-all duration-300 font-inter ${
                 isExpanded ? 'opacity-100' : 'opacity-0'
               }`}
             >
@@ -262,7 +262,7 @@ export function AppSidebar() {
         {user && !isDistillery && !isAdmin && (
           <div className="px-2 mb-6">
             <div 
-              className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2 transition-all duration-300 ${
+              className={`text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-3 px-2 transition-all duration-300 font-inter ${
                 isExpanded ? 'opacity-100' : 'opacity-0'
               }`}
             >
@@ -274,8 +274,8 @@ export function AppSidebar() {
                 className={({ isActive }) =>
                   `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
                     isActive
-                      ? 'bg-primary/10 text-primary font-medium border-l-2 border-primary'
-                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                      ? 'bg-sidebar-primary/15 text-sidebar-primary font-medium border-l-2 border-sidebar-primary'
+                      : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
                   }`
                 }
               >
@@ -295,7 +295,7 @@ export function AppSidebar() {
         {/* Support & Settings */}
         <div className="px-2">
           <div 
-            className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2 transition-all duration-300 ${
+            className={`text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-3 px-2 transition-all duration-300 font-inter ${
               isExpanded ? 'opacity-100' : 'opacity-0'
             }`}
           >
@@ -309,8 +309,8 @@ export function AppSidebar() {
                 className={({ isActive }) =>
                   `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
                     isActive
-                      ? 'bg-primary/10 text-primary font-medium border-l-2 border-primary'
-                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                      ? 'bg-sidebar-primary/15 text-sidebar-primary font-medium border-l-2 border-sidebar-primary'
+                      : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
                   }`
                 }
               >
