@@ -68,6 +68,7 @@ const supportItems = [
 ]
 
 const consumerSupportItems = [
+  { title: "Documentation", url: "/docs", icon: FileText },
   { title: "Help Center", url: "/help", icon: HelpCircle },
   { title: "Settings", url: "/settings", icon: Settings },
 ]
