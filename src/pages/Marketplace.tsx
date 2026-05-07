@@ -30,7 +30,9 @@ import {
   Shield,
   Eye,
   ArrowLeftRight,
-  HandCoins
+  HandCoins,
+  Lock,
+  Sparkles
 } from 'lucide-react';
 import { MarketplaceAnalytics } from '@/components/MarketplaceAnalytics';
 import { MatchmakingSystem } from '@/components/MatchmakingSystem';
@@ -121,7 +123,7 @@ const Marketplace = () => {
 
   useEffect(() => {
     fetchAllListings();
-  }, []);
+  }, [user]);
 
   const fetchAllListings = async () => {
     try {
@@ -146,8 +148,8 @@ const Marketplace = () => {
 
       if (primaryError) throw primaryError;
 
-      // Fetch secondary market listings
-      const { data: secondaryListings, error: secondaryError } = await supabase
+      // Secondary market listings are restricted to authenticated users.
+      const { data: secondaryListings, error: secondaryError } = user ? await supabase
         .from('cask_sales')
         .select(`
           *,
@@ -180,7 +182,7 @@ const Marketplace = () => {
           )
         `)
         .eq('status', 'active')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) : { data: [], error: null };
 
       if (secondaryError) throw secondaryError;
 
@@ -289,7 +291,7 @@ const Marketplace = () => {
     }
   };
 
-  const filteredListings = allListings
+  const filteredListingsAll = allListings
     .filter(listing => {
       const lowerSearch = searchTerm.toLowerCase();
       const distilleryName = listing.distilleries?.name?.toLowerCase() || "";
@@ -319,6 +321,12 @@ const Marketplace = () => {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       }
     });
+
+  // Teaser preview: limit to 6 listings for unauthenticated visitors
+  const TEASER_LIMIT = 6;
+  const filteredListings = user
+    ? filteredListingsAll
+    : filteredListingsAll.slice(0, TEASER_LIMIT);
 
   if (loading) {
     return (
@@ -350,6 +358,27 @@ const Marketplace = () => {
           </div>
         </div>
       </div>
+
+      {!user && (
+        <Card className="border-primary/40 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent">
+          <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="rounded-full bg-primary/20 p-2 hidden sm:block">
+                <Sparkles className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <h2 className="font-semibold text-base sm:text-lg">You're viewing a teaser preview</h2>
+                <p className="text-sm text-muted-foreground">
+                  Sign in to unlock the full marketplace, resale listings, offers, wishlist and analytics.
+                </p>
+              </div>
+            </div>
+            <Button onClick={() => navigate('/auth')} className="w-full sm:w-auto">
+              Sign in to view all casks
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4 h-auto">
@@ -633,6 +662,24 @@ const Marketplace = () => {
               </Card>
             ))}
           </div>
+
+          {!user && filteredListingsAll.length > TEASER_LIMIT && (
+            <Card className="border-primary/40 bg-card">
+              <CardContent className="p-6 sm:p-8 text-center space-y-3">
+                <Lock className="h-10 w-10 text-primary mx-auto" />
+                <h3 className="text-lg sm:text-xl font-semibold">
+                  {filteredListingsAll.length - TEASER_LIMIT}+ more casks waiting for you
+                </h3>
+                <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
+                  Create a free account to browse the full marketplace, see resale listings, save favourites and make offers.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2 justify-center pt-2">
+                  <Button onClick={() => navigate('/auth')}>Sign up free</Button>
+                  <Button variant="outline" onClick={() => navigate('/auth')}>I already have an account</Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {filteredListings.length === 0 && (
             <Card>
