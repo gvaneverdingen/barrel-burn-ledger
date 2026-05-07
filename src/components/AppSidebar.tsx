@@ -19,6 +19,10 @@ const publicItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "My Profile", url: "/consumer-journey", icon: Route },
   { title: "Marketplace", url: "/marketplace", icon: Package },
+]
+
+// Items only visible to signed-in users
+const authedPublicItems = [
   { title: "Wishlist", url: "/wishlist", icon: Heart },
   { title: "My Offers", url: "/offers", icon: HandCoins },
 ]
@@ -83,13 +87,14 @@ export function AppSidebar() {
   
   // Determine which items to show based on role
   const getPublicItems = () => {
+    const base = user ? [...publicItems, ...authedPublicItems] : publicItems
     if (isConsumer) {
-      return publicItems // Consumer sees basic public items
+      return base
     }
     if (isAdmin) {
-      return [...publicItems, ...adminItems] // Admin sees everything
+      return [...base, ...adminItems]
     }
-    return publicItems // Others see basic public items
+    return base
   }
   
   const getUserItems = () => {
