@@ -58,6 +58,14 @@ const distilleryItems = [
   { title: "Verification", url: "/distillery/verification", icon: Shield },
 ]
 
+// Account items shown to a distillery user (sellers, not buyers)
+const distilleryAccountItems = [
+  { title: "Transactions", url: "/transactions", icon: CreditCard },
+  { title: "Notifications", url: "/notifications", icon: Bell },
+  { title: "Market Insights", url: "/insights", icon: TrendingUp },
+  { title: "AI Price Tracker", url: "/market-insights", icon: TrendingUp },
+]
+
 // For non-distillery users
 const becomeDistilleryItem = { title: "Become a Distillery", url: "/distillery/onboarding", icon: PlusCircle };
 
@@ -88,6 +96,13 @@ export function AppSidebar() {
   
   // Determine which items to show based on role
   const getPublicItems = () => {
+    // Distilleries are sellers — hide buyer-only entries (Consumer Journey, Wishlist, My Offers)
+    if (isDistillery) {
+      return [
+        { title: "Home", url: "/", icon: Home },
+        { title: "Marketplace", url: "/marketplace", icon: Package },
+      ]
+    }
     const base = user ? [...publicItems, ...authedPublicItems] : publicItems
     if (isConsumer) {
       return base
@@ -99,6 +114,9 @@ export function AppSidebar() {
   }
   
   const getUserItems = () => {
+    if (isDistillery) {
+      return distilleryAccountItems
+    }
     if (isConsumer) {
       return consumerItems // Consumer sees only portfolio and profile
     }
