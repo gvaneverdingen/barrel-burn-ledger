@@ -173,7 +173,7 @@ const AppRoutes = () => {
             
             {/* Documentation and Help - Available to all */}
             <Route path="/docs" element={
-              <RoleBasedRoute allowedRoles={['investor', 'distillery', 'facilitator', 'administrator']}>
+              <RoleBasedRoute allowedRoles={['distillery', 'administrator', 'consumer']}>
                 <Documentation />
               </RoleBasedRoute>
             } />
