@@ -88,7 +88,7 @@ const DistilleryDashboard = () => {
       if (caskErr) {
         console.warn('Demo distillery cask lookup failed; falling back to verified distillery lookup.', caskErr);
       }
-      if (cask?.distilleries) return cask.distilleries as any;
+      if (cask?.distilleries) return cask.distilleries as typeof FALLBACK_DEMO_DISTILLERY;
       const { data, error } = await supabase
         .from('distilleries')
         .select('*')
