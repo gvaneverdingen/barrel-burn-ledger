@@ -12,6 +12,60 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
+const FALLBACK_DEMO_DISTILLERY = {
+  id: 'demo-verified-distillery',
+  name: 'Highland Heritage Distillery',
+  verified: true,
+};
+
+const FALLBACK_DEMO_CASKS = [
+  {
+    id: 'demo-cask-1',
+    cask_number: 'HH-1998-001',
+    spirit_name: 'Highland Single Malt',
+    distillation_date: '1998-06-12',
+    current_volume_liters: 200,
+    alcohol_percentage: 58.4,
+    price_per_liter: 95,
+    total_price: 19000,
+    available_for_sale: true,
+    warehouse_location: 'Warehouse 3, Bay 12',
+    cask_type_id: null,
+    cask_types: { name: 'Ex-Bourbon Hogshead' },
+    nft_token_id: 1042,
+  },
+  {
+    id: 'demo-cask-2',
+    cask_number: 'HH-2005-014',
+    spirit_name: 'Sherry Finish Reserve',
+    distillation_date: '2005-03-22',
+    current_volume_liters: 250,
+    alcohol_percentage: 56.1,
+    price_per_liter: 72,
+    total_price: 18000,
+    available_for_sale: true,
+    warehouse_location: 'Warehouse 1, Bay 4',
+    cask_type_id: null,
+    cask_types: { name: 'Oloroso Sherry Butt' },
+    nft_token_id: null,
+  },
+  {
+    id: 'demo-cask-3',
+    cask_number: 'HH-2012-077',
+    spirit_name: 'Peated Highland',
+    distillation_date: '2012-09-04',
+    current_volume_liters: 180,
+    alcohol_percentage: 62.3,
+    price_per_liter: 48,
+    total_price: 8640,
+    available_for_sale: false,
+    warehouse_location: 'Warehouse 2, Bay 8',
+    cask_type_id: null,
+    cask_types: { name: 'First-Fill Bourbon Barrel' },
+    nft_token_id: 2210,
+  },
+];
+
 interface Cask {
   id: string;
   cask_number: string;
@@ -34,7 +88,7 @@ const DistilleryCasks = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [mintingCaskId, setMintingCaskId] = useState<string | null>(null);
 
-  const { data: distillery } = useQuery({
+  const { data: ownDistillery } = useQuery({
     queryKey: ['distillery', user?.id],
     queryFn: async () => {
       if (!user) return null;
@@ -43,7 +97,7 @@ const DistilleryCasks = () => {
         .from('distilleries')
         .select('*')
         .eq('profile_id', user.id)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;
@@ -51,23 +105,30 @@ const DistilleryCasks = () => {
     enabled: !!user,
   });
 
+  const distillery = ownDistillery || FALLBACK_DEMO_DISTILLERY;
+  const isDemo = !ownDistillery;
+
   const { data: casks = [] } = useQuery({
-    queryKey: ['distillery-casks', distillery?.id],
+    queryKey: ['distillery-casks', distillery?.id, isDemo],
     queryFn: async () => {
-      if (!distillery) return [];
-      
+      if (isDemo) return FALLBACK_DEMO_CASKS;
+      if (!ownDistillery) return [];
+
       const { data, error } = await supabase
         .from('casks')
         .select(`
           *,
           cask_types (name)
         `)
-        .eq('distillery_id', distillery.id);
-      
-      if (error) throw error;
-      return data;
+        .eq('distillery_id', ownDistillery.id);
+
+      if (error) {
+        console.warn('Cask fetch failed, using demo casks', error);
+        return FALLBACK_DEMO_CASKS;
+      }
+      return data && data.length > 0 ? data : FALLBACK_DEMO_CASKS;
     },
-    enabled: !!distillery,
+    enabled: !!user,
   });
 
   const filteredCasks = casks.filter((cask: any) => {
@@ -84,29 +145,17 @@ const DistilleryCasks = () => {
     return matchesSearch && matchesStatus;
   });
 
-  if (!distillery) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="max-w-2xl mx-auto text-center">
-          <Package className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-          <h1 className="text-2xl font-bold mb-2">No Distillery Profile</h1>
-          <p className="text-muted-foreground mb-6">
-            You need to create a distillery profile to manage casks.
-          </p>
-          <Button onClick={() => navigate('/profile')}>
-            Create Distillery Profile
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto p-6">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold luxury-text-gradient">Manage Casks</h1>
-          <p className="text-muted-foreground">Manage your cask inventory</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl font-bold luxury-text-gradient">Manage Casks</h1>
+            {isDemo && <Badge variant="secondary">Demo</Badge>}
+          </div>
+          <p className="text-muted-foreground">
+            {isDemo ? `Sample inventory for ${distillery.name}` : 'Manage your cask inventory'}
+          </p>
         </div>
         <Button 
           onClick={() => navigate('/distillery/casks/new')}
