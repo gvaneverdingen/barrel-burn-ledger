@@ -30,7 +30,9 @@ import {
   Shield,
   Eye,
   ArrowLeftRight,
-  HandCoins
+  HandCoins,
+  Lock,
+  Sparkles
 } from 'lucide-react';
 import { MarketplaceAnalytics } from '@/components/MarketplaceAnalytics';
 import { MatchmakingSystem } from '@/components/MatchmakingSystem';
