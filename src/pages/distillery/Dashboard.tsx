@@ -176,6 +176,11 @@ const DistilleryDashboard = () => {
               Admin View
             </Badge>
           )}
+          {isDemo && (
+            <Badge variant="outline" className="border-primary text-primary">
+              Demo Distillery
+            </Badge>
+          )}
           {distillery.verified ? (
             <Badge variant="default" className="bg-green-500">
               <Shield className="h-4 w-4 mr-1" />
