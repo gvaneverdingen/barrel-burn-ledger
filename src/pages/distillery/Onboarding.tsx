@@ -310,10 +310,9 @@ const DistilleryOnboarding = () => {
                   <Input
                     id="website"
                     name="website"
-                    type="url"
                     value={formData.website}
                     onChange={handleInputChange}
-                    placeholder="https://www.yourdistillery.com"
+                    placeholder="www.distillery.com"
                   />
                 </div>
 
