@@ -12,6 +12,30 @@ const Help = () => {
 
   const faqItems = [
     {
+      question: "How does ARIGI use blockchain, and why does it matter for transparency?",
+      answer: "Every cask on ARIGI is minted as an NFT on the Polygon blockchain before it can be listed on the marketplace. This NFT acts as a tamper-proof certificate of ownership and provenance: distillery of origin, fill date, cask type, ABV, and a full history of transfers are all recorded on-chain. Because the ledger is public, anyone can independently verify that a cask exists, who currently owns it, and every transaction it has been part of — without having to trust ARIGI as the sole record-keeper. We use server-side minting so you do not need to manage a crypto wallet, but the on-chain link from your cask page (look for the Polygon explorer link) lets you audit the record at any time."
+    },
+    {
+      question: "Can I see the on-chain record of my cask?",
+      answer: "Yes. Every cask detail page includes an NFT provenance card with a direct link to the Polygon block explorer. There you can see the contract, token ID, mint transaction, and the full transfer history. Resales executed through ARIGI are also reflected on-chain, giving you a verifiable audit trail from the distillery to the current owner."
+    },
+    {
+      question: "What happens when my cask is bottled?",
+      answer: "When a cask reaches maturity you can choose to bottle it instead of selling it on. ARIGI coordinates with the bonded warehouse and an approved bottler to disgorge, reduce to bottling strength, label, and (where applicable) pay duty and VAT. Typical yield depends on cask type and angel's share — a refill hogshead at 12 years often yields around 250–320 bottles at 46% ABV. Bottling, labelling, duty, and shipping are billed separately and quoted before you confirm. Once bottled, the underlying NFT is marked as redeemed so the on-chain record reflects that the cask has left maturation."
+    },
+    {
+      question: "What are the legal rules for Scotch Whisky?",
+      answer: "Scotch Whisky is protected by the Scotch Whisky Regulations 2009 (UK). To be called Scotch, the spirit must be: produced at a distillery in Scotland from water and malted barley (other whole grains may be added); processed at that distillery into a mash, fermented only by yeast, and distilled to less than 94.8% ABV; matured in oak casks of no more than 700 litres in an excise warehouse in Scotland for a minimum of three years; bottled at no less than 40% ABV; and contain no added substances other than water and plain caramel colouring (E150A). Any age statement must refer to the youngest whisky in the bottle."
+    },
+    {
+      question: "What is the difference between Single Malt and Single Grain Scotch Whisky?",
+      answer: "Single Malt Scotch is made at a single distillery using only malted barley and distilled in copper pot stills, in batches. Single Grain Scotch is also made at a single distillery but may include other malted or unmalted cereals (typically wheat or maize alongside some malted barley) and is usually distilled continuously in column (Coffey) stills, producing a lighter spirit. 'Single' refers to a single distillery, not a single cask. Blended Scotch combines malt and grain whiskies from multiple distilleries; Blended Malt combines malts from multiple distilleries with no grain whisky."
+    },
+    {
+      question: "What about whiskies from other countries?",
+      answer: "Whisky is made around the world and each country has its own rules and style. Irish Whiskey must be distilled and matured on the island of Ireland for at least three years and is often triple-distilled and lighter in style. American Bourbon must be made in the USA from a mash of at least 51% corn and aged in new charred oak; Tennessee Whiskey adds the Lincoln County (charcoal) mellowing process. Rye Whiskey requires at least 51% rye. Japanese Whisky, under the JSLMA standard (2021), must be made from malted grains with water sourced in Japan, fermented, distilled, matured at least three years and bottled in Japan at 40% ABV or higher. Canadian Whisky must be mashed, distilled and aged in Canada for at least three years in wood not exceeding 700 litres. Other notable origins include Taiwan, India, Australia and continental Europe — many can be held and traded on ARIGI provided provenance can be verified on-chain."
+    },
+    {
       question: "How do I make my first cask purchase?",
       answer: "Navigate to the Marketplace, browse available casks, select one that meets your criteria, and follow the secure checkout process. Our team will guide you through verification and payment."
     },
