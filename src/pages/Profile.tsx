@@ -15,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { SignInPrompt } from '@/components/SignInPrompt';
+import { DistilleryProfileSection } from '@/components/profile/DistilleryProfileSection';
 
 interface UserProfile {
   id: string;
@@ -145,6 +146,28 @@ const Profile = () => {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
           <p className="mt-2 text-muted-foreground">Loading profile...</p>
         </div>
+      </div>
+    );
+  }
+
+  // Distillery users get a tailored profile page focused on their distillery details
+  if (userRole === 'distillery') {
+    return (
+      <div className="mobile-container space-y-6 pb-20 lg:pb-6">
+        <div className="py-6">
+          <div className="flex items-center gap-3">
+            <AvatarUpload avatarUrl={avatarUrl} onUploaded={(url) => setAvatarUrl(url)} />
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold">Distillery Profile</h1>
+              <p className="text-sm text-muted-foreground">Manage your distillery details and verification</p>
+            </div>
+          </div>
+        </div>
+
+        <DistilleryProfileSection
+          userId={user.id}
+          email={profile?.email || user.email || ''}
+        />
       </div>
     );
   }
