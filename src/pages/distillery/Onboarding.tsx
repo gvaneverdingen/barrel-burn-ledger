@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building2, CheckCircle, ArrowRight } from "lucide-react";
+import { Building2, CheckCircle, ArrowRight, ShieldAlert } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useNavigate } from "react-router-dom";
