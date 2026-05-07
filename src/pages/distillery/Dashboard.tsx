@@ -54,6 +54,15 @@ const DistilleryDashboard = () => {
   const { data: demoDistillery } = useQuery({
     queryKey: ['demo-distillery'],
     queryFn: async () => {
+      // Prefer a verified distillery that actually has casks so the dashboard is populated.
+      const { data: cask, error: caskErr } = await supabase
+        .from('casks')
+        .select('distillery_id, distilleries!inner(*)')
+        .eq('distilleries.verified', true)
+        .limit(1)
+        .maybeSingle();
+      if (caskErr) throw caskErr;
+      if (cask?.distilleries) return cask.distilleries as any;
       const { data, error } = await supabase
         .from('distilleries')
         .select('*')
