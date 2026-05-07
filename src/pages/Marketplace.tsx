@@ -123,7 +123,7 @@ const Marketplace = () => {
 
   useEffect(() => {
     fetchAllListings();
-  }, []);
+  }, [user]);
 
   const fetchAllListings = async () => {
     try {
@@ -148,8 +148,8 @@ const Marketplace = () => {
 
       if (primaryError) throw primaryError;
 
-      // Fetch secondary market listings
-      const { data: secondaryListings, error: secondaryError } = await supabase
+      // Secondary market listings are restricted to authenticated users.
+      const { data: secondaryListings, error: secondaryError } = user ? await supabase
         .from('cask_sales')
         .select(`
           *,
@@ -182,7 +182,7 @@ const Marketplace = () => {
           )
         `)
         .eq('status', 'active')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) : { data: [], error: null };
 
       if (secondaryError) throw secondaryError;
 
