@@ -291,7 +291,7 @@ const Marketplace = () => {
     }
   };
 
-  const filteredListings = allListings
+  const filteredListingsAll = allListings
     .filter(listing => {
       const lowerSearch = searchTerm.toLowerCase();
       const distilleryName = listing.distilleries?.name?.toLowerCase() || "";
@@ -321,6 +321,12 @@ const Marketplace = () => {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       }
     });
+
+  // Teaser preview: limit to 6 listings for unauthenticated visitors
+  const TEASER_LIMIT = 6;
+  const filteredListings = user
+    ? filteredListingsAll
+    : filteredListingsAll.slice(0, TEASER_LIMIT);
 
   if (loading) {
     return (
