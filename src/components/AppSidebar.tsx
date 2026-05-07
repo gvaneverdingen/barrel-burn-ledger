@@ -100,6 +100,7 @@ export function AppSidebar() {
     if (isDistillery) {
       return [
         { title: "Home", url: "/", icon: Home },
+        { title: "My Profile", url: "/profile", icon: User },
         { title: "Marketplace", url: "/marketplace", icon: Package },
       ]
     }
