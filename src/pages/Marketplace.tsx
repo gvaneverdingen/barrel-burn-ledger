@@ -663,6 +663,24 @@ const Marketplace = () => {
             ))}
           </div>
 
+          {!user && filteredListingsAll.length > TEASER_LIMIT && (
+            <Card className="border-primary/40 bg-card">
+              <CardContent className="p-6 sm:p-8 text-center space-y-3">
+                <Lock className="h-10 w-10 text-primary mx-auto" />
+                <h3 className="text-lg sm:text-xl font-semibold">
+                  {filteredListingsAll.length - TEASER_LIMIT}+ more casks waiting for you
+                </h3>
+                <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
+                  Create a free account to browse the full marketplace, see resale listings, save favourites and make offers.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2 justify-center pt-2">
+                  <Button onClick={() => navigate('/auth')}>Sign up free</Button>
+                  <Button variant="outline" onClick={() => navigate('/auth')}>I already have an account</Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {filteredListings.length === 0 && (
             <Card>
               <CardContent className="p-12 text-center">
