@@ -10,6 +10,9 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   userRole: UserRole | null;
+  realRole: UserRole | null;
+  viewAsRole: UserRole | null;
+  setViewAsRole: (role: UserRole | null) => void;
   loading: boolean;
   profileComplete: boolean;
   signUp: (email: string, password: string, role: UserRole, additionalData?: any) => Promise<{ error: any }>;
@@ -31,9 +34,27 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [realRole, setRealRole] = useState<UserRole | null>(null);
+  const [viewAsRole, setViewAsRoleState] = useState<UserRole | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const v = localStorage.getItem('arigi_view_as_role');
+    return (v as UserRole) || null;
+  });
   const [profileComplete, setProfileComplete] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const setViewAsRole = (role: UserRole | null) => {
+    setViewAsRoleState(role);
+    if (typeof window !== 'undefined') {
+      if (role) localStorage.setItem('arigi_view_as_role', role);
+      else localStorage.removeItem('arigi_view_as_role');
+    }
+  };
+
+  // Effective role: admins can impersonate another role for UI testing
+  const userRole: UserRole | null =
+    realRole === 'administrator' && viewAsRole ? viewAsRole : realRole;
+  const setUserRole = setRealRole;
   
   const { isLoggedIn: isMagicLoggedIn, userMetadata: magicUserMetadata, walletAddress, logout: magicLogout } = useMagic();
 
@@ -332,7 +353,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const value = {
-    user, session, userRole, loading, profileComplete,
+    user, session, userRole, realRole, viewAsRole, setViewAsRole, loading, profileComplete,
     signUp, signIn, signOut, refreshUserData,
   };
 
