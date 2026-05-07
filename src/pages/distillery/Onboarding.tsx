@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building2, CheckCircle, ArrowRight } from "lucide-react";
+import { Building2, CheckCircle, ArrowRight, ShieldAlert } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useNavigate } from "react-router-dom";
@@ -172,6 +172,27 @@ const DistilleryOnboarding = () => {
           <Button onClick={() => navigate('/distillery')}>
             Go to Distillery Dashboard
           </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Consumers cannot apply to become a distillery
+  if (userRole === 'consumer') {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="max-w-2xl mx-auto text-center">
+          <ShieldAlert className="h-16 w-16 mx-auto mb-4 text-destructive" />
+          <h1 className="text-2xl font-bold mb-2">Distillery Applications Not Available</h1>
+          <p className="text-muted-foreground mb-6">
+            Consumer accounts cannot apply to become a distillery. Distillery onboarding is reserved
+            for licensed producers and is handled by the ARIGI partnerships team. If you operate a
+            licensed distillery and would like to be listed, please contact us directly.
+          </p>
+          <div className="flex justify-center gap-3">
+            <Button variant="outline" onClick={() => navigate('/')}>Back to Home</Button>
+            <Button onClick={() => navigate('/help')}>Contact Partnerships</Button>
+          </div>
         </div>
       </div>
     );
