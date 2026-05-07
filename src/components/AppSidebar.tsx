@@ -60,6 +60,7 @@ const distilleryItems = [
 
 // Account items shown to a distillery user (sellers, not buyers)
 const distilleryAccountItems = [
+  { title: "My Profile", url: "/profile", icon: User },
   { title: "Transactions", url: "/transactions", icon: CreditCard },
   { title: "Notifications", url: "/notifications", icon: Bell },
   { title: "Market Insights", url: "/insights", icon: TrendingUp },
