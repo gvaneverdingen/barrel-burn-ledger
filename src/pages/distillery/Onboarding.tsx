@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building2, CheckCircle, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { SignInPrompt } from "@/components/SignInPrompt";
@@ -23,6 +24,7 @@ const DistilleryOnboarding = () => {
     established_year: "",
     license_number: "",
     website: "",
+    country: "",
   });
 
   // Check if user already has a distillery application
@@ -43,6 +45,20 @@ const DistilleryOnboarding = () => {
     enabled: !!user,
   });
 
+  const LICENSE_BY_COUNTRY: Record<string, { label: string; placeholder: string; help: string }> = {
+    UK: { label: "HMRC AWRS Number", placeholder: "e.g. XYAW00000123456", help: "Alcohol Wholesaler Registration Scheme number issued by HMRC, plus your Distiller's Licence under the Alcoholic Liquor Duties Act 1979." },
+    Scotland: { label: "HMRC AWRS + SWA Producer Reference", placeholder: "e.g. XYAW00000123456 / SWA-1234", help: "HMRC AWRS number and your Scotch Whisky Regulations 2009 producer registration. SWA membership reference if applicable." },
+    Ireland: { label: "Revenue Distiller's Licence", placeholder: "e.g. DL-2024-0123", help: "Distiller's Licence issued by the Office of the Revenue Commissioners, plus Irish Whiskey GI registration where relevant." },
+    USA: { label: "TTB DSP Permit Number", placeholder: "e.g. DSP-KY-12345", help: "Distilled Spirits Plant permit issued by the Alcohol and Tobacco Tax and Trade Bureau (TTB)." },
+    France: { label: "Numéro d'Entrepositaire Agréé", placeholder: "e.g. FR123456789", help: "Numéro d'accise délivré par la Direction Générale des Douanes et Droits Indirects (DGDDI)." },
+    Japan: { label: "NTA Spirits Manufacturer Licence", placeholder: "e.g. 国税-12345", help: "Distilled spirits manufacturer licence issued by the National Tax Agency (国税庁)." },
+    Canada: { label: "CRA Excise Spirits Licence", placeholder: "e.g. SL-12345", help: "Spirits Licence issued by the Canada Revenue Agency under the Excise Act, 2001." },
+    Australia: { label: "ATO Excise Manufacturer Licence", placeholder: "e.g. EXC-12345", help: "Excise Manufacturer Licence issued by the Australian Taxation Office." },
+    Other: { label: "Distillery Licence / Permit Number", placeholder: "Your national regulatory licence number", help: "Provide the production / excise licence number issued by the regulator in your country." },
+  };
+
+  const licenseConfig = LICENSE_BY_COUNTRY[formData.country] || LICENSE_BY_COUNTRY.Other;
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -56,7 +72,7 @@ const DistilleryOnboarding = () => {
       return;
     }
 
-    if (!formData.name || !formData.location || !formData.license_number) {
+    if (!formData.name || !formData.location || !formData.license_number || !formData.country) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -70,7 +86,7 @@ const DistilleryOnboarding = () => {
         .insert({
           profile_id: user.id,
           name: formData.name,
-          location: formData.location,
+          location: `${formData.location}${formData.country ? `, ${formData.country}` : ""}`,
           description: formData.description || null,
           established_year: formData.established_year ? parseInt(formData.established_year) : null,
           license_number: formData.license_number,
@@ -209,21 +225,48 @@ const DistilleryOnboarding = () => {
                     name="location"
                     value={formData.location}
                     onChange={handleInputChange}
-                    placeholder="e.g., Speyside, Scotland"
+                    placeholder="e.g., Speyside"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="license_number">Distillery License Number *</Label>
+                  <Label htmlFor="country">Country of Production *</Label>
+                  <Select
+                    value={formData.country}
+                    onValueChange={(value) => setFormData((prev) => ({ ...prev, country: value, license_number: "" }))}
+                  >
+                    <SelectTrigger id="country">
+                      <SelectValue placeholder="Select country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="UK">United Kingdom (England / Wales / NI)</SelectItem>
+                      <SelectItem value="Scotland">Scotland</SelectItem>
+                      <SelectItem value="Ireland">Ireland</SelectItem>
+                      <SelectItem value="USA">United States</SelectItem>
+                      <SelectItem value="France">France</SelectItem>
+                      <SelectItem value="Japan">Japan</SelectItem>
+                      <SelectItem value="Canada">Canada</SelectItem>
+                      <SelectItem value="Australia">Australia</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="license_number">{licenseConfig.label} *</Label>
                   <Input
                     id="license_number"
                     name="license_number"
                     value={formData.license_number}
                     onChange={handleInputChange}
-                    placeholder="e.g., AWRS-123456789"
+                    placeholder={licenseConfig.placeholder}
                     required
+                    disabled={!formData.country}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    {formData.country ? licenseConfig.help : "Select your country of production to see the required licence format."}
+                  </p>
                 </div>
 
                 <div className="space-y-2">
