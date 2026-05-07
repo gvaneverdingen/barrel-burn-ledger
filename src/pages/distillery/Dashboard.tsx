@@ -11,6 +11,30 @@ import { useState } from "react";
 import StripeConnectCard from "@/components/distillery/StripeConnectCard";
 import { SalesReports } from "@/components/distillery/SalesReports";
 
+const FALLBACK_DEMO_DISTILLERY = {
+  id: 'demo-verified-distillery',
+  name: 'Highland Heritage Distillery',
+  location: 'Speyside, Scotland',
+  description: 'A verified demo distillery profile populated with representative cask inventory for previewing the dashboard.',
+  verified: true,
+  logo_url: null,
+  website: 'https://arigi.example/distilleries/highland-heritage',
+  established_year: 1898,
+  license_number: 'DEMO-SWA-1898',
+  profile_id: 'demo-profile',
+  stripe_onboarding_complete: true,
+  stripe_account_id: null,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+};
+
+const FALLBACK_DEMO_CASKS = [
+  { id: 'demo-cask-1', available_for_sale: true, current_volume_liters: 215, alcohol_percentage: 61.2 },
+  { id: 'demo-cask-2', available_for_sale: true, current_volume_liters: 228, alcohol_percentage: 58.7 },
+  { id: 'demo-cask-3', available_for_sale: false, current_volume_liters: 203, alcohol_percentage: 60.1 },
+  { id: 'demo-cask-4', available_for_sale: true, current_volume_liters: 241, alcohol_percentage: 57.9 },
+];
+
 const DistilleryDashboard = () => {
   const { user, userRole } = useAuth();
   const navigate = useNavigate();
@@ -61,8 +85,10 @@ const DistilleryDashboard = () => {
         .eq('distilleries.verified', true)
         .limit(1)
         .maybeSingle();
-      if (caskErr) throw caskErr;
-      if (cask?.distilleries) return cask.distilleries as any;
+      if (caskErr) {
+        console.warn('Demo distillery cask lookup failed; falling back to verified distillery lookup.', caskErr);
+      }
+      if (cask?.distilleries) return cask.distilleries as typeof FALLBACK_DEMO_DISTILLERY;
       const { data, error } = await supabase
         .from('distilleries')
         .select('*')
@@ -70,23 +96,28 @@ const DistilleryDashboard = () => {
         .order('created_at', { ascending: true })
         .limit(1)
         .maybeSingle();
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.warn('Demo distillery lookup failed; using built-in demo profile.', error);
+        return FALLBACK_DEMO_DISTILLERY;
+      }
+      return data || FALLBACK_DEMO_DISTILLERY;
     },
-    enabled: !isAdmin && !!user,
+    enabled: !isAdmin,
   });
 
   // Determine which distillery to show
   const distillery = isAdmin 
     ? allDistilleries.find(d => d.id === selectedDistilleryId) || allDistilleries[0]
-    : ownDistillery || demoDistillery;
+    : ownDistillery || demoDistillery || FALLBACK_DEMO_DISTILLERY;
 
-  const isDemo = !isAdmin && !ownDistillery && !!demoDistillery;
+  const isDemo = !isAdmin && !ownDistillery;
+  const isLocalDemoDistillery = distillery?.id === FALLBACK_DEMO_DISTILLERY.id;
 
   const { data: casks } = useQuery({
     queryKey: ['distillery-casks', distillery?.id],
     queryFn: async () => {
       if (!distillery) return [];
+      if (isLocalDemoDistillery) return FALLBACK_DEMO_CASKS;
       
       const { data, error } = await supabase
         .from('casks')
