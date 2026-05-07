@@ -279,7 +279,7 @@ export function AppSidebar() {
         )}
 
         {/* Become a Distillery - Show for logged-in non-distillery users */}
-        {user && !isDistillery && !isAdmin && (
+        {user && !isDistillery && !isAdmin && !isConsumer && (
           <div className="px-2 mb-6">
             <div 
               className={`text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-3 px-2 transition-all duration-300 font-inter ${
