@@ -14,7 +14,7 @@ const RoleBasedRoute = ({
   allowedRoles, 
   redirectTo = '/' 
 }: RoleBasedRouteProps) => {
-  const { user, userRole, loading } = useAuth();
+  const { user, userRole, realRole, loading } = useAuth();
 
   // If still loading, show loading state
   if (loading) {
@@ -50,8 +50,8 @@ const RoleBasedRoute = ({
     );
   }
 
-  // Administrator can access everything
-  if (userRole === 'administrator') {
+  // Administrator can access everything (regardless of view-as)
+  if (realRole === 'administrator') {
     return <>{children}</>;
   }
 
