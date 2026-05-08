@@ -8,6 +8,7 @@ import { UserManagement } from "@/components/admin/UserManagement";
 import { ListingsManagement } from "@/components/admin/ListingsManagement";
 import { OrdersManagement } from "@/components/admin/OrdersManagement";
 import DistilleryVerificationManagement from "@/components/admin/DistilleryVerificationManagement";
+import WarehouseVerificationManagement from "@/components/admin/WarehouseVerificationManagement";
 import { ReviewModeration } from "@/components/admin/ReviewModeration";
 import { useToast } from "@/hooks/use-toast";
 
@@ -107,9 +108,10 @@ export default function AdminDashboard() {
       <MetricsCards metrics={metrics} loading={loading} />
 
       <Tabs defaultValue="users" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5 lg:w-auto">
+        <TabsList className="grid w-full grid-cols-6 lg:w-auto">
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="distilleries">Distilleries</TabsTrigger>
+          <TabsTrigger value="warehouses">Warehouses</TabsTrigger>
           <TabsTrigger value="listings">Listings</TabsTrigger>
           <TabsTrigger value="orders">Orders</TabsTrigger>
           <TabsTrigger value="reviews">Reviews</TabsTrigger>
@@ -121,6 +123,10 @@ export default function AdminDashboard() {
 
         <TabsContent value="distilleries" className="space-y-4">
           <DistilleryVerificationManagement />
+        </TabsContent>
+
+        <TabsContent value="warehouses" className="space-y-4">
+          <WarehouseVerificationManagement />
         </TabsContent>
 
         <TabsContent value="listings" className="space-y-4">
