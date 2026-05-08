@@ -322,7 +322,7 @@ export type Database = {
           created_at: string
           current_volume_liters: number | null
           distillation_date: string
-          distillery_id: string
+          distillery_id: string | null
           expected_maturation_years: number | null
           finishing_cask_type: string | null
           finishing_duration_months: number | null
@@ -344,6 +344,7 @@ export type Database = {
           tasting_notes: string | null
           total_price: number | null
           updated_at: string
+          warehouse_id: string | null
           warehouse_location: string | null
         }
         Insert: {
@@ -357,7 +358,7 @@ export type Database = {
           created_at?: string
           current_volume_liters?: number | null
           distillation_date: string
-          distillery_id: string
+          distillery_id?: string | null
           expected_maturation_years?: number | null
           finishing_cask_type?: string | null
           finishing_duration_months?: number | null
@@ -379,6 +380,7 @@ export type Database = {
           tasting_notes?: string | null
           total_price?: number | null
           updated_at?: string
+          warehouse_id?: string | null
           warehouse_location?: string | null
         }
         Update: {
@@ -392,7 +394,7 @@ export type Database = {
           created_at?: string
           current_volume_liters?: number | null
           distillation_date?: string
-          distillery_id?: string
+          distillery_id?: string | null
           expected_maturation_years?: number | null
           finishing_cask_type?: string | null
           finishing_duration_months?: number | null
@@ -414,6 +416,7 @@ export type Database = {
           tasting_notes?: string | null
           total_price?: number | null
           updated_at?: string
+          warehouse_id?: string | null
           warehouse_location?: string | null
         }
         Relationships: [
@@ -1036,6 +1039,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      warehouses: {
+        Row: {
+          bonded_warehouse_number: string | null
+          capacity_casks: number | null
+          country: string | null
+          created_at: string
+          customs_jurisdiction: string | null
+          description: string | null
+          established_year: number | null
+          excise_authority: string | null
+          id: string
+          location: string | null
+          logo_url: string | null
+          name: string
+          profile_id: string
+          stripe_account_id: string | null
+          stripe_onboarding_complete: boolean | null
+          updated_at: string
+          verified: boolean | null
+          warehouse_keeper_license: string | null
+          website: string | null
+        }
+        Insert: {
+          bonded_warehouse_number?: string | null
+          capacity_casks?: number | null
+          country?: string | null
+          created_at?: string
+          customs_jurisdiction?: string | null
+          description?: string | null
+          established_year?: number | null
+          excise_authority?: string | null
+          id?: string
+          location?: string | null
+          logo_url?: string | null
+          name: string
+          profile_id: string
+          stripe_account_id?: string | null
+          stripe_onboarding_complete?: boolean | null
+          updated_at?: string
+          verified?: boolean | null
+          warehouse_keeper_license?: string | null
+          website?: string | null
+        }
+        Update: {
+          bonded_warehouse_number?: string | null
+          capacity_casks?: number | null
+          country?: string | null
+          created_at?: string
+          customs_jurisdiction?: string | null
+          description?: string | null
+          established_year?: number | null
+          excise_authority?: string | null
+          id?: string
+          location?: string | null
+          logo_url?: string | null
+          name?: string
+          profile_id?: string
+          stripe_account_id?: string | null
+          stripe_onboarding_complete?: boolean | null
+          updated_at?: string
+          verified?: boolean | null
+          warehouse_keeper_license?: string | null
+          website?: string | null
+        }
+        Relationships: []
       }
       wishlist: {
         Row: {
