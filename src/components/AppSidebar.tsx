@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users, Database, Link, Route, Heart, LayoutDashboard, HandCoins, ClipboardList, PlusCircle } from "lucide-react"
+import { Home, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users, Database, Link, Route, Heart, LayoutDashboard, HandCoins, ClipboardList, PlusCircle, Warehouse } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 
@@ -58,6 +58,12 @@ const distilleryItems = [
   { title: "Verification", url: "/distillery/verification", icon: Shield },
 ]
 
+const warehouseItems = [
+  { title: "My Warehouse", url: "/warehouse", icon: Warehouse },
+  { title: "Add Cask", url: "/warehouse/casks/new", icon: PlusCircle },
+  { title: "Verification", url: "/warehouse/verification", icon: Shield },
+]
+
 // Account items shown to a distillery user (sellers, not buyers)
 const distilleryAccountItems = [
   { title: "My Profile", url: "/profile", icon: User },
@@ -69,6 +75,7 @@ const distilleryAccountItems = [
 
 // For non-distillery users
 const becomeDistilleryItem = { title: "Become a Distillery", url: "/distillery/onboarding", icon: PlusCircle };
+const becomeWarehouseItem = { title: "Become a Warehouse", url: "/warehouse/onboarding", icon: Warehouse };
 
 const supportItems = [
   { title: "Documentation", url: "/docs", icon: FileText },
@@ -94,6 +101,7 @@ export function AppSidebar() {
   const isConsumer = userRole === 'consumer'
   const isAdmin = userRole === 'administrator'
   const isDistillery = userRole === 'distillery'
+  const isFacilitator = userRole === 'facilitator'
   
   // Determine which items to show based on role
   const getPublicItems = () => {
@@ -278,8 +286,37 @@ export function AppSidebar() {
           </div>
         )}
 
-        {/* Become a Distillery - Show for logged-in non-distillery users */}
-        {user && !isDistillery && !isAdmin && !isConsumer && (
+        {/* Warehouse Navigation - facilitators and admins */}
+        {((user && isFacilitator) || (user && isAdmin)) && (
+          <div className="px-2 mb-6">
+            <div className={`text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-3 px-2 transition-all duration-300 font-inter ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>
+              Warehouse
+            </div>
+            <div className="space-y-1">
+              {warehouseItems.map((item) => (
+                <NavLink
+                  key={item.title}
+                  to={item.url}
+                  className={({ isActive }) =>
+                    `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
+                      isActive
+                        ? 'bg-sidebar-primary/15 text-sidebar-primary font-medium border-l-2 border-sidebar-primary'
+                        : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                    }`
+                  }
+                >
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  <span className={`ml-3 whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
+                    {item.title}
+                  </span>
+                </NavLink>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Partnerships - Become a Distillery / Warehouse for eligible users */}
+        {user && !isDistillery && !isFacilitator && !isAdmin && !isConsumer && (
           <div className="px-2 mb-6">
             <div 
               className={`text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-3 px-2 transition-all duration-300 font-inter ${
@@ -289,25 +326,24 @@ export function AppSidebar() {
               Partnerships
             </div>
             <div className="space-y-1">
-              <NavLink
-                to={becomeDistilleryItem.url}
-                className={({ isActive }) =>
-                  `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
-                    isActive
-                      ? 'bg-sidebar-primary/15 text-sidebar-primary font-medium border-l-2 border-sidebar-primary'
-                      : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
-                  }`
-                }
-              >
-                <becomeDistilleryItem.icon className="h-5 w-5 flex-shrink-0" />
-                <span 
-                  className={`ml-3 whitespace-nowrap transition-all duration-300 ${
-                    isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-                  }`}
+              {[becomeDistilleryItem, becomeWarehouseItem].map((item) => (
+                <NavLink
+                  key={item.title}
+                  to={item.url}
+                  className={({ isActive }) =>
+                    `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
+                      isActive
+                        ? 'bg-sidebar-primary/15 text-sidebar-primary font-medium border-l-2 border-sidebar-primary'
+                        : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                    }`
+                  }
                 >
-                  {becomeDistilleryItem.title}
-                </span>
-              </NavLink>
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  <span className={`ml-3 whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
+                    {item.title}
+                  </span>
+                </NavLink>
+              ))}
             </div>
           </div>
         )}
