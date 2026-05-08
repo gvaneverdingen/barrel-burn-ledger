@@ -24,7 +24,7 @@ export const ViewAsSwitcher = () => {
           <SelectItem value="distillery">View as: Distillery</SelectItem>
           <SelectItem value="consumer">View as: Consumer</SelectItem>
           <SelectItem value="investor">View as: Investor</SelectItem>
-          <SelectItem value="facilitator">View as: Facilitator</SelectItem>
+          <SelectItem value="facilitator">View as: Warehouse</SelectItem>
         </SelectContent>
       </Select>
     </div>
