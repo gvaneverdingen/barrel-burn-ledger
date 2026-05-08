@@ -49,6 +49,10 @@ const DistilleryAnalytics = lazy(() => import("./pages/distillery/Analytics"));
 const DistilleryVerification = lazy(() => import("./pages/distillery/Verification"));
 const DistilleryOnboarding = lazy(() => import("./pages/distillery/Onboarding"));
 const DistilleryNewCask = lazy(() => import("./pages/distillery/NewCask"));
+const WarehouseDashboard = lazy(() => import("./pages/warehouse/Dashboard"));
+const WarehouseOnboarding = lazy(() => import("./pages/warehouse/Onboarding"));
+const WarehouseVerification = lazy(() => import("./pages/warehouse/Verification"));
+const WarehouseNewCask = lazy(() => import("./pages/warehouse/NewCask"));
 const BlockchainExample = lazy(() => import("./pages/BlockchainExample"));
 const BlockchainTesting = lazy(() => import("./pages/BlockchainTesting"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
@@ -268,7 +272,34 @@ const AppRoutes = () => {
               path="/distillery/onboarding" 
               element={<DistilleryOnboarding />} 
             />
-            
+
+            {/* Warehouse Routes */}
+            <Route path="/warehouse/onboarding" element={<WarehouseOnboarding />} />
+            <Route
+              path="/warehouse"
+              element={
+                <RoleBasedRoute allowedRoles={["facilitator", "administrator"]}>
+                  <WarehouseDashboard />
+                </RoleBasedRoute>
+              }
+            />
+            <Route
+              path="/warehouse/casks/new"
+              element={
+                <RoleBasedRoute allowedRoles={["facilitator", "administrator"]}>
+                  <WarehouseNewCask />
+                </RoleBasedRoute>
+              }
+            />
+            <Route
+              path="/warehouse/verification"
+              element={
+                <RoleBasedRoute allowedRoles={["facilitator", "administrator"]}>
+                  <WarehouseVerification />
+                </RoleBasedRoute>
+              }
+            />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
