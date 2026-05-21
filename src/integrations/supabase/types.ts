@@ -223,6 +223,60 @@ export type Database = {
           },
         ]
       }
+      cask_regauges: {
+        Row: {
+          abv: number
+          bulk_liters: number
+          cask_id: string
+          created_at: string
+          id: string
+          measured_by: string | null
+          notes: string | null
+          regauge_date: string
+          rla_liters: number
+          updated_at: string
+        }
+        Insert: {
+          abv: number
+          bulk_liters: number
+          cask_id: string
+          created_at?: string
+          id?: string
+          measured_by?: string | null
+          notes?: string | null
+          regauge_date: string
+          rla_liters: number
+          updated_at?: string
+        }
+        Update: {
+          abv?: number
+          bulk_liters?: number
+          cask_id?: string
+          created_at?: string
+          id?: string
+          measured_by?: string | null
+          notes?: string | null
+          regauge_date?: string
+          rla_liters?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cask_regauges_cask_id_fkey"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cask_regauges_cask_id_fkey"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks_marketplace"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cask_sales: {
         Row: {
           asking_price_per_liter: number
@@ -286,6 +340,111 @@ export type Database = {
           },
         ]
       }
+      cask_transfers: {
+        Row: {
+          cask_id: string
+          created_at: string
+          created_by: string | null
+          doc_hash: string | null
+          from_cask_id: string | null
+          from_warehouse_id: string | null
+          id: string
+          reason: string | null
+          to_cask_id: string | null
+          to_warehouse_id: string | null
+          transfer_date: string
+          transfer_type: Database["public"]["Enums"]["cask_transfer_type"]
+          updated_at: string
+        }
+        Insert: {
+          cask_id: string
+          created_at?: string
+          created_by?: string | null
+          doc_hash?: string | null
+          from_cask_id?: string | null
+          from_warehouse_id?: string | null
+          id?: string
+          reason?: string | null
+          to_cask_id?: string | null
+          to_warehouse_id?: string | null
+          transfer_date: string
+          transfer_type: Database["public"]["Enums"]["cask_transfer_type"]
+          updated_at?: string
+        }
+        Update: {
+          cask_id?: string
+          created_at?: string
+          created_by?: string | null
+          doc_hash?: string | null
+          from_cask_id?: string | null
+          from_warehouse_id?: string | null
+          id?: string
+          reason?: string | null
+          to_cask_id?: string | null
+          to_warehouse_id?: string | null
+          transfer_date?: string
+          transfer_type?: Database["public"]["Enums"]["cask_transfer_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cask_transfers_cask_id_fkey"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cask_transfers_cask_id_fkey"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks_marketplace"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cask_transfers_from_cask_id_fkey"
+            columns: ["from_cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cask_transfers_from_cask_id_fkey"
+            columns: ["from_cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks_marketplace"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cask_transfers_from_warehouse_id_fkey"
+            columns: ["from_warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cask_transfers_to_cask_id_fkey"
+            columns: ["to_cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cask_transfers_to_cask_id_fkey"
+            columns: ["to_cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks_marketplace"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cask_transfers_to_warehouse_id_fkey"
+            columns: ["to_warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cask_types: {
         Row: {
           capacity_liters: number
@@ -317,35 +476,53 @@ export type Database = {
           available_for_sale: boolean | null
           blockchain_hash: string | null
           blockchain_id: string
+          cask_fill_generation:
+            | Database["public"]["Enums"]["cask_fill_generation"]
+            | null
           cask_number: string
           cask_type_id: string
+          char_level: number | null
+          cooperage: string | null
           created_at: string
           current_volume_liters: number | null
           distillation_date: string
           distillery_id: string | null
+          dsp_code: string | null
+          duty_status: Database["public"]["Enums"]["duty_status"] | null
           expected_maturation_years: number | null
           finishing_cask_type: string | null
           finishing_duration_months: number | null
           finishing_notes: string | null
           has_been_finished: boolean | null
           id: string
+          insurance_valuation: number | null
+          insurance_valuation_at: string | null
           is_single_barrel: boolean | null
           last_gauging_date: string | null
           nft_contract_address: string | null
           nft_minted_at: string | null
           nft_token_id: number | null
           original_cask_type: string | null
+          original_lpa: number | null
+          previous_contents:
+            | Database["public"]["Enums"]["previous_contents"]
+            | null
           price_per_liter: number | null
+          provenance_doc_hash: string | null
           quality_grade: string | null
           rarity_tier: number | null
           region: string | null
           special_finish: string | null
           spirit_name: string
+          spirit_type: Database["public"]["Enums"]["spirit_type"] | null
           tasting_notes: string | null
+          toast_level: Database["public"]["Enums"]["toast_level"] | null
           total_price: number | null
           updated_at: string
           warehouse_id: string | null
           warehouse_location: string | null
+          wood_species: Database["public"]["Enums"]["wood_species"] | null
+          wowgr_holder_warehouse_id: string | null
         }
         Insert: {
           age_years?: number | null
@@ -353,35 +530,53 @@ export type Database = {
           available_for_sale?: boolean | null
           blockchain_hash?: string | null
           blockchain_id: string
+          cask_fill_generation?:
+            | Database["public"]["Enums"]["cask_fill_generation"]
+            | null
           cask_number: string
           cask_type_id: string
+          char_level?: number | null
+          cooperage?: string | null
           created_at?: string
           current_volume_liters?: number | null
           distillation_date: string
           distillery_id?: string | null
+          dsp_code?: string | null
+          duty_status?: Database["public"]["Enums"]["duty_status"] | null
           expected_maturation_years?: number | null
           finishing_cask_type?: string | null
           finishing_duration_months?: number | null
           finishing_notes?: string | null
           has_been_finished?: boolean | null
           id?: string
+          insurance_valuation?: number | null
+          insurance_valuation_at?: string | null
           is_single_barrel?: boolean | null
           last_gauging_date?: string | null
           nft_contract_address?: string | null
           nft_minted_at?: string | null
           nft_token_id?: number | null
           original_cask_type?: string | null
+          original_lpa?: number | null
+          previous_contents?:
+            | Database["public"]["Enums"]["previous_contents"]
+            | null
           price_per_liter?: number | null
+          provenance_doc_hash?: string | null
           quality_grade?: string | null
           rarity_tier?: number | null
           region?: string | null
           special_finish?: string | null
           spirit_name: string
+          spirit_type?: Database["public"]["Enums"]["spirit_type"] | null
           tasting_notes?: string | null
+          toast_level?: Database["public"]["Enums"]["toast_level"] | null
           total_price?: number | null
           updated_at?: string
           warehouse_id?: string | null
           warehouse_location?: string | null
+          wood_species?: Database["public"]["Enums"]["wood_species"] | null
+          wowgr_holder_warehouse_id?: string | null
         }
         Update: {
           age_years?: number | null
@@ -389,35 +584,53 @@ export type Database = {
           available_for_sale?: boolean | null
           blockchain_hash?: string | null
           blockchain_id?: string
+          cask_fill_generation?:
+            | Database["public"]["Enums"]["cask_fill_generation"]
+            | null
           cask_number?: string
           cask_type_id?: string
+          char_level?: number | null
+          cooperage?: string | null
           created_at?: string
           current_volume_liters?: number | null
           distillation_date?: string
           distillery_id?: string | null
+          dsp_code?: string | null
+          duty_status?: Database["public"]["Enums"]["duty_status"] | null
           expected_maturation_years?: number | null
           finishing_cask_type?: string | null
           finishing_duration_months?: number | null
           finishing_notes?: string | null
           has_been_finished?: boolean | null
           id?: string
+          insurance_valuation?: number | null
+          insurance_valuation_at?: string | null
           is_single_barrel?: boolean | null
           last_gauging_date?: string | null
           nft_contract_address?: string | null
           nft_minted_at?: string | null
           nft_token_id?: number | null
           original_cask_type?: string | null
+          original_lpa?: number | null
+          previous_contents?:
+            | Database["public"]["Enums"]["previous_contents"]
+            | null
           price_per_liter?: number | null
+          provenance_doc_hash?: string | null
           quality_grade?: string | null
           rarity_tier?: number | null
           region?: string | null
           special_finish?: string | null
           spirit_name?: string
+          spirit_type?: Database["public"]["Enums"]["spirit_type"] | null
           tasting_notes?: string | null
+          toast_level?: Database["public"]["Enums"]["toast_level"] | null
           total_price?: number | null
           updated_at?: string
           warehouse_id?: string | null
           warehouse_location?: string | null
+          wood_species?: Database["public"]["Enums"]["wood_species"] | null
+          wowgr_holder_warehouse_id?: string | null
         }
         Relationships: [
           {
@@ -439,6 +652,13 @@ export type Database = {
             columns: ["distillery_id"]
             isOneToOne: false
             referencedRelation: "distilleries_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "casks_wowgr_holder_warehouse_id_fkey"
+            columns: ["wowgr_holder_warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
             referencedColumns: ["id"]
           },
         ]
@@ -1257,6 +1477,8 @@ export type Database = {
       }
     }
     Functions: {
+      can_manage_cask: { Args: { _cask_id: string }; Returns: boolean }
+      can_view_cask: { Args: { _cask_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["user_role"]
@@ -1267,12 +1489,79 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
+      cask_fill_generation:
+        | "first_fill"
+        | "refill"
+        | "second_fill"
+        | "third_fill"
+        | "fourth_fill_plus"
+        | "rejuvenated"
+        | "virgin"
+      cask_transfer_type:
+        | "re_rack"
+        | "marrying"
+        | "finishing_transfer"
+        | "warehouse_move"
+        | "other"
+      duty_status: "under_bond" | "duty_paid"
+      previous_contents:
+        | "virgin_oak"
+        | "ex_bourbon"
+        | "ex_sherry_oloroso"
+        | "ex_sherry_px"
+        | "ex_sherry_fino"
+        | "ex_sherry_amontillado"
+        | "ex_sherry_manzanilla"
+        | "ex_sherry_palo_cortado"
+        | "ex_port_ruby"
+        | "ex_port_tawny"
+        | "ex_port_white"
+        | "ex_wine_sauternes"
+        | "ex_wine_bordeaux"
+        | "ex_wine_burgundy"
+        | "ex_wine_tokaji"
+        | "ex_wine_other"
+        | "ex_rum"
+        | "ex_cognac"
+        | "ex_madeira"
+        | "ex_marsala"
+        | "str"
+        | "other"
+      spirit_type:
+        | "single_malt"
+        | "single_grain"
+        | "blended_malt"
+        | "blended_grain"
+        | "blended_whisky"
+        | "bourbon"
+        | "rye"
+        | "corn_whiskey"
+        | "tennessee_whiskey"
+        | "irish_pot_still"
+        | "rum"
+        | "cognac"
+        | "armagnac"
+        | "brandy"
+        | "tequila"
+        | "mezcal"
+        | "other"
+      toast_level: "light" | "medium" | "medium_plus" | "heavy"
       user_role:
         | "distillery"
         | "consumer"
         | "investor"
         | "administrator"
         | "facilitator"
+      wood_species:
+        | "american_oak"
+        | "european_oak"
+        | "spanish_oak"
+        | "french_oak"
+        | "hungarian_oak"
+        | "japanese_mizunara"
+        | "chestnut"
+        | "cherry"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1400,12 +1689,84 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      cask_fill_generation: [
+        "first_fill",
+        "refill",
+        "second_fill",
+        "third_fill",
+        "fourth_fill_plus",
+        "rejuvenated",
+        "virgin",
+      ],
+      cask_transfer_type: [
+        "re_rack",
+        "marrying",
+        "finishing_transfer",
+        "warehouse_move",
+        "other",
+      ],
+      duty_status: ["under_bond", "duty_paid"],
+      previous_contents: [
+        "virgin_oak",
+        "ex_bourbon",
+        "ex_sherry_oloroso",
+        "ex_sherry_px",
+        "ex_sherry_fino",
+        "ex_sherry_amontillado",
+        "ex_sherry_manzanilla",
+        "ex_sherry_palo_cortado",
+        "ex_port_ruby",
+        "ex_port_tawny",
+        "ex_port_white",
+        "ex_wine_sauternes",
+        "ex_wine_bordeaux",
+        "ex_wine_burgundy",
+        "ex_wine_tokaji",
+        "ex_wine_other",
+        "ex_rum",
+        "ex_cognac",
+        "ex_madeira",
+        "ex_marsala",
+        "str",
+        "other",
+      ],
+      spirit_type: [
+        "single_malt",
+        "single_grain",
+        "blended_malt",
+        "blended_grain",
+        "blended_whisky",
+        "bourbon",
+        "rye",
+        "corn_whiskey",
+        "tennessee_whiskey",
+        "irish_pot_still",
+        "rum",
+        "cognac",
+        "armagnac",
+        "brandy",
+        "tequila",
+        "mezcal",
+        "other",
+      ],
+      toast_level: ["light", "medium", "medium_plus", "heavy"],
       user_role: [
         "distillery",
         "consumer",
         "investor",
         "administrator",
         "facilitator",
+      ],
+      wood_species: [
+        "american_oak",
+        "european_oak",
+        "spanish_oak",
+        "french_oak",
+        "hungarian_oak",
+        "japanese_mizunara",
+        "chestnut",
+        "cherry",
+        "other",
       ],
     },
   },
