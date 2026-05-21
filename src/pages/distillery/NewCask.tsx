@@ -16,6 +16,7 @@ import CaskAdvancedSpecsFields, {
   AdvancedSpecsState,
   emptyAdvancedSpecs,
   buildAdvancedSpecsPayload,
+  validateAdvancedSpecs,
 } from '@/components/CaskAdvancedSpecsFields';
 
 const NewCask = () => {
