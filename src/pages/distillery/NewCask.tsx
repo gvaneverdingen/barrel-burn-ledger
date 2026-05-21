@@ -96,6 +96,12 @@ const NewCask = () => {
       return;
     }
 
+    const specsErr = validateAdvancedSpecs(advancedSpecs);
+    if (specsErr) {
+      toast.error(specsErr);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
