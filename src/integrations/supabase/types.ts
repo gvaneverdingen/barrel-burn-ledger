@@ -229,6 +229,9 @@ export type Database = {
           bulk_liters: number
           cask_id: string
           created_at: string
+          document_filename: string | null
+          document_type: string | null
+          document_url: string | null
           id: string
           measured_by: string | null
           notes: string | null
@@ -241,6 +244,9 @@ export type Database = {
           bulk_liters: number
           cask_id: string
           created_at?: string
+          document_filename?: string | null
+          document_type?: string | null
+          document_url?: string | null
           id?: string
           measured_by?: string | null
           notes?: string | null
@@ -253,6 +259,9 @@ export type Database = {
           bulk_liters?: number
           cask_id?: string
           created_at?: string
+          document_filename?: string | null
+          document_type?: string | null
+          document_url?: string | null
           id?: string
           measured_by?: string | null
           notes?: string | null
@@ -346,6 +355,9 @@ export type Database = {
           created_at: string
           created_by: string | null
           doc_hash: string | null
+          document_filename: string | null
+          document_type: string | null
+          document_url: string | null
           from_cask_id: string | null
           from_warehouse_id: string | null
           id: string
@@ -361,6 +373,9 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           doc_hash?: string | null
+          document_filename?: string | null
+          document_type?: string | null
+          document_url?: string | null
           from_cask_id?: string | null
           from_warehouse_id?: string | null
           id?: string
@@ -376,6 +391,9 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           doc_hash?: string | null
+          document_filename?: string | null
+          document_type?: string | null
+          document_url?: string | null
           from_cask_id?: string | null
           from_warehouse_id?: string | null
           id?: string
