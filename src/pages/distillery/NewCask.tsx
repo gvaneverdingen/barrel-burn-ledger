@@ -96,6 +96,11 @@ const NewCask = () => {
       return;
     }
 
+    if (!formData.current_volume_liters || !formData.alcohol_percentage || !formData.region.trim()) {
+      toast.error('Volume, ABV and Region are required — they are anchored on-chain in the NFT.');
+      return;
+    }
+
     const specsErr = validateAdvancedSpecs(advancedSpecs);
     if (specsErr) {
       toast.error(specsErr);
