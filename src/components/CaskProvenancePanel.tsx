@@ -331,6 +331,11 @@ const AddTransferDialog = ({ caskId, onAdded }: { caskId: string; onAdded: () =>
       toast.error("Date and type are required");
       return;
     }
+    const cidErr = cidError(form.doc_hash);
+    if (cidErr) {
+      toast.error(`Document Hash: ${cidErr}`);
+      return;
+    }
     setBusy(true);
     const { error } = await supabase.from("cask_transfers").insert({
       cask_id: caskId,
