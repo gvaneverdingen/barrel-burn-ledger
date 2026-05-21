@@ -279,7 +279,7 @@ async function executePolygonTransaction(
       // Fetch cask data for contract parameters
       const { data: caskData, error: caskError } = await supabaseService
         .from('casks')
-        .select('*, cask_types(name)')
+        .select('*, cask_types(name), warehouse:warehouses!casks_warehouse_id_fkey(name, bonded_warehouse_number), wowgr:warehouses!casks_wowgr_holder_warehouse_id_fkey(name)')
         .eq('id', transaction.caskId)
         .single();
       
@@ -328,7 +328,47 @@ async function executePolygonTransaction(
           // Not our event, skip
         }
       }
-      
+
+      // Anchor extended barrel specs on-chain for rarity scoring
+      if (typeof tokenId === 'number') {
+        try {
+          const fillDateSec = caskData.distillation_date
+            ? Math.floor(new Date(caskData.distillation_date).getTime() / 1000)
+            : 0;
+          const fillGen = String(caskData.cask_fill_generation || '').toLowerCase();
+          const fillNumber =
+            fillGen.includes('first') ? 1 :
+            fillGen.includes('second') ? 2 :
+            fillGen.includes('third') ? 3 :
+            fillGen.includes('refill') ? 2 : 1;
+          const dutyStatus = caskData.duty_status === 'duty_paid' ? 1 : 0;
+          const specs = {
+            distillerySite: caskData.dsp_code || '',
+            countryOfOrigin: caskData.region || '',
+            fillDate: fillDateSec,
+            originalSpiritType: caskData.spirit_type || '',
+            caskSizeCategory: caskData.cask_types?.name || '',
+            originalVolumeLiters: Math.floor(caskData.current_volume_liters || 0),
+            currentVolumeLiters: Math.floor(caskData.current_volume_liters || 0),
+            currentAbv: Math.floor((caskData.alcohol_percentage || 0) * 100),
+            woodType: caskData.wood_species || '',
+            previousContent: caskData.previous_contents || '',
+            charLevel: Math.min(7, Math.max(0, Number(caskData.char_level || 0))),
+            fillNumber,
+            bondedWarehouse: caskData.warehouse?.bonded_warehouse_number || caskData.warehouse?.name || '',
+            wowgrHolder: caskData.wowgr?.name || '',
+            dutyStatus,
+            provenanceDocHash: caskData.provenance_doc_hash || '',
+            exists: true,
+          };
+          const specsTx = await nftContract.setAdvancedSpecs(tokenId, specs);
+          await specsTx.wait();
+          console.log("Advanced specs anchored on-chain for token", tokenId);
+        } catch (specsError) {
+          console.error("Failed to set advanced specs (mint still succeeded):", (specsError as Error).message);
+        }
+      }
+
     } else if (useSmartContracts && transaction.transactionType === 'transfer') {
       console.log("Transferring NFT via smart contract");
       
