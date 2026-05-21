@@ -453,6 +453,7 @@ const AddTransferDialog = ({ caskId, onAdded }: { caskId: string; onAdded: () =>
     reason: "",
     doc_hash: "",
   });
+  const [doc, setDoc] = useState<DocumentAttachState>({ ...emptyDoc, doc_type: "transfer_note" });
 
   const submit = async () => {
     if (!form.transfer_date || !form.transfer_type) {
@@ -465,12 +466,20 @@ const AddTransferDialog = ({ caskId, onAdded }: { caskId: string; onAdded: () =>
       return;
     }
     setBusy(true);
+    const uploaded = await uploadEventDocument(caskId, doc);
+    if (doc.file && !uploaded) {
+      setBusy(false);
+      return;
+    }
     const { error } = await supabase.from("cask_transfers").insert({
       cask_id: caskId,
       transfer_date: form.transfer_date,
       transfer_type: form.transfer_type as any,
       reason: form.reason || null,
       doc_hash: form.doc_hash || null,
+      document_url: uploaded?.url ?? null,
+      document_filename: uploaded?.filename ?? null,
+      document_type: uploaded?.type ?? null,
     });
     setBusy(false);
     if (error) {
@@ -480,6 +489,7 @@ const AddTransferDialog = ({ caskId, onAdded }: { caskId: string; onAdded: () =>
     toast.success("Transfer recorded");
     setOpen(false);
     setForm({ transfer_date: new Date().toISOString().slice(0, 10), transfer_type: "re_rack", reason: "", doc_hash: "" });
+    setDoc({ ...emptyDoc, doc_type: "transfer_note" });
     onAdded();
   };
 
@@ -517,6 +527,7 @@ const AddTransferDialog = ({ caskId, onAdded }: { caskId: string; onAdded: () =>
               Optional. Paste the IPFS CID for the supporting document (re-rack note, transfer paperwork).
             </p>
           </div>
+          <DocumentAttachField state={doc} onChange={setDoc} />
         </div>
         <Button onClick={submit} disabled={busy || !!cidError(form.doc_hash)} className="w-full">{busy ? "Saving…" : "Save Event"}</Button>
       </DialogContent>
