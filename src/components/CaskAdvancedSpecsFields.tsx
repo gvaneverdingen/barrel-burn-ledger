@@ -9,6 +9,7 @@ import {
   TOAST_LEVEL_OPTIONS,
   DUTY_STATUS_OPTIONS,
 } from "@/lib/caskSpecs";
+import { cidError } from "@/lib/ipfs";
 
 export type AdvancedSpecsState = {
   dsp_code: string;
@@ -39,6 +40,13 @@ export const emptyAdvancedSpecs: AdvancedSpecsState = {
   insurance_valuation: "",
   provenance_doc_hash: "",
 };
+
+/** Validates fields that have format constraints. Returns an error message or null. */
+export function validateAdvancedSpecs(s: AdvancedSpecsState): string | null {
+  const err = cidError(s.provenance_doc_hash);
+  if (err) return `Provenance Document Hash: ${err}`;
+  return null;
+}
 
 /** Maps the form state into Supabase insert/update payload values. */
 export function buildAdvancedSpecsPayload(s: AdvancedSpecsState) {
@@ -199,9 +207,14 @@ const CaskAdvancedSpecsFields = ({ value, onChange }: Props) => {
             value={value.provenance_doc_hash}
             onChange={(e) => update("provenance_doc_hash", e.target.value)}
             placeholder="bafy... — points to WOWGR / cooperage docs"
+            aria-invalid={!!cidError(value.provenance_doc_hash)}
           />
+          {cidError(value.provenance_doc_hash) && (
+            <p className="text-xs text-destructive">{cidError(value.provenance_doc_hash)}</p>
+          )}
           <p className="text-xs text-muted-foreground">
             Upload supporting docs (WOWGR, cooperage cert, delivery order) via the cask images section after creation.
+            Paste the IPFS CID returned after uploading — formats accepted: Qm… (v0) or bafy… (v1).
           </p>
         </div>
       </div>
