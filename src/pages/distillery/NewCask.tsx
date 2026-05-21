@@ -398,6 +398,9 @@ const NewCask = () => {
                 </div>
               </div>
 
+              {/* Provenance & Cooperage */}
+              <CaskAdvancedSpecsFields value={advancedSpecs} onChange={setAdvancedSpecs} />
+
               {/* Availability */}
               <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
                 <div>
