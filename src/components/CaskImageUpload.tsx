@@ -164,6 +164,11 @@ export const CaskImageUpload = ({ caskId, onImageUploaded, canUpload }: CaskImag
             <option value="warehouse_location">Warehouse Location</option>
             <option value="inspection_photo">Inspection Photo</option>
             <option value="certificate">Certificate/Documentation</option>
+            <option disabled>── Provenance Documents ──</option>
+            <option value="wowgr">WOWGR Certificate</option>
+            <option value="cooperage_cert">Cooperage Certificate</option>
+            <option value="delivery_order">Delivery Order</option>
+            <option value="distillery_cert">Distillery Certificate</option>
           </select>
         </div>
 
