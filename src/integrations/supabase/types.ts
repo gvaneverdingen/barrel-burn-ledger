@@ -289,6 +289,7 @@ export type Database = {
       cask_sales: {
         Row: {
           asking_price_per_liter: number
+          cask_id: string | null
           created_at: string
           expires_at: string | null
           id: string
@@ -304,6 +305,7 @@ export type Database = {
         }
         Insert: {
           asking_price_per_liter: number
+          cask_id?: string | null
           created_at?: string
           expires_at?: string | null
           id?: string
@@ -319,6 +321,7 @@ export type Database = {
         }
         Update: {
           asking_price_per_liter?: number
+          cask_id?: string | null
           created_at?: string
           expires_at?: string | null
           id?: string
@@ -333,6 +336,20 @@ export type Database = {
           volume_for_sale_liters?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "cask_sales_cask_id_fkey"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cask_sales_cask_id_fkey"
+            columns: ["cask_id"]
+            isOneToOne: false
+            referencedRelation: "casks_marketplace"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "cask_sales_ownership_id_fkey"
             columns: ["ownership_id"]
@@ -441,6 +458,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "cask_transfers_from_warehouse_id_fkey"
+            columns: ["from_warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "cask_transfers_to_cask_id_fkey"
             columns: ["to_cask_id"]
             isOneToOne: false
@@ -459,6 +483,13 @@ export type Database = {
             columns: ["to_warehouse_id"]
             isOneToOne: false
             referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cask_transfers_to_warehouse_id_fkey"
+            columns: ["to_warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses_public"
             referencedColumns: ["id"]
           },
         ]
@@ -677,6 +708,13 @@ export type Database = {
             columns: ["wowgr_holder_warehouse_id"]
             isOneToOne: false
             referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "casks_wowgr_holder_warehouse_id_fkey"
+            columns: ["wowgr_holder_warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1492,6 +1530,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      warehouses_public: {
+        Row: {
+          country: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          location: string | null
+          name: string | null
+          profile_id: string | null
+          verified: boolean | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          location?: string | null
+          name?: string | null
+          profile_id?: string | null
+          verified?: boolean | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          location?: string | null
+          name?: string | null
+          profile_id?: string | null
+          verified?: boolean | null
+        }
+        Relationships: []
       }
     }
     Functions: {
