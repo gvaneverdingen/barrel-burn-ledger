@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, History, Droplet, ArrowRightLeft } from "lucide-react";
+import { Plus, History, Droplet, ArrowRightLeft, Paperclip, Upload, X } from "lucide-react";
 import { cidError } from "@/lib/ipfs";
 import {
   SPIRIT_TYPE_LABELS,
@@ -48,6 +48,9 @@ interface Regauge {
   bulk_liters: number;
   abv: number;
   notes: string | null;
+  document_url: string | null;
+  document_filename: string | null;
+  document_type: string | null;
 }
 
 interface Transfer {
@@ -56,6 +59,9 @@ interface Transfer {
   transfer_type: string;
   reason: string | null;
   doc_hash: string | null;
+  document_url: string | null;
+  document_filename: string | null;
+  document_type: string | null;
 }
 
 interface Props {
