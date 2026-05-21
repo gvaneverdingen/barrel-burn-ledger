@@ -77,6 +77,115 @@ const Row = ({ label, value }: { label: string; value: React.ReactNode }) => (
   </div>
 );
 
+const DOC_TYPE_OPTIONS = [
+  { value: "wowgr", label: "WOWGR Certificate" },
+  { value: "cooperage_cert", label: "Cooperage Certificate" },
+  { value: "delivery_order", label: "Delivery Order" },
+  { value: "distillery_cert", label: "Distillery Certificate" },
+  { value: "regauge_report", label: "Regauge Report" },
+  { value: "transfer_note", label: "Transfer Note" },
+  { value: "other", label: "Other" },
+];
+const DOC_TYPE_LABELS = Object.fromEntries(DOC_TYPE_OPTIONS.map((o) => [o.value, o.label]));
+
+interface DocumentAttachState {
+  file: File | null;
+  doc_type: string;
+  uploading: boolean;
+}
+
+const emptyDoc: DocumentAttachState = { file: null, doc_type: "other", uploading: false };
+
+/** Renders file picker + type selector. Returns selected state via callback. */
+const DocumentAttachField = ({
+  state,
+  onChange,
+  label = "Attach Document (optional)",
+}: {
+  state: DocumentAttachState;
+  onChange: (s: DocumentAttachState) => void;
+  label?: string;
+}) => (
+  <div className="space-y-2 col-span-2">
+    <Label>{label}</Label>
+    <div className="flex flex-col sm:flex-row gap-2">
+      <Input
+        type="file"
+        accept="image/*,application/pdf"
+        onChange={(e) => {
+          const f = e.target.files?.[0] ?? null;
+          if (f && f.size > 10 * 1024 * 1024) {
+            toast.error("File too large (max 10MB)");
+            return;
+          }
+          onChange({ ...state, file: f });
+        }}
+        className="flex-1"
+      />
+      <Select value={state.doc_type} onValueChange={(v) => onChange({ ...state, doc_type: v })}>
+        <SelectTrigger className="sm:w-56"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          {DOC_TYPE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+        </SelectContent>
+      </Select>
+    </div>
+    {state.file && (
+      <p className="text-xs text-muted-foreground flex items-center gap-2">
+        <Paperclip className="h-3 w-3" />{state.file.name} ({(state.file.size / 1024).toFixed(0)} KB)
+        <button type="button" onClick={() => onChange({ ...state, file: null })} className="text-destructive hover:underline">
+          <X className="h-3 w-3 inline" /> remove
+        </button>
+      </p>
+    )}
+    <p className="text-xs text-muted-foreground">PDFs or images, max 10MB. Stored in the cask documents bucket.</p>
+  </div>
+);
+
+/** Uploads file to the cask-images bucket under {caskId}/events/. Returns metadata or null. */
+async function uploadEventDocument(
+  caskId: string,
+  state: DocumentAttachState,
+): Promise<{ url: string; filename: string; type: string } | null> {
+  if (!state.file) return null;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    toast.error("Sign in required to upload documents");
+    return null;
+  }
+  const ext = state.file.name.split(".").pop();
+  const path = `${user.id}/events/${caskId}/${Date.now()}.${ext}`;
+  const { error: upErr } = await supabase.storage
+    .from("cask-images")
+    .upload(path, state.file, { contentType: state.file.type });
+  if (upErr) {
+    toast.error(`Upload failed: ${upErr.message}`);
+    return null;
+  }
+  const { data: urlData } = supabase.storage.from("cask-images").getPublicUrl(path);
+  return { url: urlData.publicUrl, filename: state.file.name, type: state.doc_type };
+}
+
+/** Renders an attached-document chip inside a history row. */
+const AttachmentChip = ({
+  url,
+  filename,
+  type,
+}: { url: string | null; filename: string | null; type: string | null }) => {
+  if (!url) return null;
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+    >
+      <Paperclip className="h-3 w-3" />
+      {type ? DOC_TYPE_LABELS[type] ?? type : "Document"}
+      {filename && <span className="text-muted-foreground truncate max-w-[10rem]">— {filename}</span>}
+    </a>
+  );
+};
+
 const CaskProvenancePanel = ({ caskId, canManage = false }: Props) => {
   const [cask, setCask] = useState<CaskRow | null>(null);
   const [regauges, setRegauges] = useState<Regauge[]>([]);
