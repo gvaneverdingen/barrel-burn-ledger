@@ -8,6 +8,7 @@ const CASK_NFT_ABI = [
   "function getTokenIdByCaskId(string caskId) view returns (uint256)",
   "function ownerOf(uint256 tokenId) view returns (address)",
   "function safeTransferFromWithPrice(address from, address to, uint256 tokenId, uint256 price)",
+  "function setAdvancedSpecs(uint256 tokenId, tuple(string distillerySite, string countryOfOrigin, uint256 fillDate, string originalSpiritType, string caskSizeCategory, uint256 originalVolumeLiters, uint256 currentVolumeLiters, uint256 currentAbv, string woodType, string previousContent, uint8 charLevel, uint8 fillNumber, string bondedWarehouse, string wowgrHolder, uint8 dutyStatus, string provenanceDocHash, bool exists) specs)",
   "event CaskMinted(uint256 indexed tokenId, string caskId, address indexed distillery, address indexed owner, string spiritName, string caskNumber, uint8 rarityTier)"
 ];
 
