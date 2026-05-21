@@ -153,27 +153,22 @@ const Marketplace = () => {
         .from('cask_sales')
         .select(`
           *,
-          cask_ownership (
-            cask_id,
-            acquisition_price,
-            acquired_date,
-            casks (
-              spirit_name,
-              cask_number,
-              distillation_date,
-              alcohol_percentage,
-              blockchain_hash,
-              warehouse_location,
-              tasting_notes,
-              distilleries (
-                name,
-                location,
-                verified
-              ),
-              cask_types (
-                name,
-                capacity_liters
-              )
+          casks (
+            spirit_name,
+            cask_number,
+            distillation_date,
+            alcohol_percentage,
+            blockchain_hash,
+            warehouse_location,
+            tasting_notes,
+            distilleries (
+              name,
+              location,
+              verified
+            ),
+            cask_types (
+              name,
+              capacity_liters
             )
           ),
           profiles (
@@ -223,15 +218,15 @@ const Marketplace = () => {
       const secondaryUnified: UnifiedListing[] = (secondaryListings || [])
         .filter(listing => {
           // Only include if cask data exists and has essential fields
-          const cask = listing.cask_ownership?.casks;
+          const cask = listing.casks;
           return cask && cask.spirit_name && cask.cask_number;
         })
         .map(listing => {
-          const cask = listing.cask_ownership!.casks!;
+          const cask = listing.casks!;
 
           return {
             id: listing.id,
-            cask_id: listing.cask_ownership?.cask_id,
+            cask_id: listing.cask_id,
             spirit_name: cask.spirit_name,
             cask_number: cask.cask_number,
             distillation_date: cask.distillation_date || '',
@@ -248,7 +243,6 @@ const Marketplace = () => {
             is_resale: true,
             seller_id: listing.seller_id,
             ownership_id: listing.ownership_id,
-            acquisition_price: listing.cask_ownership?.acquisition_price,
             blockchain_hash: cask.blockchain_hash,
             seller_name: listing.profiles 
               ? `${listing.profiles.first_name} ${listing.profiles.last_name}` 
