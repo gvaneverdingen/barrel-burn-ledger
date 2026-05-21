@@ -49,6 +49,40 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
     // Mapping from token ID to cask metadata
     mapping(uint256 => CaskMetadata) public caskMetadata;
 
+    /**
+     * @dev Extended barrel specifications used to drive rarity scoring.
+     * Stored in a separate struct/mapping to keep `mintCask` within the
+     * Solidity stack limit while still anchoring every spec on-chain.
+     */
+    struct CaskAdvancedSpecs {
+        // Identification
+        string distillerySite;       // DSP / warehouse code
+        string countryOfOrigin;      // ISO country or descriptive origin
+        uint256 fillDate;            // Unix timestamp spirit entered the cask
+        string originalSpiritType;   // single malt, single grain, bourbon, rye, ...
+
+        // Cask construction
+        string caskSizeCategory;     // ASB, Barrique, Hogshead, Butt, Puncheon, ...
+        uint256 originalVolumeLiters;
+        uint256 currentVolumeLiters;
+        uint256 currentAbv;          // scaled by 100, e.g. 6235 = 62.35%
+        string woodType;             // American oak, European oak, Mizunara, ...
+        string previousContent;      // ex-bourbon, oloroso sherry, PX, port, ...
+        uint8 charLevel;             // 1-4 char or toast level
+        uint8 fillNumber;            // 1 = first fill, 2 = refill, ...
+
+        // Custody & provenance
+        string bondedWarehouse;
+        string wowgrHolder;
+        uint8 dutyStatus;            // 0 = under bond, 1 = duty paid
+        string provenanceDocHash;    // IPFS CID for bundled provenance docs
+
+        bool exists;
+    }
+
+    // Mapping from token ID to advanced specs
+    mapping(uint256 => CaskAdvancedSpecs) public caskAdvancedSpecs;
+
     // Events
     event CaskMinted(
         uint256 indexed tokenId,
@@ -58,6 +92,16 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         string spiritName,
         string caskNumber,
         uint8 rarityTier
+    );
+
+    event CaskAdvancedSpecsSet(
+        uint256 indexed tokenId,
+        string caskSizeCategory,
+        string woodType,
+        string previousContent,
+        uint8 fillNumber,
+        uint8 charLevel,
+        uint8 dutyStatus
     );
 
     event CaskTransferred(
@@ -144,6 +188,47 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         emit CaskMinted(tokenId, caskId, distillery, to, spiritName, caskNumber, rarityTier);
 
         return tokenId;
+    }
+
+    /**
+     * @dev Attach the extended barrel specification to an existing token.
+     * Kept as a separate call (rather than packed into `mintCask`) to avoid
+     * Solidity's stack-too-deep limit. Intended to be invoked by the platform
+     * immediately after `mintCask` so rarity scoring has the full spec set.
+     */
+    function setAdvancedSpecs(
+        uint256 tokenId,
+        CaskAdvancedSpecs memory specs
+    ) public onlyOwner {
+        require(caskMetadata[tokenId].exists, "CaskNFT: Token does not exist");
+        require(specs.fillNumber >= 1, "CaskNFT: fillNumber must be >= 1");
+        require(specs.dutyStatus <= 1, "CaskNFT: dutyStatus must be 0 or 1");
+        require(specs.charLevel <= 7, "CaskNFT: charLevel out of range");
+
+        specs.exists = true;
+        caskAdvancedSpecs[tokenId] = specs;
+
+        emit CaskAdvancedSpecsSet(
+            tokenId,
+            specs.caskSizeCategory,
+            specs.woodType,
+            specs.previousContent,
+            specs.fillNumber,
+            specs.charLevel,
+            specs.dutyStatus
+        );
+    }
+
+    /**
+     * @dev Get extended barrel specs used for rarity scoring.
+     */
+    function getAdvancedSpecs(uint256 tokenId)
+        public
+        view
+        returns (CaskAdvancedSpecs memory)
+    {
+        require(caskAdvancedSpecs[tokenId].exists, "CaskNFT: Advanced specs not set");
+        return caskAdvancedSpecs[tokenId];
     }
 
     /**
