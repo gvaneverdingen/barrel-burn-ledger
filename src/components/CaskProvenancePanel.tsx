@@ -95,12 +95,12 @@ const CaskProvenancePanel = ({ caskId, canManage = false }: Props) => {
         .maybeSingle(),
       supabase
         .from("cask_regauges")
-        .select("id, regauge_date, rla_liters, bulk_liters, abv, notes")
+        .select("id, regauge_date, rla_liters, bulk_liters, abv, notes, document_url, document_filename, document_type")
         .eq("cask_id", caskId)
         .order("regauge_date", { ascending: false }),
       supabase
         .from("cask_transfers")
-        .select("id, transfer_date, transfer_type, reason, doc_hash")
+        .select("id, transfer_date, transfer_type, reason, doc_hash, document_url, document_filename, document_type")
         .eq("cask_id", caskId)
         .order("transfer_date", { ascending: false }),
     ]);
