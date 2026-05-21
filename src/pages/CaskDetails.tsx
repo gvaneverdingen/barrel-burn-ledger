@@ -34,6 +34,7 @@ import CaskTransactionHistory from "@/components/CaskTransactionHistory";
 import { ShareCaskButton } from "@/components/ShareCaskButton";
 import { addRecentlyViewed } from "@/components/RecentlyViewedCasks";
 import { PriceAlertButton } from "@/components/PriceAlertButton";
+import CaskProvenancePanel from "@/components/CaskProvenancePanel";
 
 interface CaskDetails {
   id: string;
