@@ -12,12 +12,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Save, Wine } from "lucide-react";
+import CaskAdvancedSpecsFields, {
+  AdvancedSpecsState,
+  emptyAdvancedSpecs,
+  buildAdvancedSpecsPayload,
+} from "@/components/CaskAdvancedSpecsFields";
 
 const WarehouseNewCask = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [advancedSpecs, setAdvancedSpecs] = useState<AdvancedSpecsState>(emptyAdvancedSpecs);
 
   const [formData, setFormData] = useState({
     cask_number: "",
@@ -97,6 +103,8 @@ const WarehouseNewCask = () => {
           expected_maturation_years: parseInt(formData.expected_maturation_years) || null,
           available_for_sale: formData.available_for_sale,
           last_gauging_date: formData.last_gauging_date || null,
+          wowgr_holder_warehouse_id: warehouse.id,
+          ...buildAdvancedSpecsPayload(advancedSpecs),
         })
         .select()
         .single();
@@ -193,6 +201,8 @@ const WarehouseNewCask = () => {
               <Label>Tasting Notes</Label>
               <Textarea name="tasting_notes" value={formData.tasting_notes} onChange={onChange} rows={4} />
             </div>
+
+            <CaskAdvancedSpecsFields value={advancedSpecs} onChange={setAdvancedSpecs} />
 
             <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
               <div>

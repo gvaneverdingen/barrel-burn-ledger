@@ -34,6 +34,7 @@ import CaskTransactionHistory from "@/components/CaskTransactionHistory";
 import { ShareCaskButton } from "@/components/ShareCaskButton";
 import { addRecentlyViewed } from "@/components/RecentlyViewedCasks";
 import { PriceAlertButton } from "@/components/PriceAlertButton";
+import CaskProvenancePanel from "@/components/CaskProvenancePanel";
 
 interface CaskDetails {
   id: string;
@@ -1103,6 +1104,9 @@ const CaskDetails = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Provenance, cooperage, regauge & transfer history */}
+            <CaskProvenancePanel caskId={cask.id} canManage={canManageImages} />
 
             {/* Blockchain / NFT Status */}
             <NftStatusCard

@@ -12,12 +12,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { ArrowLeft, Save, Wine } from 'lucide-react';
+import CaskAdvancedSpecsFields, {
+  AdvancedSpecsState,
+  emptyAdvancedSpecs,
+  buildAdvancedSpecsPayload,
+} from '@/components/CaskAdvancedSpecsFields';
 
 const NewCask = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [advancedSpecs, setAdvancedSpecs] = useState<AdvancedSpecsState>(emptyAdvancedSpecs);
   
   const [formData, setFormData] = useState({
     cask_number: '',
@@ -119,6 +125,7 @@ const NewCask = () => {
           expected_maturation_years: parseInt(formData.expected_maturation_years) || null,
           available_for_sale: formData.available_for_sale,
           last_gauging_date: formData.last_gauging_date || null,
+          ...buildAdvancedSpecsPayload(advancedSpecs),
         })
         .select()
         .single();
@@ -390,6 +397,9 @@ const NewCask = () => {
                   />
                 </div>
               </div>
+
+              {/* Provenance & Cooperage */}
+              <CaskAdvancedSpecsFields value={advancedSpecs} onChange={setAdvancedSpecs} />
 
               {/* Availability */}
               <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
