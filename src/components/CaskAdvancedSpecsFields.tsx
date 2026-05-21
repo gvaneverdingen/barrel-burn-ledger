@@ -43,6 +43,16 @@ export const emptyAdvancedSpecs: AdvancedSpecsState = {
 
 /** Validates fields that have format constraints. Returns an error message or null. */
 export function validateAdvancedSpecs(s: AdvancedSpecsState): string | null {
+  if (!s.dsp_code.trim()) return "DSP / Warehouse Code is required (anchored on-chain).";
+  if (!s.spirit_type) return "Spirit Type is required (anchored on-chain).";
+  if (!s.wood_species) return "Wood Species is required (anchored on-chain).";
+  if (!s.cask_fill_generation) return "Cask Fill Generation is required (anchored on-chain).";
+  if (!s.previous_contents) return "Previous Contents is required (anchored on-chain).";
+  if (!s.duty_status) return "Duty Status is required (anchored on-chain).";
+  const char = parseInt(s.char_level, 10);
+  if (!s.char_level || Number.isNaN(char) || char < 1 || char > 4) {
+    return "Char Level (1–4) is required (anchored on-chain).";
+  }
   const err = cidError(s.provenance_doc_hash);
   if (err) return `Provenance Document Hash: ${err}`;
   return null;
@@ -84,13 +94,14 @@ const CaskAdvancedSpecsFields = ({ value, onChange }: Props) => {
       <div>
         <h3 className="text-lg font-semibold">Provenance &amp; Cooperage</h3>
         <p className="text-xs text-muted-foreground">
-          Optional but recommended for premium listings — these specs travel with the cask NFT.
+          Required — these specs are anchored on-chain in the cask NFT and drive rarity scoring.
+          Fields marked with * must be filled before the cask can be minted.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Spirit Type</Label>
+          <Label>Spirit Type *</Label>
           <Select value={value.spirit_type} onValueChange={(v) => update("spirit_type", v)}>
             <SelectTrigger><SelectValue placeholder="Select spirit type" /></SelectTrigger>
             <SelectContent>
@@ -101,7 +112,7 @@ const CaskAdvancedSpecsFields = ({ value, onChange }: Props) => {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Wood Species</Label>
+          <Label>Wood Species *</Label>
           <Select value={value.wood_species} onValueChange={(v) => update("wood_species", v)}>
             <SelectTrigger><SelectValue placeholder="Select wood species" /></SelectTrigger>
             <SelectContent>
@@ -112,7 +123,7 @@ const CaskAdvancedSpecsFields = ({ value, onChange }: Props) => {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Cask Fill Generation</Label>
+          <Label>Cask Fill Generation *</Label>
           <Select value={value.cask_fill_generation} onValueChange={(v) => update("cask_fill_generation", v)}>
             <SelectTrigger><SelectValue placeholder="First-fill, refill..." /></SelectTrigger>
             <SelectContent>
@@ -123,7 +134,7 @@ const CaskAdvancedSpecsFields = ({ value, onChange }: Props) => {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Previous Contents</Label>
+          <Label>Previous Contents *</Label>
           <Select value={value.previous_contents} onValueChange={(v) => update("previous_contents", v)}>
             <SelectTrigger><SelectValue placeholder="e.g. Ex-Sherry Oloroso" /></SelectTrigger>
             <SelectContent>
@@ -134,7 +145,7 @@ const CaskAdvancedSpecsFields = ({ value, onChange }: Props) => {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Char Level (1–4)</Label>
+          <Label>Char Level (1–4) *</Label>
           <Input
             type="number"
             min={1}
@@ -163,7 +174,7 @@ const CaskAdvancedSpecsFields = ({ value, onChange }: Props) => {
           />
         </div>
         <div className="space-y-2">
-          <Label>DSP / Warehouse Code</Label>
+          <Label>DSP / Warehouse Code *</Label>
           <Input
             value={value.dsp_code}
             onChange={(e) => update("dsp_code", e.target.value)}
@@ -181,7 +192,7 @@ const CaskAdvancedSpecsFields = ({ value, onChange }: Props) => {
           />
         </div>
         <div className="space-y-2">
-          <Label>Duty Status</Label>
+          <Label>Duty Status *</Label>
           <Select value={value.duty_status} onValueChange={(v) => update("duty_status", v)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
