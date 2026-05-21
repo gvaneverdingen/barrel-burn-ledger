@@ -202,6 +202,8 @@ const WarehouseNewCask = () => {
               <Textarea name="tasting_notes" value={formData.tasting_notes} onChange={onChange} rows={4} />
             </div>
 
+            <CaskAdvancedSpecsFields value={advancedSpecs} onChange={setAdvancedSpecs} />
+
             <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
               <div>
                 <Label className="text-base font-medium">Available for Sale</Label>
