@@ -1105,6 +1105,9 @@ const CaskDetails = () => {
               </CardContent>
             </Card>
 
+            {/* Provenance, cooperage, regauge & transfer history */}
+            <CaskProvenancePanel caskId={cask.id} canManage={canManageImages} />
+
             {/* Blockchain / NFT Status */}
             <NftStatusCard
               blockchainHash={cask.blockchain_hash}
