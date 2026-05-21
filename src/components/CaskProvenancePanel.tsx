@@ -326,6 +326,7 @@ const CaskProvenancePanel = ({ caskId, canManage = false }: Props) => {
                   <span className="text-muted-foreground">Bulk <strong className="text-foreground">{r.bulk_liters} L</strong></span>
                   <span className="text-muted-foreground">ABV <strong className="text-foreground">{r.abv}%</strong></span>
                   {r.notes && <span className="text-muted-foreground italic">{r.notes}</span>}
+                  <AttachmentChip url={r.document_url} filename={r.document_filename} type={r.document_type} />
                 </div>
               ))}
             </div>
@@ -360,6 +361,7 @@ const CaskProvenancePanel = ({ caskId, canManage = false }: Props) => {
                       Doc: {t.doc_hash.slice(0, 12)}…
                     </a>
                   )}
+                  <AttachmentChip url={t.document_url} filename={t.document_filename} type={t.document_type} />
                 </div>
               ))}
             </div>
