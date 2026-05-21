@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Plus, History, Droplet, ArrowRightLeft } from "lucide-react";
+import { cidError } from "@/lib/ipfs";
 import {
   SPIRIT_TYPE_LABELS,
   WOOD_SPECIES_LABELS,
@@ -368,9 +369,23 @@ const AddTransferDialog = ({ caskId, onAdded }: { caskId: string; onAdded: () =>
             </Select>
           </div>
           <div className="space-y-1 col-span-2"><Label>Reason / Notes</Label><Textarea rows={2} value={form.reason} onChange={(e) => setForm({ ...form, reason: e.target.value })} /></div>
-          <div className="space-y-1 col-span-2"><Label>Document Hash (IPFS CID)</Label><Input value={form.doc_hash} onChange={(e) => setForm({ ...form, doc_hash: e.target.value })} placeholder="bafy..." /></div>
+          <div className="space-y-1 col-span-2">
+            <Label>Document Hash (IPFS CID)</Label>
+            <Input
+              value={form.doc_hash}
+              onChange={(e) => setForm({ ...form, doc_hash: e.target.value })}
+              placeholder="Qm… or bafy…"
+              aria-invalid={!!cidError(form.doc_hash)}
+            />
+            {cidError(form.doc_hash) && (
+              <p className="text-xs text-destructive">{cidError(form.doc_hash)}</p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Optional. Paste the IPFS CID for the supporting document (re-rack note, transfer paperwork).
+            </p>
+          </div>
         </div>
-        <Button onClick={submit} disabled={busy} className="w-full">{busy ? "Saving…" : "Save Event"}</Button>
+        <Button onClick={submit} disabled={busy || !!cidError(form.doc_hash)} className="w-full">{busy ? "Saving…" : "Save Event"}</Button>
       </DialogContent>
     </Dialog>
   );
