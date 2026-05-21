@@ -16,6 +16,7 @@ import CaskAdvancedSpecsFields, {
   AdvancedSpecsState,
   emptyAdvancedSpecs,
   buildAdvancedSpecsPayload,
+  validateAdvancedSpecs,
 } from "@/components/CaskAdvancedSpecsFields";
 
 const WarehouseNewCask = () => {
@@ -74,6 +75,10 @@ const WarehouseNewCask = () => {
     }
     if (!formData.cask_number || !formData.spirit_name || !formData.distillation_date || !formData.cask_type_id) {
       return toast.error("Please fill in all required fields");
+    }
+    const specsErr = validateAdvancedSpecs(advancedSpecs);
+    if (specsErr) {
+      return toast.error(specsErr);
     }
     setIsSubmitting(true);
     try {
