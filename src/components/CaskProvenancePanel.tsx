@@ -383,6 +383,7 @@ const AddRegaugeDialog = ({ caskId, onAdded }: { caskId: string; onAdded: () => 
     abv: "",
     notes: "",
   });
+  const [doc, setDoc] = useState<DocumentAttachState>({ ...emptyDoc, doc_type: "regauge_report" });
 
   const submit = async () => {
     if (!form.regauge_date || !form.rla_liters || !form.bulk_liters || !form.abv) {
@@ -390,6 +391,11 @@ const AddRegaugeDialog = ({ caskId, onAdded }: { caskId: string; onAdded: () => 
       return;
     }
     setBusy(true);
+    const uploaded = await uploadEventDocument(caskId, doc);
+    if (doc.file && !uploaded) {
+      setBusy(false);
+      return;
+    }
     const { error } = await supabase.from("cask_regauges").insert({
       cask_id: caskId,
       regauge_date: form.regauge_date,
@@ -397,6 +403,9 @@ const AddRegaugeDialog = ({ caskId, onAdded }: { caskId: string; onAdded: () => 
       bulk_liters: parseFloat(form.bulk_liters),
       abv: parseFloat(form.abv),
       notes: form.notes || null,
+      document_url: uploaded?.url ?? null,
+      document_filename: uploaded?.filename ?? null,
+      document_type: uploaded?.type ?? null,
     });
     setBusy(false);
     if (error) {
@@ -406,6 +415,7 @@ const AddRegaugeDialog = ({ caskId, onAdded }: { caskId: string; onAdded: () => 
     toast.success("Regauge recorded");
     setOpen(false);
     setForm({ regauge_date: new Date().toISOString().slice(0, 10), rla_liters: "", bulk_liters: "", abv: "", notes: "" });
+    setDoc({ ...emptyDoc, doc_type: "regauge_report" });
     onAdded();
   };
 
@@ -425,6 +435,7 @@ const AddRegaugeDialog = ({ caskId, onAdded }: { caskId: string; onAdded: () => 
           <div className="space-y-1"><Label>Bulk (L)</Label><Input type="number" step="0.01" value={form.bulk_liters} onChange={(e) => setForm({ ...form, bulk_liters: e.target.value })} /></div>
           <div className="space-y-1 col-span-2"><Label>ABV (%)</Label><Input type="number" step="0.1" value={form.abv} onChange={(e) => setForm({ ...form, abv: e.target.value })} /></div>
           <div className="space-y-1 col-span-2"><Label>Notes</Label><Textarea rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
+          <DocumentAttachField state={doc} onChange={setDoc} />
         </div>
         <Button onClick={submit} disabled={busy} className="w-full">{busy ? "Saving…" : "Save Regauge"}</Button>
       </DialogContent>
