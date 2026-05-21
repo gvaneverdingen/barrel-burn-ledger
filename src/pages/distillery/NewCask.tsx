@@ -96,6 +96,11 @@ const NewCask = () => {
       return;
     }
 
+    if (!formData.current_volume_liters || !formData.alcohol_percentage || !formData.region.trim()) {
+      toast.error('Volume, ABV and Region are required — they are anchored on-chain in the NFT.');
+      return;
+    }
+
     const specsErr = validateAdvancedSpecs(advancedSpecs);
     if (specsErr) {
       toast.error(specsErr);
@@ -285,7 +290,7 @@ const NewCask = () => {
                 <h3 className="text-lg font-semibold">Volume & Pricing</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="current_volume_liters">Current Volume (L)</Label>
+                    <Label htmlFor="current_volume_liters">Current Volume (L) *</Label>
                     <Input
                       id="current_volume_liters"
                       name="current_volume_liters"
@@ -294,10 +299,11 @@ const NewCask = () => {
                       value={formData.current_volume_liters}
                       onChange={handleInputChange}
                       placeholder="e.g., 200"
+                      required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="alcohol_percentage">ABV (%)</Label>
+                    <Label htmlFor="alcohol_percentage">ABV (%) *</Label>
                     <Input
                       id="alcohol_percentage"
                       name="alcohol_percentage"
@@ -306,6 +312,7 @@ const NewCask = () => {
                       value={formData.alcohol_percentage}
                       onChange={handleInputChange}
                       placeholder="e.g., 63.5"
+                      required
                     />
                   </div>
                   <div className="space-y-2">
@@ -350,13 +357,14 @@ const NewCask = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="region">Region</Label>
+                    <Label htmlFor="region">Region *</Label>
                     <Input
                       id="region"
                       name="region"
                       value={formData.region}
                       onChange={handleInputChange}
                       placeholder="e.g., Speyside, Scotland"
+                      required
                     />
                   </div>
                   <div className="space-y-2">
