@@ -1,0 +1,379 @@
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+import { Plus, History, Droplet, ArrowRightLeft } from "lucide-react";
+import {
+  SPIRIT_TYPE_LABELS,
+  WOOD_SPECIES_LABELS,
+  FILL_GENERATION_LABELS,
+  PREVIOUS_CONTENTS_LABELS,
+  TOAST_LEVEL_LABELS,
+  DUTY_STATUS_LABELS,
+  TRANSFER_TYPE_LABELS,
+  TRANSFER_TYPE_OPTIONS,
+  computeAngelsShareRate,
+} from "@/lib/caskSpecs";
+
+interface CaskRow {
+  id: string;
+  dsp_code: string | null;
+  spirit_type: string | null;
+  wood_species: string | null;
+  char_level: number | null;
+  toast_level: string | null;
+  cooperage: string | null;
+  cask_fill_generation: string | null;
+  previous_contents: string | null;
+  original_lpa: number | null;
+  duty_status: string | null;
+  insurance_valuation: number | null;
+  insurance_valuation_at: string | null;
+  provenance_doc_hash: string | null;
+  wowgr_holder_warehouse_id: string | null;
+}
+
+interface Regauge {
+  id: string;
+  regauge_date: string;
+  rla_liters: number;
+  bulk_liters: number;
+  abv: number;
+  notes: string | null;
+}
+
+interface Transfer {
+  id: string;
+  transfer_date: string;
+  transfer_type: string;
+  reason: string | null;
+  doc_hash: string | null;
+}
+
+interface Props {
+  caskId: string;
+  /** When true, render add-regauge / add-transfer dialogs. */
+  canManage?: boolean;
+}
+
+const Row = ({ label, value }: { label: string; value: React.ReactNode }) => (
+  <div className="flex justify-between text-sm gap-4">
+    <span className="text-muted-foreground">{label}:</span>
+    <span className="text-right">{value}</span>
+  </div>
+);
+
+const CaskProvenancePanel = ({ caskId, canManage = false }: Props) => {
+  const [cask, setCask] = useState<CaskRow | null>(null);
+  const [regauges, setRegauges] = useState<Regauge[]>([]);
+  const [transfers, setTransfers] = useState<Transfer[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchAll = async () => {
+    setLoading(true);
+    const [{ data: caskData }, { data: rg }, { data: tr }] = await Promise.all([
+      supabase
+        .from("casks")
+        .select(
+          "id, dsp_code, spirit_type, wood_species, char_level, toast_level, cooperage, cask_fill_generation, previous_contents, original_lpa, duty_status, insurance_valuation, insurance_valuation_at, provenance_doc_hash, wowgr_holder_warehouse_id",
+        )
+        .eq("id", caskId)
+        .maybeSingle(),
+      supabase
+        .from("cask_regauges")
+        .select("id, regauge_date, rla_liters, bulk_liters, abv, notes")
+        .eq("cask_id", caskId)
+        .order("regauge_date", { ascending: false }),
+      supabase
+        .from("cask_transfers")
+        .select("id, transfer_date, transfer_type, reason, doc_hash")
+        .eq("cask_id", caskId)
+        .order("transfer_date", { ascending: false }),
+    ]);
+    setCask((caskData as CaskRow) ?? null);
+    setRegauges((rg as Regauge[]) ?? []);
+    setTransfers((tr as Transfer[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [caskId]);
+
+  const angelsShareRate = useMemo(
+    () => computeAngelsShareRate(regauges, cask?.original_lpa ?? null),
+    [regauges, cask?.original_lpa],
+  );
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="py-8 text-center text-sm text-muted-foreground">Loading provenance…</CardContent>
+      </Card>
+    );
+  }
+
+  const hasAnySpec =
+    cask &&
+    (cask.spirit_type ||
+      cask.wood_species ||
+      cask.cask_fill_generation ||
+      cask.previous_contents ||
+      cask.cooperage ||
+      cask.char_level ||
+      cask.toast_level ||
+      cask.dsp_code ||
+      cask.original_lpa ||
+      cask.insurance_valuation ||
+      cask.provenance_doc_hash);
+
+  return (
+    <div className="space-y-6">
+      {hasAnySpec && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Droplet className="h-5 w-5" />Provenance &amp; Cooperage
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid md:grid-cols-2 gap-x-8 gap-y-2">
+            {cask?.spirit_type && <Row label="Spirit Type" value={SPIRIT_TYPE_LABELS[cask.spirit_type] ?? cask.spirit_type} />}
+            {cask?.wood_species && <Row label="Wood Species" value={WOOD_SPECIES_LABELS[cask.wood_species] ?? cask.wood_species} />}
+            {cask?.cask_fill_generation && (
+              <Row label="Fill Generation" value={FILL_GENERATION_LABELS[cask.cask_fill_generation] ?? cask.cask_fill_generation} />
+            )}
+            {cask?.previous_contents && (
+              <Row label="Previous Contents" value={PREVIOUS_CONTENTS_LABELS[cask.previous_contents] ?? cask.previous_contents} />
+            )}
+            {cask?.char_level != null && <Row label="Char Level" value={`${cask.char_level} / 4`} />}
+            {cask?.toast_level && <Row label="Toast Level" value={TOAST_LEVEL_LABELS[cask.toast_level] ?? cask.toast_level} />}
+            {cask?.cooperage && <Row label="Cooperage" value={cask.cooperage} />}
+            {cask?.dsp_code && <Row label="DSP / Warehouse Code" value={cask.dsp_code} />}
+            {cask?.original_lpa != null && <Row label="Original LPA" value={`${cask.original_lpa} L`} />}
+            {cask?.duty_status && (
+              <Row label="Duty Status" value={<Badge variant="secondary">{DUTY_STATUS_LABELS[cask.duty_status] ?? cask.duty_status}</Badge>} />
+            )}
+            {cask?.insurance_valuation != null && (
+              <Row
+                label="Insurance Valuation"
+                value={`${cask.insurance_valuation.toLocaleString()}${cask.insurance_valuation_at ? ` (as of ${new Date(cask.insurance_valuation_at).toLocaleDateString()})` : ""}`}
+              />
+            )}
+            {cask?.provenance_doc_hash && (
+              <Row
+                label="Provenance Docs"
+                value={
+                  <a
+                    className="text-primary hover:underline break-all"
+                    href={`https://ipfs.io/ipfs/${cask.provenance_doc_hash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {cask.provenance_doc_hash.slice(0, 16)}…
+                  </a>
+                }
+              />
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <CardTitle className="flex items-center gap-2">
+            <History className="h-5 w-5" />Regauge History
+          </CardTitle>
+          {canManage && <AddRegaugeDialog caskId={caskId} onAdded={fetchAll} />}
+        </CardHeader>
+        <CardContent>
+          {angelsShareRate != null && (
+            <p className="text-sm text-muted-foreground mb-4">
+              Angel&apos;s share rate (derived): <strong>{angelsShareRate.toFixed(2)}% / year</strong>
+            </p>
+          )}
+          {regauges.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No regauges recorded yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {regauges.map((r) => (
+                <div key={r.id} className="flex flex-wrap items-baseline gap-x-6 gap-y-1 border-b border-border/40 pb-2 text-sm last:border-0">
+                  <span className="font-medium">{new Date(r.regauge_date).toLocaleDateString()}</span>
+                  <span className="text-muted-foreground">RLA <strong className="text-foreground">{r.rla_liters} L</strong></span>
+                  <span className="text-muted-foreground">Bulk <strong className="text-foreground">{r.bulk_liters} L</strong></span>
+                  <span className="text-muted-foreground">ABV <strong className="text-foreground">{r.abv}%</strong></span>
+                  {r.notes && <span className="text-muted-foreground italic">{r.notes}</span>}
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <CardTitle className="flex items-center gap-2">
+            <ArrowRightLeft className="h-5 w-5" />Transfer &amp; Maturation Events
+          </CardTitle>
+          {canManage && <AddTransferDialog caskId={caskId} onAdded={fetchAll} />}
+        </CardHeader>
+        <CardContent>
+          {transfers.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No transfers recorded yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {transfers.map((t) => (
+                <div key={t.id} className="flex flex-wrap items-baseline gap-x-6 gap-y-1 border-b border-border/40 pb-2 text-sm last:border-0">
+                  <span className="font-medium">{new Date(t.transfer_date).toLocaleDateString()}</span>
+                  <Badge variant="outline">{TRANSFER_TYPE_LABELS[t.transfer_type] ?? t.transfer_type}</Badge>
+                  {t.reason && <span className="text-muted-foreground">{t.reason}</span>}
+                  {t.doc_hash && (
+                    <a
+                      className="text-primary hover:underline text-xs break-all"
+                      href={`https://ipfs.io/ipfs/${t.doc_hash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Doc: {t.doc_hash.slice(0, 12)}…
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+/* -------------------------- Add Regauge dialog -------------------------- */
+const AddRegaugeDialog = ({ caskId, onAdded }: { caskId: string; onAdded: () => void }) => {
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [form, setForm] = useState({
+    regauge_date: new Date().toISOString().slice(0, 10),
+    rla_liters: "",
+    bulk_liters: "",
+    abv: "",
+    notes: "",
+  });
+
+  const submit = async () => {
+    if (!form.regauge_date || !form.rla_liters || !form.bulk_liters || !form.abv) {
+      toast.error("Date, RLA, bulk litres and ABV are required");
+      return;
+    }
+    setBusy(true);
+    const { error } = await supabase.from("cask_regauges").insert({
+      cask_id: caskId,
+      regauge_date: form.regauge_date,
+      rla_liters: parseFloat(form.rla_liters),
+      bulk_liters: parseFloat(form.bulk_liters),
+      abv: parseFloat(form.abv),
+      notes: form.notes || null,
+    });
+    setBusy(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Regauge recorded");
+    setOpen(false);
+    setForm({ regauge_date: new Date().toISOString().slice(0, 10), rla_liters: "", bulk_liters: "", abv: "", notes: "" });
+    onAdded();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" variant="outline"><Plus className="h-4 w-4 mr-1" />Add Regauge</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Record Regauge</DialogTitle></DialogHeader>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1 col-span-2">
+            <Label>Date</Label>
+            <Input type="date" value={form.regauge_date} onChange={(e) => setForm({ ...form, regauge_date: e.target.value })} />
+          </div>
+          <div className="space-y-1"><Label>RLA (L)</Label><Input type="number" step="0.01" value={form.rla_liters} onChange={(e) => setForm({ ...form, rla_liters: e.target.value })} /></div>
+          <div className="space-y-1"><Label>Bulk (L)</Label><Input type="number" step="0.01" value={form.bulk_liters} onChange={(e) => setForm({ ...form, bulk_liters: e.target.value })} /></div>
+          <div className="space-y-1 col-span-2"><Label>ABV (%)</Label><Input type="number" step="0.1" value={form.abv} onChange={(e) => setForm({ ...form, abv: e.target.value })} /></div>
+          <div className="space-y-1 col-span-2"><Label>Notes</Label><Textarea rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
+        </div>
+        <Button onClick={submit} disabled={busy} className="w-full">{busy ? "Saving…" : "Save Regauge"}</Button>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+/* -------------------------- Add Transfer dialog -------------------------- */
+const AddTransferDialog = ({ caskId, onAdded }: { caskId: string; onAdded: () => void }) => {
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [form, setForm] = useState({
+    transfer_date: new Date().toISOString().slice(0, 10),
+    transfer_type: "re_rack",
+    reason: "",
+    doc_hash: "",
+  });
+
+  const submit = async () => {
+    if (!form.transfer_date || !form.transfer_type) {
+      toast.error("Date and type are required");
+      return;
+    }
+    setBusy(true);
+    const { error } = await supabase.from("cask_transfers").insert({
+      cask_id: caskId,
+      transfer_date: form.transfer_date,
+      transfer_type: form.transfer_type as any,
+      reason: form.reason || null,
+      doc_hash: form.doc_hash || null,
+    });
+    setBusy(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Transfer recorded");
+    setOpen(false);
+    setForm({ transfer_date: new Date().toISOString().slice(0, 10), transfer_type: "re_rack", reason: "", doc_hash: "" });
+    onAdded();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" variant="outline"><Plus className="h-4 w-4 mr-1" />Add Event</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Record Transfer / Event</DialogTitle></DialogHeader>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1"><Label>Date</Label><Input type="date" value={form.transfer_date} onChange={(e) => setForm({ ...form, transfer_date: e.target.value })} /></div>
+          <div className="space-y-1">
+            <Label>Type</Label>
+            <Select value={form.transfer_type} onValueChange={(v) => setForm({ ...form, transfer_type: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {TRANSFER_TYPE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1 col-span-2"><Label>Reason / Notes</Label><Textarea rows={2} value={form.reason} onChange={(e) => setForm({ ...form, reason: e.target.value })} /></div>
+          <div className="space-y-1 col-span-2"><Label>Document Hash (IPFS CID)</Label><Input value={form.doc_hash} onChange={(e) => setForm({ ...form, doc_hash: e.target.value })} placeholder="bafy..." /></div>
+        </div>
+        <Button onClick={submit} disabled={busy} className="w-full">{busy ? "Saving…" : "Save Event"}</Button>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default CaskProvenancePanel;
