@@ -736,9 +736,7 @@ const CaskDetails = () => {
         const { data, error } = await supabase.functions.invoke('create-payment', {
           body: {
             caskId: cask?.id,
-            amount: Math.round((cask?.total_price || 0) * 100), // Convert to cents
             currency: 'usd',
-            caskName: cask?.spirit_name,
           }
         });
  
