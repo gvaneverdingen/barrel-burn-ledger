@@ -11,11 +11,9 @@ const corsHeaders = {
 // Zod validation schema
 const CreatePaymentSchema = z.object({
   caskId: z.string().uuid("Invalid cask ID format"),
-  amount: z.number().int("Amount must be an integer").positive("Amount must be positive").max(100000000, "Amount exceeds maximum allowed"),
   currency: z.enum(["usd", "eur", "gbp"], {
     errorMap: () => ({ message: "Currency must be usd, eur, or gbp" })
   }).default("usd"),
-  caskName: z.string().min(1, "Cask name is required").max(200, "Cask name too long"),
 });
 
 // Sanitize error messages for production
