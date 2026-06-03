@@ -103,9 +103,9 @@ serve(async (req) => {
       throw new Error(`Validation failed: ${errors}`);
     }
 
-    const { caskId, amount, currency, caskName } = validationResult.data;
-    
-    console.log("Request data validated:", { caskId, amount, currency, caskName });
+    const { caskId, currency } = validationResult.data;
+
+    console.log("Request data validated:", { caskId, currency });
 
     // Create Supabase service client for database operations
     const supabaseService = createClient(
@@ -126,7 +126,8 @@ serve(async (req) => {
         distillery:distilleries!inner(
           id,
           profile_id,
-          name
+          name,
+          verified
         )
       `)
       .eq("id", caskId)
@@ -144,9 +145,44 @@ serve(async (req) => {
     
     console.log("Cask data retrieved successfully");
 
+    // Server-side validation: cask state and price integrity
+    if (!cask.available_for_sale) {
+      throw new Error("Cask is not available for sale");
+    }
+    if (!cask.distillery?.verified) {
+      throw new Error("Distillery is not verified");
+    }
+    if (cask.distillery.profile_id === user.id) {
+      throw new Error("Cannot purchase your own cask");
+    }
+
+    const totalPriceDb = Number(cask.total_price);
+    const pricePerLiterDb = Number(cask.price_per_liter);
+    const volumeDb = Number(cask.current_volume_liters);
+
+    if (!Number.isFinite(totalPriceDb) || totalPriceDb <= 0) {
+      throw new Error("Cask has no valid price");
+    }
+    if (!Number.isFinite(pricePerLiterDb) || pricePerLiterDb <= 0) {
+      throw new Error("Cask has no valid price");
+    }
+    if (!Number.isFinite(volumeDb) || volumeDb <= 0) {
+      throw new Error("Cask has no valid price");
+    }
+
+    // Cross-check total_price against price_per_liter × current_volume_liters (1% tolerance)
+    const expectedTotal = pricePerLiterDb * volumeDb;
+    const drift = Math.abs(expectedTotal - totalPriceDb) / totalPriceDb;
+    if (drift > 0.01) {
+      console.error("Price mismatch:", { totalPriceDb, expectedTotal, drift });
+      throw new Error("Cask has no valid price");
+    }
+
+    // Server-computed amount (in minor units / cents)
+    const totalAmount = totalPriceDb;
+    const amount = Math.round(totalAmount * 100);
+    const caskName = cask.spirit_name || `Cask ${cask.cask_number ?? cask.id}`;
     // Primary sale fee structure: 10% platform + 1.5% transaction = 11.5% total, distillery gets 88.5%
-    // (Resale uses 5% platform fee, seller gets 95% — see purchase-cask function)
-    const totalAmount = amount / 100; // Convert from cents to dollars
     const platformFeeRate = 0.10;
     const transactionFeeRate = 0.015;
     const distilleryRate = 0.885;
@@ -164,8 +200,8 @@ serve(async (req) => {
       cask_id: caskId,
       transaction_type: "purchase",
       total_amount: totalAmount,
-      volume_liters: cask.current_volume_liters || 0,
-      price_per_liter: cask.price_per_liter || 0,
+      volume_liters: volumeDb,
+      price_per_liter: pricePerLiterDb,
       transaction_fee: transactionFee,
       platform_fee: arigiPlatformFee,
       distillery_fee: distilleryFee,
