@@ -1576,6 +1576,16 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
+      owns_distillery: { Args: { _distillery_id: string }; Returns: boolean }
+      owns_verified_distillery: {
+        Args: { _distillery_id: string }
+        Returns: boolean
+      }
+      owns_verified_warehouse: {
+        Args: { _warehouse_id: string }
+        Returns: boolean
+      }
+      owns_warehouse: { Args: { _warehouse_id: string }; Returns: boolean }
     }
     Enums: {
       cask_fill_generation:
