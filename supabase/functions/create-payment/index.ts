@@ -160,26 +160,31 @@ serve(async (req) => {
     const pricePerLiterDb = Number(cask.price_per_liter);
     const volumeDb = Number(cask.current_volume_liters);
 
-    if (!Number.isFinite(totalPriceDb) || totalPriceDb <= 0) {
-      throw new Error("Cask has no valid price");
-    }
-    if (!Number.isFinite(pricePerLiterDb) || pricePerLiterDb <= 0) {
-      throw new Error("Cask has no valid price");
-    }
-    if (!Number.isFinite(volumeDb) || volumeDb <= 0) {
+    const hasTotal = Number.isFinite(totalPriceDb) && totalPriceDb > 0;
+    const hasPerLiter = Number.isFinite(pricePerLiterDb) && pricePerLiterDb > 0;
+    const hasVolume = Number.isFinite(volumeDb) && volumeDb > 0;
+
+    let totalAmount: number;
+
+    if (hasTotal && hasPerLiter && hasVolume) {
+      // Cross-check total_price against price_per_liter × current_volume_liters (1% tolerance)
+      const expectedTotal = pricePerLiterDb * volumeDb;
+      const drift = Math.abs(expectedTotal - totalPriceDb) / totalPriceDb;
+      if (drift > 0.01) {
+        console.error("Price mismatch:", { totalPriceDb, expectedTotal, drift });
+        throw new Error("Cask has no valid price");
+      }
+      totalAmount = totalPriceDb;
+    } else if (hasTotal) {
+      // Use stored total directly when per-liter components are unavailable
+      totalAmount = totalPriceDb;
+    } else if (hasPerLiter && hasVolume) {
+      // Fallback: derive total from price_per_liter × current_volume_liters
+      totalAmount = pricePerLiterDb * volumeDb;
+    } else {
       throw new Error("Cask has no valid price");
     }
 
-    // Cross-check total_price against price_per_liter × current_volume_liters (1% tolerance)
-    const expectedTotal = pricePerLiterDb * volumeDb;
-    const drift = Math.abs(expectedTotal - totalPriceDb) / totalPriceDb;
-    if (drift > 0.01) {
-      console.error("Price mismatch:", { totalPriceDb, expectedTotal, drift });
-      throw new Error("Cask has no valid price");
-    }
-
-    // Server-computed amount (in minor units / cents)
-    const totalAmount = totalPriceDb;
     const amount = Math.round(totalAmount * 100);
     const caskName = cask.spirit_name || `Cask ${cask.cask_number ?? cask.id}`;
     // Primary sale fee structure: 10% platform + 1.5% transaction = 11.5% total, distillery gets 88.5%
@@ -200,8 +205,8 @@ serve(async (req) => {
       cask_id: caskId,
       transaction_type: "purchase",
       total_amount: totalAmount,
-      volume_liters: volumeDb,
-      price_per_liter: pricePerLiterDb,
+      volume_liters: hasVolume ? volumeDb : null,
+      price_per_liter: hasPerLiter ? pricePerLiterDb : null,
       transaction_fee: transactionFee,
       platform_fee: arigiPlatformFee,
       distillery_fee: distilleryFee,
