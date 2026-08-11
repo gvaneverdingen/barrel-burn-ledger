@@ -86,6 +86,8 @@ interface UnifiedListing {
   updated_at: string;
   distillery_id?: string;
   cask_type_id?: string;
+  region?: string | null;
+  spirit_type?: string | null;
   distilleries?: {
     name: string;
     location: string | null;
@@ -107,6 +109,32 @@ interface UnifiedListing {
 }
 
 const Marketplace = () => {
+  // Map a listing to a spirit category using structured fields
+  // (region / spirit_type / distillery location), not display-name substrings.
+  const SCOTCH_REGIONS = ['speyside', 'highland', 'highlands', 'islay', 'campbeltown', 'lowland', 'lowlands', 'island', 'islands', 'scotland', 'scottish'];
+  const IRISH_REGIONS = ['ireland', 'irish', 'cork', 'dublin', 'louth', 'antrim'];
+  const US_REGIONS = ['kentucky', 'tennessee', 'usa', 'united states', 'indiana'];
+
+  const getListingCategory = (listing: UnifiedListing): 'scotch' | 'bourbon' | 'irish' | 'other' => {
+    const region = (listing.region || '').toLowerCase();
+    const location = (listing.distilleries?.location || '').toLowerCase();
+    const spiritType = (listing.spirit_type || '').toLowerCase();
+    const haystack = `${region} ${location}`;
+
+    const inList = (list: string[]) => list.some((v) => haystack.includes(v));
+
+    if (spiritType === 'bourbon' || spiritType === 'tennessee_whiskey' || spiritType === 'corn_whiskey' || spiritType === 'rye') {
+      return 'bourbon';
+    }
+    if (spiritType === 'irish_pot_still') return 'irish';
+    if (inList(SCOTCH_REGIONS)) return 'scotch';
+    if (inList(IRISH_REGIONS)) return 'irish';
+    if (inList(US_REGIONS)) return 'bourbon';
+    // Scotch spirit types only count as Scotch when the origin says so,
+    // otherwise treat as world whisky.
+    return 'other';
+  };
+
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToComparison, isInComparison } = useComparison();
@@ -161,6 +189,8 @@ const Marketplace = () => {
             blockchain_hash,
             warehouse_location,
             tasting_notes,
+            region,
+            spirit_type,
             distilleries (
               name,
               location,
@@ -207,6 +237,8 @@ const Marketplace = () => {
           updated_at: cask.updated_at,
           distillery_id: cask.distillery_id,
           cask_type_id: cask.cask_type_id,
+          region: cask.region,
+          spirit_type: cask.spirit_type,
           distilleries: cask.distilleries,
           cask_types: cask.cask_types,
           is_resale: false,
@@ -236,6 +268,8 @@ const Marketplace = () => {
             total_price: listing.total_asking_price,
             warehouse_location: cask.warehouse_location,
             tasting_notes: cask.tasting_notes,
+            region: (cask as any).region ?? null,
+            spirit_type: (cask as any).spirit_type ?? null,
             created_at: listing.created_at,
             updated_at: listing.created_at,
             distilleries: cask.distilleries,
@@ -298,9 +332,7 @@ const Marketplace = () => {
       
       const matchesType = filterType === 'all' || 
         (filterType === 'resale' && listing.is_resale) ||
-        (filterType === 'scotch' && listing.spirit_name.toLowerCase().includes('scotch')) ||
-        (filterType === 'bourbon' && listing.spirit_name.toLowerCase().includes('bourbon')) ||
-        (filterType === 'irish' && listing.spirit_name.toLowerCase().includes('irish'));
+        (filterType !== 'resale' && getListingCategory(listing) === filterType);
       
       const matchesPrice = maxPrice === '' || ((listing.total_price || 0) <= maxPrice);
       return matchesSearch && matchesType && matchesPrice;
@@ -675,17 +707,6 @@ const Marketplace = () => {
             </Card>
           )}
 
-          {filteredListings.length === 0 && (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No casks found</h3>
-                <p className="text-muted-foreground">
-                  Try adjusting your filters or search terms
-                </p>
-              </CardContent>
-            </Card>
-          )}
         </TabsContent>
 
         <TabsContent value="map" className="space-y-6">
