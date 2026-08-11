@@ -65,6 +65,7 @@ const Documentation = lazy(() => import("./pages/Documentation"));
 const Help = lazy(() => import("./pages/Help"));
 const Settings = lazy(() => import("./pages/Settings"));
 const ConsumerJourney = lazy(() => import("./pages/ConsumerJourney"));
+const About = lazy(() => import("./pages/About"));
 const DistilleryDashboard = lazy(() => import("./pages/distillery/Dashboard"));
 const DistilleryCasks = lazy(() => import("./pages/distillery/Casks"));
 const DistilleryAnalytics = lazy(() => import("./pages/distillery/Analytics"));
@@ -179,6 +180,30 @@ const AppRoutes = () => {
             />
             
             {/* Marketplace and related features - Available to all */}
+            <Route
+              path="/about"
+              element={
+                <WithSeo
+                  seo={{
+                    title: 'Our Story | ARIGI — Whisky Casks Direct From the Distillery',
+                    description:
+                      'ARIGI was built by bulk spirits traders who saw how opaque the cask market had become. Every cask comes direct from the distillery or a verified owner, with provenance recorded on-chain.',
+                    canonical: '/about',
+                    jsonLd: {
+                      '@context': 'https://schema.org',
+                      '@type': 'Organization',
+                      name: 'ARIGI',
+                      url: 'https://barrel-burn-ledger.lovable.app/',
+                      logo: 'https://barrel-burn-ledger.lovable.app/og-image.jpg',
+                      description:
+                        'Whisky cask marketplace sourcing direct from distilleries and verified owners, with on-chain provenance.',
+                    },
+                  }}
+                >
+                  <About />
+                </WithSeo>
+              }
+            />
             <Route
               path="/marketplace"
               element={
