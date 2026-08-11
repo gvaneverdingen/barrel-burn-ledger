@@ -180,7 +180,17 @@ const Marketplace = () => {
       const { data: secondaryListings, error: secondaryError } = user ? await supabase
         .from('cask_sales')
         .select(`
-          *,
+          id,
+          cask_id,
+          seller_id,
+          asking_price_per_liter,
+          total_asking_price,
+          volume_for_sale_liters,
+          status,
+          notes,
+          listing_date,
+          last_gauging_date,
+          created_at,
           casks (
             spirit_name,
             cask_number,
