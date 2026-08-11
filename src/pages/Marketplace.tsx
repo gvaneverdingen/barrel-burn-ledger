@@ -101,7 +101,6 @@ interface UnifiedListing {
   // Secondary market specific fields
   is_resale?: boolean;
   seller_id?: string;
-  ownership_id?: string;
   acquisition_price?: number;
   blockchain_hash?: string;
   seller_name?: string;
@@ -286,7 +285,6 @@ const Marketplace = () => {
             cask_types: cask.cask_types,
             is_resale: true,
             seller_id: listing.seller_id,
-            ownership_id: listing.ownership_id,
             blockchain_hash: cask.blockchain_hash,
             seller_name: listing.profiles 
               ? `${listing.profiles.first_name} ${listing.profiles.last_name}` 
@@ -745,7 +743,7 @@ const Marketplace = () => {
           open={offerDialogOpen}
           onOpenChange={setOfferDialogOpen}
           listing={{
-             id: selectedOfferListing.is_resale ? selectedOfferListing.ownership_id || selectedOfferListing.id : selectedOfferListing.id,
+             id: selectedOfferListing.id,
              cask_id: selectedOfferListing.cask_id,
              seller_id: selectedOfferListing.seller_id,
              spirit_name: selectedOfferListing.spirit_name,
