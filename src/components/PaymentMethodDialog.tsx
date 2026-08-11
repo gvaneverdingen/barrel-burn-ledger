@@ -243,8 +243,17 @@ export const PaymentMethodDialog = ({
               return (
                 <Card
                   key={option.id}
-                  className="cursor-pointer transition-all hover:border-primary/50 hover:shadow-sm"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Pay with ${option.label}`}
+                  className="cursor-pointer transition-all hover:border-primary/50 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   onClick={() => handleMethodSelect(option.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleMethodSelect(option.id);
+                    }
+                  }}
                 >
                   <CardContent className="flex items-center gap-4 p-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
@@ -277,8 +286,17 @@ export const PaymentMethodDialog = ({
             <p className="text-sm text-muted-foreground">Choose how to connect your wallet:</p>
 
             <Card
-              className="cursor-pointer transition-all hover:border-primary/50"
+              role="button"
+              tabIndex={0}
+              aria-label="Connect an external wallet"
+              className="cursor-pointer transition-all hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               onClick={() => handleWalletSelect("external")}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleWalletSelect("external");
+                }
+              }}
             >
               <CardContent className="flex items-center gap-4 p-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
@@ -291,26 +309,6 @@ export const PaymentMethodDialog = ({
                 <ArrowRight className="h-4 w-4 text-muted-foreground" />
               </CardContent>
             </Card>
-
-            {walletAddress && (
-              <Card
-                className="cursor-pointer transition-all hover:border-primary/50"
-                onClick={() => handleWalletSelect("magic")}
-              >
-                <CardContent className="flex items-center gap-4 p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                    <Coins className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <span className="font-medium text-sm">Magic Wallet</span>
-                    <p className="text-xs text-muted-foreground font-mono">
-                      {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-                    </p>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                </CardContent>
-              </Card>
-            )}
 
             <Button variant="ghost" className="w-full" onClick={() => setStep("method")}>
               ← Back
@@ -337,11 +335,11 @@ export const PaymentMethodDialog = ({
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Wallet</span>
-                <span className="text-xs">{walletSource === "external" ? "External Wallet" : "Magic Wallet"}</span>
+                <span className="text-xs">External Wallet</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Network</span>
-                <span className="text-xs">Polygon Amoy (Testnet)</span>
+                <span className="text-xs">Polygon</span>
               </div>
             </div>
 
