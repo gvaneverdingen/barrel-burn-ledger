@@ -112,6 +112,7 @@ const CaskDetails = () => {
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [userWalletAddress, setUserWalletAddress] = useState<string | null>(null);
   const [primaryImageUrl, setPrimaryImageUrl] = useState<string | null>(null);
+  const [loadState, setLoadState] = useState<'ok' | 'notfound' | 'error'>('ok');
 
   const isAdmin = userRole === 'administrator';
 
@@ -146,11 +147,7 @@ const CaskDetails = () => {
     const timeoutId = setTimeout(() => {
       console.error('[CaskDetails] Loading timeout - forcing loading=false');
       setLoading(false);
-      toast({
-        title: "Loading timeout",
-        description: "The page took too long to load. Please try refreshing.",
-        variant: "destructive",
-      });
+      setLoadState((prev) => (prev === 'ok' ? 'error' : prev));
     }, 10000); // 10 second timeout
 
     fetchCaskDetails(id).finally(() => {
@@ -506,11 +503,8 @@ const CaskDetails = () => {
 
       if (!caskData) {
         console.warn('[CaskDetails] Cask not found or not accessible due to RLS', { caskId });
-        toast({
-          title: "Cask unavailable",
-          description: "This cask could not be found or is not accessible.",
-        });
-        navigate("/marketplace");
+        setCask(null);
+        setLoadState('notfound');
         return;
       }
 
@@ -521,6 +515,7 @@ const CaskDetails = () => {
           setIsOwnerSale(true);
         }
 
+        setLoadState('ok');
         setCask({
           ...caskData,
           price_per_liter: Number(saleData.asking_price_per_liter),
@@ -536,6 +531,7 @@ const CaskDetails = () => {
       }
 
       console.log('[CaskDetails] Primary cask data loaded');
+      setLoadState('ok');
       setCask({
         ...caskData,
         is_sale_listing: false
@@ -543,12 +539,7 @@ const CaskDetails = () => {
 
     } catch (error: any) {
       console.error("Error fetching cask details:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load cask details. Please try again.",
-        variant: "destructive",
-      });
-      navigate("/marketplace");
+      setLoadState('error');
     } finally {
       console.log('[CaskDetails] Finished fetching cask details, setting loading=false');
       setLoading(false);
@@ -556,6 +547,17 @@ const CaskDetails = () => {
   };
 
   const calculateAge = (distillationDate: string) => {
+    return calculateAgeImpl(distillationDate);
+  };
+
+  const retryLoad = () => {
+    if (!id) return;
+    setLoadState('ok');
+    setLoading(true);
+    fetchCaskDetails(id);
+  };
+
+  const calculateAgeImpl = (distillationDate: string) => {
     const now = new Date();
     const distilled = new Date(distillationDate);
     return Math.floor((now.getTime() - distilled.getTime()) / (1000 * 60 * 60 * 24 * 365.25));
@@ -825,22 +827,36 @@ const CaskDetails = () => {
 
   if (!cask) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
-        <div className="container mx-auto px-4 py-8">
-          <Button variant="ghost" asChild className="mb-6">
-            <Link to="/marketplace">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Marketplace
-            </Link>
-          </Button>
-          <Card>
-            <CardContent className="text-center py-12">
-              <h4 className="text-lg font-medium mb-2">Cask not found</h4>
-              <p className="text-muted-foreground">The requested cask could not be found.</p>
-            </CardContent>
-          </Card>
+      <>
+        <Seo
+          title={loadState === 'error' ? 'Cask unavailable | ARIGI' : "This cask isn't available | ARIGI"}
+          description="This cask could not be loaded. It may have been sold, delisted, or the link may be incorrect."
+          noIndex
+        />
+        <div className="mobile-container flex min-h-[60vh] items-center justify-center py-12">
+          <div className="text-center space-y-4 max-w-md">
+            <h1 className="text-2xl font-bold text-foreground">
+              {loadState === 'error' ? "We couldn't load this cask" : "This cask isn't available"}
+            </h1>
+            <p className="text-muted-foreground">
+              {loadState === 'error'
+                ? 'Something went wrong while loading this cask. Please check your connection and try again.'
+                : 'It may have been sold or delisted, or the link may be incorrect.'}
+            </p>
+            <div className="flex flex-wrap justify-center gap-2 pt-2">
+              {loadState === 'error' && (
+                <Button onClick={retryLoad}>Try again</Button>
+              )}
+              <Button asChild variant={loadState === 'error' ? 'outline' : 'default'}>
+                <Link to="/marketplace">Browse the marketplace</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/">Back to home</Link>
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 

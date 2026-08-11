@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,6 +21,22 @@ export const Layout = ({ children }: LayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const [sidebarExpanded, setSidebarExpanded] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return localStorage.getItem('arigi_sidebar_collapsed') !== 'true';
+  });
+
+  const toggleSidebar = () => {
+    setSidebarExpanded((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('arigi_sidebar_collapsed', next ? 'false' : 'true');
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  };
 
   const getRoleIcon = (role: string | null) => {
     switch (role) {
@@ -107,8 +123,12 @@ export const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div className="flex min-h-screen w-full">
-      <AppSidebar />
-      <main className="flex-1 ml-0 lg:ml-16 transition-all duration-300 pb-16 lg:pb-0">
+      <AppSidebar isExpanded={sidebarExpanded} onToggle={toggleSidebar} />
+      <main
+        className={`flex-1 min-w-0 ml-0 transition-all duration-300 pb-16 lg:pb-0 ${
+          sidebarExpanded ? 'lg:ml-64' : 'lg:ml-16'
+        }`}
+      >
           {/* Mobile-Optimized Global Header */}
           <header className="mobile-sticky-header h-14 sm:h-16 border-b border-border/50 bg-card/80 backdrop-blur-md">
             <div className="mobile-container h-full flex items-center justify-between gap-2">

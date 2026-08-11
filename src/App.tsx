@@ -128,6 +128,11 @@ const AppRoutes = () => {
         {/* All other routes with layout */}
         <Route path="/*" element={
         <Layout>
+          <Suspense fallback={
+            <div className="mobile-container py-12 flex items-center justify-center min-h-[50vh]">
+              <LoadingSpinner />
+            </div>
+          }>
           <Routes>
             <Route
               path="/"
@@ -371,6 +376,7 @@ const AppRoutes = () => {
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
         </Layout>
       } />
     </Routes>
