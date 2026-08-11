@@ -296,7 +296,7 @@ const ConsumerJourney = () => {
           <main className="flex-1">
             <header className="h-16 border-b flex items-center px-6">
               <SidebarTrigger />
-              <h1 className="text-2xl font-bold ml-4 luxury-text-gradient">Secure Profile</h1>
+              <h2 className="text-2xl font-bold ml-4 luxury-text-gradient">Secure Profile</h2>
             </header>
             <div className="container max-w-4xl mx-auto px-4 py-8">
               <div className="text-center">
@@ -317,7 +317,7 @@ const ConsumerJourney = () => {
         <main className="flex-1">
           <header className="h-16 border-b backdrop-blur-sm bg-background/80 flex items-center px-6 sticky top-0 z-10">
             <SidebarTrigger />
-            <h1 className="text-2xl font-bold ml-4 luxury-text-gradient">Secure Profile & Credentials</h1>
+            <h2 className="text-2xl font-bold ml-4 luxury-text-gradient">Secure Profile & Credentials</h2>
           </header>
           
           <div className="container max-w-4xl mx-auto px-4 py-8 space-y-8 animate-fade-in">
