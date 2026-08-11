@@ -79,6 +79,7 @@ interface Transaction {
 
 interface CaskSale {
   id: string;
+  cask_id: string;
   asking_price_per_liter: number;
   total_asking_price: number;
   volume_for_sale_liters: number;
@@ -87,25 +88,18 @@ interface CaskSale {
   status: string;
   notes: string;
   last_gauging_date: string | null;
-  cask_ownership: {
+  casks: {
     id: string;
-    ownership_percentage: number;
-    volume_liters: number;
-    acquired_date: string;
-    acquisition_price: number;
-    casks: {
-      id: string;
-      spirit_name: string;
-      cask_number: string;
-      alcohol_percentage: number | null;
-      distilleries: {
-        name: string;
-        location: string;
-      };
-      cask_types: {
-        name: string;
-        capacity_liters: number;
-      };
+    spirit_name: string;
+    cask_number: string;
+    alcohol_percentage: number | null;
+    distilleries: {
+      name: string;
+      location: string;
+    };
+    cask_types: {
+      name: string;
+      capacity_liters: number;
     };
   };
 }
@@ -209,17 +203,23 @@ const Portfolio = () => {
       const { data: salesData, error: salesError } = await supabase
         .from("cask_sales")
         .select(`
-          *,
-          cask_ownership (
-            *,
-            casks (
-              id,
-              spirit_name,
-              cask_number,
-              alcohol_percentage,
-              distilleries (name, location),
-              cask_types (name, capacity_liters)
-            )
+          id,
+          cask_id,
+          asking_price_per_liter,
+          total_asking_price,
+          volume_for_sale_liters,
+          listing_date,
+          expires_at,
+          status,
+          notes,
+          last_gauging_date,
+          casks (
+            id,
+            spirit_name,
+            cask_number,
+            alcohol_percentage,
+            distilleries (name, location),
+            cask_types (name, capacity_liters)
           )
         `)
         .eq("seller_id", user?.id)
@@ -233,7 +233,7 @@ const Portfolio = () => {
 
       const safeOwnerships = (ownershipData || []).filter((o: any) => o.casks && o.casks.spirit_name);
       const safeTransactions = (transactionData || []).filter((t: any) => t.casks && t.casks.spirit_name);
-      const safeSales = (salesData || []).filter((s: any) => s.cask_ownership?.casks && s.cask_ownership.casks.spirit_name);
+      const safeSales = (salesData || []).filter((s: any) => s.casks && s.casks.spirit_name);
       
 
       setOwnerships(safeOwnerships as CaskOwnership[]);
@@ -289,12 +289,12 @@ const Portfolio = () => {
     }
   };
 
-  const isOwnershipForSale = (ownershipId: string) => {
-    return activeSales.some(sale => sale.cask_ownership.id === ownershipId);
+  const isOwnershipForSale = (caskId: string) => {
+    return activeSales.some(sale => sale.cask_id === caskId);
   };
 
-  const getSaleIdForOwnership = (ownershipId: string): string | null => {
-    const sale = activeSales.find(sale => sale.cask_ownership.id === ownershipId);
+  const getSaleIdForOwnership = (caskId: string): string | null => {
+    const sale = activeSales.find(sale => sale.cask_id === caskId);
     return sale ? sale.id : null;
   };
 
