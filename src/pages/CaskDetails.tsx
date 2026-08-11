@@ -816,22 +816,36 @@ const CaskDetails = () => {
 
   if (!cask) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
-        <div className="container mx-auto px-4 py-8">
-          <Button variant="ghost" asChild className="mb-6">
-            <Link to="/marketplace">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Marketplace
-            </Link>
-          </Button>
-          <Card>
-            <CardContent className="text-center py-12">
-              <h4 className="text-lg font-medium mb-2">Cask not found</h4>
-              <p className="text-muted-foreground">The requested cask could not be found.</p>
-            </CardContent>
-          </Card>
+      <>
+        <Seo
+          title={loadState === 'error' ? 'Cask unavailable | ARIGI' : "This cask isn't available | ARIGI"}
+          description="This cask could not be loaded. It may have been sold, delisted, or the link may be incorrect."
+          noIndex
+        />
+        <div className="mobile-container flex min-h-[60vh] items-center justify-center py-12">
+          <div className="text-center space-y-4 max-w-md">
+            <h1 className="text-2xl font-bold text-foreground">
+              {loadState === 'error' ? "We couldn't load this cask" : "This cask isn't available"}
+            </h1>
+            <p className="text-muted-foreground">
+              {loadState === 'error'
+                ? 'Something went wrong while loading this cask. Please check your connection and try again.'
+                : 'It may have been sold or delisted, or the link may be incorrect.'}
+            </p>
+            <div className="flex flex-wrap justify-center gap-2 pt-2">
+              {loadState === 'error' && (
+                <Button onClick={retryLoad}>Try again</Button>
+              )}
+              <Button asChild variant={loadState === 'error' ? 'outline' : 'default'}>
+                <Link to="/marketplace">Browse the marketplace</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/">Back to home</Link>
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
