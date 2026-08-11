@@ -308,7 +308,8 @@ const CaskDetails = () => {
         const { data: activeSale } = await supabase
           .from('cask_sales')
           .select('id, seller_id')
-          .eq('ownership_id', ownership.id)
+          .eq('cask_id', cask.id)
+          .eq('seller_id', user.id)
           .eq('status', 'active')
           .maybeSingle();
 
