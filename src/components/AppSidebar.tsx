@@ -13,8 +13,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import angelShareLogo from '@/assets/angel-share-logo.png'
-
 const publicItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Marketplace", url: "/marketplace", icon: Package },
