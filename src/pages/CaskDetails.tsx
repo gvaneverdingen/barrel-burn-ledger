@@ -441,97 +441,28 @@ const CaskDetails = () => {
   const fetchCaskDetails = async (caskId: string) => {
     console.log('[CaskDetails] Fetching cask details for ID:', caskId);
     try {
-      // First, try to find active resale listing for this cask
-      const { data: ownershipData, error: ownershipError } = await supabase
-        .from('cask_ownership')
-        .select('id')
+      // Look for an active resale listing for this cask (linked via denormalized cask_id)
+      const { data: saleData, error: saleError } = await supabase
+        .from('cask_sales')
+        .select(`
+          id,
+          seller_id,
+          asking_price_per_liter,
+          total_asking_price,
+          volume_for_sale_liters,
+          notes,
+          last_gauging_date,
+          profiles:profiles(first_name, last_name)
+        `)
+        .eq('status', 'active')
         .eq('cask_id', caskId)
-        .eq('is_active', true)
         .maybeSingle();
 
-      if (ownershipError) {
-        console.error('[CaskDetails] Error fetching ownership data:', ownershipError);
+      if (saleError) {
+        console.error('[CaskDetails] Error fetching sale data:', saleError);
       }
 
-      let saleData = null;
-      if (ownershipData) {
-        console.log('[CaskDetails] Active ownership found, looking for active sale listing', ownershipData);
-        const { data, error: saleError } = await supabase
-          .from('cask_sales')
-          .select(`
-            id,
-            seller_id,
-            asking_price_per_liter,
-            total_asking_price,
-            volume_for_sale_liters,
-            notes,
-            last_gauging_date,
-            ownership:cask_ownership(
-              id,
-              cask_id,
-              profiles:profiles(first_name, last_name),
-              cask:casks(
-                *,
-                distillery:distilleries(
-                  id,
-                  name,
-                  location,
-                  description,
-                  established_year,
-                  verified
-                ),
-                cask_type:cask_types(
-                  id,
-                  name,
-                  capacity_liters,
-                  description
-                )
-              )
-            )
-          `)
-          .eq('status', 'active')
-          .eq('ownership_id', ownershipData.id)
-          .maybeSingle();
-        
-        if (saleError) {
-          console.error('[CaskDetails] Error fetching sale data:', saleError);
-        }
-
-        saleData = data;
-      }
-
-      if (saleData?.ownership?.cask) {
-        console.log('[CaskDetails] Resale listing detected, building resale cask data');
-        // This is a resale listing - use resale pricing
-        const caskInfo = saleData.ownership.cask;
-        const finalCaskData = {
-          ...caskInfo,
-          // Override with resale pricing
-          price_per_liter: Number(saleData.asking_price_per_liter),
-          total_price: Number(saleData.total_asking_price),
-          current_volume_liters: Number(saleData.volume_for_sale_liters),
-          tasting_notes: saleData.notes || caskInfo.tasting_notes,
-          last_gauging_date: saleData.last_gauging_date,
-          // Add sale metadata
-          is_sale_listing: true,
-          sale_id: saleData.id,
-          seller: saleData.ownership.profiles
-        } as CaskDetails;
-
-        setActiveSaleId(saleData.id);
-        
-        // Check if current user owns this sale listing
-        if (user && saleData.seller_id === user.id) {
-          setIsOwnerSale(true);
-        }
-
-        setCask(finalCaskData);
-        console.log('[CaskDetails] Resale cask data set');
-        return;
-      }
-
-      console.log('[CaskDetails] No active resale listing, fetching primary cask data');
-      // If no active resale, fetch original cask data (may not exist or be accessible due to RLS)
+      // Fetch cask data (may not exist or be accessible due to RLS)
       const { data: caskData, error: caskError } = await supabase
         .from("casks")
         .select(`
@@ -566,6 +497,27 @@ const CaskDetails = () => {
           description: "This cask could not be found or is not accessible.",
         });
         navigate("/marketplace");
+        return;
+      }
+
+      if (saleData) {
+        console.log('[CaskDetails] Resale listing detected, building resale cask data');
+        setActiveSaleId(saleData.id);
+        if (user && saleData.seller_id === user.id) {
+          setIsOwnerSale(true);
+        }
+
+        setCask({
+          ...caskData,
+          price_per_liter: Number(saleData.asking_price_per_liter),
+          total_price: Number(saleData.total_asking_price),
+          current_volume_liters: Number(saleData.volume_for_sale_liters),
+          tasting_notes: saleData.notes || caskData.tasting_notes,
+          last_gauging_date: saleData.last_gauging_date,
+          is_sale_listing: true,
+          sale_id: saleData.id,
+          seller: saleData.profiles,
+        } as CaskDetails);
         return;
       }
 
