@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, MapPin, Calendar, Shield, Globe, Wine, Eye, Star } from 'lucide-react';
 import { ReviewList } from '@/components/ReviewList';
 import caskPlaceholder from '@/assets/cask-placeholder.jpg';
+import { Seo } from '@/components/Seo';
 
 interface DistilleryData {
   id: string;
@@ -104,6 +105,24 @@ const DistilleryProfile = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <Seo
+        title={`${distillery.name}${distillery.location ? ` — ${distillery.location}` : ''} | Whisky Casks on ARIGI`}
+        description={
+          distillery.description?.slice(0, 155) ||
+          `Discover whisky casks from ${distillery.name}${distillery.location ? ` in ${distillery.location}` : ''}, with blockchain-verified provenance on ARIGI.`
+        }
+        canonical={`/distillery/${distillery.id}`}
+        image={distillery.logo_url}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: `${typeof window !== 'undefined' ? window.location.origin : ''}/` },
+            { '@type': 'ListItem', position: 2, name: 'Marketplace', item: `${typeof window !== 'undefined' ? window.location.origin : ''}/marketplace` },
+            { '@type': 'ListItem', position: 3, name: distillery.name, item: `${typeof window !== 'undefined' ? window.location.origin : ''}/distillery/${distillery.id}` },
+          ],
+        }}
+      />
       <Button variant="ghost" asChild className="mb-6">
         <Link to="/marketplace">
           <ArrowLeft className="h-4 w-4 mr-2" />
