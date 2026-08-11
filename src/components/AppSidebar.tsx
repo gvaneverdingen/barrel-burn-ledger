@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users, Database, Link, Route, Heart, LayoutDashboard, HandCoins, ClipboardList, PlusCircle, Warehouse, LineChart, Sparkles, LogIn, Code2, PanelLeftClose, PanelLeftOpen } from "lucide-react"
+import { Home, BookOpen, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users, Database, Link, Route, Heart, LayoutDashboard, HandCoins, ClipboardList, PlusCircle, Warehouse, LineChart, Sparkles, LogIn, Code2, PanelLeftClose, PanelLeftOpen } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 
@@ -16,6 +16,7 @@ import {
 const publicItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Marketplace", url: "/marketplace", icon: Package },
+  { title: "Our Story", url: "/about", icon: BookOpen },
 ]
 
 // Public destinations shown only to signed-in buyers (journey/guide content)
