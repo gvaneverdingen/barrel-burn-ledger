@@ -547,7 +547,6 @@ const CaskDetails = () => {
   };
 
   const calculateAge = (distillationDate: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const now = new Date();
     const distilled = new Date(distillationDate);
     return Math.floor((now.getTime() - distilled.getTime()) / (1000 * 60 * 60 * 24 * 365.25));
