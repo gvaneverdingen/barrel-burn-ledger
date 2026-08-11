@@ -522,18 +522,18 @@ const Portfolio = () => {
                                 View Details
                               </Button>
                               
-                              {isOwnershipForSale(ownership.cask_id) ? (
+                              {isOwnershipForSale(ownership.casks.id) ? (
                                 <div className="flex items-center gap-3">
                                   <Badge variant="secondary" className="bg-orange-500/10 text-orange-600 border-orange-500/20">
                                     Listed for Sale
                                   </Badge>
-                                  {getSaleIdForOwnership(ownership.cask_id) && (
+                                  {getSaleIdForOwnership(ownership.casks.id) && (
                                     <Button
                                       variant="outline"
                                       size="sm"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        handleCancelSaleClick(getSaleIdForOwnership(ownership.cask_id)!);
+                                        handleCancelSaleClick(getSaleIdForOwnership(ownership.casks.id)!);
                                       }}
                                       className="border-red-500/20 text-red-600 hover:bg-red-500/10"
                                     >
