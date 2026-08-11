@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { MagicProvider } from "@/contexts/MagicContext";
 import { ComparisonProvider } from "@/contexts/ComparisonContext";
@@ -14,6 +15,27 @@ import { Layout } from "@/components/Layout";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import ProfileCompletion from "@/components/ProfileCompletion";
 import RoleBasedRoute from "./components/RoleBasedRoute";
+import { Seo } from "@/components/Seo";
+
+// Small helper to attach per-route metadata without touching each page component
+const WithSeo = ({
+  seo,
+  children,
+}: {
+  seo: React.ComponentProps<typeof Seo>;
+  children: React.ReactNode;
+}) => (
+  <>
+    <Seo {...seo} />
+    {children}
+  </>
+);
+
+const privateSeo = (title: string, description: string) => ({
+  title,
+  description,
+  noIndex: true,
+});
 
 // Critical routes - load immediately
 import Index from "./pages/Index";
@@ -98,49 +120,95 @@ const AppRoutes = () => {
     }>
       <Routes>
         {/* Auth and payment pages without layout */}
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/unsubscribe" element={<Unsubscribe />} />
-        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/auth" element={<WithSeo seo={privateSeo('Sign In | ARIGI', 'Sign in or create an ARIGI account to buy, sell and manage whisky casks.')}><Auth /></WithSeo>} />
+        <Route path="/reset-password" element={<WithSeo seo={privateSeo('Reset Password | ARIGI', 'Reset the password for your ARIGI account.')}><ResetPassword /></WithSeo>} />
+        <Route path="/unsubscribe" element={<WithSeo seo={privateSeo('Email Preferences | ARIGI', 'Manage your ARIGI email notification preferences.')}><Unsubscribe /></WithSeo>} />
+        <Route path="/payment-success" element={<WithSeo seo={privateSeo('Payment Confirmation | ARIGI', 'Confirming your cask purchase.')}><PaymentSuccess /></WithSeo>} />
         
         {/* All other routes with layout */}
         <Route path="/*" element={
         <Layout>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route
+              path="/"
+              element={
+                <WithSeo
+                  seo={{
+                    title: 'ARIGI — Buy & Own Whisky Casks | Blockchain-Verified Cask Investment',
+                    description:
+                      'ARIGI connects buyers and investors with premium distilleries and bonded warehouses. Browse whisky casks for sale with blockchain-verified provenance.',
+                    canonical: '/',
+                    jsonLd: {
+                      '@context': 'https://schema.org',
+                      '@type': 'Organization',
+                      name: 'ARIGI',
+                      url: 'https://barrel-burn-ledger.lovable.app/',
+                      logo: 'https://barrel-burn-ledger.lovable.app/og-image.jpg',
+                      description:
+                        'Blockchain-verified whisky cask marketplace connecting buyers with distilleries and bonded warehouses.',
+                    },
+                  }}
+                >
+                  <Index />
+                </WithSeo>
+              }
+            />
             
             {/* Consumer Journey - Available to consumers and administrators */}
             <Route 
               path="/consumer-journey" 
               element={
                 <RoleBasedRoute allowedRoles={['consumer', 'administrator', 'investor', 'distillery', 'facilitator']}>
-                  <ConsumerJourney />
+                  <WithSeo
+                    seo={{
+                      title: 'How Cask Ownership Works | ARIGI Buyer Journey',
+                      description:
+                        'Step through the ARIGI buyer journey: verify your profile, choose a cask, complete secure payment and track maturation.',
+                      canonical: '/consumer-journey',
+                    }}
+                  >
+                    <ConsumerJourney />
+                  </WithSeo>
                 </RoleBasedRoute>
               } 
             />
             
             {/* Marketplace and related features - Available to all */}
-            <Route path="/marketplace" element={<Marketplace />} />
+            <Route
+              path="/marketplace"
+              element={
+                <WithSeo
+                  seo={{
+                    title: 'Whisky Casks for Sale | ARIGI Marketplace',
+                    description:
+                      'Browse whisky casks for sale by region, age, spirit type and price. Every listing carries blockchain-verified provenance on ARIGI.',
+                    canonical: '/marketplace',
+                  }}
+                >
+                  <Marketplace />
+                </WithSeo>
+              }
+            />
             <Route path="/cask/:id" element={<CaskDetails />} />
             <Route path="/distillery/:id" element={<DistilleryProfile />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/offers" element={<Offers />} />
-            <Route path="/comparison" element={<Comparison />} />
+            <Route path="/wishlist" element={<WithSeo seo={privateSeo('Your Wishlist | ARIGI', 'Casks you are tracking on ARIGI.')}><Wishlist /></WithSeo>} />
+            <Route path="/offers" element={<WithSeo seo={privateSeo('Your Offers | ARIGI', 'Offers you have made or received on ARIGI.')}><Offers /></WithSeo>} />
+            <Route path="/comparison" element={<WithSeo seo={privateSeo('Compare Casks | ARIGI', 'Compare selected casks side by side.')}><Comparison /></WithSeo>} />
             
             {/* User Profile and Portfolio - accessible to any authenticated user, data is still protected by RLS */}
             <Route 
               path="/profile" 
-              element={<Profile />} 
+              element={<WithSeo seo={privateSeo('Your Profile | ARIGI', 'Manage your ARIGI account information.')}><Profile /></WithSeo>}
             />
             <Route 
               path="/portfolio" 
-              element={<Portfolio />} 
+              element={<WithSeo seo={privateSeo('Your Portfolio | ARIGI', 'Track the casks you own and their maturation.')}><Portfolio /></WithSeo>}
             />
             <Route 
               path="/reports" 
               element={
                 <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
-                  <Reports />
+                  <WithSeo seo={privateSeo('Reports | ARIGI', 'Download and review your ARIGI account reports.')}><Reports /></WithSeo>
                 </RoleBasedRoute>
               } 
             />
@@ -150,7 +218,7 @@ const AppRoutes = () => {
               path="/insights" 
               element={
                 <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
-                  <Insights />
+                  <WithSeo seo={{ title: 'Whisky Cask Market Insights | ARIGI', description: 'Live platform analytics on cask listings, regions and pricing trends.', canonical: '/insights' }}><Insights /></WithSeo>
                 </RoleBasedRoute>
               } 
             />
@@ -158,7 +226,7 @@ const AppRoutes = () => {
               path="/market-insights" 
               element={
                 <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
-                  <MarketInsights />
+                  <WithSeo seo={{ title: 'AI Whisky Cask Price Tracker | ARIGI', description: 'AI-assisted tracking of current whisky cask market prices and comparable sales.', canonical: '/market-insights' }}><MarketInsights /></WithSeo>
                 </RoleBasedRoute>
               } 
             />
@@ -166,30 +234,30 @@ const AppRoutes = () => {
               path="/notifications" 
               element={
                 <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
-                  <Notifications />
+                  <WithSeo seo={privateSeo('Notifications | ARIGI', 'Your ARIGI activity notifications.')}><Notifications /></WithSeo>
                 </RoleBasedRoute>
               } 
             />
             <Route 
               path="/transactions" 
-              element={<Transactions />} 
+              element={<WithSeo seo={privateSeo('Transactions | ARIGI', 'Your cask purchase and sale history.')}><Transactions /></WithSeo>}
             />
             
             {/* Documentation and Help - Available to all */}
             <Route path="/docs" element={
               <RoleBasedRoute allowedRoles={['distillery', 'administrator', 'consumer']}>
-                <Documentation />
+                <WithSeo seo={{ title: 'Cask Ownership Documentation | ARIGI', description: 'Guides for distilleries, warehouses and buyers: listing casks, provenance documents, WOWGR and settlement.', canonical: '/docs' }}><Documentation /></WithSeo>
               </RoleBasedRoute>
             } />
-            <Route path="/help" element={<Help />} />
-            <Route path="/settings" element={<Settings />} />
+            <Route path="/help" element={<WithSeo seo={{ title: 'Help Centre & FAQ | ARIGI Whisky Casks', description: 'Answers on buying, storing, insuring and reselling whisky casks through ARIGI.', canonical: '/help' }}><Help /></WithSeo>} />
+            <Route path="/settings" element={<WithSeo seo={privateSeo('Settings | ARIGI', 'Manage your ARIGI account settings and preferences.')}><Settings /></WithSeo>} />
             
             {/* Admin and Testing - Admin only */}
             <Route 
               path="/admin" 
               element={
                 <RoleBasedRoute allowedRoles={['administrator']}>
-                  <Admin />
+                  <WithSeo seo={privateSeo('Admin | ARIGI', 'ARIGI administration.')}><Admin /></WithSeo>
                 </RoleBasedRoute>
               } 
             />
@@ -197,7 +265,7 @@ const AppRoutes = () => {
               path="/admin/dashboard" 
               element={
                 <RoleBasedRoute allowedRoles={['administrator']}>
-                  <AdminDashboard />
+                  <WithSeo seo={privateSeo('Admin Dashboard | ARIGI', 'ARIGI administration dashboard.')}><AdminDashboard /></WithSeo>
                 </RoleBasedRoute>
               } 
             />
@@ -205,7 +273,7 @@ const AppRoutes = () => {
               path="/admin/cask-data" 
               element={
                 <RoleBasedRoute allowedRoles={['administrator']}>
-                  <CaskDataManagement />
+                  <WithSeo seo={privateSeo('Cask Data Management | ARIGI', 'ARIGI administration.')}><CaskDataManagement /></WithSeo>
                 </RoleBasedRoute>
               } 
             />
@@ -213,7 +281,7 @@ const AppRoutes = () => {
               path="/test-data"
               element={
                 <RoleBasedRoute allowedRoles={['administrator']}>
-                  <TestData />
+                  <WithSeo seo={privateSeo('Test Data | ARIGI', 'Internal QA tooling.')}><TestData /></WithSeo>
                 </RoleBasedRoute>
               } 
             />
@@ -221,7 +289,7 @@ const AppRoutes = () => {
               path="/blockchain-testing" 
               element={
                 <RoleBasedRoute allowedRoles={['administrator']}>
-                  <BlockchainTesting />
+                  <WithSeo seo={privateSeo('Blockchain Testing | ARIGI', 'Internal QA tooling.')}><BlockchainTesting /></WithSeo>
                 </RoleBasedRoute>
               } 
             />
@@ -312,6 +380,7 @@ const AppRoutes = () => {
 
 const App = () => (
   <ErrorBoundary>
+   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <MagicProvider>
@@ -331,6 +400,7 @@ const App = () => (
         </MagicProvider>
       </TooltipProvider>
     </QueryClientProvider>
+   </HelmetProvider>
   </ErrorBoundary>
 );
 
