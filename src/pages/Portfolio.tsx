@@ -522,18 +522,18 @@ const Portfolio = () => {
                                 View Details
                               </Button>
                               
-                              {isOwnershipForSale(ownership.id) ? (
+                              {isOwnershipForSale(ownership.cask_id) ? (
                                 <div className="flex items-center gap-3">
                                   <Badge variant="secondary" className="bg-orange-500/10 text-orange-600 border-orange-500/20">
                                     Listed for Sale
                                   </Badge>
-                                  {getSaleIdForOwnership(ownership.id) && (
+                                  {getSaleIdForOwnership(ownership.cask_id) && (
                                     <Button
                                       variant="outline"
                                       size="sm"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        handleCancelSaleClick(getSaleIdForOwnership(ownership.id)!);
+                                        handleCancelSaleClick(getSaleIdForOwnership(ownership.cask_id)!);
                                       }}
                                       className="border-red-500/20 text-red-600 hover:bg-red-500/10"
                                     >
@@ -581,17 +581,17 @@ const Portfolio = () => {
                           key={sale.id} 
                           className="luxury-card hover-scale animate-fade-in group overflow-hidden cursor-pointer" 
                           style={{ animationDelay: `${index * 0.1}s` }}
-                          onClick={() => navigate(`/cask/${sale.cask_ownership.casks.id}`)}
+                          onClick={() => navigate(`/cask/${sale.casks.id}`)}
                         >
                           <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                           <CardHeader className="relative">
                             <div className="flex justify-between items-start">
                               <div className="space-y-2">
                                 <CardTitle className="text-2xl luxury-text-gradient">
-                                  {sale.cask_ownership.casks.spirit_name}
+                                  {sale.casks.spirit_name}
                                 </CardTitle>
                                 <CardDescription className="text-base">
-                                  {sale.cask_ownership.casks.distilleries.name} • Cask #{sale.cask_ownership.casks.cask_number}
+                                  {sale.casks.distilleries.name} • Cask #{sale.casks.cask_number}
                                 </CardDescription>
                               </div>
                               <Badge className="bg-green-500/10 text-green-600 border-green-500/20 px-3 py-1">
@@ -615,7 +615,7 @@ const Portfolio = () => {
                                 <>
                                   <div className="space-y-1">
                                     <p className="text-sm text-muted-foreground font-medium">ABV</p>
-                                    <p className="text-xl font-bold">{sale.cask_ownership?.casks?.alcohol_percentage ?? 'N/A'}%</p>
+                                    <p className="text-xl font-bold">{sale.casks?.alcohol_percentage ?? 'N/A'}%</p>
                                   </div>
                                   <div className="space-y-1">
                                     <p className="text-sm text-muted-foreground font-medium">Last Gauging</p>
