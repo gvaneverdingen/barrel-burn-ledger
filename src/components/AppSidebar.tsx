@@ -93,8 +93,65 @@ const consumerSupportItems = [
   { title: "Settings", url: "/settings", icon: Settings },
 ]
 
+/**
+ * Role-aware navigation items for the mobile bottom bar.
+ * Reuses the same item definitions and role logic as the desktop sidebar.
+ */
+export function getMobileNavItems(
+  user: unknown | null,
+  userRole: string | null
+): { title: string; url: string; icon: typeof Home }[] {
+  if (!user) {
+    return [
+      { title: "Home", url: "/", icon: Home },
+      { title: "Marketplace", url: "/marketplace", icon: Package },
+      { title: "Sign in", url: "/auth", icon: LogIn },
+    ]
+  }
+
+  if (userRole === 'distillery') {
+    return [
+      { title: "Home", url: "/", icon: Home },
+      { title: "Marketplace", url: "/marketplace", icon: Package },
+      distilleryItems[0], // My Distillery
+      distilleryItems[1], // Manage Casks
+      { title: "Profile", url: "/profile", icon: User },
+    ]
+  }
+
+  if (userRole === 'facilitator') {
+    return [
+      { title: "Home", url: "/", icon: Home },
+      { title: "Marketplace", url: "/marketplace", icon: Package },
+      warehouseItems[0], // My Warehouse
+      warehouseItems[1], // Add Cask
+      { title: "Profile", url: "/profile", icon: User },
+    ]
+  }
+
+  if (userRole === 'administrator') {
+    return [
+      { title: "Home", url: "/", icon: Home },
+      { title: "Marketplace", url: "/marketplace", icon: Package },
+      adminItems[0], // Admin Dashboard
+      { title: "Portfolio", url: "/portfolio", icon: BarChart3 },
+      { title: "Profile", url: "/profile", icon: User },
+    ]
+  }
+
+  // Consumers / investors (buyers)
+  return [
+    { title: "Home", url: "/", icon: Home },
+    { title: "Marketplace", url: "/marketplace", icon: Package },
+    authedPublicItems[1], // My Offers
+    { title: "Portfolio", url: "/portfolio", icon: BarChart3 },
+    { title: "Profile", url: "/profile", icon: User },
+  ]
+}
+
 export function AppSidebar() {
   const [isExpanded, setIsExpanded] = useState(false)
+  const [showDeveloper, setShowDeveloper] = useState(false)
   const { user, userRole } = useAuth()
   const location = useLocation()
   const currentPath = location.pathname
@@ -386,6 +443,45 @@ export function AppSidebar() {
             ))}
           </div>
         </div>
+
+        {/* Developer / QA tools — admin only, collapsed by default */}
+        {user && isAdmin && (
+          <div className="px-2 mt-6 pt-4 border-t border-sidebar-border">
+            <button
+              type="button"
+              onClick={() => setShowDeveloper((v) => !v)}
+              aria-expanded={showDeveloper}
+              className="w-full flex items-center px-2 py-2 rounded-lg text-sidebar-foreground/60 hover:bg-sidebar-accent transition-all duration-200"
+            >
+              <Code2 className="h-5 w-5 flex-shrink-0" />
+              <span className={`ml-3 text-xs font-semibold uppercase tracking-wider whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>
+                Developer
+              </span>
+            </button>
+            {showDeveloper && (
+              <div className="space-y-1 mt-1">
+                {developerItems.map((item) => (
+                  <NavLink
+                    key={item.title}
+                    to={item.url}
+                    className={({ isActive }) =>
+                      `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
+                        isActive
+                          ? 'bg-sidebar-primary/15 text-sidebar-primary font-medium border-l-2 border-sidebar-primary'
+                          : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                      }`
+                    }
+                  >
+                    <item.icon className="h-5 w-5 flex-shrink-0" />
+                    <span className={`ml-3 whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
+                      {item.title}
+                    </span>
+                  </NavLink>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
