@@ -35,6 +35,7 @@ import { ShareCaskButton } from "@/components/ShareCaskButton";
 import { addRecentlyViewed } from "@/components/RecentlyViewedCasks";
 import { PriceAlertButton } from "@/components/PriceAlertButton";
 import CaskProvenancePanel from "@/components/CaskProvenancePanel";
+import { Seo } from "@/components/Seo";
 
 interface CaskDetails {
   id: string;
@@ -110,6 +111,7 @@ const CaskDetails = () => {
   const [hasActiveSale, setHasActiveSale] = useState(false);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [userWalletAddress, setUserWalletAddress] = useState<string | null>(null);
+  const [primaryImageUrl, setPrimaryImageUrl] = useState<string | null>(null);
 
   const isAdmin = userRole === 'administrator';
 
@@ -164,6 +166,18 @@ const CaskDetails = () => {
       addRecentlyViewed({ id: cask.id, name: cask.spirit_name, price: cask.total_price ?? 0 });
     }
   }, [cask?.id]);
+
+  // Primary image for social/OG metadata
+  useEffect(() => {
+    if (!id) return;
+    supabase
+      .from('cask_images')
+      .select('image_url')
+      .eq('cask_id', id)
+      .eq('is_primary', true)
+      .maybeSingle()
+      .then(({ data }) => setPrimaryImageUrl(data?.image_url ?? null));
+  }, [id]);
 
   // Fetch user's wallet address
   useEffect(() => {
