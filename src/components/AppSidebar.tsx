@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users, Database, Link, Route, Heart, LayoutDashboard, HandCoins, ClipboardList, PlusCircle, Warehouse, LineChart, Sparkles, LogIn, Code2 } from "lucide-react"
+import { Home, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users, Database, Link, Route, Heart, LayoutDashboard, HandCoins, ClipboardList, PlusCircle, Warehouse, LineChart, Sparkles, LogIn, Code2, PanelLeftClose, PanelLeftOpen } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 
@@ -17,9 +17,14 @@ import angelShareLogo from '@/assets/angel-share-logo.png'
 
 const publicItems = [
   { title: "Home", url: "/", icon: Home },
-  { title: "My Profile", url: "/consumer-journey", icon: Route },
   { title: "Marketplace", url: "/marketplace", icon: Package },
 ]
+
+// Public destinations shown only to signed-in buyers (journey/guide content)
+const journeyItem = { title: "Buyer Journey", url: "/consumer-journey", icon: Route }
+
+// Shown to logged-out visitors as a clear call to action
+const signInItem = { title: "Sign in", url: "/auth", icon: LogIn }
 
 // Items only visible to signed-in users
 const authedPublicItems = [
@@ -149,8 +154,12 @@ export function getMobileNavItems(
   ]
 }
 
-export function AppSidebar() {
-  const [isExpanded, setIsExpanded] = useState(false)
+interface AppSidebarProps {
+  isExpanded?: boolean
+  onToggle?: () => void
+}
+
+export function AppSidebar({ isExpanded = true, onToggle }: AppSidebarProps) {
   const [showDeveloper, setShowDeveloper] = useState(false)
   const { user, userRole } = useAuth()
   const location = useLocation()
@@ -173,7 +182,9 @@ export function AppSidebar() {
         { title: "Marketplace", url: "/marketplace", icon: Package },
       ]
     }
-    const base = user ? [...publicItems, ...authedPublicItems] : publicItems
+    const base = user
+      ? [...publicItems, journeyItem, ...authedPublicItems]
+      : [...publicItems, signInItem]
     if (isConsumer) {
       return base
     }
@@ -219,21 +230,29 @@ export function AppSidebar() {
       className={`fixed left-0 top-0 h-full heritage-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out z-50 hidden lg:block ${
         isExpanded ? 'w-64' : 'w-16'
       }`}
-      onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
     >
-      {/* Logo */}
+      {/* Collapse toggle (logo lives in the global header) */}
       <div className="p-2 border-b border-sidebar-border h-16 flex items-center">
-        <div className="flex items-center space-x-2 px-2 overflow-hidden">
-          <img src={angelShareLogo} alt="Angel Share Barrel Trading" className="h-8 w-8 flex-shrink-0" />
-          <span 
-            className={`font-bold text-sm whitespace-nowrap transition-all duration-300 font-playfair heritage-text-gradient ${
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-label={isExpanded ? 'Collapse navigation' : 'Expand navigation'}
+          aria-expanded={isExpanded}
+          className="flex items-center gap-2 w-full px-2 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-all duration-200"
+        >
+          {isExpanded ? (
+            <PanelLeftClose className="h-5 w-5 flex-shrink-0" />
+          ) : (
+            <PanelLeftOpen className="h-5 w-5 flex-shrink-0" />
+          )}
+          <span
+            className={`text-sm whitespace-nowrap transition-all duration-300 font-inter ${
               isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
             }`}
           >
-            Angel Share
+            Collapse
           </span>
-        </div>
+        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto py-4">
