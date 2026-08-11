@@ -376,6 +376,7 @@ const AppRoutes = () => {
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
         </Layout>
       } />
     </Routes>
