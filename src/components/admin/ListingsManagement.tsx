@@ -30,13 +30,10 @@ export function ListingsManagement() {
         .from('cask_sales')
         .select(`
           *,
-          cask_ownership (
-            cask_id,
-            casks (
-              spirit_name,
-              cask_number,
-              distilleries (name)
-            )
+          casks (
+            spirit_name,
+            cask_number,
+            distilleries (name)
           ),
           profiles (email, first_name, last_name)
         `)
@@ -81,7 +78,7 @@ export function ListingsManagement() {
   };
 
   const filteredListings = listings.filter(listing => {
-    const cask = listing.cask_ownership?.casks;
+    const cask = listing.casks;
     const matchesSearch = 
       cask?.spirit_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cask?.cask_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -147,7 +144,7 @@ export function ListingsManagement() {
                 </TableRow>
               ) : (
                 filteredListings.map((listing) => {
-                  const cask = listing.cask_ownership?.casks;
+                  const cask = listing.casks;
                   return (
                     <TableRow key={listing.id}>
                       <TableCell className="font-medium">

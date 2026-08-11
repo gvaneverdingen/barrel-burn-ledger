@@ -79,6 +79,7 @@ interface Transaction {
 
 interface CaskSale {
   id: string;
+  cask_id: string;
   asking_price_per_liter: number;
   total_asking_price: number;
   volume_for_sale_liters: number;
@@ -87,25 +88,18 @@ interface CaskSale {
   status: string;
   notes: string;
   last_gauging_date: string | null;
-  cask_ownership: {
+  casks: {
     id: string;
-    ownership_percentage: number;
-    volume_liters: number;
-    acquired_date: string;
-    acquisition_price: number;
-    casks: {
-      id: string;
-      spirit_name: string;
-      cask_number: string;
-      alcohol_percentage: number | null;
-      distilleries: {
-        name: string;
-        location: string;
-      };
-      cask_types: {
-        name: string;
-        capacity_liters: number;
-      };
+    spirit_name: string;
+    cask_number: string;
+    alcohol_percentage: number | null;
+    distilleries: {
+      name: string;
+      location: string;
+    };
+    cask_types: {
+      name: string;
+      capacity_liters: number;
     };
   };
 }
@@ -190,7 +184,23 @@ const Portfolio = () => {
       const { data: transactionData, error: transactionError } = await supabase
         .from("transactions")
         .select(`
-          *,
+          id,
+          cask_id,
+          buyer_id,
+          seller_id,
+          transaction_type,
+          volume_liters,
+          price_per_liter,
+          total_amount,
+          transaction_fee,
+          distillery_fee,
+          platform_fee,
+          seller_amount,
+          blockchain_transaction_hash,
+          status,
+          completed_at,
+          created_at,
+          sale_listing_id,
           casks (
             spirit_name,
             cask_number,
@@ -209,17 +219,23 @@ const Portfolio = () => {
       const { data: salesData, error: salesError } = await supabase
         .from("cask_sales")
         .select(`
-          *,
-          cask_ownership (
-            *,
-            casks (
-              id,
-              spirit_name,
-              cask_number,
-              alcohol_percentage,
-              distilleries (name, location),
-              cask_types (name, capacity_liters)
-            )
+          id,
+          cask_id,
+          asking_price_per_liter,
+          total_asking_price,
+          volume_for_sale_liters,
+          listing_date,
+          expires_at,
+          status,
+          notes,
+          last_gauging_date,
+          casks (
+            id,
+            spirit_name,
+            cask_number,
+            alcohol_percentage,
+            distilleries (name, location),
+            cask_types (name, capacity_liters)
           )
         `)
         .eq("seller_id", user?.id)
@@ -233,7 +249,7 @@ const Portfolio = () => {
 
       const safeOwnerships = (ownershipData || []).filter((o: any) => o.casks && o.casks.spirit_name);
       const safeTransactions = (transactionData || []).filter((t: any) => t.casks && t.casks.spirit_name);
-      const safeSales = (salesData || []).filter((s: any) => s.cask_ownership?.casks && s.cask_ownership.casks.spirit_name);
+      const safeSales = (salesData || []).filter((s: any) => s.casks && s.casks.spirit_name);
       
 
       setOwnerships(safeOwnerships as CaskOwnership[]);
@@ -289,12 +305,12 @@ const Portfolio = () => {
     }
   };
 
-  const isOwnershipForSale = (ownershipId: string) => {
-    return activeSales.some(sale => sale.cask_ownership.id === ownershipId);
+  const isOwnershipForSale = (caskId: string) => {
+    return activeSales.some(sale => sale.cask_id === caskId);
   };
 
-  const getSaleIdForOwnership = (ownershipId: string): string | null => {
-    const sale = activeSales.find(sale => sale.cask_ownership.id === ownershipId);
+  const getSaleIdForOwnership = (caskId: string): string | null => {
+    const sale = activeSales.find(sale => sale.cask_id === caskId);
     return sale ? sale.id : null;
   };
 
@@ -522,18 +538,18 @@ const Portfolio = () => {
                                 View Details
                               </Button>
                               
-                              {isOwnershipForSale(ownership.id) ? (
+                              {isOwnershipForSale(ownership.casks.id) ? (
                                 <div className="flex items-center gap-3">
                                   <Badge variant="secondary" className="bg-orange-500/10 text-orange-600 border-orange-500/20">
                                     Listed for Sale
                                   </Badge>
-                                  {getSaleIdForOwnership(ownership.id) && (
+                                  {getSaleIdForOwnership(ownership.casks.id) && (
                                     <Button
                                       variant="outline"
                                       size="sm"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        handleCancelSaleClick(getSaleIdForOwnership(ownership.id)!);
+                                        handleCancelSaleClick(getSaleIdForOwnership(ownership.casks.id)!);
                                       }}
                                       className="border-red-500/20 text-red-600 hover:bg-red-500/10"
                                     >
@@ -581,17 +597,17 @@ const Portfolio = () => {
                           key={sale.id} 
                           className="luxury-card hover-scale animate-fade-in group overflow-hidden cursor-pointer" 
                           style={{ animationDelay: `${index * 0.1}s` }}
-                          onClick={() => navigate(`/cask/${sale.cask_ownership.casks.id}`)}
+                          onClick={() => navigate(`/cask/${sale.casks.id}`)}
                         >
                           <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                           <CardHeader className="relative">
                             <div className="flex justify-between items-start">
                               <div className="space-y-2">
                                 <CardTitle className="text-2xl luxury-text-gradient">
-                                  {sale.cask_ownership.casks.spirit_name}
+                                  {sale.casks.spirit_name}
                                 </CardTitle>
                                 <CardDescription className="text-base">
-                                  {sale.cask_ownership.casks.distilleries.name} • Cask #{sale.cask_ownership.casks.cask_number}
+                                  {sale.casks.distilleries.name} • Cask #{sale.casks.cask_number}
                                 </CardDescription>
                               </div>
                               <Badge className="bg-green-500/10 text-green-600 border-green-500/20 px-3 py-1">
@@ -615,7 +631,7 @@ const Portfolio = () => {
                                 <>
                                   <div className="space-y-1">
                                     <p className="text-sm text-muted-foreground font-medium">ABV</p>
-                                    <p className="text-xl font-bold">{sale.cask_ownership?.casks?.alcohol_percentage ?? 'N/A'}%</p>
+                                    <p className="text-xl font-bold">{sale.casks?.alcohol_percentage ?? 'N/A'}%</p>
                                   </div>
                                   <div className="space-y-1">
                                     <p className="text-sm text-muted-foreground font-medium">Last Gauging</p>

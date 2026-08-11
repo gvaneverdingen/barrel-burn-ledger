@@ -39,7 +39,23 @@ export default function BlockchainTesting() {
       const { data, error } = await supabase
         .from('transactions')
         .select(`
-          *,
+          id,
+          cask_id,
+          buyer_id,
+          seller_id,
+          transaction_type,
+          volume_liters,
+          price_per_liter,
+          total_amount,
+          transaction_fee,
+          distillery_fee,
+          platform_fee,
+          seller_amount,
+          blockchain_transaction_hash,
+          status,
+          completed_at,
+          created_at,
+          sale_listing_id,
           casks(spirit_name, cask_number)
         `)
         .eq('status', 'completed')
