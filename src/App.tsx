@@ -273,7 +273,7 @@ const AppRoutes = () => {
               path="/admin/cask-data" 
               element={
                 <RoleBasedRoute allowedRoles={['administrator']}>
-                  <CaskDataManagement />
+                  <WithSeo seo={privateSeo('Cask Data Management | ARIGI', 'ARIGI administration.')}><CaskDataManagement /></WithSeo>
                 </RoleBasedRoute>
               } 
             />
@@ -281,7 +281,7 @@ const AppRoutes = () => {
               path="/test-data"
               element={
                 <RoleBasedRoute allowedRoles={['administrator']}>
-                  <TestData />
+                  <WithSeo seo={privateSeo('Test Data | ARIGI', 'Internal QA tooling.')}><TestData /></WithSeo>
                 </RoleBasedRoute>
               } 
             />
@@ -289,7 +289,7 @@ const AppRoutes = () => {
               path="/blockchain-testing" 
               element={
                 <RoleBasedRoute allowedRoles={['administrator']}>
-                  <BlockchainTesting />
+                  <WithSeo seo={privateSeo('Blockchain Testing | ARIGI', 'Internal QA tooling.')}><BlockchainTesting /></WithSeo>
                 </RoleBasedRoute>
               } 
             />
