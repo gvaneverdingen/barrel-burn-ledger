@@ -30,13 +30,10 @@ export function ListingsManagement() {
         .from('cask_sales')
         .select(`
           *,
-          cask_ownership (
-            cask_id,
-            casks (
-              spirit_name,
-              cask_number,
-              distilleries (name)
-            )
+          casks (
+            spirit_name,
+            cask_number,
+            distilleries (name)
           ),
           profiles (email, first_name, last_name)
         `)
