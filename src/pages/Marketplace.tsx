@@ -86,6 +86,8 @@ interface UnifiedListing {
   updated_at: string;
   distillery_id?: string;
   cask_type_id?: string;
+  region?: string | null;
+  spirit_type?: string | null;
   distilleries?: {
     name: string;
     location: string | null;
@@ -161,6 +163,8 @@ const Marketplace = () => {
             blockchain_hash,
             warehouse_location,
             tasting_notes,
+            region,
+            spirit_type,
             distilleries (
               name,
               location,
