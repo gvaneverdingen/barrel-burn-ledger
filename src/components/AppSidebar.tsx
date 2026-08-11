@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users, Database, Link, Route, Heart, LayoutDashboard, HandCoins, ClipboardList, PlusCircle, Warehouse } from "lucide-react"
+import { Home, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users, Database, Link, Route, Heart, LayoutDashboard, HandCoins, ClipboardList, PlusCircle, Warehouse, LineChart, Sparkles, LogIn, Code2 } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 
@@ -31,6 +31,10 @@ const adminItems = [
   { title: "Admin Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
   { title: "Admin View", url: "/admin", icon: Users },
   { title: "Cask Data Management", url: "/admin/cask-data", icon: ClipboardList },
+]
+
+// Developer / QA only — kept out of the main product navigation
+const developerItems = [
   { title: "Test Data", url: "/test-data", icon: Database },
   { title: "Blockchain Testing", url: "/blockchain-testing", icon: Link },
 ]
@@ -45,8 +49,8 @@ const userItems = [
   { title: "Profile", url: "/profile", icon: User },
   { title: "Portfolio", url: "/portfolio", icon: BarChart3 },
   { title: "Transactions", url: "/transactions", icon: CreditCard },
-  { title: "Market Insights", url: "/insights", icon: TrendingUp },
-  { title: "AI Price Tracker", url: "/market-insights", icon: TrendingUp },
+  { title: "Platform Insights", url: "/insights", icon: LineChart },
+  { title: "AI Price Tracker", url: "/market-insights", icon: Sparkles },
   { title: "Notifications", url: "/notifications", icon: Bell },
   { title: "Reports", url: "/reports", icon: FileText },
 ]
@@ -69,8 +73,8 @@ const distilleryAccountItems = [
   { title: "My Profile", url: "/profile", icon: User },
   { title: "Transactions", url: "/transactions", icon: CreditCard },
   { title: "Notifications", url: "/notifications", icon: Bell },
-  { title: "Market Insights", url: "/insights", icon: TrendingUp },
-  { title: "AI Price Tracker", url: "/market-insights", icon: TrendingUp },
+  { title: "Platform Insights", url: "/insights", icon: LineChart },
+  { title: "AI Price Tracker", url: "/market-insights", icon: Sparkles },
 ]
 
 // For non-distillery users
