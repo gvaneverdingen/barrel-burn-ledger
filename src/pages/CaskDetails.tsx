@@ -846,6 +846,59 @@ const CaskDetails = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
+        {cask && (() => {
+          const volume = cask.current_volume_liters ?? cask.cask_type?.capacity_liters;
+          const caskTypeName = cask.cask_type?.name ?? 'Whisky';
+          const vintage = cask.distillation_date ? new Date(cask.distillation_date).getFullYear() : null;
+          const age = vintage ? new Date().getFullYear() - vintage : null;
+          const seoTitle = `${cask.spirit_name} — ${volume ? `${Math.round(Number(volume))}L ` : ''}${caskTypeName} Cask for Sale | ARIGI`;
+          const seoDescription = [
+            cask.distillery?.name ? `${cask.distillery.name}${cask.distillery.location ? `, ${cask.distillery.location}` : ''}.` : null,
+            vintage ? `Distilled ${vintage}${age ? ` (${age} years old)` : ''}.` : null,
+            cask.alcohol_percentage ? `${cask.alcohol_percentage}% ABV.` : null,
+            cask.total_price ? `Priced at ${formatPrice(cask.total_price)}.` : null,
+            'Blockchain-verified provenance on ARIGI.',
+          ].filter(Boolean).join(' ');
+          const origin = typeof window !== 'undefined' ? window.location.origin : '';
+          return (
+            <Seo
+              title={seoTitle}
+              description={seoDescription}
+              canonical={`/cask/${cask.id}`}
+              image={primaryImageUrl}
+              type="product"
+              jsonLd={[
+                {
+                  '@context': 'https://schema.org',
+                  '@type': 'Product',
+                  name: cask.spirit_name,
+                  description: seoDescription,
+                  ...(primaryImageUrl ? { image: primaryImageUrl } : {}),
+                  ...(cask.distillery?.name ? { brand: { '@type': 'Brand', name: cask.distillery.name } } : {}),
+                  sku: cask.cask_number,
+                  offers: {
+                    '@type': 'Offer',
+                    price: cask.total_price ?? undefined,
+                    priceCurrency: 'GBP',
+                    availability: cask.available_for_sale
+                      ? 'https://schema.org/InStock'
+                      : 'https://schema.org/OutOfStock',
+                    url: `${origin}/cask/${cask.id}`,
+                  },
+                },
+                {
+                  '@context': 'https://schema.org',
+                  '@type': 'BreadcrumbList',
+                  itemListElement: [
+                    { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+                    { '@type': 'ListItem', position: 2, name: 'Marketplace', item: `${origin}/marketplace` },
+                    { '@type': 'ListItem', position: 3, name: cask.spirit_name, item: `${origin}/cask/${cask.id}` },
+                  ],
+                },
+              ]}
+            />
+          );
+        })()}
         <div className="container mx-auto px-4 py-8">
           
            <div className="flex items-center justify-between mb-6">
