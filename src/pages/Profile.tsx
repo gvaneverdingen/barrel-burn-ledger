@@ -170,7 +170,7 @@ const Profile = () => {
           <div className="flex items-center gap-3">
             <AvatarUpload avatarUrl={avatarUrl} onUploaded={(url) => setAvatarUrl(url)} />
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold">Distillery Profile</h1>
+              <h2 className="text-xl sm:text-2xl font-bold">Distillery Profile</h2>
               <p className="text-sm text-muted-foreground">Manage your distillery details and verification</p>
             </div>
           </div>
@@ -190,7 +190,7 @@ const Profile = () => {
         <div className="flex items-center gap-3">
           <AvatarUpload avatarUrl={avatarUrl} onUploaded={(url) => setAvatarUrl(url)} />
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold">Profile Settings</h2>
+            <h1 className="text-xl sm:text-2xl font-bold">Profile Settings</h1>
             <p className="text-sm text-muted-foreground">Manage your account information</p>
           </div>
         </div>
