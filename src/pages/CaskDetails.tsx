@@ -547,6 +547,17 @@ const CaskDetails = () => {
   };
 
   const calculateAge = (distillationDate: string) => {
+    return calculateAgeImpl(distillationDate);
+  };
+
+  const retryLoad = () => {
+    if (!id) return;
+    setLoadState('ok');
+    setLoading(true);
+    fetchCaskDetails(id);
+  };
+
+  const calculateAgeImpl = (distillationDate: string) => {
     const now = new Date();
     const distilled = new Date(distillationDate);
     return Math.floor((now.getTime() - distilled.getTime()) / (1000 * 60 * 60 * 24 * 365.25));
