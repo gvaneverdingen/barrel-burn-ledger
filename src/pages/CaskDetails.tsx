@@ -112,6 +112,7 @@ const CaskDetails = () => {
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [userWalletAddress, setUserWalletAddress] = useState<string | null>(null);
   const [primaryImageUrl, setPrimaryImageUrl] = useState<string | null>(null);
+  const [loadState, setLoadState] = useState<'ok' | 'notfound' | 'error'>('ok');
 
   const isAdmin = userRole === 'administrator';
 
@@ -146,11 +147,7 @@ const CaskDetails = () => {
     const timeoutId = setTimeout(() => {
       console.error('[CaskDetails] Loading timeout - forcing loading=false');
       setLoading(false);
-      toast({
-        title: "Loading timeout",
-        description: "The page took too long to load. Please try refreshing.",
-        variant: "destructive",
-      });
+      setLoadState((prev) => (prev === 'ok' ? 'error' : prev));
     }, 10000); // 10 second timeout
 
     fetchCaskDetails(id).finally(() => {
@@ -506,11 +503,8 @@ const CaskDetails = () => {
 
       if (!caskData) {
         console.warn('[CaskDetails] Cask not found or not accessible due to RLS', { caskId });
-        toast({
-          title: "Cask unavailable",
-          description: "This cask could not be found or is not accessible.",
-        });
-        navigate("/marketplace");
+        setCask(null);
+        setLoadState('notfound');
         return;
       }
 
@@ -521,6 +515,7 @@ const CaskDetails = () => {
           setIsOwnerSale(true);
         }
 
+        setLoadState('ok');
         setCask({
           ...caskData,
           price_per_liter: Number(saleData.asking_price_per_liter),
@@ -536,6 +531,7 @@ const CaskDetails = () => {
       }
 
       console.log('[CaskDetails] Primary cask data loaded');
+      setLoadState('ok');
       setCask({
         ...caskData,
         is_sale_listing: false
@@ -543,12 +539,7 @@ const CaskDetails = () => {
 
     } catch (error: any) {
       console.error("Error fetching cask details:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load cask details. Please try again.",
-        variant: "destructive",
-      });
-      navigate("/marketplace");
+      setLoadState('error');
     } finally {
       console.log('[CaskDetails] Finished fetching cask details, setting loading=false');
       setLoading(false);
