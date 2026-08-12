@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import {
   ArrowRight,
@@ -16,7 +17,51 @@ import {
   Eye,
   Repeat,
   Gauge,
+  HelpCircle,
 } from 'lucide-react';
+
+const faqs = [
+  {
+    question: 'What does "provenance you can audit" actually mean?',
+    answer:
+      'Every ARIGI cask is minted as an NFT on the Polygon blockchain before it can be listed. The token records the distillery of origin, fill date, cask type, ABV and the full transfer history. Because the ledger is public, anyone can verify who owns the cask and every transaction it has passed through — independently of ARIGI. A link on each cask page points to the on-chain record on the block explorer.',
+  },
+  {
+    question: 'How do you confirm a seller actually owns the cask?',
+    answer:
+      'Before a resale listing goes live, ownership is checked against our records and against the bonded warehouse holding the cask. A certificate from the party selling it is not title — we require documentation the warehouse recognises, such as a delivery order, not a self-issued PDF.',
+  },
+  {
+    question: 'What is a delivery order and why does it matter?',
+    answer:
+      'A delivery order is the document that proves the bonded warehouse recognises you as the legal owner of the cask under their account. It is the single most important ownership document — far more significant than a seller\u2019s certificate. ARIGI insists that one is issued on every transfer.',
+  },
+  {
+    question: 'Are the fees shown before I buy?',
+    answer:
+      'Yes. The asking price and all fees are visible before you commit to a purchase. You see the distillery\u2019s price, the platform fee, and any other charges up front — nothing is discovered afterwards. The same transparency applies to resales executed through the marketplace.',
+  },
+  {
+    question: 'How are casks valued on ARIGI?',
+    answer:
+      'We show what casks actually sold for. We do not publish projected returns, growth curves or "current market value" figures produced by the party doing the selling. The market decides the price; we make sure you can see it honestly.',
+  },
+  {
+    question: 'Where is my cask stored, and who insures it?',
+    answer:
+      'Every cask sits in a licensed bonded warehouse, not in a spreadsheet. Storage and insurance are arranged through the warehouse and are clearly outlined before purchase. The cask remains in bonded (duty-suspended) storage until you choose to bottle or sell it.',
+  },
+  {
+    question: 'Can I sell my cask before it matures?',
+    answer:
+      'Yes. Resale runs through the same open marketplace as the original purchase — not back through a broker. You list the cask at your asking price, and any verified buyer can make an offer or buy at that price. The transfer and the on-chain record are updated together.',
+  },
+  {
+    question: 'What happens when a cask is bottled?',
+    answer:
+      'When a cask reaches maturity you can choose to bottle it. ARIGI coordinates with the bonded warehouse and an approved bottler to disgorge, reduce to bottling strength, label, and where applicable pay duty and VAT. Bottling, labelling, duty and shipping are quoted before you confirm. Once bottled, the underlying NFT is marked as redeemed so the on-chain record reflects that the cask has left maturation.',
+  },
+];
 
 const problems = [
   {
