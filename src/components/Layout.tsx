@@ -10,6 +10,7 @@ import { CurrencySelector } from '@/components/CurrencySelector';
 import { NotificationsBell } from '@/components/NotificationsBell';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { ViewAsSwitcher } from '@/components/ViewAsSwitcher';
+import { SiteGuideAgent } from '@/components/SiteGuideAgent';
 import angelShareLogo from '@/assets/angel-share-logo.png';
 
 interface LayoutProps {
@@ -187,6 +188,7 @@ export const Layout = ({ children }: LayoutProps) => {
           
           <ComparisonButton />
           <MobileBottomNav />
+          <SiteGuideAgent />
         </main>
       </div>
   );
