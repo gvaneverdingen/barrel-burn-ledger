@@ -286,6 +286,37 @@ const About = () => {
         </div>
       </section>
 
+      {/* ============== FAQ ============== */}
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="h-11 w-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <HelpCircle className="h-6 w-6 text-primary" />
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold font-playfair">
+              Provenance & fees, explained
+            </h2>
+          </div>
+          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-8">
+            Straight answers to the questions buyers ask most about how ownership is verified and what
+            they actually pay for.
+          </p>
+
+          <Accordion type="single" collapsible className="w-full">
+            {faqs.map((item, index) => (
+              <AccordionItem key={index} value={`faq-${index}`}>
+                <AccordionTrigger className="text-left text-base sm:text-lg font-semibold">
+                  {item.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                  {item.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </section>
+
       {/* ============== CLOSING CTA ============== */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <Card className="heritage-card border-primary/30 overflow-hidden">
