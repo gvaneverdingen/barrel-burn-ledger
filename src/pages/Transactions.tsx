@@ -13,13 +13,15 @@ const Transactions = () => {
   const { user } = useAuth();
   const { formatPrice } = useCurrency();
 
+  const TX_COLS = 'id, cask_id, buyer_id, seller_id, transaction_type, volume_liters, price_per_liter, total_amount, transaction_fee, distillery_fee, platform_fee, seller_amount, blockchain_transaction_hash, status, completed_at, created_at, sale_listing_id';
+
   const { data: purchases } = useQuery({
     queryKey: ['user-purchases', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
       const { data, error } = await supabase
         .from('transactions')
-        .select('*, cask:casks(spirit_name, cask_number)')
+        .select(`${TX_COLS}, cask:casks(spirit_name, cask_number)`)
         .eq('buyer_id', user.id)
         .order('created_at', { ascending: false });
       if (error) throw error;
@@ -34,7 +36,7 @@ const Transactions = () => {
       if (!user?.id) return [];
       const { data, error } = await supabase
         .from('payouts')
-        .select('*, transaction:transactions(*, cask:casks(spirit_name, cask_number))')
+        .select(`*, transaction:transactions(${TX_COLS}, cask:casks(spirit_name, cask_number))`)
         .eq('recipient_id', user.id)
         .order('created_at', { ascending: false });
       if (error) throw error;

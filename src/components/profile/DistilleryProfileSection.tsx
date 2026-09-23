@@ -55,21 +55,22 @@ export const DistilleryProfileSection: React.FC<Props> = ({ userId, email }) => 
     setLoading(true);
     const { data, error } = await supabase
       .from('distilleries')
-      .select('*')
+      .select('id, name, location, description, website, logo_url, established_year, verified, created_at, updated_at, profile_id')
       .eq('profile_id', userId)
       .maybeSingle();
 
     if (error) {
       toast({ title: 'Error', description: 'Failed to load distillery.', variant: 'destructive' });
     } else if (data) {
-      setDistillery(data as DistilleryRow);
+      const row = data as unknown as DistilleryRow;
+      setDistillery(row);
       setForm({
-        name: data.name || '',
-        location: data.location || '',
-        description: data.description || '',
-        website: data.website || '',
-        established_year: data.established_year ? String(data.established_year) : '',
-        license_number: data.license_number || '',
+        name: row.name || '',
+        location: row.location || '',
+        description: row.description || '',
+        website: row.website || '',
+        established_year: row.established_year ? String(row.established_year) : '',
+        license_number: row.license_number || '',
         logo_url: data.logo_url || '',
       });
     }
