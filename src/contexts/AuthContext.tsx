@@ -92,7 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { data: rolesData } = await supabase
         .from('user_roles')
         .select('role')
-        .eq('user_id', user.id);
+        .eq('user_id', activeUser.id);
       
       const roles = rolesData?.map(r => r.role) || [];
       const prioritizedRole = roles.includes('administrator') 
@@ -104,7 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('first_name, last_name, date_of_birth')
-        .eq('id', user.id)
+        .eq('id', activeUser.id)
         .maybeSingle();
       
       if (error) {
