@@ -255,7 +255,7 @@ const ProfileCompletion = () => {
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
             <User className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="text-2xl">Complete Your Profile</CardTitle>
+          <h1 className="text-2xl font-semibold leading-none tracking-tight">Complete Your Profile</h1>
           <CardDescription>
             Please provide your basic information to get started with ARIGI
           </CardDescription>

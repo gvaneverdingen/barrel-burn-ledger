@@ -102,20 +102,6 @@ const NftStatusCard = ({
               This cask has not been tokenized on the blockchain yet.
             </p>
 
-            {hasBlockchainRecord && blockchainHash && (
-              <div className="text-sm">
-                <span className="text-muted-foreground">Tx Hash:</span>{" "}
-                <a
-                  href={`${explorerBase}/tx/${blockchainHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-mono text-primary hover:underline text-xs"
-                >
-                  {blockchainHash.slice(0, 10)}...{blockchainHash.slice(-6)}
-                  <ExternalLink className="inline h-3 w-3 ml-1" />
-                </a>
-              </div>
-            )}
 
             {canMint && onMint && (
               <Button

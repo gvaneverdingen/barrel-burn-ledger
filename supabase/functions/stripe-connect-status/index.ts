@@ -43,13 +43,14 @@ serve(async (req) => {
       .from("distilleries")
       .select("*")
       .eq("profile_id", user.id)
-      .single();
+      .maybeSingle();
 
-    if (distilleryError || !distillery) {
-      throw new Error("Distillery not found");
+    if (distilleryError) {
+      throw new Error("Distillery lookup failed");
     }
 
-    if (!distillery.stripe_account_id) {
+    // No distillery yet (e.g. application not submitted) -> simply "not connected"
+    if (!distillery || !distillery.stripe_account_id) {
       return new Response(
         JSON.stringify({
           connected: false,
