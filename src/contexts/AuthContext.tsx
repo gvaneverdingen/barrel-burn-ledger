@@ -18,7 +18,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, role: UserRole, additionalData?: any) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
-  refreshUserData: () => Promise<void>;
+  refreshUserData: (overrideUser?: User | null) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -82,8 +82,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const refreshUserData = async () => {
-    if (!user) return;
+  const refreshUserData = async (overrideUser?: User | null) => {
+    const activeUser = overrideUser ?? user;
+    if (!activeUser) return;
+    
     
     try {
       // Fetch all roles from user_roles table and prioritize administrator
