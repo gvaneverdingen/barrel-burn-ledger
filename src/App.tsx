@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { MagicProvider } from "@/contexts/MagicContext";
@@ -164,18 +164,17 @@ const AppRoutes = () => {
             <Route 
               path="/consumer-journey" 
               element={
-                <RoleBasedRoute allowedRoles={['consumer', 'administrator', 'investor', 'distillery', 'facilitator']}>
+                
                   <WithSeo
                     seo={{
-                      title: 'How Cask Ownership Works | ARIGI Buyer Journey',
+                      title: 'Secure Buyer Profile | ARIGI',
                       description:
                         'Step through the ARIGI buyer journey: verify your profile, choose a cask, complete secure payment and track maturation.',
                       canonical: '/consumer-journey',
                     }}
                   >
-                    <ConsumerJourney />
+                    <RoleBasedRoute allowedRoles={['consumer', 'administrator', 'investor', 'distillery', 'facilitator']}><ConsumerJourney /></RoleBasedRoute>
                   </WithSeo>
-                </RoleBasedRoute>
               } 
             />
             
