@@ -92,7 +92,7 @@ const Insights = () => {
       <div className="mb-8">
         <h2 className="text-3xl font-bold luxury-text-gradient mb-2">Market Insights</h2>
         <p className="text-muted-foreground">
-          Live analytics from the Angel Share marketplace.
+          Live analytics from the ARIGI marketplace.
         </p>
       </div>
 

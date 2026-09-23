@@ -341,7 +341,7 @@ const About = () => {
                 variant="outline"
                 className="text-base px-8 h-12 border-primary/40 hover:bg-primary/10"
               >
-                <Link to="/consumer-journey">How buying works</Link>
+                <Link to="/help">How buying works</Link>
               </Button>
             </div>
           </CardContent>

@@ -141,8 +141,8 @@ const PaymentSuccess = () => {
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <img src={angelShareLogo} alt="Angel Share Logo" className="h-10 w-10 object-contain" />
-            <h1 className="text-2xl font-bold text-foreground heritage-title font-playfair">Angel Share</h1>
+            <img src={angelShareLogo} alt="ARIGI logo" className="h-10 w-10 object-contain" />
+            <h1 className="text-2xl font-bold text-foreground heritage-title font-playfair">ARIGI</h1>
           </div>
           
           <div className="flex items-center space-x-4">
