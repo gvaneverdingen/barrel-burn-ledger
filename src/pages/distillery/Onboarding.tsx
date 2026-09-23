@@ -198,23 +198,9 @@ const DistilleryOnboarding = () => {
     );
   }
 
-  // If user is already a distillery
-  if (userRole === 'distillery') {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="max-w-2xl mx-auto text-center">
-          <Building2 className="h-16 w-16 mx-auto mb-4 text-primary" />
-          <h1 className="text-2xl font-bold mb-2">You're Already a Distillery</h1>
-          <p className="text-muted-foreground mb-6">
-            Your account already has distillery access. Visit your dashboard to manage your casks.
-          </p>
-          <Button onClick={() => navigate('/distillery')}>
-            Go to Distillery Dashboard
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  // Distillery-role accounts without a distillery record still need to apply
+  // (the existingDistillery check above handles those who already have one).
+
 
   return (
     <div className="container mx-auto p-6">
