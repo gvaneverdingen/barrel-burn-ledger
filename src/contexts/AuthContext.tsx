@@ -18,7 +18,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, role: UserRole, additionalData?: any) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
-  refreshUserData: () => Promise<void>;
+  refreshUserData: (overrideUser?: User | null) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -82,15 +82,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const refreshUserData = async () => {
-    if (!user) return;
+  const refreshUserData = async (overrideUser?: User | null) => {
+    const activeUser = overrideUser ?? user;
+    if (!activeUser) return;
+    
     
     try {
       // Fetch all roles from user_roles table and prioritize administrator
       const { data: rolesData } = await supabase
         .from('user_roles')
         .select('role')
-        .eq('user_id', user.id);
+        .eq('user_id', activeUser.id);
       
       const roles = rolesData?.map(r => r.role) || [];
       const prioritizedRole = roles.includes('administrator') 
@@ -102,7 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('first_name, last_name, date_of_birth')
-        .eq('id', user.id)
+        .eq('id', activeUser.id)
         .maybeSingle();
       
       if (error) {
@@ -181,14 +183,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (session?.user) {
+        const sessionUser = session?.user ?? null;
+
+        if (sessionUser) {
           setTimeout(() => {
-            refreshUserData();
+            refreshUserData(sessionUser).finally(() => {
+              setLoading(false);
+              isInitialized = true;
+            });
           }, 0);
-        } else {
-          setUserRole(null);
-          setProfileComplete(false);
+          return;
         }
+
+        setUserRole(null);
+        setProfileComplete(false);
         
         if (!isInitialized) {
           setLoading(false);
@@ -199,12 +207,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      setUser(session?.user ?? null);
+      const sessionUser = session?.user ?? null;
+      setUser(sessionUser);
       
-      if (session?.user) {
+      if (sessionUser) {
         setTimeout(() => {
-          refreshUserData();
+          refreshUserData(sessionUser).finally(() => {
+            setLoading(false);
+            isInitialized = true;
+          });
         }, 0);
+        return;
       }
       
       if (!isInitialized) {
