@@ -290,7 +290,7 @@ const PaymentSuccess = () => {
 
                 <div className="pt-4 border-t">
                   <p className="text-xs text-muted-foreground">
-                    Need help? Contact our support team at support@angelshare.com
+                    Need help? Contact our support team at support@arigi.com
                   </p>
                 </div>
               </CardContent>
