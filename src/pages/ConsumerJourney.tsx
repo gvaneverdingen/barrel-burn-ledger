@@ -323,7 +323,7 @@ const ConsumerJourney = () => {
           <div className="container max-w-4xl mx-auto px-4 py-8 space-y-8 animate-fade-in">
             {/* Hero Section */}
             <div className="text-center space-y-4 py-8">
-              <h2 className="text-4xl font-bold luxury-text-gradient">Your Secure Investment Profile</h2>
+              <h1 className="text-4xl font-bold luxury-text-gradient">Your Secure Investment Profile</h1>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Manage your personal information, credentials, and banking details for secure whisky cask investments
               </p>
