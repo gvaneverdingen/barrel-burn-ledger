@@ -70,7 +70,8 @@ const ProfileCompletion = () => {
     };
 
     checkExistingProfile();
-  }, [user, refreshUserData, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const handleManualRefresh = async () => {
     setRefreshing(true);
