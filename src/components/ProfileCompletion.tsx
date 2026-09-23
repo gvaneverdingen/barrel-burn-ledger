@@ -216,7 +216,7 @@ const ProfileCompletion = () => {
       console.log('ProfileCompletion: Profile update successful');
       toast({
         title: "Profile Complete!",
-        description: "Welcome to Angel Share. Your profile has been completed successfully.",
+        description: "Welcome to ARIGI. Your profile has been completed successfully.",
       });
 
       // Refresh user data to update profile completion status
@@ -257,7 +257,7 @@ const ProfileCompletion = () => {
           </div>
           <CardTitle className="text-2xl">Complete Your Profile</CardTitle>
           <CardDescription>
-            Please provide your basic information to get started with Angel Share
+            Please provide your basic information to get started with ARIGI
           </CardDescription>
         </CardHeader>
         
