@@ -55,7 +55,7 @@ export const DistilleryProfileSection: React.FC<Props> = ({ userId, email }) => 
     setLoading(true);
     const { data, error } = await supabase
       .from('distilleries')
-      .select('*')
+      .select('id, name, location, description, website, logo_url, established_year, verified, created_at, updated_at, profile_id')
       .eq('profile_id', userId)
       .maybeSingle();
 
