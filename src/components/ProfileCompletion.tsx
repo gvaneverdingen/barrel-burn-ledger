@@ -50,10 +50,9 @@ const ProfileCompletion = () => {
           });
           
           if (isComplete) {
-            console.log('🟢 ProfileCompletion: Profile is already complete, should refresh auth state');
-            // Profile is complete, refresh auth state and navigate
-            await refreshUserData();
-            setTimeout(() => navigate('/'), 100);
+            // Profile is complete: refresh auth state so the requested route renders.
+            // Do not navigate away — that would discard the originally requested URL.
+            await refreshUserData(user);
             return;
           }
 

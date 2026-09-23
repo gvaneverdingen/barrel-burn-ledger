@@ -183,14 +183,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (session?.user) {
+        const sessionUser = session?.user ?? null;
+
+        if (sessionUser) {
           setTimeout(() => {
-            refreshUserData();
+            refreshUserData(sessionUser).finally(() => {
+              setLoading(false);
+              isInitialized = true;
+            });
           }, 0);
-        } else {
-          setUserRole(null);
-          setProfileComplete(false);
+          return;
         }
+
+        setUserRole(null);
+        setProfileComplete(false);
         
         if (!isInitialized) {
           setLoading(false);
@@ -201,12 +207,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      setUser(session?.user ?? null);
+      const sessionUser = session?.user ?? null;
+      setUser(sessionUser);
       
-      if (session?.user) {
+      if (sessionUser) {
         setTimeout(() => {
-          refreshUserData();
+          refreshUserData(sessionUser).finally(() => {
+            setLoading(false);
+            isInitialized = true;
+          });
         }, 0);
+        return;
       }
       
       if (!isInitialized) {
