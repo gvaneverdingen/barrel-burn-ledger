@@ -233,6 +233,14 @@ const DistilleryDashboard = () => {
             </Badge>
           )}
         </div>
+        {isDemo && (
+          <div className="mt-4 rounded-lg border border-primary/40 bg-primary/5 p-4 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+            <p className="text-sm text-muted-foreground">
+              You're viewing a sample distillery. Submit your distillery application to manage and list your own casks.
+            </p>
+            <Button size="sm" onClick={() => navigate('/distillery/onboarding')}>Apply now</Button>
+          </div>
+        )}
       </div>
 
       {/* Stats Cards */}
