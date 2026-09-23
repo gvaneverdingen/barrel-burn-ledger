@@ -81,14 +81,14 @@ const DistilleryDashboard = () => {
       // Prefer a verified distillery that actually has casks so the dashboard is populated.
       const { data: cask, error: caskErr } = await supabase
         .from('casks')
-        .select('distillery_id, distilleries!inner(*)')
+        .select('distillery_id, distilleries!inner(id, name, location, description, website, logo_url, established_year, verified, created_at, updated_at, profile_id)')
         .eq('distilleries.verified', true)
         .limit(1)
         .maybeSingle();
       if (caskErr) {
         console.warn('Demo distillery cask lookup failed; falling back to verified distillery lookup.', caskErr);
       }
-      if (cask?.distilleries) return cask.distilleries as typeof FALLBACK_DEMO_DISTILLERY;
+      if (cask?.distilleries) return cask.distilleries as unknown as typeof FALLBACK_DEMO_DISTILLERY;
       const { data, error } = await supabase
         .from('distilleries')
         .select('id, name, location, description, website, logo_url, established_year, verified, created_at, updated_at, profile_id')
