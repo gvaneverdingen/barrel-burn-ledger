@@ -135,9 +135,9 @@ export const Layout = ({ children }: LayoutProps) => {
             <div className="mobile-container h-full flex items-center justify-between gap-2">
               <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
                 <div className="animate-float shrink-0">
-                  <img src={angelShareLogo} alt="Angel Share Logo" className="h-7 w-7 sm:h-8 sm:w-8 object-contain" />
+                  <img src={angelShareLogo} alt="ARIGI logo" className="h-7 w-7 sm:h-8 sm:w-8 object-contain" />
                 </div>
-                <h1 className="text-base sm:text-xl font-bold heritage-title font-playfair truncate">Angel Share</h1>
+                <span className="text-base sm:text-xl font-bold heritage-title font-playfair truncate">ARIGI</span>
               </div>
               
               <div className="flex items-center space-x-2 sm:space-x-4">

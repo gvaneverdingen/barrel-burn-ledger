@@ -223,7 +223,7 @@ const DistilleryOnboarding = () => {
           <Building2 className="h-12 w-12 mx-auto mb-4 text-primary" />
           <h1 className="text-3xl font-bold luxury-text-gradient">Become a Distillery Partner</h1>
           <p className="text-muted-foreground mt-2">
-            Join Angel Share and list your casks on our marketplace
+            Join ARIGI and list your casks on our marketplace
           </p>
         </div>
 

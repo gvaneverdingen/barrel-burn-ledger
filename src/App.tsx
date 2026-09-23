@@ -220,6 +220,8 @@ const AppRoutes = () => {
               }
             />
             <Route path="/cask/:id" element={<CaskDetails />} />
+            <Route path="/distillery/dashboard" element={<Navigate to="/distillery" replace />} />
+            <Route path="/warehouse/dashboard" element={<Navigate to="/warehouse" replace />} />
             <Route path="/distillery/:id" element={<DistilleryProfile />} />
             <Route path="/wishlist" element={<WithSeo seo={privateSeo('Your Wishlist | ARIGI', 'Casks you are tracking on ARIGI.')}><Wishlist /></WithSeo>} />
             <Route path="/offers" element={<WithSeo seo={privateSeo('Your Offers | ARIGI', 'Offers you have made or received on ARIGI.')}><Offers /></WithSeo>} />
@@ -247,17 +249,13 @@ const AppRoutes = () => {
             <Route 
               path="/insights" 
               element={
-                <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
-                  <WithSeo seo={{ title: 'Whisky Cask Market Insights | ARIGI', description: 'Live platform analytics on cask listings, regions and pricing trends.', canonical: '/insights' }}><Insights /></WithSeo>
-                </RoleBasedRoute>
+                <WithSeo seo={{ title: 'Whisky Cask Market Insights | ARIGI', description: 'Live platform analytics on cask listings, regions and pricing trends.', canonical: '/insights' }}><RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}><Insights /></RoleBasedRoute></WithSeo>
               } 
             />
             <Route 
               path="/market-insights" 
               element={
-                <RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}>
-                  <WithSeo seo={{ title: 'AI Whisky Cask Price Tracker | ARIGI', description: 'AI-assisted tracking of current whisky cask market prices and comparable sales.', canonical: '/market-insights' }}><MarketInsights /></WithSeo>
-                </RoleBasedRoute>
+                <WithSeo seo={{ title: 'AI Whisky Cask Price Tracker | ARIGI', description: 'AI-assisted tracking of current whisky cask market prices and comparable sales.', canonical: '/market-insights' }}><RoleBasedRoute allowedRoles={['consumer', 'investor', 'distillery', 'facilitator', 'administrator']}><MarketInsights /></RoleBasedRoute></WithSeo>
               } 
             />
             <Route 
@@ -328,73 +326,73 @@ const AppRoutes = () => {
             {/* Distillery Routes - Distillery and Admin only */}
             <Route 
               path="/distillery" 
-              element={
+              element={<WithSeo seo={privateSeo('Distillery Dashboard | ARIGI', 'Manage your ARIGI account.')}>
                 <RoleBasedRoute allowedRoles={['distillery', 'administrator']}>
                   <DistilleryDashboard />
-                </RoleBasedRoute>
+                </RoleBasedRoute></WithSeo>
               } 
             />
             <Route 
               path="/distillery/casks" 
-              element={
+              element={<WithSeo seo={privateSeo('Manage Casks | ARIGI', 'Manage your ARIGI account.')}>
                 <RoleBasedRoute allowedRoles={['distillery', 'administrator']}>
                   <DistilleryCasks />
-                </RoleBasedRoute>
+                </RoleBasedRoute></WithSeo>
               } 
             />
             <Route 
               path="/distillery/casks/new" 
-              element={
+              element={<WithSeo seo={privateSeo('List a New Cask | ARIGI', 'Manage your ARIGI account.')}>
                 <RoleBasedRoute allowedRoles={['distillery', 'administrator']}>
                   <DistilleryNewCask />
-                </RoleBasedRoute>
+                </RoleBasedRoute></WithSeo>
               } 
             />
             <Route 
               path="/distillery/analytics" 
-              element={
+              element={<WithSeo seo={privateSeo('Distillery Analytics | ARIGI', 'Manage your ARIGI account.')}>
                 <RoleBasedRoute allowedRoles={['distillery', 'administrator']}>
                   <DistilleryAnalytics />
-                </RoleBasedRoute>
+                </RoleBasedRoute></WithSeo>
               } 
             />
             <Route 
               path="/distillery/verification" 
-              element={
+              element={<WithSeo seo={privateSeo('Distillery Verification | ARIGI', 'Manage your ARIGI account.')}>
                 <RoleBasedRoute allowedRoles={['distillery', 'administrator']}>
                   <DistilleryVerification />
-                </RoleBasedRoute>
+                </RoleBasedRoute></WithSeo>
               } 
             />
             <Route 
               path="/distillery/onboarding" 
-              element={<DistilleryOnboarding />} 
+              element={<WithSeo seo={privateSeo('Become a Distillery Partner | ARIGI', 'Apply to list your casks on ARIGI.')}><DistilleryOnboarding /></WithSeo>} 
             />
 
             {/* Warehouse Routes */}
-            <Route path="/warehouse/onboarding" element={<WarehouseOnboarding />} />
+            <Route path="/warehouse/onboarding" element={<WithSeo seo={privateSeo('Warehouse Application | ARIGI', 'Apply to list casks as a bonded warehouse on ARIGI.')}><WarehouseOnboarding /></WithSeo>} />
             <Route
               path="/warehouse"
-              element={
+              element={<WithSeo seo={privateSeo('Warehouse Dashboard | ARIGI', 'Manage your ARIGI account.')}>
                 <RoleBasedRoute allowedRoles={["facilitator", "administrator"]}>
                   <WarehouseDashboard />
-                </RoleBasedRoute>
+                </RoleBasedRoute></WithSeo>
               }
             />
             <Route
               path="/warehouse/casks/new"
-              element={
+              element={<WithSeo seo={privateSeo('List a Warehouse Cask | ARIGI', 'Manage your ARIGI account.')}>
                 <RoleBasedRoute allowedRoles={["facilitator", "administrator"]}>
                   <WarehouseNewCask />
-                </RoleBasedRoute>
+                </RoleBasedRoute></WithSeo>
               }
             />
             <Route
               path="/warehouse/verification"
-              element={
+              element={<WithSeo seo={privateSeo('Warehouse Verification | ARIGI', 'Manage your ARIGI account.')}>
                 <RoleBasedRoute allowedRoles={["facilitator", "administrator"]}>
                   <WarehouseVerification />
-                </RoleBasedRoute>
+                </RoleBasedRoute></WithSeo>
               }
             />
 
