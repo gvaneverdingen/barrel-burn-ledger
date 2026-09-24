@@ -290,6 +290,8 @@ export type Database = {
         Row: {
           asking_price_per_liter: number
           cask_id: string | null
+          contact_email: string | null
+          contact_phone: string | null
           created_at: string
           expires_at: string | null
           id: string
@@ -298,6 +300,8 @@ export type Database = {
           notes: string | null
           ownership_id: string
           seller_id: string
+          sold_at: string | null
+          sold_to: string | null
           status: string
           total_asking_price: number
           updated_at: string
@@ -306,6 +310,8 @@ export type Database = {
         Insert: {
           asking_price_per_liter: number
           cask_id?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
           expires_at?: string | null
           id?: string
@@ -314,6 +320,8 @@ export type Database = {
           notes?: string | null
           ownership_id: string
           seller_id: string
+          sold_at?: string | null
+          sold_to?: string | null
           status?: string
           total_asking_price: number
           updated_at?: string
@@ -322,6 +330,8 @@ export type Database = {
         Update: {
           asking_price_per_liter?: number
           cask_id?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
           expires_at?: string | null
           id?: string
@@ -330,6 +340,8 @@ export type Database = {
           notes?: string | null
           ownership_id?: string
           seller_id?: string
+          sold_at?: string | null
+          sold_to?: string | null
           status?: string
           total_asking_price?: number
           updated_at?: string
@@ -1665,6 +1677,10 @@ export type Database = {
     Functions: {
       can_manage_cask: { Args: { _cask_id: string }; Returns: boolean }
       can_view_cask: { Args: { _cask_id: string }; Returns: boolean }
+      confirm_resale_sold: {
+        Args: { _buyer_email: string; _final_price: number; _sale_id: string }
+        Returns: undefined
+      }
       get_cask_provenance: {
         Args: { _cask_id: string }
         Returns: {

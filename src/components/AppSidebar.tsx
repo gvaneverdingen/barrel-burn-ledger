@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, BookOpen, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users, Database, Link, Route, Heart, LayoutDashboard, HandCoins, ClipboardList, PlusCircle, Warehouse, LineChart, Sparkles, LogIn, Code2, PanelLeftClose, PanelLeftOpen } from "lucide-react"
+import { Store, Home, BookOpen, Package, User, Building2, BarChart3, CreditCard, Settings, HelpCircle, Bell, FileText, Shield, TrendingUp, Users, Database, Link, Route, Heart, LayoutDashboard, HandCoins, ClipboardList, PlusCircle, Warehouse, LineChart, Sparkles, LogIn, Code2, PanelLeftClose, PanelLeftOpen } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 
@@ -45,6 +45,7 @@ const developerItems = [
 
 const consumerItems = [
   { title: "Portfolio", url: "/portfolio", icon: BarChart3 },
+  { title: "Resell a Cask", url: "/sell", icon: Store },
   { title: "Profile", url: "/profile", icon: User },
   { title: "Transactions", url: "/transactions", icon: CreditCard },
 ]
@@ -52,6 +53,7 @@ const consumerItems = [
 const userItems = [
   { title: "Profile", url: "/profile", icon: User },
   { title: "Portfolio", url: "/portfolio", icon: BarChart3 },
+  { title: "Resell a Cask", url: "/sell", icon: Store },
   { title: "Transactions", url: "/transactions", icon: CreditCard },
   { title: "Platform Insights", url: "/insights", icon: LineChart },
   { title: "AI Price Tracker", url: "/market-insights", icon: Sparkles },
@@ -139,6 +141,7 @@ export function getMobileNavItems(
       { title: "Marketplace", url: "/marketplace", icon: Package },
       adminItems[0], // Admin Dashboard
       { title: "Portfolio", url: "/portfolio", icon: BarChart3 },
+  { title: "Resell a Cask", url: "/sell", icon: Store },
       { title: "Profile", url: "/profile", icon: User },
     ]
   }
@@ -149,6 +152,7 @@ export function getMobileNavItems(
     { title: "Marketplace", url: "/marketplace", icon: Package },
     authedPublicItems[1], // My Offers
     { title: "Portfolio", url: "/portfolio", icon: BarChart3 },
+  { title: "Resell a Cask", url: "/sell", icon: Store },
     { title: "Profile", url: "/profile", icon: User },
   ]
 }

@@ -51,6 +51,7 @@ const Reports = lazy(() => import("./pages/Reports"));
 const CaskDetails = lazy(() => import("./pages/CaskDetails"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
+const SellCask = lazy(() => import("./pages/SellCask"));
 const Admin = lazy(() => import("./pages/Admin"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const CaskDataManagement = lazy(() => import("./pages/admin/CaskDataManagement"));
@@ -230,6 +231,10 @@ const AppRoutes = () => {
             <Route 
               path="/profile" 
               element={<WithSeo seo={privateSeo('Your Profile | ARIGI', 'Manage your ARIGI account information.')}><Profile /></WithSeo>}
+            />
+            <Route
+              path="/sell"
+              element={<WithSeo seo={privateSeo('Resell a Cask | ARIGI', 'List a cask you own for resale and confirm the sale.')}><SellCask /></WithSeo>}
             />
             <Route 
               path="/portfolio" 
