@@ -12,9 +12,9 @@ import { toast } from "sonner";
 
 type Wh = { id: string; name: string; location: string | null };
 
-export default function WarehouseTransferCard({ caskId, currentWarehouseId, onMoved }: { caskId: string; currentWarehouseId?: string | null; onMoved?: () => void }) {
+export default function WarehouseTransferCard({ caskId, onMoved }: { caskId: string; onMoved?: () => void }) {
   const [warehouses, setWarehouses] = useState<Wh[]>([]);
-  const [current, setCurrent] = useState<string | null | undefined>(currentWarehouseId);
+  const [current, setCurrent] = useState<string | null>(null);
   const [to, setTo] = useState("");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [reason, setReason] = useState("");
@@ -24,11 +24,12 @@ export default function WarehouseTransferCard({ caskId, currentWarehouseId, onMo
     supabase.from("warehouses").select("id, name, location").eq("verified", true).order("name")
       .then(({ data }) => setWarehouses((data as Wh[]) || []));
   }, []);
+  const [locationText, setLocationText] = useState<string | null>(null);
   useEffect(() => {
-    if (currentWarehouseId !== undefined) { setCurrent(currentWarehouseId); return; }
-    supabase.from("casks").select("warehouse_id").eq("id", caskId).maybeSingle().then(({ data }) => setCurrent((data as any)?.warehouse_id ?? null));
-  }, [caskId, currentWarehouseId]);
-
+    supabase.from("cask_transfers").select("to_warehouse_id").eq("cask_id", caskId).eq("transfer_type", "warehouse_move")
+      .order("created_at", { ascending: false }).limit(1).maybeSingle().then(({ data }) => setCurrent((data as any)?.to_warehouse_id ?? null));
+    supabase.from("casks").select("warehouse_location").eq("id", caskId).maybeSingle().then(({ data }) => setLocationText((data as any)?.warehouse_location ?? null));
+  }, [caskId]);
   const currentName = warehouses.find((w) => w.id === current)?.name;
   const options = warehouses.filter((w) => w.id !== current);
 
@@ -58,7 +59,7 @@ export default function WarehouseTransferCard({ caskId, currentWarehouseId, onMo
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground">Currently stored at: <span className="text-foreground font-medium">{currentName ?? "Not set"}</span></p>
+        <p className="text-sm text-muted-foreground">Currently stored at: <span className="text-foreground font-medium">{currentName ?? locationText ?? "Not set"}</span></p>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1">
             <Label htmlFor="wt-to">Destination warehouse</Label>
