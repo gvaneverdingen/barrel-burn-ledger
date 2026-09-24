@@ -46,6 +46,8 @@ const empty: FormState = {
   id_document_type: 'passport', id_document_number: '',
 };
 
+import { SumsubVerify } from './SumsubVerify';
+
 export function KycForm({ onStatusChange }: { onStatusChange?: () => void }) {
   const { user } = useAuth();
   const [form, setForm] = useState<FormState>(empty);
@@ -54,6 +56,8 @@ export function KycForm({ onStatusChange }: { onStatusChange?: () => void }) {
   const [latest, setLatest] = useState<Submission | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [autoAvailable, setAutoAvailable] = useState(false);
+  const [showManual, setShowManual] = useState(false);
 
   const load = async () => {
     if (!user) return;
@@ -162,8 +166,27 @@ export function KycForm({ onStatusChange }: { onStatusChange?: () => void }) {
     </div>
   );
 
+  const auto = (
+    <SumsubVerify
+      onAvailability={setAutoAvailable}
+      onReviewed={() => { setTimeout(() => onStatusChange?.(), 4000); }}
+    />
+  );
+
+  if (autoAvailable && !showManual) {
+    return (
+      <div className="space-y-4">
+        {auto}
+        <button type="button" className="text-xs text-muted-foreground underline" onClick={() => setShowManual(true)}>
+          Can't use the camera? Upload documents for manual review instead
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {!showManual && <div className="hidden">{auto}</div>}
       {latest?.status === 'rejected' && (
         <Alert variant="destructive">
           <XCircle className="h-4 w-4" />
