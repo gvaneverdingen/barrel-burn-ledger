@@ -37,14 +37,7 @@ const paymentOptions: { id: PaymentMethod; label: string; icon: any; description
     id: "usdc",
     label: "USDC Stablecoin",
     icon: Coins,
-    description: "Pay with USD Coin on Polygon",
-    badge: "Stablecoin",
-  },
-  {
-    id: "usdt",
-    label: "USDT Stablecoin",
-    icon: Coins,
-    description: "Pay with Tether on Polygon",
+    description: "Pay with native USDC (Circle) on Polygon — real funds, settles on-chain",
     badge: "Stablecoin",
   },
 ];
