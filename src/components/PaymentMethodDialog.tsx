@@ -37,14 +37,7 @@ const paymentOptions: { id: PaymentMethod; label: string; icon: any; description
     id: "usdc",
     label: "USDC Stablecoin",
     icon: Coins,
-    description: "Pay with USD Coin on Polygon",
-    badge: "Stablecoin",
-  },
-  {
-    id: "usdt",
-    label: "USDT Stablecoin",
-    icon: Coins,
-    description: "Pay with Tether on Polygon",
+    description: "Pay with native USDC (Circle) on Polygon — real funds, settles on-chain",
     badge: "Stablecoin",
   },
 ];
@@ -277,7 +270,7 @@ export const PaymentMethodDialog = ({
                 <p className="font-medium">Identity verification (KYC) required</p>
                 <p className="text-muted-foreground mt-1">
                   Connecting a wallet doesn't replace identity checks. To comply with anti-money-laundering rules,
-                  every buyer must complete KYC before paying with USDC or USDT.
+                  every buyer must complete KYC before paying with USDC.
                   {kycStatus === "loading" ? " Checking your status…" : ` Current status: ${kycStatus}.`}
                 </p>
               </div>

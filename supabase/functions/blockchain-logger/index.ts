@@ -19,10 +19,11 @@ const MARKETPLACE_ABI = [
   "function calculateFees(uint256 price, bool isPrimarySale) view returns (uint256 platformFee, uint256 distilleryRoyalty, uint256 sellerAmount)"
 ];
 
-const AMOY_NETWORK = { chainId: 80002, name: "amoy" };
+const AMOY_NETWORK = { chainId: 137, name: "matic" }; // Polygon mainnet
 const FALLBACK_POLYGON_RPC_URLS = [
-  "https://polygon-amoy-bor-rpc.publicnode.com",
-  "https://polygon-amoy.drpc.org",
+  "https://polygon-rpc.com",
+  "https://polygon-bor-rpc.publicnode.com",
+  "https://polygon.drpc.org",
 ];
 
 const corsHeaders = {
@@ -95,7 +96,7 @@ async function createPolygonProvider(primaryRpcUrl?: string) {
 
       const provider = new ethers.JsonRpcProvider(rpcUrl, AMOY_NETWORK);
       const blockNumber = await provider.getBlockNumber();
-      console.log("Connected to Polygon Amoy RPC:", sanitizeRpcUrl(rpcUrl), "Block:", blockNumber);
+      console.log("Connected to Polygon RPC:", sanitizeRpcUrl(rpcUrl), "Block:", blockNumber);
       return provider;
     } catch (error) {
       lastError = error as Error;
@@ -105,8 +106,8 @@ async function createPolygonProvider(primaryRpcUrl?: string) {
 
   throw new Error(
     lastError
-      ? `Unable to connect to Polygon Amoy RPC: ${lastError.message}`
-      : "Unable to connect to Polygon Amoy RPC"
+      ? `Unable to connect to Polygon RPC: ${lastError.message}`
+      : "Unable to connect to Polygon RPC"
   );
 }
 

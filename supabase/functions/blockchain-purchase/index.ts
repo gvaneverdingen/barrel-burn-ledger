@@ -30,30 +30,29 @@ const CASKNFT_ABI = [
 
 const RequestSchema = z.object({
   saleId: z.string().uuid("Invalid sale ID"),
-  paymentMethod: z.enum(["usdc", "usdt"]),
+  paymentMethod: z.enum(["usdc"]),
   walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid wallet address"),
 });
 
-// Known stablecoin addresses on Polygon Amoy testnet
+// Native USDC (Circle) on Polygon mainnet
 const STABLECOIN_ADDRESSES: Record<string, string> = {
-  // On testnet we'll use test tokens — these would be replaced with real addresses on mainnet
-  usdc: "0x41E94Eb019C0762f9Bfcf9Fb1E58725BfB0e7582", // Test USDC on Amoy
-  usdt: "0x1616d425Cd540B256475cBfb604586C8598eC0FB", // Test USDT on Amoy
+  usdc: "0x3c499c542cEf5E3811e1192ce70d8cC03d5c3359",
 };
 
-// Rotating RPC endpoints for Polygon Amoy
+// Rotating RPC endpoints for Polygon mainnet (POLYGON_RPC_URL tried first)
 const RPC_ENDPOINTS = [
-  "https://rpc-amoy.polygon.technology",
-  "https://polygon-amoy-bor-rpc.publicnode.com",
-  "https://polygon-amoy.drpc.org",
-];
+  Deno.env.get("POLYGON_RPC_URL"),
+  "https://polygon-rpc.com",
+  "https://polygon-bor-rpc.publicnode.com",
+  "https://polygon.drpc.org",
+].filter(Boolean) as string[];
 
 async function getProvider(): Promise<ethers.JsonRpcProvider> {
   for (const rpc of RPC_ENDPOINTS) {
     try {
       const provider = new ethers.JsonRpcProvider(rpc, {
-        chainId: 80002,
-        name: "amoy",
+        chainId: 137,
+        name: "matic",
       });
       await provider.getBlockNumber();
       console.log("Connected to RPC:", rpc);
@@ -67,8 +66,8 @@ async function getProvider(): Promise<ethers.JsonRpcProvider> {
   const customRpc = Deno.env.get("POLYGON_RPC_URL");
   if (customRpc) {
     const provider = new ethers.JsonRpcProvider(customRpc, {
-      chainId: 80002,
-      name: "amoy",
+      chainId: 137,
+        name: "matic",
     });
     await provider.getBlockNumber();
     return provider;

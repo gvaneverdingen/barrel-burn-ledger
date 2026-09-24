@@ -68,7 +68,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-primary" /> Wallet Connected</CardTitle>
-          <CardDescription>Your wallet is ready for USDC/USDT payments on Polygon.</CardDescription>
+          <CardDescription>Your wallet is ready for USDC payments on Polygon.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between rounded-md border p-3">
@@ -90,7 +90,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2"><Wallet className="h-5 w-5" /> WalletConnect</CardTitle>
-        <CardDescription>Connect a crypto wallet to pay for casks in USDC or USDT.</CardDescription>
+        <CardDescription>Connect a crypto wallet to pay for casks in USDC.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Button className="w-full" onClick={() => handleConnect('walletconnect')} disabled={!!busy}>
