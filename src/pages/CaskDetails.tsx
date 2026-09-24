@@ -32,6 +32,7 @@ import { SellCaskDialog } from "@/components/SellCaskDialog";
 import { PaymentMethodDialog } from "@/components/PaymentMethodDialog";
 import CaskTransactionHistory from "@/components/CaskTransactionHistory";
 import CaskProvenanceTimeline from "@/components/CaskProvenanceTimeline";
+import ResaleContact from "@/components/ResaleContact";
 import { ShareCaskButton } from "@/components/ShareCaskButton";
 import { addRecentlyViewed } from "@/components/RecentlyViewedCasks";
 import { PriceAlertButton } from "@/components/PriceAlertButton";
@@ -1155,6 +1156,7 @@ const CaskDetails = () => {
             />
 
             {/* Transaction History */}
+            <ResaleContact caskId={cask.id} />
             <CaskProvenanceTimeline caskId={cask.id} />
             <CaskTransactionHistory caskId={cask.id} />
 
