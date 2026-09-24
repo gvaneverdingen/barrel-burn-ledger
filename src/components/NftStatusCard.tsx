@@ -26,8 +26,8 @@ const NftStatusCard = ({
   const networkName = nftContractAddress?.startsWith("0x") ? "Polygon" : "Unknown";
   const hasBlockchainRecord = !!blockchainHash;
   
-  // Use Amoy explorer for testnet (Chain ID 80002)
-  const explorerBase = "https://amoy.polygonscan.com";
+  // Polygon mainnet explorer
+  const explorerBase = "https://polygonscan.com";
 
   return (
     <Card className="border-primary/20">

@@ -107,7 +107,7 @@ const DistilleryDocs = () => {
               </li>
               <li>
                 <strong>Mint the provenance NFT.</strong> Mandatory before the cask becomes visible on
-                the marketplace. Server-side mint on Polygon Amoy via the platform wallet — no
+                the marketplace. Server-side mint on Polygon via the platform wallet — no
                 MetaMask required (see NFT provenance below).
               </li>
               <li>
@@ -132,7 +132,7 @@ const DistilleryDocs = () => {
       {/* NFT provenance */}
       <section id="nft" className="space-y-4 scroll-mt-24">
         <h2 className="text-2xl font-semibold flex items-center gap-2">
-          <Coins className="h-6 w-6 text-primary" /> NFT provenance (Polygon Amoy)
+          <Coins className="h-6 w-6 text-primary" /> NFT provenance (Polygon)
         </h2>
         <Card className="luxury-card">
           <CardContent className="p-6 space-y-3 text-sm leading-relaxed">
@@ -143,7 +143,7 @@ const DistilleryDocs = () => {
               redemption) are recorded on-chain so buyers can audit chain-of-custody independently.
             </p>
             <ul className="list-disc pl-6 space-y-1">
-              <li>Network: <strong>Polygon Amoy testnet</strong> (chainId 80002). Mainnet migration is on the roadmap.</li>
+              <li>Network: <strong>Polygon mainnet</strong> (chainId 137).</li>
               <li>Minting: server-side via Edge Function using the platform private key — distillery does not pay gas.</li>
               <li>Authorisation: <code>distillery</code> and <code>administrator</code> roles only.</li>
               <li>Rarity tier is computed from age, finish and single-barrel flag (Exceptional 21+, Premium 18+, etc.).</li>

@@ -4,9 +4,11 @@ export type Eip1193Provider = {
   disconnect?: () => Promise<void>;
 };
 
-export const AMOY_CHAIN_ID = 80002;
-const AMOY_HEX = "0x13882";
-const AMOY_RPC = "https://rpc-amoy.polygon.technology";
+// Polygon mainnet
+export const AMOY_CHAIN_ID = 137;
+export const POLYGON_CHAIN_ID = 137;
+const AMOY_HEX = "0x89";
+const AMOY_RPC = "https://polygon-rpc.com";
 
 // Publishable project ID from https://cloud.reown.com
 export const WALLETCONNECT_PROJECT_ID: string =
@@ -64,10 +66,10 @@ export async function connectWallet(
         method: "wallet_addEthereumChain",
         params: [{
           chainId: AMOY_HEX,
-          chainName: "Polygon Amoy Testnet",
-          nativeCurrency: { name: "MATIC", symbol: "MATIC", decimals: 18 },
+          chainName: "Polygon",
+          nativeCurrency: { name: "POL", symbol: "POL", decimals: 18 },
           rpcUrls: [AMOY_RPC],
-          blockExplorerUrls: ["https://amoy.polygonscan.com"],
+          blockExplorerUrls: ["https://polygonscan.com"],
         }],
       });
     }

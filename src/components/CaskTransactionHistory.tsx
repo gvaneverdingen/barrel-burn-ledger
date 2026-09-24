@@ -163,7 +163,7 @@ const CaskTransactionHistory = ({ caskId }: CaskTransactionHistoryProps) => {
                 <div className="flex items-center gap-2 pt-2 border-t">
                   <span className="text-xs text-muted-foreground">Blockchain Tx:</span>
                   <a
-                    href={`https://amoy.polygonscan.com/tx/${tx.blockchain_transaction_hash}`}
+                    href={`https://polygonscan.com/tx/${tx.blockchain_transaction_hash}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs font-mono text-primary hover:underline flex items-center gap-1 truncate max-w-[280px]"

@@ -14,22 +14,23 @@ const ConfirmSchema = z.object({
 });
 
 const RPC_ENDPOINTS = [
-  "https://rpc-amoy.polygon.technology",
-  "https://polygon-amoy-bor-rpc.publicnode.com",
-  "https://polygon-amoy.drpc.org",
-];
+  Deno.env.get("POLYGON_RPC_URL"),
+  "https://polygon-rpc.com",
+  "https://polygon-bor-rpc.publicnode.com",
+  "https://polygon.drpc.org",
+].filter(Boolean) as string[];
 
 async function getProvider(): Promise<ethers.JsonRpcProvider> {
   for (const rpc of RPC_ENDPOINTS) {
     try {
-      const provider = new ethers.JsonRpcProvider(rpc, { chainId: 80002, name: "amoy" });
+      const provider = new ethers.JsonRpcProvider(rpc, { chainId: 137, name: "matic" });
       await provider.getBlockNumber();
       return provider;
     } catch (_e) { /* try next */ }
   }
   const customRpc = Deno.env.get("POLYGON_RPC_URL");
   if (customRpc) {
-    return new ethers.JsonRpcProvider(customRpc, { chainId: 80002, name: "amoy" });
+    return new ethers.JsonRpcProvider(customRpc, { chainId: 137, name: "matic" });
   }
   throw new Error("All RPC endpoints failed");
 }
