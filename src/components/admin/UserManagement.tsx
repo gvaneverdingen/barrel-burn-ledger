@@ -29,14 +29,24 @@ export function UserManagement({ onUpdate }: UserManagementProps) {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select(`
-          *,
-          user_roles (role)
-        `);
+      // user_roles references auth.users, so it cannot be embedded from profiles
+      const [{ data: profiles }, { data: roles }] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id, email, first_name, last_name, company_name, verification_status, created_at'),
+        supabase.from('user_roles').select('user_id, role'),
+      ]);
 
-      setUsers(profiles || []);
+      const rolesByUser = new Map<string, { role: string }[]>();
+      (roles || []).forEach((r: any) => {
+        const list = rolesByUser.get(r.user_id) || [];
+        list.push({ role: r.role });
+        rolesByUser.set(r.user_id, list);
+      });
+
+      setUsers(
+        (profiles || []).map((p: any) => ({ ...p, user_roles: rolesByUser.get(p.id) || [] }))
+      );
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
