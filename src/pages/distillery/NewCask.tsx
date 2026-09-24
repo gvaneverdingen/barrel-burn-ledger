@@ -135,7 +135,9 @@ const NewCask = () => {
           tasting_notes: formData.tasting_notes || null,
           quality_grade: formData.quality_grade || null,
           expected_maturation_years: parseInt(formData.expected_maturation_years) || null,
-          available_for_sale: formData.available_for_sale,
+          // Casks are always created off-market: the blockchain record must exist
+          // before a cask can be listed. We switch it on after a successful mint.
+          available_for_sale: false,
           last_gauging_date: formData.last_gauging_date || null,
           ...buildAdvancedSpecsPayload(advancedSpecs),
         })
@@ -157,13 +159,26 @@ const NewCask = () => {
 
         if (mintError || !mintResult?.success) {
           console.error('Auto-mint failed:', mintError || mintResult?.error);
-          toast.error('Cask created but NFT minting failed. You can mint it later from the cask details page.');
+          toast.error('Cask saved, but the blockchain record failed. It stays off the marketplace until it is recorded — retry from the cask page.');
         } else {
-          toast.success(`NFT minted! Token #${mintResult.tokenId} on Polygon.`);
+          toast.success(`Recorded on the blockchain (token #${mintResult.tokenId}).`);
+
+          if (formData.available_for_sale) {
+            const { error: listError } = await supabase
+              .from('casks')
+              .update({ available_for_sale: true })
+              .eq('id', data.id);
+            if (listError) {
+              console.error('Listing failed:', listError);
+              toast.error('Cask recorded, but listing it failed. You can list it from Manage Casks.');
+            } else {
+              toast.success('Cask is now live on the marketplace.');
+            }
+          }
         }
       } catch (mintErr) {
         console.error('Auto-mint error:', mintErr);
-        toast.error('Cask created but NFT minting failed. You can retry from the cask details page.');
+        toast.error('Cask saved, but the blockchain record failed. You can retry from the cask page.');
       }
 
       navigate('/distillery/casks');
@@ -423,7 +438,10 @@ const NewCask = () => {
                     Available for Sale
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    Make this cask visible in the marketplace
+                    Make this cask visible in the marketplace. Every cask is first
+                    recorded on the blockchain — it only goes live once that record
+                    succeeds. If it fails, the cask is saved and you can retry from
+                    its cask page.
                   </p>
                 </div>
                 <Switch

@@ -145,8 +145,9 @@ const CaskAdvancedSpecsFields = ({ value, onChange }: Props) => {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Char Level (1–4) *</Label>
+          <Label htmlFor="char_level">Char Level (1–4) *</Label>
           <Input
+            id="char_level"
             type="number"
             min={1}
             max={4}
