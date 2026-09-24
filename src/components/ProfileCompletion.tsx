@@ -18,6 +18,7 @@ const ProfileCompletion = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [dobOpen, setDobOpen] = useState(false);
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
