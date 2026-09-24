@@ -124,22 +124,6 @@ const ConsumerJourney = () => {
         setWallets(walletsData || []);
       }
 
-      // Mock verification documents (would need to create this table)
-      setVerificationDocs([
-        {
-          id: '1',
-          document_type: 'government_id',
-          status: 'approved',
-          uploaded_at: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          document_type: 'proof_of_address',
-          status: 'pending',
-          uploaded_at: new Date().toISOString(),
-        }
-      ]);
-
       // Mock bank accounts (would need to create this table)
       setBankAccounts([]);
     } catch (error) {
@@ -232,17 +216,7 @@ const ConsumerJourney = () => {
     }
   };
 
-  const getVerificationProgress = () => {
-    const totalSteps = 4; // Profile, Identity, Address, Selfie
-    let completedSteps = 0;
-    
-    if (profile?.first_name && profile?.last_name) completedSteps++;
-    if (verificationDocs.some(doc => doc.document_type === 'government_id' && doc.status === 'approved')) completedSteps++;
-    if (verificationDocs.some(doc => doc.document_type === 'proof_of_address' && doc.status === 'approved')) completedSteps++;
-    if (verificationDocs.some(doc => doc.document_type === 'selfie' && doc.status === 'approved')) completedSteps++;
-    
-    return (completedSteps / totalSteps) * 100;
-  };
+  const getVerificationProgress = () => (profile?.verification_status === 'verified' ? 100 : profile?.verification_status === 'pending' ? 50 : 0);
 
   const getDocumentStatus = (docType: string) => {
     const doc = verificationDocs.find(d => d.document_type === docType);
