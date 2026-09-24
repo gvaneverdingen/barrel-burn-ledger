@@ -68,6 +68,7 @@ export const PaymentMethodDialog = ({
   const [txDetails, setTxDetails] = useState<any>(null);
   const [approvalRequired, setApprovalRequired] = useState<any>(null);
   const providerRef = useRef<Eip1193Provider | null>(null);
+  const [kycStatus, setKycStatus] = useState<string>("loading");
 
   const resetDialog = () => {
     setSelectedMethod(null);
@@ -86,6 +87,16 @@ export const PaymentMethodDialog = ({
       onStripeCheckout();
     } else {
       setStep("wallet");
+      setKycStatus("loading");
+      supabase.auth.getUser().then(async ({ data }) => {
+        if (!data.user) return setKycStatus("not signed in");
+        const { data: p } = await supabase
+          .from("profiles")
+          .select("verification_status")
+          .eq("id", data.user.id)
+          .maybeSingle();
+        setKycStatus(p?.verification_status || "pending");
+      });
     }
   };
 
@@ -258,9 +269,32 @@ export const PaymentMethodDialog = ({
           </div>
         )}
 
-        {step === "wallet" && (
+        {step === "wallet" && kycStatus !== "verified" && (
+          <div className="space-y-3" role="alert">
+            <div className="flex gap-2 rounded-md border border-primary/40 bg-primary/10 p-3 text-sm">
+              <Shield className="h-4 w-4 mt-0.5 text-primary shrink-0" />
+              <div>
+                <p className="font-medium">Identity verification (KYC) required</p>
+                <p className="text-muted-foreground mt-1">
+                  Connecting a wallet doesn't replace identity checks. To comply with anti-money-laundering rules,
+                  every buyer must complete KYC before paying with USDC or USDT.
+                  {kycStatus === "loading" ? " Checking your status…" : ` Current status: ${kycStatus}.`}
+                </p>
+              </div>
+            </div>
+            <Button className="w-full" onClick={() => { window.location.href = "/consumer-journey"; }}>
+              Complete verification
+            </Button>
+            <Button variant="outline" className="w-full" onClick={() => setStep("method")}>
+              Back to payment methods
+            </Button>
+          </div>
+        )}
+
+        {step === "wallet" && kycStatus === "verified" && (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">Choose how to connect your wallet:</p>
+
 
             <Card
               role="button"
