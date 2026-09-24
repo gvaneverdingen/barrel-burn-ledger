@@ -10,6 +10,7 @@ import { OrdersManagement } from "@/components/admin/OrdersManagement";
 import DistilleryVerificationManagement from "@/components/admin/DistilleryVerificationManagement";
 import WarehouseVerificationManagement from "@/components/admin/WarehouseVerificationManagement";
 import { ReviewModeration } from "@/components/admin/ReviewModeration";
+import { KycReview } from "@/components/admin/KycReview";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AdminDashboard() {
@@ -108,8 +109,9 @@ export default function AdminDashboard() {
       <MetricsCards metrics={metrics} loading={loading} />
 
       <Tabs defaultValue="users" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-6 lg:w-auto">
+        <TabsList className="grid w-full grid-cols-7 lg:w-auto">
           <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="kyc">KYC</TabsTrigger>
           <TabsTrigger value="distilleries">Distilleries</TabsTrigger>
           <TabsTrigger value="warehouses">Warehouses</TabsTrigger>
           <TabsTrigger value="listings">Listings</TabsTrigger>
@@ -119,6 +121,10 @@ export default function AdminDashboard() {
 
         <TabsContent value="users" className="space-y-4">
           <UserManagement onUpdate={fetchMetrics} />
+        </TabsContent>
+
+        <TabsContent value="kyc" className="space-y-4">
+          <KycReview />
         </TabsContent>
 
         <TabsContent value="distilleries" className="space-y-4">
