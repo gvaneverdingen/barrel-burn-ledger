@@ -278,12 +278,12 @@ const Auth = () => {
                         </DialogContent>
                       </Dialog>
                     </div>
-                    <Input
+                    <PasswordInput
                       id="signin-password"
                       name="password"
-                      type="password"
                       required
                       placeholder="••••••••"
+                      autoComplete="current-password"
                     />
                   </div>
                 </CardContent>
