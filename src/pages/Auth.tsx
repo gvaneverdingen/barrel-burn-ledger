@@ -15,6 +15,7 @@ import WalletConnect from '@/components/WalletConnect';
 import PasswordStrengthIndicator from '@/components/PasswordStrengthIndicator';
 import { validatePasswordStrength } from '@/utils/passwordValidation';
 import { authRateLimiter } from '@/utils/rateLimiting';
+import PasswordInput from '@/components/PasswordInput';
 import { supabase } from '@/integrations/supabase/client';
 
 const Auth = () => {
