@@ -866,6 +866,89 @@ export type Database = {
         }
         Relationships: []
       }
+      kyc_submissions: {
+        Row: {
+          address_line: string
+          city: string
+          country: string
+          created_at: string
+          date_of_birth: string
+          id: string
+          id_back_path: string | null
+          id_document_number: string
+          id_document_type: string
+          id_front_path: string
+          legal_first_name: string
+          legal_last_name: string
+          nationality: string
+          postal_code: string
+          proof_of_address_path: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reviewer_notes: string | null
+          selfie_path: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address_line: string
+          city: string
+          country: string
+          created_at?: string
+          date_of_birth: string
+          id?: string
+          id_back_path?: string | null
+          id_document_number: string
+          id_document_type: string
+          id_front_path: string
+          legal_first_name: string
+          legal_last_name: string
+          nationality: string
+          postal_code: string
+          proof_of_address_path: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_notes?: string | null
+          selfie_path: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address_line?: string
+          city?: string
+          country?: string
+          created_at?: string
+          date_of_birth?: string
+          id?: string
+          id_back_path?: string | null
+          id_document_number?: string
+          id_document_type?: string
+          id_front_path?: string
+          legal_first_name?: string
+          legal_last_name?: string
+          nationality?: string
+          postal_code?: string
+          proof_of_address_path?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_notes?: string | null
+          selfie_path?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kyc_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string | null
@@ -1604,6 +1687,10 @@ export type Database = {
         Returns: boolean
       }
       owns_warehouse: { Args: { _warehouse_id: string }; Returns: boolean }
+      review_kyc_submission: {
+        Args: { _approve: boolean; _notes?: string; _submission_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       cask_fill_generation:
