@@ -999,9 +999,9 @@ const CaskDetails = () => {
               <CardHeader>
                 <div className="flex justify-between items-start">
                    <div>
-                     <CardTitle className="text-3xl font-bold text-primary">
+                     <h1 className="text-3xl font-bold leading-none tracking-tight text-primary">
                        {cask.spirit_name}
-                     </CardTitle>
+                     </h1>
                      <CardDescription className="flex items-center space-x-2 mt-2">
                        <MapPin className="h-4 w-4" />
                         <Link to={`/distillery/${cask.distillery?.id}`} className="hover:text-primary hover:underline transition-colors">
