@@ -211,7 +211,7 @@ const Auth = () => {
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="signin">Sign In</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            <TabsTrigger value="wallet">Magic Wallet</TabsTrigger>
+            <TabsTrigger value="wallet">WalletConnect</TabsTrigger>
           </TabsList>
 
           <TabsContent value="signin">
@@ -456,7 +456,7 @@ const Auth = () => {
               onConnect={(walletAddress, email) => {
                 toast({
                   title: "Wallet Connected",
-                  description: "Magic wallet connected successfully! You can now use blockchain features.",
+                  description: "Wallet connected via WalletConnect.",
                 });
               }}
             />
