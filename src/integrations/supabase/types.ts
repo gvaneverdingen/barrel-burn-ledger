@@ -299,7 +299,10 @@ export type Database = {
           listing_date: string
           notes: string | null
           ownership_id: string
+          reserved_for: string | null
+          reserved_price: number | null
           seller_id: string
+          seller_wallet: string | null
           sold_at: string | null
           sold_to: string | null
           status: string
@@ -319,7 +322,10 @@ export type Database = {
           listing_date?: string
           notes?: string | null
           ownership_id: string
+          reserved_for?: string | null
+          reserved_price?: number | null
           seller_id: string
+          seller_wallet?: string | null
           sold_at?: string | null
           sold_to?: string | null
           status?: string
@@ -339,7 +345,10 @@ export type Database = {
           listing_date?: string
           notes?: string | null
           ownership_id?: string
+          reserved_for?: string | null
+          reserved_price?: number | null
           seller_id?: string
+          seller_wallet?: string | null
           sold_at?: string | null
           sold_to?: string | null
           status?: string
@@ -367,6 +376,13 @@ export type Database = {
             columns: ["ownership_id"]
             isOneToOne: false
             referencedRelation: "cask_ownership"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cask_sales_reserved_for_fkey"
+            columns: ["reserved_for"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -1683,6 +1699,15 @@ export type Database = {
     Functions: {
       can_manage_cask: { Args: { _cask_id: string }; Returns: boolean }
       can_view_cask: { Args: { _cask_id: string }; Returns: boolean }
+      complete_resale_crypto: {
+        Args: {
+          _amount: number
+          _buyer: string
+          _sale_id: string
+          _tx_hash: string
+        }
+        Returns: string
+      }
       confirm_resale_sold: {
         Args: { _buyer_email: string; _final_price: number; _sale_id: string }
         Returns: undefined
@@ -1703,6 +1728,17 @@ export type Database = {
       get_my_distillery_license: {
         Args: { _distillery_id: string }
         Returns: string
+      }
+      get_my_resale_payment_requests: {
+        Args: never
+        Returns: {
+          cask_id: string
+          cask_number: string
+          price: number
+          sale_id: string
+          seller_wallet: string
+          spirit_name: string
+        }[]
       }
       has_role: {
         Args: {
@@ -1730,6 +1766,15 @@ export type Database = {
         Returns: boolean
       }
       owns_warehouse: { Args: { _warehouse_id: string }; Returns: boolean }
+      request_resale_crypto_payment: {
+        Args: {
+          _buyer_email: string
+          _price: number
+          _sale_id: string
+          _wallet: string
+        }
+        Returns: undefined
+      }
       review_kyc_submission: {
         Args: { _approve: boolean; _notes?: string; _submission_id: string }
         Returns: undefined
