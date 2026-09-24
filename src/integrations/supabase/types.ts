@@ -380,6 +380,7 @@ export type Database = {
       }
       cask_transfers: {
         Row: {
+          blockchain_tx_hash: string | null
           cask_id: string
           created_at: string
           created_by: string | null
@@ -398,6 +399,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          blockchain_tx_hash?: string | null
           cask_id: string
           created_at?: string
           created_by?: string | null
@@ -416,6 +418,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          blockchain_tx_hash?: string | null
           cask_id?: string
           created_at?: string
           created_by?: string | null
