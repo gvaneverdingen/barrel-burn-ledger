@@ -704,6 +704,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "casks_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "casks_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "casks_wowgr_holder_warehouse_id_fkey"
             columns: ["wowgr_holder_warehouse_id"]
             isOneToOne: false
