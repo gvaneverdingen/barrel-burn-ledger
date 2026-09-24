@@ -104,7 +104,7 @@ const DistilleryOnboarding = () => {
           website: formData.website || null,
           verified: false, // Start as unverified
         })
-        .select()
+        .select('id')
         .single();
 
       if (distilleryError) throw distilleryError;
