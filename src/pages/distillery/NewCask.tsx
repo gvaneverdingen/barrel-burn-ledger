@@ -438,7 +438,10 @@ const NewCask = () => {
                     Available for Sale
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    Make this cask visible in the marketplace
+                    Make this cask visible in the marketplace. Every cask is first
+                    recorded on the blockchain — it only goes live once that record
+                    succeeds. If it fails, the cask is saved and you can retry from
+                    its cask page.
                   </p>
                 </div>
                 <Switch
