@@ -117,6 +117,20 @@ serve(async (req) => {
 
     const { saleId, paymentMethod, walletAddress } = parsed.data;
 
+    // KYC is mandatory for wallet (crypto) purchases — connecting a wallet does not replace identity verification
+    const { data: buyerProfile } = await supabaseService
+      .from("profiles")
+      .select("verification_status")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (buyerProfile?.verification_status !== "verified") {
+      return new Response(JSON.stringify({ error: "KYC_REQUIRED: Identity verification must be completed before paying with a wallet." }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+
     // Get sale details
     const { data: sale, error: saleError } = await supabaseService
       .from("cask_sales")
