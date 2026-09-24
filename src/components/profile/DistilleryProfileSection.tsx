@@ -62,7 +62,9 @@ export const DistilleryProfileSection: React.FC<Props> = ({ userId, email }) => 
     if (error) {
       toast({ title: 'Error', description: 'Failed to load distillery.', variant: 'destructive' });
     } else if (data) {
-      const row = data as unknown as DistilleryRow;
+      // License number is private: read it via an owner-only function
+      const { data: lic } = await (supabase.rpc as any)('get_my_distillery_license', { _distillery_id: data.id });
+      const row = { ...(data as unknown as DistilleryRow), license_number: (lic as string | null) ?? null };
       setDistillery(row);
       setForm({
         name: row.name || '',
@@ -81,17 +83,22 @@ export const DistilleryProfileSection: React.FC<Props> = ({ userId, email }) => 
     if (!distillery) return;
     setIsSaving(true);
     const yearNum = form.established_year ? parseInt(form.established_year, 10) : null;
+    const updates: Record<string, unknown> = {
+      name: form.name.trim(),
+      location: form.location.trim() || null,
+      description: form.description.trim() || null,
+      website: form.website.trim() || null,
+      established_year: yearNum && !Number.isNaN(yearNum) ? yearNum : null,
+      logo_url: form.logo_url.trim() || null,
+    };
+    // Only write the license number when the user actually changed it (never blank it out implicitly)
+    const newLicense = form.license_number.trim();
+    if (newLicense && newLicense !== (distillery.license_number || '')) {
+      updates.license_number = newLicense;
+    }
     const { error } = await supabase
       .from('distilleries')
-      .update({
-        name: form.name.trim(),
-        location: form.location.trim() || null,
-        description: form.description.trim() || null,
-        website: form.website.trim() || null,
-        established_year: yearNum && !Number.isNaN(yearNum) ? yearNum : null,
-        license_number: form.license_number.trim() || null,
-        logo_url: form.logo_url.trim() || null,
-      })
+      .update(updates)
       .eq('id', distillery.id);
 
     setIsSaving(false);
