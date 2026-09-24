@@ -1709,6 +1709,14 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
+      list_verified_warehouses: {
+        Args: never
+        Returns: {
+          id: string
+          location: string
+          name: string
+        }[]
+      }
       owns_distillery: { Args: { _distillery_id: string }; Returns: boolean }
       owns_verified_distillery: {
         Args: { _distillery_id: string }
