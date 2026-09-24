@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { connectWallet, type Eip1193Provider } from "@/lib/walletProvider";
 import { FundWalletPanel } from "@/components/FundWalletPanel";
+import { KycForm } from "@/components/kyc/KycForm";
 
 type PaymentMethod = "stripe" | "usdc" | "usdt";
 type WalletSource = "magic" | "external" | "walletconnect";
