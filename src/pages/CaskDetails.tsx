@@ -469,7 +469,7 @@ const CaskDetails = () => {
           volume_for_sale_liters,
           notes,
           last_gauging_date,
-          profiles:profiles(first_name, last_name)
+          profiles:profiles!cask_sales_seller_id_fkey(first_name, last_name)
         `)
         .eq('status', 'active')
         .eq('cask_id', caskId)
