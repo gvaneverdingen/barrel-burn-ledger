@@ -277,7 +277,7 @@ export const PaymentMethodDialog = ({
                 <p className="font-medium">Identity verification (KYC) required</p>
                 <p className="text-muted-foreground mt-1">
                   Connecting a wallet doesn't replace identity checks. To comply with anti-money-laundering rules,
-                  every buyer must complete KYC before paying with USDC or USDT.
+                  every buyer must complete KYC before paying with USDC.
                   {kycStatus === "loading" ? " Checking your status…" : ` Current status: ${kycStatus}.`}
                 </p>
               </div>

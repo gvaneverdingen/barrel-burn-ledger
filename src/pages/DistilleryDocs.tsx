@@ -181,7 +181,7 @@ const DistilleryDocs = () => {
                     <td className="p-2">1.5%</td><td className="p-2">—</td><td className="p-2 font-medium">~5%</td>
                   </tr>
                   <tr className="border-t border-border">
-                    <td className="p-2">Resale (USDC/USDT)</td><td className="p-2">2.5% + 3% on-chain</td>
+                    <td className="p-2">Resale (USDC)</td><td className="p-2">2.5% + 3% on-chain</td>
                     <td className="p-2">1.5%</td><td className="p-2">—</td><td className="p-2 font-medium">~8.5% + 3%</td>
                   </tr>
                 </tbody>

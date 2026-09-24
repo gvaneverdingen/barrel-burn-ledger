@@ -88,7 +88,7 @@ const ConsumerDocs = () => {
               <li><strong>Browse the marketplace.</strong> Filter by region, age, cask type or price.</li>
               <li><strong>Open the cask page.</strong> Read the distillery profile, gauging data and on-chain provenance link.</li>
               <li><strong>Choose your route:</strong> "Buy at asking price" for an immediate purchase, or "Make an offer" to negotiate.</li>
-              <li><strong>Pay securely.</strong> Card or bank transfer via Stripe; USDC/USDT on Polygon for crypto buyers.</li>
+              <li><strong>Pay securely.</strong> Card or bank transfer via Stripe; USDC on Polygon for crypto buyers.</li>
               <li><strong>Receive your certificate.</strong> Ownership transfers in your portfolio and on the warehouse record within minutes.</li>
             </ol>
             <div className="flex gap-2 pt-2">
