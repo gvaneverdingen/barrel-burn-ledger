@@ -21,7 +21,7 @@ export const SignInPrompt = ({
           <div className="mx-auto rounded-full bg-primary/10 p-4 w-fit">
             <Lock className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="text-xl luxury-text-gradient">{title}</CardTitle>
+          <CardTitle asChild className="text-xl luxury-text-gradient"><h1>{title}</h1></CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
