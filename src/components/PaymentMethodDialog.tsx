@@ -9,6 +9,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { connectWallet, type Eip1193Provider } from "@/lib/walletProvider";
+import { FundWalletPanel } from "@/components/FundWalletPanel";
 
 type PaymentMethod = "stripe" | "usdc" | "usdt";
 type WalletSource = "magic" | "external" | "walletconnect";
@@ -111,20 +112,25 @@ export const PaymentMethodDialog = ({
       }
 
       // Connect the chosen wallet (browser extension or WalletConnect QR)
-      let activeWallet = walletAddress;
       let provider = providerRef.current;
+      let activeWallet: string | null | undefined = null;
       if (!provider) {
         try {
           const conn = await connectWallet(walletSource);
           provider = conn.provider;
           providerRef.current = provider;
-          if (!activeWallet) activeWallet = conn.address;
+          activeWallet = conn.address;
         } catch (e: any) {
           toast.error(e?.message || "Could not connect wallet");
           setProcessing(false);
           return;
         }
+      } else {
+        // Pay from the wallet the buyer actually connected (and funded)
+        const accts: string[] = await provider.request({ method: "eth_accounts" });
+        activeWallet = accts?.[0];
       }
+      if (!activeWallet) activeWallet = walletAddress;
 
       // Call the blockchain-purchase edge function
       const { data, error } = await supabase.functions.invoke("blockchain-purchase", {
@@ -391,6 +397,20 @@ export const PaymentMethodDialog = ({
                 </Tooltip>
               </div>
             </TooltipProvider>
+
+            <FundWalletPanel
+              requiredUsd={totalPrice}
+              getAddress={async () => {
+                try {
+                  const conn = await connectWallet(walletSource === "walletconnect" ? "walletconnect" : "external");
+                  providerRef.current = conn.provider;
+                  return conn.address;
+                } catch (e: any) {
+                  toast.error(e?.message || "Could not connect wallet");
+                  return null;
+                }
+              }}
+            />
 
             <div className="flex gap-2">
               <Button variant="outline" className="flex-1" onClick={() => setStep("wallet")} disabled={processing}>
