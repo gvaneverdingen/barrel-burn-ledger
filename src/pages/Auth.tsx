@@ -15,6 +15,7 @@ import WalletConnect from '@/components/WalletConnect';
 import PasswordStrengthIndicator from '@/components/PasswordStrengthIndicator';
 import { validatePasswordStrength } from '@/utils/passwordValidation';
 import { authRateLimiter } from '@/utils/rateLimiting';
+import PasswordInput from '@/components/PasswordInput';
 import { supabase } from '@/integrations/supabase/client';
 
 const Auth = () => {
@@ -277,12 +278,12 @@ const Auth = () => {
                         </DialogContent>
                       </Dialog>
                     </div>
-                    <Input
+                    <PasswordInput
                       id="signin-password"
                       name="password"
-                      type="password"
                       required
                       placeholder="••••••••"
+                      autoComplete="current-password"
                     />
                   </div>
                 </CardContent>
@@ -420,13 +421,13 @@ const Auth = () => {
 
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Password</Label>
-                    <Input
+                    <PasswordInput
                       id="signup-password"
                       name="password"
-                      type="password"
                       required
                       placeholder="••••••••"
                       minLength={8}
+                      autoComplete="new-password"
                       value={signUpPassword}
                       onChange={(e) => {
                         setSignUpPassword(e.target.value);
