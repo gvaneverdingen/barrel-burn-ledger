@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, CreditCard, Coins, Wallet, ArrowRight, Shield, Info, CheckCircle, AlertCircle } from "lucide-react";
+import { Loader2, CreditCard, Coins, Wallet, ArrowRight, Shield, Info, CheckCircle, AlertCircle, QrCode } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { connectWallet, type Eip1193Provider } from "@/lib/walletProvider";
 
 type PaymentMethod = "stripe" | "usdc" | "usdt";
-type WalletSource = "magic" | "external";
+type WalletSource = "magic" | "external" | "walletconnect";
 
 interface PaymentMethodDialogProps {
   open: boolean;
@@ -96,43 +97,23 @@ export const PaymentMethodDialog = ({
     setProcessing(true);
 
     try {
-      // Determine wallet address
+      if (walletSource === "magic") {
+        toast.error("Magic wallet blockchain payments coming soon. Please use an external wallet or Stripe.");
+        setProcessing(false);
+        return;
+      }
+
+      // Connect the chosen wallet (browser extension or WalletConnect QR)
       let activeWallet = walletAddress;
-
-      if (!activeWallet) {
-        if (walletSource === "external") {
-          // Request external wallet connection
-          if (typeof window !== "undefined" && (window as any).ethereum) {
-            const accounts = await (window as any).ethereum.request({ method: "eth_requestAccounts" });
-            activeWallet = accounts[0];
-
-            // Switch to Polygon Amoy
-            try {
-              await (window as any).ethereum.request({
-                method: "wallet_switchEthereumChain",
-                params: [{ chainId: "0x13882" }], // 80002 in hex
-              });
-            } catch (switchError: any) {
-              if (switchError.code === 4902) {
-                await (window as any).ethereum.request({
-                  method: "wallet_addEthereumChain",
-                  params: [{
-                    chainId: "0x13882",
-                    chainName: "Polygon Amoy Testnet",
-                    nativeCurrency: { name: "MATIC", symbol: "MATIC", decimals: 18 },
-                    rpcUrls: ["https://rpc-amoy.polygon.technology"],
-                    blockExplorerUrls: ["https://amoy.polygonscan.com"],
-                  }],
-                });
-              }
-            }
-          } else {
-            toast.error("No wallet detected. Please install MetaMask or use Magic wallet.");
-            setProcessing(false);
-            return;
-          }
-        } else {
-          toast.error("Magic wallet not connected. Please connect your wallet first.");
+      let provider = providerRef.current;
+      if (!provider) {
+        try {
+          const conn = await connectWallet(walletSource);
+          provider = conn.provider;
+          providerRef.current = provider;
+          if (!activeWallet) activeWallet = conn.address;
+        } catch (e: any) {
+          toast.error(e?.message || "Could not connect wallet");
           setProcessing(false);
           return;
         }
@@ -160,13 +141,12 @@ export const PaymentMethodDialog = ({
 
       setTxDetails(data);
 
-      // Now execute the transaction from the user's wallet
+      // Execute the transaction from the user's wallet
       let txHash: string;
-
-      if (walletSource === "external" && (window as any).ethereum) {
+      {
         const { ethers } = await import("https://esm.sh/ethers@6.13.4" as any);
-        const provider = new ethers.BrowserProvider((window as any).ethereum);
-        const signer = await provider.getSigner();
+        const bp = new ethers.BrowserProvider(provider);
+        const signer = await bp.getSigner();
 
         if (data.txType === "erc20_marketplace") {
           const contract = new ethers.Contract(data.to, data.abi, signer);
@@ -183,12 +163,6 @@ export const PaymentMethodDialog = ({
         } else {
           throw new Error("Unknown transaction type");
         }
-      } else {
-        // Magic wallet — we'd use Magic SDK provider here
-        // For now, show instructions
-        toast.error("Magic wallet blockchain payments coming soon. Please use an external wallet or Stripe.");
-        setProcessing(false);
-        return;
       }
 
       // Confirm the purchase with the backend
