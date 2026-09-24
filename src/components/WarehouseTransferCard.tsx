@@ -24,7 +24,10 @@ export default function WarehouseTransferCard({ caskId, currentWarehouseId, onMo
     supabase.from("warehouses").select("id, name, location").eq("verified", true).order("name")
       .then(({ data }) => setWarehouses((data as Wh[]) || []));
   }, []);
-  useEffect(() => setCurrent(currentWarehouseId), [currentWarehouseId]);
+  useEffect(() => {
+    if (currentWarehouseId !== undefined) { setCurrent(currentWarehouseId); return; }
+    supabase.from("casks").select("warehouse_id").eq("id", caskId).maybeSingle().then(({ data }) => setCurrent((data as any)?.warehouse_id ?? null));
+  }, [caskId, currentWarehouseId]);
 
   const currentName = warehouses.find((w) => w.id === current)?.name;
   const options = warehouses.filter((w) => w.id !== current);

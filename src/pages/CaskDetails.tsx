@@ -1160,7 +1160,7 @@ const CaskDetails = () => {
             {/* Transaction History */}
             <ResaleContact caskId={cask.id} />
             {canManageImages && (
-              <WarehouseTransferCard caskId={cask.id} currentWarehouseId={(cask as any).warehouse_id} onMoved={() => setHistoryKey((k) => k + 1)} />
+              <WarehouseTransferCard caskId={cask.id} onMoved={() => setHistoryKey((k) => k + 1)} />
             )}
             <CaskProvenanceTimeline key={historyKey} caskId={cask.id} />
             <CaskTransactionHistory caskId={cask.id} />
