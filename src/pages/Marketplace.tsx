@@ -210,7 +210,7 @@ const Marketplace = () => {
               capacity_liters
             )
           ),
-          profiles (
+          profiles!cask_sales_seller_id_fkey (
             first_name,
             last_name
           )
