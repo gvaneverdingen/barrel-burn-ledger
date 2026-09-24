@@ -32,6 +32,7 @@ import { SellCaskDialog } from "@/components/SellCaskDialog";
 import { PaymentMethodDialog } from "@/components/PaymentMethodDialog";
 import CaskTransactionHistory from "@/components/CaskTransactionHistory";
 import CaskProvenanceTimeline from "@/components/CaskProvenanceTimeline";
+import WarehouseTransferCard from "@/components/WarehouseTransferCard";
 import ResaleContact from "@/components/ResaleContact";
 import { ShareCaskButton } from "@/components/ShareCaskButton";
 import { addRecentlyViewed } from "@/components/RecentlyViewedCasks";
@@ -105,6 +106,7 @@ const CaskDetails = () => {
   const [offerDialogOpen, setOfferDialogOpen] = useState(false);
   const [offers, setOffers] = useState<any[]>([]);
   const [isOwner, setIsOwner] = useState(false);
+  const [historyKey, setHistoryKey] = useState(0);
   const [sellerId, setSellerId] = useState<string | null>(null);
   const [isMintingNft, setIsMintingNft] = useState(false);
   const [adminViewAs, setAdminViewAs] = useState<'default' | 'distillery' | 'owner'>('default');
@@ -1157,7 +1159,10 @@ const CaskDetails = () => {
 
             {/* Transaction History */}
             <ResaleContact caskId={cask.id} />
-            <CaskProvenanceTimeline caskId={cask.id} />
+            {canManageImages && (
+              <WarehouseTransferCard caskId={cask.id} currentWarehouseId={(cask as any).warehouse_id} onMoved={() => setHistoryKey((k) => k + 1)} />
+            )}
+            <CaskProvenanceTimeline key={historyKey} caskId={cask.id} />
             <CaskTransactionHistory caskId={cask.id} />
 
             {/* Blockchain ID */}
