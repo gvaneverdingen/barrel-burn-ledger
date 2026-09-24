@@ -100,12 +100,15 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
         <p className="text-xs text-muted-foreground">
           Works with Trust Wallet, Rainbow, MetaMask Mobile, Ledger Live and 300+ others.
         </p>
-        {hasInjectedWallet() && (
-          <Button variant="outline" className="w-full" onClick={() => handleConnect('external')} disabled={!!busy}>
-            <Wallet className="mr-2 h-4 w-4" />
-            {busy === 'external' ? 'Connecting…' : 'Use Browser Wallet'}
-          </Button>
-        )}
+        <Button variant="outline" className="w-full" onClick={() => handleConnect('external')} disabled={!!busy}>
+          <Wallet className="mr-2 h-4 w-4" />
+          {busy === 'external' ? 'Connecting…' : 'Use Browser Wallet (Extension)'}
+        </Button>
+        <p className="text-xs text-muted-foreground">
+          {hasInjectedWallet()
+            ? 'A browser extension like MetaMask, Rabby, Brave or Coinbase Wallet was detected.'
+            : 'No wallet extension detected — install MetaMask (metamask.io) and this button will connect to it.'}
+        </p>
         <div className="flex gap-2 rounded-md border bg-muted/40 p-3 text-xs text-muted-foreground">
           <Info className="h-4 w-4 shrink-0" />
           <span>A wallet is only needed for crypto payments. You still need an ARIGI account (Sign In / Sign Up) to buy casks. <Badge variant="secondary" className="ml-1">Polygon</Badge></span>
