@@ -1568,6 +1568,10 @@ export type Database = {
     Functions: {
       can_manage_cask: { Args: { _cask_id: string }; Returns: boolean }
       can_view_cask: { Args: { _cask_id: string }; Returns: boolean }
+      get_my_distillery_license: {
+        Args: { _distillery_id: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["user_role"]
