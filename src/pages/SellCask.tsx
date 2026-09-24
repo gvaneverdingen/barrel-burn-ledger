@@ -13,14 +13,15 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SignInPrompt } from "@/components/SignInPrompt";
+import ResalePaymentRequests from "@/components/ResalePaymentRequests";
 import { toast } from "sonner";
-import { Info, Loader2, Store, CheckCircle, ShieldAlert } from "lucide-react";
+import { Info, Loader2, Store, CheckCircle, ShieldAlert, Wallet } from "lucide-react";
 
 interface Owned {
   ownershipId: string;
   volume: number;
   cask: { id: string; spirit_name: string; cask_number: string; nft_token_id: number | null; total_price: number | null };
-  listing: { id: string; total_asking_price: number; status: string; contact_email: string | null; contact_phone: string | null } | null;
+  listing: { id: string; total_asking_price: number; status: string; contact_email: string | null; contact_phone: string | null; seller_wallet?: string | null; reserved_for?: string | null; reserved_price?: number | null } | null;
 }
 
 const listingSchema = z.object({
@@ -99,6 +100,46 @@ function ListForm({ item, userEmail, onDone }: { item: Owned; userEmail: string;
   );
 }
 
+function CryptoRequest({ item, onDone }: { item: Owned; onDone: () => void }) {
+  const l = item.listing!;
+  const [buyer, setBuyer] = useState("");
+  const [price, setPrice] = useState(String(l.reserved_price ?? l.total_asking_price));
+  const [wallet, setWallet] = useState(l.seller_wallet || "");
+  const [busy, setBusy] = useState(false);
+
+  const send = async () => {
+    const e = z.string().trim().email().safeParse(buyer);
+    if (!e.success) return toast.error("Enter the buyer's ARIGI account email");
+    if (!(Number(price) > 0)) return toast.error("Enter the agreed price in USDC");
+    if (!/^0x[0-9a-fA-F]{40}$/.test(wallet.trim())) return toast.error("Enter your Polygon wallet address (0x…, 42 characters)");
+    setBusy(true);
+    const { error } = await (supabase.rpc as any)("request_resale_crypto_payment", { _sale_id: l.id, _buyer_email: e.data, _price: Number(price), _wallet: wallet.trim() });
+    setBusy(false);
+    if (error) return toast.error(error.message);
+    toast.success("Payment request sent — the buyer can now pay from their wallet");
+    onDone();
+  };
+
+  return (
+    <div className="rounded-md border border-primary/30 p-3 space-y-3">
+      <p className="text-sm font-medium flex items-center gap-1">
+        <Wallet className="h-4 w-4 text-primary" /> Get paid in USDC (crypto checkout)
+        <TooltipProvider><Tooltip><TooltipTrigger asChild><Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" /></TooltipTrigger>
+          <TooltipContent className="max-w-[280px] text-xs">The buyer pays native USDC on Polygon straight into your wallet. ARIGI never holds the funds. As soon as the payment is confirmed on the blockchain, the cask moves to the buyer automatically, and the payment is shown as an on-chain receipt in the ownership history. The buyer must have passed identity verification. Double-check your wallet address, because blockchain payments can't be reversed.</TooltipContent></Tooltip></TooltipProvider>
+      </p>
+      {l.reserved_for && l.seller_wallet && (
+        <p className="text-xs text-muted-foreground">Payment request sent for {Number(l.reserved_price).toLocaleString()} USDC to wallet {l.seller_wallet}. Waiting for the buyer. Sending a new request replaces it.</p>
+      )}
+      <div className="grid gap-3 sm:grid-cols-3">
+        <div className="space-y-1"><Label htmlFor={`cbuyer-${item.cask.id}`}>Buyer's ARIGI email</Label><Input id={`cbuyer-${item.cask.id}`} type="email" value={buyer} onChange={(e) => setBuyer(e.target.value)} /></div>
+        <div className="space-y-1"><Label htmlFor={`cprice-${item.cask.id}`}>Agreed price (USDC)</Label><Input id={`cprice-${item.cask.id}`} type="number" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
+        <div className="space-y-1"><Label htmlFor={`cwallet-${item.cask.id}`}>Your Polygon wallet</Label><Input id={`cwallet-${item.cask.id}`} value={wallet} placeholder="0x…" onChange={(e) => setWallet(e.target.value)} /></div>
+      </div>
+      <Button variant="outline" onClick={send} disabled={busy}>{busy ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Wallet className="h-4 w-4 mr-2" />}Send payment request</Button>
+    </div>
+  );
+}
+
 function ConfirmSale({ item, onDone }: { item: Owned; onDone: () => void }) {
   const { formatPrice } = useCurrency();
   const [buyer, setBuyer] = useState("");
@@ -133,9 +174,10 @@ function ConfirmSale({ item, onDone }: { item: Owned; onDone: () => void }) {
         Listed at <span className="font-semibold text-foreground">{formatPrice(item.listing!.total_asking_price)}</span> · buyers contact you at {item.listing!.contact_email || "—"}
         {item.listing!.contact_phone ? ` / ${item.listing!.contact_phone}` : ""}
       </p>
+      <CryptoRequest item={item} onDone={onDone} />
       <div className="rounded-md border border-border p-3 space-y-3">
         <p className="text-sm font-medium flex items-center gap-1">
-          Agreed a sale with a buyer?
+          Paid another way? Confirm the sale manually
           <TooltipProvider><Tooltip><TooltipTrigger asChild><Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" /></TooltipTrigger>
             <TooltipContent className="max-w-[260px] text-xs">Confirm once the buyer has paid you. The cask moves to their ARIGI account, the listing is marked sold and the sale appears in the cask's ownership history.</TooltipContent></Tooltip></TooltipProvider>
         </p>
@@ -165,7 +207,7 @@ export default function SellCask() {
       .eq("is_active", true);
     const { data: sales } = await supabase
       .from("cask_sales")
-      .select("id, cask_id, total_asking_price, status, contact_email, contact_phone")
+      .select("id, cask_id, total_asking_price, status, contact_email, contact_phone, seller_wallet, reserved_for, reserved_price" as any)
       .eq("seller_id", user.id)
       .eq("status", "active");
     setItems(((own as any[]) || []).filter((o) => o.cask).map((o) => ({
@@ -186,6 +228,7 @@ export default function SellCask() {
         <h1 className="text-3xl font-serif font-bold">Resell a Cask</h1>
         <p className="text-muted-foreground">List a whole cask you own, share how buyers can reach you, and confirm the sale when it's agreed.</p>
       </div>
+      <ResalePaymentRequests />
       {!items ? (
         <Skeleton className="h-40 w-full" />
       ) : items.length === 0 ? (
