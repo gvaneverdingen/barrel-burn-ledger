@@ -135,7 +135,9 @@ const NewCask = () => {
           tasting_notes: formData.tasting_notes || null,
           quality_grade: formData.quality_grade || null,
           expected_maturation_years: parseInt(formData.expected_maturation_years) || null,
-          available_for_sale: formData.available_for_sale,
+          // Casks are always created off-market: the blockchain record must exist
+          // before a cask can be listed. We switch it on after a successful mint.
+          available_for_sale: false,
           last_gauging_date: formData.last_gauging_date || null,
           ...buildAdvancedSpecsPayload(advancedSpecs),
         })
