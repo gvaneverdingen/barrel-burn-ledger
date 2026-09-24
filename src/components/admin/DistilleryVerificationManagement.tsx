@@ -56,7 +56,8 @@ const DistilleryVerificationManagement = () => {
       const { data, error } = await supabase
         .from('distilleries')
         .select(`
-          *,
+          id, name, location, description, established_year, website,
+          verified, created_at, profile_id,
           profiles:profile_id (
             email,
             first_name,
@@ -66,7 +67,16 @@ const DistilleryVerificationManagement = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as Distillery[];
+
+      // license_number is column-protected; fetch it through the secure function
+      const rows = (data || []) as unknown as Distillery[];
+      const licenses = await Promise.all(
+        rows.map(async (d) => {
+          const { data: lic } = await supabase.rpc('get_my_distillery_license', { _distillery_id: d.id });
+          return lic as string | null;
+        })
+      );
+      return rows.map((d, i) => ({ ...d, license_number: licenses[i] })) as Distillery[];
     },
   });
 
