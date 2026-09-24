@@ -73,7 +73,8 @@ serve(async (req) => {
         distillery:distilleries!inner(
           id,
           name,
-          profile_id
+          profile_id,
+          wallet_address
         )
       `)
       .eq('id', caskId)
@@ -143,7 +144,8 @@ serve(async (req) => {
         volume: cask.current_volume_liters || 0,
         price: cask.total_price || 0,
         timestamp: Date.now(),
-        metadata: nftMetadata
+        metadata: nftMetadata,
+        distilleryWallet: (cask as any).distillery?.wallet_address || null
       })
     });
 
