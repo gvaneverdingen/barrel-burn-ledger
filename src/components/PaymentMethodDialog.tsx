@@ -112,20 +112,25 @@ export const PaymentMethodDialog = ({
       }
 
       // Connect the chosen wallet (browser extension or WalletConnect QR)
-      let activeWallet = walletAddress;
       let provider = providerRef.current;
+      let activeWallet: string | null | undefined = null;
       if (!provider) {
         try {
           const conn = await connectWallet(walletSource);
           provider = conn.provider;
           providerRef.current = provider;
-          if (!activeWallet) activeWallet = conn.address;
+          activeWallet = conn.address;
         } catch (e: any) {
           toast.error(e?.message || "Could not connect wallet");
           setProcessing(false);
           return;
         }
+      } else {
+        // Pay from the wallet the buyer actually connected (and funded)
+        const accts: string[] = await provider.request({ method: "eth_accounts" });
+        activeWallet = accts?.[0];
       }
+      if (!activeWallet) activeWallet = walletAddress;
 
       // Call the blockchain-purchase edge function
       const { data, error } = await supabase.functions.invoke("blockchain-purchase", {
