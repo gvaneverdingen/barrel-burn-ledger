@@ -18,6 +18,7 @@ const ProfileCompletion = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [dobOpen, setDobOpen] = useState(false);
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -295,7 +296,7 @@ const ProfileCompletion = () => {
               <Label>
                 Date of Birth <span className="text-red-500">*</span>
               </Label>
-              <Popover>
+              <Popover open={dobOpen} onOpenChange={setDobOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -316,7 +317,10 @@ const ProfileCompletion = () => {
                   <Calendar
                     mode="single"
                     selected={formData.date_of_birth}
-                    onSelect={(date) => setFormData(prev => ({ ...prev, date_of_birth: date }))}
+                    onSelect={(date) => {
+                      setFormData(prev => ({ ...prev, date_of_birth: date }));
+                      if (date) setDobOpen(false);
+                    }}
                     disabled={(date) =>
                       date > new Date() || date < new Date("1900-01-01")
                     }
