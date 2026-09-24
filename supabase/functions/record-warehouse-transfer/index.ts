@@ -57,23 +57,27 @@ Deno.serve(async (req) => {
     if (!allowed) return json({ error: "Only the cask's owner, distillery, warehouse or an admin can move it" }, 403);
 
     const admin = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    const { data: cask } = await admin.from("casks").select("id, cask_number, warehouse_id, nft_token_id").eq("id", caskId).maybeSingle();
+    const { data: cask } = await admin.from("casks").select("id, cask_number, nft_token_id").eq("id", caskId).maybeSingle();
     if (!cask) return json({ error: "Cask not found" }, 404);
-    if (cask.warehouse_id === toWarehouseId) return json({ error: "The cask is already in that warehouse" }, 400);
+    // Storage location = destination of the latest move (casks.warehouse_id means the listing holder, not storage)
+    const { data: lastMove } = await admin.from("cask_transfers").select("to_warehouse_id")
+      .eq("cask_id", caskId).eq("transfer_type", "warehouse_move").order("created_at", { ascending: false }).limit(1).maybeSingle();
+    const fromId = lastMove?.to_warehouse_id ?? null;
+    if (fromId === toWarehouseId) return json({ error: "The cask is already in that warehouse" }, 400);
     const { data: dest } = await admin.from("warehouses").select("id, name, verified").eq("id", toWarehouseId).maybeSingle();
     if (!dest?.verified) return json({ error: "Choose a verified warehouse" }, 400);
 
     const { data: transfer, error: insErr } = await admin.from("cask_transfers").insert({
       cask_id: caskId, transfer_type: "warehouse_move", transfer_date: transferDate,
-      from_warehouse_id: cask.warehouse_id, to_warehouse_id: toWarehouseId,
+      from_warehouse_id: fromId, to_warehouse_id: toWarehouseId,
       reason: reason || null, created_by: user.id,
     }).select("id, created_at").single();
     if (insErr) throw insErr;
-    const { error: upErr } = await admin.from("casks").update({ warehouse_id: toWarehouseId, warehouse_location: dest.name }).eq("id", caskId);
+    const { error: upErr } = await admin.from("casks").update({ warehouse_location: dest.name }).eq("id", caskId);
     if (upErr) throw upErr;
 
     const record = JSON.stringify({ transferId: transfer.id, caskId, cask: cask.cask_number, tokenId: cask.nft_token_id,
-      from: cask.warehouse_id, to: toWarehouseId, date: transferDate, by: user.id, at: transfer.created_at });
+      from: fromId, to: toWarehouseId, date: transferDate, by: user.id, at: transfer.created_at });
     const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(record));
     const fingerprint = "0x" + Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
 
