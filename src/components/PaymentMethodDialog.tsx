@@ -9,6 +9,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { connectWallet, type Eip1193Provider } from "@/lib/walletProvider";
+import { FundWalletPanel } from "@/components/FundWalletPanel";
 
 type PaymentMethod = "stripe" | "usdc" | "usdt";
 type WalletSource = "magic" | "external" | "walletconnect";
@@ -391,6 +392,20 @@ export const PaymentMethodDialog = ({
                 </Tooltip>
               </div>
             </TooltipProvider>
+
+            <FundWalletPanel
+              requiredUsd={totalPrice}
+              getAddress={async () => {
+                try {
+                  const conn = await connectWallet(walletSource === "walletconnect" ? "walletconnect" : "external");
+                  providerRef.current = conn.provider;
+                  return conn.address;
+                } catch (e: any) {
+                  toast.error(e?.message || "Could not connect wallet");
+                  return null;
+                }
+              }}
+            />
 
             <div className="flex gap-2">
               <Button variant="outline" className="flex-1" onClick={() => setStep("wallet")} disabled={processing}>
