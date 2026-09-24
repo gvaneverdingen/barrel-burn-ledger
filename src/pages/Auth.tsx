@@ -421,13 +421,13 @@ const Auth = () => {
 
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Password</Label>
-                    <Input
+                    <PasswordInput
                       id="signup-password"
                       name="password"
-                      type="password"
                       required
                       placeholder="••••••••"
                       minLength={8}
+                      autoComplete="new-password"
                       value={signUpPassword}
                       onChange={(e) => {
                         setSignUpPassword(e.target.value);
