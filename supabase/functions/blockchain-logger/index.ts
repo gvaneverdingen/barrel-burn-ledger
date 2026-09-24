@@ -41,6 +41,7 @@ interface BlockchainTransaction {
   timestamp: number;
   transactionId?: string;
   metadata?: any;
+  distilleryWallet?: string | null;
 }
 
 interface BlockchainResponse {
@@ -293,10 +294,13 @@ async function executePolygonTransaction(
       const ageYears = Math.min(255, Math.floor((Date.now() - distillationDate.getTime()) / (1000 * 60 * 60 * 24 * 365)));
       
       // Mint to the wallet address (server-side minting)
+      // Certificate goes to the distillery's own wallet when it has set one; platform pays the fee
+      const dw = transaction.distilleryWallet && /^0x[0-9a-fA-F]{40}$/.test(transaction.distilleryWallet)
+        ? ethers.getAddress(transaction.distilleryWallet) : null;
       const mintTx = await nftContract.mintCask(
-        wallet.address, // mint to platform wallet, can transfer later
+        dw ?? wallet.address,
         transaction.caskId,
-        wallet.address, // distillery address placeholder
+        dw ?? wallet.address,
         caskData.spirit_name,
         caskData.cask_number,
         Math.floor(caskData.current_volume_liters || transaction.volume),

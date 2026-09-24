@@ -807,6 +807,7 @@ export type Database = {
           stripe_onboarding_complete: boolean | null
           updated_at: string
           verified: boolean | null
+          wallet_address: string | null
           website: string | null
         }
         Insert: {
@@ -823,6 +824,7 @@ export type Database = {
           stripe_onboarding_complete?: boolean | null
           updated_at?: string
           verified?: boolean | null
+          wallet_address?: string | null
           website?: string | null
         }
         Update: {
@@ -839,6 +841,7 @@ export type Database = {
           stripe_onboarding_complete?: boolean | null
           updated_at?: string
           verified?: boolean | null
+          wallet_address?: string | null
           website?: string | null
         }
         Relationships: [
