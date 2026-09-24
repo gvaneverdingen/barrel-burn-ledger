@@ -281,9 +281,20 @@ export const PaymentMethodDialog = ({
                 </p>
               </div>
             </div>
-            <Button className="w-full" onClick={() => { window.location.href = "/consumer-journey"; }}>
-              Complete verification
-            </Button>
+            {kycStatus === "not signed in" ? (
+              <Button className="w-full" onClick={() => { window.location.href = "/auth"; }}>Sign in to verify</Button>
+            ) : kycStatus !== "loading" && (
+              <div className="max-h-[55vh] overflow-y-auto rounded-md border border-border p-3">
+                <KycForm
+                  onStatusChange={async () => {
+                    const { data } = await supabase.auth.getUser();
+                    if (!data.user) return;
+                    const { data: p } = await supabase.from("profiles").select("verification_status").eq("id", data.user.id).maybeSingle();
+                    setKycStatus(p?.verification_status || "pending");
+                  }}
+                />
+              </div>
+            )}
             <Button variant="outline" className="w-full" onClick={() => setStep("method")}>
               Back to payment methods
             </Button>
