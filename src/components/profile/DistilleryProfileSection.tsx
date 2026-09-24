@@ -17,6 +17,7 @@ interface DistilleryRow {
   location: string | null;
   description: string | null;
   website: string | null;
+  wallet_address?: string | null;
   established_year: number | null;
   license_number: string | null;
   logo_url: string | null;
@@ -41,6 +42,7 @@ export const DistilleryProfileSection: React.FC<Props> = ({ userId, email }) => 
     location: '',
     description: '',
     website: '',
+    wallet_address: '',
     established_year: '',
     license_number: '',
     logo_url: '',
@@ -55,7 +57,7 @@ export const DistilleryProfileSection: React.FC<Props> = ({ userId, email }) => 
     setLoading(true);
     const { data, error } = await supabase
       .from('distilleries')
-      .select('id, name, location, description, website, logo_url, established_year, verified, created_at, updated_at, profile_id')
+      .select('id, name, location, description, website, wallet_address, logo_url, established_year, verified, created_at, updated_at, profile_id')
       .eq('profile_id', userId)
       .maybeSingle();
 
@@ -71,6 +73,7 @@ export const DistilleryProfileSection: React.FC<Props> = ({ userId, email }) => 
         location: row.location || '',
         description: row.description || '',
         website: row.website || '',
+        wallet_address: (row as any).wallet_address || '',
         established_year: row.established_year ? String(row.established_year) : '',
         license_number: row.license_number || '',
         logo_url: data.logo_url || '',
@@ -88,9 +91,15 @@ export const DistilleryProfileSection: React.FC<Props> = ({ userId, email }) => 
       location: form.location.trim() || null,
       description: form.description.trim() || null,
       website: form.website.trim() || null,
+      wallet_address: form.wallet_address.trim() || null,
       established_year: yearNum && !Number.isNaN(yearNum) ? yearNum : null,
       logo_url: form.logo_url.trim() || null,
     };
+    if (updates.wallet_address && !/^0x[0-9a-fA-F]{40}$/.test(updates.wallet_address as string)) {
+      setIsSaving(false);
+      toast({ title: 'Invalid wallet address', description: 'Use a Polygon address starting with 0x (42 characters).', variant: 'destructive' });
+      return;
+    }
     // Only write the license number when the user actually changed it (never blank it out implicitly)
     const newLicense = form.license_number.trim();
     if (newLicense && newLicense !== (distillery.license_number || '')) {
@@ -214,6 +223,21 @@ export const DistilleryProfileSection: React.FC<Props> = ({ userId, email }) => 
                       {distillery.website} <ExternalLink className="h-3 w-3" />
                     </a>
                   ) : 'Not provided'}
+                </div>
+              )}
+            </div>
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="wallet_address" className="flex items-center gap-1">
+                Distillery wallet (Polygon)
+                <span title="New blockchain certificates for your casks are sent to this wallet. ARIGI still pays the network fee, and you never share a private key. Use an address you control, such as MetaMask. Casks that are already recorded keep their current certificate." className="cursor-help text-muted-foreground">ⓘ</span>
+              </Label>
+              {isEditing ? (
+                <Input id="wallet_address" value={form.wallet_address} onChange={(e) => setForm((f) => ({ ...f, wallet_address: e.target.value }))} placeholder="0x…" />
+              ) : (
+                <div className="text-sm bg-muted/50 px-3 py-2 rounded-md font-mono break-all">
+                  {distillery.wallet_address ? (
+                    <a href={`https://polygonscan.com/address/${distillery.wallet_address}`} target="_blank" rel="noreferrer" className="text-primary hover:underline">{distillery.wallet_address}</a>
+                  ) : 'Not set: certificates go to the ARIGI platform wallet'}
                 </div>
               )}
             </div>
