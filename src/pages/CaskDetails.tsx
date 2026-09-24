@@ -107,6 +107,7 @@ const CaskDetails = () => {
   const [offers, setOffers] = useState<any[]>([]);
   const [isOwner, setIsOwner] = useState(false);
   const [historyKey, setHistoryKey] = useState(0);
+  const [canMoveCask, setCanMoveCask] = useState(false);
   const [sellerId, setSellerId] = useState<string | null>(null);
   const [isMintingNft, setIsMintingNft] = useState(false);
   const [adminViewAs, setAdminViewAs] = useState<'default' | 'distillery' | 'owner'>('default');
@@ -203,7 +204,8 @@ const CaskDetails = () => {
       checkImageManagementPermissions();
       fetchOffers();
       checkOwnership();
-    }
+      (supabase.rpc as any)('can_manage_cask', { _cask_id: cask.id }).then(({ data }: any) => setCanMoveCask(!!data));
+    } else setCanMoveCask(false);
   }, [cask, user]);
 
   const checkImageManagementPermissions = async () => {
@@ -1159,7 +1161,7 @@ const CaskDetails = () => {
 
             {/* Transaction History */}
             <ResaleContact caskId={cask.id} />
-            {canManageImages && (
+            {canMoveCask && (
               <WarehouseTransferCard caskId={cask.id} onMoved={() => setHistoryKey((k) => k + 1)} />
             )}
             <CaskProvenanceTimeline key={historyKey} caskId={cask.id} />

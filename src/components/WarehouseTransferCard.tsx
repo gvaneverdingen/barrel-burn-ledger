@@ -21,8 +21,7 @@ export default function WarehouseTransferCard({ caskId, onMoved }: { caskId: str
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    supabase.from("warehouses").select("id, name, location").eq("verified", true).order("name")
-      .then(({ data }) => setWarehouses((data as Wh[]) || []));
+    (supabase.rpc as any)("list_verified_warehouses").then(({ data }: any) => setWarehouses((data as Wh[]) || []));
   }, []);
   const [locationText, setLocationText] = useState<string | null>(null);
   useEffect(() => {
