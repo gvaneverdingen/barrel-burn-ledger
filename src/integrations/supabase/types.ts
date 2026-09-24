@@ -1665,6 +1665,19 @@ export type Database = {
     Functions: {
       can_manage_cask: { Args: { _cask_id: string }; Returns: boolean }
       can_view_cask: { Args: { _cask_id: string }; Returns: boolean }
+      get_cask_provenance: {
+        Args: { _cask_id: string }
+        Returns: {
+          amount: number
+          detail: string
+          event_at: string
+          event_type: string
+          on_chain: boolean
+          owner_label: string
+          title: string
+          tx_hash: string
+        }[]
+      }
       get_my_distillery_license: {
         Args: { _distillery_id: string }
         Returns: string
