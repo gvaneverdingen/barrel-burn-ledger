@@ -6,10 +6,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 
+const MAX_BYTES = 10 * 1024 * 1024;
+
 interface SelfieCaptureProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCaptured?: (publicUrl: string) => void;
+  /** Receives the private storage path in the kyc-documents bucket (never a public URL). */
+  onCaptured?: (storagePath: string) => void;
   bucket?: string;
   pathPrefix?: string;
 }
@@ -24,8 +27,8 @@ export const SelfieCapture = ({
   open,
   onOpenChange,
   onCaptured,
-  bucket = "cask-images",
-  pathPrefix = "selfies",
+  bucket = "kyc-documents",
+  pathPrefix = "",
 }: SelfieCaptureProps) => {
   const { user } = useAuth();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -119,6 +122,11 @@ export const SelfieCapture = ({
   const handleFallbackFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > MAX_BYTES) {
+      toast({ title: "File too large", description: "Please choose an image under 10 MB.", variant: "destructive" });
+      e.target.value = "";
+      return;
+    }
     const reader = new FileReader();
     reader.onload = () => {
       setCapturedDataUrl(reader.result as string);
@@ -133,20 +141,25 @@ export const SelfieCapture = ({
   };
 
   const handleUpload = async () => {
-    if (!capturedDataUrl || !user) return;
+    if (!capturedDataUrl) return;
     setUploading(true);
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const uid = sessionData.session?.user?.id;
+      if (!uid || !user) {
+        toast({ title: "Please sign in again", description: "Your session has expired. Sign in again to submit your selfie.", variant: "destructive" });
+        return;
+      }
       const blob = await dataUrlToBlob(capturedDataUrl);
-      const path = `${pathPrefix}/${user.id}/selfie-${Date.now()}.jpg`;
+      if (blob.size > MAX_BYTES) throw new Error("Image is larger than 10 MB. Please use a smaller photo.");
+      const prefix = pathPrefix ? `${pathPrefix.replace(/\/+$/, "")}/` : "";
+      const path = `${prefix}${uid}/${Date.now()}-selfie.jpg`;
       const { error: uploadError } = await supabase.storage
         .from(bucket)
-        .upload(path, blob, { upsert: true, contentType: "image/jpeg" });
+        .upload(path, blob, { contentType: "image/jpeg" });
       if (uploadError) throw uploadError;
 
-      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
-      const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
-
-      onCaptured?.(publicUrl);
+      onCaptured?.(path);
       toast({ title: "Selfie uploaded", description: "Your selfie has been submitted for review." });
       onOpenChange(false);
     } catch (err: any) {
