@@ -3,8 +3,19 @@ import { Users, Package, DollarSign, TrendingUp, Warehouse, UserCheck, BadgePoun
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
+interface RoleCounts {
+  consumer: number;
+  distillery: number;
+  investor: number;
+  facilitator: number;
+  administrator: number;
+}
+
 interface MetricsCardsProps {
   metrics: {
+    totalAccounts: number;
+    roleCounts: RoleCounts;
+    newAccounts30d: number;
     totalConsumers: number;
     totalDistillers: number;
     totalOrders: number;
@@ -22,6 +33,21 @@ interface MetricsCardsProps {
 export function MetricsCards({ metrics, loading }: MetricsCardsProps) {
   const { formatPrice } = useCurrency();
   const cards = [
+    {
+      title: "Total Accounts",
+      value: metrics.totalAccounts,
+      icon: Users,
+      customContent: (
+        <>
+          <p className="text-xs text-muted-foreground">
+            {metrics.roleCounts.consumer} consumers · {metrics.roleCounts.distillery} distilleries · {metrics.roleCounts.investor} investors · {metrics.roleCounts.facilitator} warehouses · {metrics.roleCounts.administrator} admins
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {metrics.newAccounts30d} new in the last 30 days
+          </p>
+        </>
+      )
+    },
     {
       title: "Total Consumers",
       value: metrics.totalConsumers,
