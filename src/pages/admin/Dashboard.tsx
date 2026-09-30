@@ -16,6 +16,9 @@ import { useToast } from "@/hooks/use-toast";
 export default function AdminDashboard() {
   const { toast } = useToast();
   const [metrics, setMetrics] = useState({
+    totalAccounts: 0,
+    roleCounts: { consumer: 0, distillery: 0, investor: 0, facilitator: 0, administrator: 0 },
+    newAccounts30d: 0,
     totalConsumers: 0,
     totalDistillers: 0,
     totalOrders: 0,
