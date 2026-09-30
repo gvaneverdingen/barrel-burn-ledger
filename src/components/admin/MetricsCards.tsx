@@ -30,9 +30,17 @@ interface MetricsCardsProps {
   loading: boolean;
 }
 
+interface CardDef {
+  title: string;
+  value: string | number;
+  icon: React.ComponentType<{ className?: string }>;
+  description?: string;
+  customContent?: React.ReactNode;
+}
+
 export function MetricsCards({ metrics, loading }: MetricsCardsProps) {
   const { formatPrice } = useCurrency();
-  const cards = [
+  const cards: CardDef[] = [
     {
       title: "Total Accounts",
       value: metrics.totalAccounts,
