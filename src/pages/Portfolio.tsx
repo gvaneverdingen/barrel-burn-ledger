@@ -425,7 +425,7 @@ const Portfolio = () => {
                           <p className="text-muted-foreground mb-6">
                             Start building your portfolio by investing in premium whisky casks
                           </p>
-                          <button className="luxury-button px-6 py-2 rounded-lg font-medium hover-scale">
+                          <button onClick={() => navigate('/marketplace')} className="luxury-button px-6 py-2 rounded-lg font-medium hover-scale">
                             Visit Marketplace
                           </button>
                         </CardContent>
