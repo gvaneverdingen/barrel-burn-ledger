@@ -94,8 +94,17 @@ export default function AdminDashboard() {
       const totalInventory = casks?.reduce((sum, c) => sum + Number(c.current_volume_liters || 0), 0) || 0;
 
       setMetrics({
-        totalConsumers: consumers?.length || 0,
-        totalDistillers: distillers?.length || 0,
+        totalAccounts: totalAccounts || 0,
+        roleCounts: {
+          consumer: consumerCount,
+          distillery: distilleryCount,
+          investor: investorCount,
+          facilitator: facilitatorCount,
+          administrator: administratorCount,
+        },
+        newAccounts30d: newAccounts30d || 0,
+        totalConsumers: consumerCount,
+        totalDistillers: distilleryCount,
         totalOrders,
         totalRevenue,
         activeListings: activeListings || 0,
