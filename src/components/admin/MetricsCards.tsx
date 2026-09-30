@@ -123,6 +123,11 @@ export function MetricsCards({ metrics, loading }: MetricsCardsProps) {
           <CardContent>
             {loading ? (
               <Skeleton className="h-8 w-24" />
+            ) : card.customContent ? (
+              <>
+                <div className="text-2xl font-bold">{card.value}</div>
+                {card.customContent}
+              </>
             ) : (
               <>
                 <div className="text-2xl font-bold">{card.value}</div>
