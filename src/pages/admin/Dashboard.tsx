@@ -40,16 +40,33 @@ export default function AdminDashboard() {
     try {
       setLoading(true);
 
-      // Fetch user counts by role
-      const { data: consumers } = await supabase
-        .from('user_roles')
-        .select('id', { count: 'exact', head: true })
-        .eq('role', 'consumer');
+      // Fetch total registered accounts and new accounts in last 30 days
+      const { count: totalAccounts } = await supabase
+        .from('profiles')
+        .select('id', { count: 'exact', head: true });
 
-      const { data: distillers } = await supabase
-        .from('user_roles')
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const { count: newAccounts30d } = await supabase
+        .from('profiles')
         .select('id', { count: 'exact', head: true })
-        .eq('role', 'distillery');
+        .gte('created_at', thirtyDaysAgo);
+
+      // Fetch role counts
+      const countRole = async (role: 'consumer' | 'distillery' | 'investor' | 'facilitator' | 'administrator') => {
+        const { count } = await supabase
+          .from('user_roles')
+          .select('id', { count: 'exact', head: true })
+          .eq('role', role);
+        return count || 0;
+      };
+
+      const [consumerCount, distilleryCount, investorCount, facilitatorCount, administratorCount] = await Promise.all([
+        countRole('consumer'),
+        countRole('distillery'),
+        countRole('investor'),
+        countRole('facilitator'),
+        countRole('administrator'),
+      ]);
 
       // Fetch orders count and revenue
       const { data: transactions } = await supabase
