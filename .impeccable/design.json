@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-02T00:00:00Z",
+  "title": "Design System: ARIGI",
+  "extensions": {
+    "colorMeta": {
+      "midnight-navy": { "role": "neutral", "displayName": "Midnight Navy", "canonical": "hsl(222 38% 11%)", "tonalRamp": ["hsl(222 40% 5%)", "hsl(222 40% 7%)", "hsl(222 38% 11%)", "hsl(222 35% 14%)", "hsl(222 25% 18%)", "hsl(222 25% 22%)", "hsl(220 28% 30%)", "hsl(220 25% 45%)"] },
+      "midnight-deep": { "role": "neutral", "displayName": "Midnight Deep", "canonical": "hsl(222 40% 7%)" },
+      "ledger-card": { "role": "neutral", "displayName": "Ledger Card", "canonical": "hsl(222 35% 14%)" },
+      "champagne": { "role": "primary", "displayName": "Ledger Champagne", "canonical": "hsl(38 60% 68%)", "tonalRamp": ["hsl(38 55% 15%)", "hsl(38 55% 25%)", "hsl(38 55% 38%)", "hsl(38 58% 52%)", "hsl(38 60% 60%)", "hsl(38 60% 68%)", "hsl(38 60% 80%)", "hsl(38 60% 92%)"] },
+      "bronze": { "role": "secondary", "displayName": "Cask Bronze", "canonical": "hsl(32 55% 60%)", "tonalRamp": ["hsl(32 50% 15%)", "hsl(32 50% 25%)", "hsl(32 50% 38%)", "hsl(32 50% 50%)", "hsl(32 55% 60%)", "hsl(32 55% 70%)", "hsl(32 55% 82%)", "hsl(32 55% 93%)"] },
+      "slate-navy": { "role": "neutral", "displayName": "Slate Navy", "canonical": "hsl(220 28% 22%)" },
+      "muted-navy": { "role": "neutral", "displayName": "Muted Navy", "canonical": "hsl(222 25% 18%)" },
+      "rule-line": { "role": "neutral", "displayName": "Rule Line", "canonical": "hsl(222 25% 22%)" },
+      "parchment-ink": { "role": "neutral", "displayName": "Parchment Ink", "canonical": "hsl(38 35% 92%)" },
+      "aged-label": { "role": "neutral", "displayName": "Aged Label", "canonical": "hsl(38 15% 68%)" },
+      "sealing-red": { "role": "semantic", "displayName": "Sealing-wax Red", "canonical": "hsl(8 65% 55%)" },
+      "sidebar-navy": { "role": "neutral", "displayName": "Sidebar Navy", "canonical": "hsl(220 40% 10%)" },
+      "parchment": { "role": "neutral", "displayName": "Parchment (planned light ground)", "canonical": "hsl(38 30% 96%)" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Marketing hero headlines only." },
+      "headline": { "displayName": "Headline", "purpose": "Section headings and app page titles." },
+      "title": { "displayName": "Title", "purpose": "Card titles, cask names, dialog titles." },
+      "body": { "displayName": "Body", "purpose": "Running copy and all data, capped at ~70ch." },
+      "label": { "displayName": "Label", "purpose": "Badges, eyebrows, sidebar group headings, table headers." }
+    },
+    "shadows": [
+      { "name": "elegant", "value": "0 4px 16px -4px hsl(222 45% 8% / 0.12)", "purpose": "Resting cards." },
+      { "name": "heritage", "value": "0 12px 24px -6px hsl(220 35% 18% / 0.25)", "purpose": "Raised cards and popovers." },
+      { "name": "luxury", "value": "0 20px 40px -12px hsl(222 45% 8% / 0.35)", "purpose": "Dialogs and hovered hero CTA." },
+      { "name": "champagne-glow", "value": "0 8px 32px -8px hsl(38 55% 60% / 0.35)", "purpose": "The single hero CTA only." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "All state transitions (0.2–0.3s)." },
+      { "name": "fade-in", "value": "0.6s ease-out, translateY(20px) to 0", "purpose": "Section entrance on marketing pages." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "2xl", "value": "1400px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid champagne with deep navy ink; the main action on any screen.",
+      "html": "<button class=\"ds-btn-primary\">Explore the Marketplace <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 32px; background: hsl(38 60% 68%); color: hsl(222 40% 10%); font-family: Inter, system-ui, sans-serif; font-size: 1rem; font-weight: 500; border: none; border-radius: 10px; cursor: pointer; transition: background 0.2s cubic-bezier(0.4,0,0.2,1); } .ds-btn-primary:hover { background: hsl(38 60% 62%); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(222 38% 11%), 0 0 0 4px hsl(38 60% 68%); } .ds-btn-primary svg { transition: transform 0.2s; } .ds-btn-primary:hover svg { transform: translateX(4px); }"
+    },
+    {
+      "name": "Hero Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Gradient + glow variant; once per screen, marketing hero only.",
+      "html": "<button class=\"ds-btn-hero\">Explore the Marketplace</button>",
+      "css": ".ds-btn-hero { height: 48px; padding: 0 32px; background: linear-gradient(90deg, hsl(38 60% 68%), hsl(32 55% 60%)); color: hsl(222 40% 10%); font-family: Inter, system-ui, sans-serif; font-size: 1rem; font-weight: 500; border: none; border-radius: 12px; box-shadow: 0 8px 32px -8px hsl(38 55% 60% / 0.35); cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); } .ds-btn-hero:hover { transform: translateY(-1px); box-shadow: 0 20px 40px -12px hsl(222 45% 8% / 0.35); } .ds-btn-hero:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(222 38% 11%), 0 0 0 4px hsl(38 60% 68%); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action beside a primary.",
+      "html": "<button class=\"ds-btn-outline\">Create Account</button>",
+      "css": ".ds-btn-outline { height: 48px; padding: 0 32px; background: transparent; color: hsl(38 35% 92%); font-family: Inter, system-ui, sans-serif; font-size: 1rem; font-weight: 500; border: 1px solid hsl(38 60% 68% / 0.4); border-radius: 10px; cursor: pointer; transition: background 0.2s; } .ds-btn-outline:hover { background: hsl(38 60% 68% / 0.1); } .ds-btn-outline:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(222 38% 11%), 0 0 0 4px hsl(38 60% 68%); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Muted navy field with champagne focus ring and inline helper/error text.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Provenance document CID</span><input class=\"ds-input\" placeholder=\"Qm… or bafy…\"><span class=\"ds-field-help\">Optional. IPFS content hash for the supporting document.</span></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; font-family: Inter, system-ui, sans-serif; max-width: 360px; } .ds-field-label { font-size: 0.875rem; font-weight: 500; color: hsl(38 35% 92%); } .ds-input { height: 40px; padding: 0 12px; background: hsl(222 25% 18%); color: hsl(38 35% 92%); border: 1px solid hsl(222 25% 22%); border-radius: 10px; font-size: 0.875rem; } .ds-input::placeholder { color: hsl(38 15% 68% / 0.7); } .ds-input:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(222 38% 11%), 0 0 0 4px hsl(38 60% 68%); } .ds-field-help { font-size: 0.75rem; color: hsl(38 15% 68%); }"
+    },
+    {
+      "name": "Eyebrow Badge",
+      "kind": "chip",
+      "refersTo": "badge-outline",
+      "description": "Pill tag for eyebrows and verification status.",
+      "html": "<span class=\"ds-badge\">Blockchain-verified provenance</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; padding: 2px 10px; border: 1px solid hsl(38 60% 68% / 0.4); background: hsl(38 60% 68% / 0.05); color: hsl(38 60% 68%); border-radius: 9999px; font-family: Inter, system-ui, sans-serif; font-size: 0.75rem; font-weight: 600; }"
+    },
+    {
+      "name": "Cask Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Ledger-card container; border shifts to champagne on hover, no lift in lists.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-card-img\"></div><div class=\"ds-card-body\"><h3 class=\"ds-card-title\">Speyside 2015 · Cask #412</h3><p class=\"ds-card-meta\">Ex-bourbon hogshead · 61.2% ABV · Filled 03/2015</p><p class=\"ds-card-price\">£18,500</p></div></article>",
+      "css": ".ds-card { width: 300px; background: hsl(222 35% 14%); border: 1px solid hsl(222 25% 22% / 0.6); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px -4px hsl(222 45% 8% / 0.12); transition: border-color 0.2s; font-family: Inter, system-ui, sans-serif; } .ds-card:hover { border-color: hsl(38 60% 68% / 0.4); } .ds-card-img { aspect-ratio: 4/3; background: linear-gradient(135deg, hsl(28 40% 30%), hsl(222 35% 14%)); } .ds-card-body { padding: 20px; } .ds-card-title { margin: 0 0 6px; font-family: 'Playfair Display', Georgia, serif; font-weight: 600; font-size: 1.25rem; color: hsl(38 35% 92%); } .ds-card-meta { margin: 0 0 12px; font-size: 0.875rem; color: hsl(38 15% 68%); } .ds-card-price { margin: 0; font-size: 1.125rem; font-weight: 600; color: hsl(38 60% 68%); font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Sidebar Nav",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Sidebar group with uppercase label and an active champagne row.",
+      "html": "<nav class=\"ds-nav\"><div class=\"ds-nav-label\">Navigation</div><a class=\"ds-nav-item ds-active\">Home</a><a class=\"ds-nav-item\">Marketplace</a><a class=\"ds-nav-item\">Our Story</a></nav>",
+      "css": ".ds-nav { width: 240px; padding: 16px 8px; background: hsl(220 40% 10%); font-family: Inter, system-ui, sans-serif; } .ds-nav-label { padding: 0 8px 8px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: hsl(38 15% 68%); } .ds-nav-item { display: flex; align-items: center; height: 44px; padding: 0 12px; border-radius: 12px; color: hsl(38 25% 88%); font-size: 1rem; cursor: pointer; transition: background 0.2s; } .ds-nav-item:hover { background: hsl(220 35% 15%); } .ds-nav-item.ds-active { background: hsl(220 28% 22%); color: hsl(38 60% 68%); box-shadow: inset 2px 0 0 hsl(38 60% 68% / 0.6); }"
+    },
+    {
+      "name": "Stat Row",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Signature: real platform figures in champagne Playfair, zeros included.",
+      "html": "<div class=\"ds-stats\"><div><b>16</b><span>Casks listed</span></div><div><b>16</b><span>For sale now</span></div><div><b>4</b><span>Distilleries</span></div><div><b>0</b><span>Trades settled</span></div></div>",
+      "css": ".ds-stats { display: grid; grid-template-columns: repeat(4, 1fr); max-width: 680px; border: 1px solid hsl(222 25% 22% / 0.6); border-radius: 12px; background: hsl(222 35% 14% / 0.5); } .ds-stats div { padding: 20px 16px; display: flex; flex-direction: column; gap: 4px; } .ds-stats div + div { border-left: 1px solid hsl(222 25% 22% / 0.6); } .ds-stats b { font-family: 'Playfair Display', Georgia, serif; font-size: 2rem; color: hsl(38 60% 68%); line-height: 1; } .ds-stats span { font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; color: hsl(38 15% 68%); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Bonded Ledger",
+    "overview": "ARIGI should feel like a bonded warehouse's ledger read by lamplight. The ground is deep midnight navy, the ink is warm parchment, and champagne gold is used the way a clerk uses a seal or a ruled line: to mark what has been verified, what is for sale and what to act on next. The luxury is in the precision. Every number, document hash, fill date and fee should read as clearly as a line in a ledger, because the product's promise is that everything can be checked.\n\nThe incumbent build leans more ornamental than this North Star: gold gradient text on most headings, gradient-filled buttons with a gold glow, and cards that lift on hover. This document keeps that vocabulary but rations it. Ornament belongs to a few hero moments. Working surfaces (marketplace, cask detail, dashboards, admin) stay flat, solid and tabular.\n\nDark navy is the primary world and the only one built today. A light parchment theme is wanted but not yet built: the current light and dark tokens are both navy, so the theme toggle only shifts the shade.",
+    "keyCharacteristics": [
+      "Midnight navy ground, parchment ink, champagne as the single accent for verification and action.",
+      "Playfair Display headlines over Inter body: a printed-register headline with modern, legible working text.",
+      "Softly rounded containers (12px) with hairline navy borders; depth from tonal layering first, shadow second.",
+      "Real photography of casks and warehouses carries the atmosphere, so the interface doesn't have to.",
+      "Data (ABV, fill date, price, fees, CIDs, transaction IDs) is set plainly, aligned and never decorated."
+    ],
+    "rules": [
+      { "name": "The One Seal Rule", "body": "Champagne marks verification and the next action. If more than about 10% of a working screen is gold, something is decorated that should have been informational.", "section": "colors" },
+      { "name": "The Solid Gold Rule", "body": "On working surfaces, champagne is a solid fill or a solid text colour. The gold gradient (--gradient-champagne) is reserved for the single hero headline of a marketing page and at most one primary CTA per screen.", "section": "colors" },
+      { "name": "The Serif Speaks, the Sans Works Rule", "body": "Playfair is for statements and names. Prices, ABV, volumes, dates, hashes and form fields are always Inter, set with tabular figures where they align in columns.", "section": "typography" },
+      { "name": "The Plain Data Rule", "body": "Never apply gradient text to a number or a document identifier.", "section": "typography" },
+      { "name": "The Still Ledger Rule", "body": "Cards in lists and tables do not lift or glow on hover; change the border to champagne at ~40% instead. Translate-on-hover is reserved for marketing cards and the hero CTA.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep champagne to verification, the primary action and active state (the One Seal Rule).",
+      "Do set every number, date, ABV, price, fee and hash in Inter, in solid parchment or champagne, never gradient text.",
+      "Do let real cask and warehouse photography provide the warmth; keep the UI around it flat and quiet.",
+      "Do show fees, status and on-chain links as visible, labelled data rather than hiding them behind tooltips.",
+      "Do keep 44px minimum touch targets and the 2px champagne focus ring on every interactive element.",
+      "Do design new tokens so a parchment light theme can be added: define each colour role once in :root and redefine it per theme, never hard-code hsl(222 …) values in components."
+    ],
+    "donts": [
+      "Don't use the gold gradient on more than one headline and one CTA per screen (the Solid Gold Rule).",
+      "Don't lift, scale or glow cards in marketplace lists, tables or dashboards (the Still Ledger Rule).",
+      "Don't add looping animations (luxury-glow, float) to working surfaces.",
+      "Don't introduce new accent hues for decoration; extend semantic roles (success, warning) as named tokens first.",
+      "Don't hard-code navy values in components, as bg-heritage-dark does today; it blocks the planned light theme."
+    ]
+  }
+}
