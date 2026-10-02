@@ -250,7 +250,7 @@ export const PaymentMethodDialog = ({
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-sm">{option.label}</span>
-                        <Badge variant="outline" className="text-[10px] h-4 px-1.5">
+                        <Badge variant="outline" className="text-xs h-5 px-1.5">
                           {option.badge}
                         </Badge>
                       </div>

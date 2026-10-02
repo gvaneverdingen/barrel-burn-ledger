@@ -1414,12 +1414,12 @@ const CaskDetails = () => {
                             <div className={`max-w-[85%] rounded-lg p-3 ${isBuyer ? 'bg-primary/10' : 'bg-muted'}`}>
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="text-xs font-semibold">{senderName}</span>
-                                <Badge variant="outline" className="text-[10px] h-4 px-1">
+                                <Badge variant="outline" className="text-xs h-5 px-1.5">
                                   {offer.offer_type === 'enquiry' ? 'Enquiry' : 'Offer'}
                                 </Badge>
                                 {offer.status === 'accepted' && (
-                                  <Badge variant="default" className="text-[10px] h-4 px-1">
-                                    <CheckCircle className="h-2.5 w-2.5 mr-0.5" /> Agreed
+                                  <Badge variant="default" className="text-xs h-5 px-1.5">
+                                    <CheckCircle className="h-3 w-3 mr-1" /> Agreed
                                   </Badge>
                                 )}
                               </div>
@@ -1429,7 +1429,7 @@ const CaskDetails = () => {
                                   Offer: {formatPrice(offer.offered_total_price)}
                                 </p>
                               )}
-                              <p className="text-[10px] text-muted-foreground mt-1">
+                              <p className="text-xs text-muted-foreground mt-1">
                                 {new Date(offer.created_at).toLocaleDateString(undefined, {
                                   month: 'short', day: 'numeric', year: 'numeric',
                                   hour: '2-digit', minute: '2-digit'

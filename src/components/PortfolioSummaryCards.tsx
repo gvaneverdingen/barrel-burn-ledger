@@ -94,7 +94,7 @@ export const PortfolioSummaryCards = ({ ownerships }: PortfolioSummaryCardsProps
             <div className="text-lg sm:text-2xl font-bold luxury-text-gradient">{value}</div>
             <div className="flex items-center gap-2 mt-1">
               <p className="text-xs text-muted-foreground">{sub}</p>
-              {badge && <Badge variant={badgeVariant} className="text-[10px] px-1.5 py-0">{badge}</Badge>}
+              {badge && <Badge variant={badgeVariant} className="text-xs px-1.5 py-0">{badge}</Badge>}
             </div>
           </CardContent>
         </Card>

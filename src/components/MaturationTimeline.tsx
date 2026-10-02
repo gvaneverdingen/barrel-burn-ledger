@@ -61,7 +61,7 @@ export const MaturationTimeline = ({ ownerships }: MaturationTimelineProps) => {
               </span>
             </div>
             <Progress value={item.progress} className="h-2" />
-            <div className="flex justify-between text-[10px] text-muted-foreground">
+            <div className="flex justify-between text-xs text-muted-foreground">
               <span>{item.ageYears}y aged</span>
               <span>Peak: {item.peakDate.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</span>
             </div>
