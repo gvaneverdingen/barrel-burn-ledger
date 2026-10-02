@@ -15,6 +15,13 @@ colors:
   sealing-red: "hsl(8 65% 55%)"
   sidebar-navy: "hsl(220 40% 10%)"
   parchment: "hsl(38 30% 96%)"
+  paper: "hsl(38 35% 99%)"
+  old-gold: "hsl(34 62% 34%)"
+  old-bronze: "hsl(28 50% 40%)"
+  ledger-ink: "hsl(222 40% 12%)"
+  faded-ink: "hsl(222 14% 36%)"
+  vellum: "hsl(38 22% 90%)"
+  deckle-line: "hsl(36 20% 82%)"
 typography:
   display:
     fontFamily: "Playfair Display, Georgia, serif"
@@ -101,7 +108,7 @@ ARIGI should feel like a bonded warehouse's ledger read by lamplight. The ground
 
 The incumbent build leans more ornamental than this North Star: gold gradient text on most headings, gradient-filled buttons with a gold glow, and cards that lift on hover. This document keeps that vocabulary but rations it. Ornament belongs to a few hero moments. Working surfaces (marketplace, cask detail, dashboards, admin) stay flat, solid and tabular.
 
-Dark navy is the primary world and the only one built today. A light **parchment** theme is wanted but not yet built: the current light and dark tokens are both navy, so the theme toggle only shifts the shade.
+Dark navy is the primary world and the default for every visitor (`<html class="dark">`, applied before first paint). A light **parchment** theme is the opt-in alternative from the theme toggle: the same ledger, printed on paper by daylight, with champagne deepened to old gold so it stays legible. Both themes define the same colour roles in `src/index.css`; components reference roles, never hues.
 
 **Key Characteristics:**
 - Midnight navy ground, parchment ink, champagne as the single accent for verification and action.
@@ -133,7 +140,18 @@ A two-temperature palette: cold, deep navies for every surface; warm parchment a
 - **Parchment** (`{colors.parchment}`): reserved as the ground of the planned light theme. Not used as a surface in the dark world.
 
 ### Semantic
-- **Sealing-wax Red** (`{colors.sealing-red}`): destructive actions and errors only.
+- **Sealing-wax Red** (`{colors.sealing-red}`): destructive actions and errors only (`hsl(6 65% 44%)` in the light theme).
+
+### Light theme (parchment)
+The same roles, remapped for paper. Every text pair meets WCAG AA (4.5:1 or better).
+- **Parchment** (`{colors.parchment}`): page background.
+- **Paper** (`{colors.paper}`): cards, popovers and dialogs, a half-step brighter than the page.
+- **Old Gold** (`{colors.old-gold}`): the primary role. Champagne cannot carry text on paper (1.8:1), so the seal deepens to old gold (5.2:1 on parchment); buttons use it as a fill with near-white ink (5.4:1).
+- **Old Bronze** (`{colors.old-bronze}`): the accent role.
+- **Ledger Ink** (`{colors.ledger-ink}`): primary text (16:1).
+- **Faded Ink** (`{colors.faded-ink}`): secondary text (6.7:1).
+- **Vellum** (`{colors.vellum}`): muted panels, secondary buttons, skeletons.
+- **Deckle Line** (`{colors.deckle-line}`): borders and input strokes.
 
 ### Named Rules
 **The One Seal Rule.** Champagne marks verification and the next action. If more than about 10% of a working screen is gold, something is decorated that should have been informational.
@@ -232,11 +250,11 @@ A vertical sequence of custody events (fill, regauge, warehouse transfer, sale, 
 - **Do** let real cask and warehouse photography provide the warmth; keep the UI around it flat and quiet.
 - **Do** show fees, status and on-chain links as visible, labelled data rather than hiding them behind tooltips.
 - **Do** keep 44px minimum touch targets and the 2px champagne focus ring on every interactive element.
-- **Do** design new tokens so a parchment light theme can be added: define each colour role once in `:root` and redefine it per theme, never hard-code `hsl(222 …)` values in components.
+- **Do** add any new colour as a role in both `:root` (parchment) and `.dark` (navy) in `src/index.css`, and check it in both themes before shipping.
 
 ### Don't:
 - **Don't** use the gold gradient on more than one headline and one CTA per screen (the Solid Gold Rule).
 - **Don't** lift, scale or glow cards in marketplace lists, tables or dashboards (the Still Ledger Rule).
 - **Don't** add looping animations (`luxury-glow`, `float`) to working surfaces.
 - **Don't** introduce new accent hues for decoration; extend semantic roles (success, warning) as named tokens first.
-- **Don't** hard-code navy values in components, as `bg-heritage-dark` does today; it blocks the planned light theme.
+- **Don't** hard-code hues in components (`hsl(222 …)`, `text-white` on non-photo surfaces); they break one of the two themes. The green/red/amber status utilities still scattered through the app (~280 uses) should migrate to named semantic tokens.

@@ -1,46 +1,237 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-02T00:00:00Z",
+  "generatedAt": "2026-10-02T09:00:00Z",
   "title": "Design System: ARIGI",
   "extensions": {
     "colorMeta": {
-      "midnight-navy": { "role": "neutral", "displayName": "Midnight Navy", "canonical": "hsl(222 38% 11%)", "tonalRamp": ["hsl(222 40% 5%)", "hsl(222 40% 7%)", "hsl(222 38% 11%)", "hsl(222 35% 14%)", "hsl(222 25% 18%)", "hsl(222 25% 22%)", "hsl(220 28% 30%)", "hsl(220 25% 45%)"] },
-      "midnight-deep": { "role": "neutral", "displayName": "Midnight Deep", "canonical": "hsl(222 40% 7%)" },
-      "ledger-card": { "role": "neutral", "displayName": "Ledger Card", "canonical": "hsl(222 35% 14%)" },
-      "champagne": { "role": "primary", "displayName": "Ledger Champagne", "canonical": "hsl(38 60% 68%)", "tonalRamp": ["hsl(38 55% 15%)", "hsl(38 55% 25%)", "hsl(38 55% 38%)", "hsl(38 58% 52%)", "hsl(38 60% 60%)", "hsl(38 60% 68%)", "hsl(38 60% 80%)", "hsl(38 60% 92%)"] },
-      "bronze": { "role": "secondary", "displayName": "Cask Bronze", "canonical": "hsl(32 55% 60%)", "tonalRamp": ["hsl(32 50% 15%)", "hsl(32 50% 25%)", "hsl(32 50% 38%)", "hsl(32 50% 50%)", "hsl(32 55% 60%)", "hsl(32 55% 70%)", "hsl(32 55% 82%)", "hsl(32 55% 93%)"] },
-      "slate-navy": { "role": "neutral", "displayName": "Slate Navy", "canonical": "hsl(220 28% 22%)" },
-      "muted-navy": { "role": "neutral", "displayName": "Muted Navy", "canonical": "hsl(222 25% 18%)" },
-      "rule-line": { "role": "neutral", "displayName": "Rule Line", "canonical": "hsl(222 25% 22%)" },
-      "parchment-ink": { "role": "neutral", "displayName": "Parchment Ink", "canonical": "hsl(38 35% 92%)" },
-      "aged-label": { "role": "neutral", "displayName": "Aged Label", "canonical": "hsl(38 15% 68%)" },
-      "sealing-red": { "role": "semantic", "displayName": "Sealing-wax Red", "canonical": "hsl(8 65% 55%)" },
-      "sidebar-navy": { "role": "neutral", "displayName": "Sidebar Navy", "canonical": "hsl(220 40% 10%)" },
-      "parchment": { "role": "neutral", "displayName": "Parchment (planned light ground)", "canonical": "hsl(38 30% 96%)" }
+      "midnight-navy": {
+        "role": "neutral",
+        "displayName": "Midnight Navy",
+        "canonical": "hsl(222 38% 11%)",
+        "tonalRamp": [
+          "hsl(222 40% 5%)",
+          "hsl(222 40% 7%)",
+          "hsl(222 38% 11%)",
+          "hsl(222 35% 14%)",
+          "hsl(222 25% 18%)",
+          "hsl(222 25% 22%)",
+          "hsl(220 28% 30%)",
+          "hsl(220 25% 45%)"
+        ]
+      },
+      "midnight-deep": {
+        "role": "neutral",
+        "displayName": "Midnight Deep",
+        "canonical": "hsl(222 40% 7%)"
+      },
+      "ledger-card": {
+        "role": "neutral",
+        "displayName": "Ledger Card",
+        "canonical": "hsl(222 35% 14%)"
+      },
+      "champagne": {
+        "role": "primary",
+        "displayName": "Ledger Champagne",
+        "canonical": "hsl(38 60% 68%)",
+        "tonalRamp": [
+          "hsl(38 55% 15%)",
+          "hsl(38 55% 25%)",
+          "hsl(38 55% 38%)",
+          "hsl(38 58% 52%)",
+          "hsl(38 60% 60%)",
+          "hsl(38 60% 68%)",
+          "hsl(38 55% 65%)",
+          "hsl(38 60% 80%)"
+        ]
+      },
+      "bronze": {
+        "role": "secondary",
+        "displayName": "Cask Bronze",
+        "canonical": "hsl(32 55% 60%)",
+        "tonalRamp": [
+          "hsl(32 50% 15%)",
+          "hsl(32 50% 25%)",
+          "hsl(32 50% 38%)",
+          "hsl(32 50% 55%)",
+          "hsl(32 55% 60%)",
+          "hsl(32 55% 70%)",
+          "hsl(32 55% 82%)",
+          "hsl(32 55% 93%)"
+        ]
+      },
+      "slate-navy": {
+        "role": "neutral",
+        "displayName": "Slate Navy",
+        "canonical": "hsl(220 28% 22%)"
+      },
+      "muted-navy": {
+        "role": "neutral",
+        "displayName": "Muted Navy",
+        "canonical": "hsl(222 25% 18%)"
+      },
+      "rule-line": {
+        "role": "neutral",
+        "displayName": "Rule Line",
+        "canonical": "hsl(222 25% 22%)"
+      },
+      "parchment-ink": {
+        "role": "neutral",
+        "displayName": "Parchment Ink",
+        "canonical": "hsl(38 35% 92%)"
+      },
+      "aged-label": {
+        "role": "neutral",
+        "displayName": "Aged Label",
+        "canonical": "hsl(38 15% 68%)"
+      },
+      "sealing-red": {
+        "role": "semantic",
+        "displayName": "Sealing-wax Red",
+        "canonical": "hsl(8 65% 55%)"
+      },
+      "sidebar-navy": {
+        "role": "neutral",
+        "displayName": "Sidebar Navy",
+        "canonical": "hsl(220 40% 10%)"
+      },
+      "parchment": {
+        "role": "neutral",
+        "displayName": "Parchment",
+        "canonical": "hsl(38 30% 96%)"
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper (light theme)",
+        "canonical": "hsl(38 35% 99%)"
+      },
+      "old-gold": {
+        "role": "primary",
+        "displayName": "Old Gold (light theme)",
+        "canonical": "hsl(34 62% 34%)",
+        "tonalRamp": [
+          "hsl(34 62% 14%)",
+          "hsl(34 62% 22%)",
+          "hsl(34 62% 28%)",
+          "hsl(34 62% 34%)",
+          "hsl(36 62% 38%)",
+          "hsl(36 60% 50%)",
+          "hsl(38 60% 70%)",
+          "hsl(38 60% 90%)"
+        ]
+      },
+      "old-bronze": {
+        "role": "secondary",
+        "displayName": "Old Bronze (light theme)",
+        "canonical": "hsl(28 50% 40%)",
+        "tonalRamp": [
+          "hsl(28 50% 14%)",
+          "hsl(28 50% 22%)",
+          "hsl(28 50% 30%)",
+          "hsl(28 50% 40%)",
+          "hsl(30 50% 40%)",
+          "hsl(32 50% 55%)",
+          "hsl(32 55% 75%)",
+          "hsl(32 55% 92%)"
+        ]
+      },
+      "ledger-ink": {
+        "role": "neutral",
+        "displayName": "Ledger Ink (light theme)",
+        "canonical": "hsl(222 40% 12%)"
+      },
+      "faded-ink": {
+        "role": "neutral",
+        "displayName": "Faded Ink (light theme)",
+        "canonical": "hsl(222 14% 36%)"
+      },
+      "vellum": {
+        "role": "neutral",
+        "displayName": "Vellum (light theme)",
+        "canonical": "hsl(38 22% 90%)"
+      },
+      "deckle-line": {
+        "role": "neutral",
+        "displayName": "Deckle Line (light theme)",
+        "canonical": "hsl(36 20% 82%)"
+      }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Marketing hero headlines only." },
-      "headline": { "displayName": "Headline", "purpose": "Section headings and app page titles." },
-      "title": { "displayName": "Title", "purpose": "Card titles, cask names, dialog titles." },
-      "body": { "displayName": "Body", "purpose": "Running copy and all data, capped at ~70ch." },
-      "label": { "displayName": "Label", "purpose": "Badges, eyebrows, sidebar group headings, table headers." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Marketing hero headlines only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings and app page titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card titles, cask names, dialog titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running copy and all data, capped at ~70ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Badges, eyebrows, sidebar group headings, table headers."
+      }
     },
     "shadows": [
-      { "name": "elegant", "value": "0 4px 16px -4px hsl(222 45% 8% / 0.12)", "purpose": "Resting cards." },
-      { "name": "heritage", "value": "0 12px 24px -6px hsl(220 35% 18% / 0.25)", "purpose": "Raised cards and popovers." },
-      { "name": "luxury", "value": "0 20px 40px -12px hsl(222 45% 8% / 0.35)", "purpose": "Dialogs and hovered hero CTA." },
-      { "name": "champagne-glow", "value": "0 8px 32px -8px hsl(38 55% 60% / 0.35)", "purpose": "The single hero CTA only." }
+      {
+        "name": "elegant",
+        "value": "0 4px 16px -4px hsl(222 45% 8% / 0.12)",
+        "purpose": "Resting cards."
+      },
+      {
+        "name": "heritage",
+        "value": "0 12px 24px -6px hsl(220 35% 18% / 0.25)",
+        "purpose": "Raised cards and popovers."
+      },
+      {
+        "name": "luxury",
+        "value": "0 20px 40px -12px hsl(222 45% 8% / 0.35)",
+        "purpose": "Dialogs and hovered hero CTA."
+      },
+      {
+        "name": "champagne-glow",
+        "value": "0 8px 32px -8px hsl(38 55% 60% / 0.35)",
+        "purpose": "The single hero CTA only."
+      }
     ],
     "motion": [
-      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "All state transitions (0.2–0.3s)." },
-      { "name": "fade-in", "value": "0.6s ease-out, translateY(20px) to 0", "purpose": "Section entrance on marketing pages." }
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "All state transitions (0.2–0.3s)."
+      },
+      {
+        "name": "fade-in",
+        "value": "0.6s ease-out, translateY(20px) to 0",
+        "purpose": "Section entrance on marketing pages."
+      }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "1024px" },
-      { "name": "xl", "value": "1280px" },
-      { "name": "2xl", "value": "1400px" }
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      },
+      {
+        "name": "2xl",
+        "value": "1400px"
+      }
     ]
   },
   "components": [
@@ -111,7 +302,7 @@
   ],
   "narrative": {
     "northStar": "The Bonded Ledger",
-    "overview": "ARIGI should feel like a bonded warehouse's ledger read by lamplight. The ground is deep midnight navy, the ink is warm parchment, and champagne gold is used the way a clerk uses a seal or a ruled line: to mark what has been verified, what is for sale and what to act on next. The luxury is in the precision. Every number, document hash, fill date and fee should read as clearly as a line in a ledger, because the product's promise is that everything can be checked.\n\nThe incumbent build leans more ornamental than this North Star: gold gradient text on most headings, gradient-filled buttons with a gold glow, and cards that lift on hover. This document keeps that vocabulary but rations it. Ornament belongs to a few hero moments. Working surfaces (marketplace, cask detail, dashboards, admin) stay flat, solid and tabular.\n\nDark navy is the primary world and the only one built today. A light parchment theme is wanted but not yet built: the current light and dark tokens are both navy, so the theme toggle only shifts the shade.",
+    "overview": "ARIGI should feel like a bonded warehouse's ledger read by lamplight. The ground is deep midnight navy, the ink is warm parchment, and champagne gold is used the way a clerk uses a seal or a ruled line: to mark what has been verified, what is for sale and what to act on next. The luxury is in the precision. Every number, document hash, fill date and fee should read as clearly as a line in a ledger, because the product's promise is that everything can be checked.\n\nThe incumbent build leans more ornamental than this North Star: gold gradient text on most headings, gradient-filled buttons with a gold glow, and cards that lift on hover. This document keeps that vocabulary but rations it. Ornament belongs to a few hero moments. Working surfaces (marketplace, cask detail, dashboards, admin) stay flat, solid and tabular.\n\nDark navy is the primary world and the default for every visitor (<html class=\"dark\">, applied before first paint). A light parchment theme is the opt-in alternative from the theme toggle: the same ledger, printed on paper by daylight, with champagne deepened to old gold so it stays legible. Both themes define the same colour roles in src/index.css; components reference roles, never hues.",
     "keyCharacteristics": [
       "Midnight navy ground, parchment ink, champagne as the single accent for verification and action.",
       "Playfair Display headlines over Inter body: a printed-register headline with modern, legible working text.",
@@ -120,11 +311,31 @@
       "Data (ABV, fill date, price, fees, CIDs, transaction IDs) is set plainly, aligned and never decorated."
     ],
     "rules": [
-      { "name": "The One Seal Rule", "body": "Champagne marks verification and the next action. If more than about 10% of a working screen is gold, something is decorated that should have been informational.", "section": "colors" },
-      { "name": "The Solid Gold Rule", "body": "On working surfaces, champagne is a solid fill or a solid text colour. The gold gradient (--gradient-champagne) is reserved for the single hero headline of a marketing page and at most one primary CTA per screen.", "section": "colors" },
-      { "name": "The Serif Speaks, the Sans Works Rule", "body": "Playfair is for statements and names. Prices, ABV, volumes, dates, hashes and form fields are always Inter, set with tabular figures where they align in columns.", "section": "typography" },
-      { "name": "The Plain Data Rule", "body": "Never apply gradient text to a number or a document identifier.", "section": "typography" },
-      { "name": "The Still Ledger Rule", "body": "Cards in lists and tables do not lift or glow on hover; change the border to champagne at ~40% instead. Translate-on-hover is reserved for marketing cards and the hero CTA.", "section": "elevation" }
+      {
+        "name": "The One Seal Rule",
+        "body": "Champagne marks verification and the next action. If more than about 10% of a working screen is gold, something is decorated that should have been informational.",
+        "section": "colors"
+      },
+      {
+        "name": "The Solid Gold Rule",
+        "body": "On working surfaces, champagne is a solid fill or a solid text colour. The gold gradient (--gradient-champagne) is reserved for the single hero headline of a marketing page and at most one primary CTA per screen.",
+        "section": "colors"
+      },
+      {
+        "name": "The Serif Speaks, the Sans Works Rule",
+        "body": "Playfair is for statements and names. Prices, ABV, volumes, dates, hashes and form fields are always Inter, set with tabular figures where they align in columns.",
+        "section": "typography"
+      },
+      {
+        "name": "The Plain Data Rule",
+        "body": "Never apply gradient text to a number or a document identifier.",
+        "section": "typography"
+      },
+      {
+        "name": "The Still Ledger Rule",
+        "body": "Cards in lists and tables do not lift or glow on hover; change the border to champagne at ~40% instead. Translate-on-hover is reserved for marketing cards and the hero CTA.",
+        "section": "elevation"
+      }
     ],
     "dos": [
       "Do keep champagne to verification, the primary action and active state (the One Seal Rule).",
@@ -132,14 +343,14 @@
       "Do let real cask and warehouse photography provide the warmth; keep the UI around it flat and quiet.",
       "Do show fees, status and on-chain links as visible, labelled data rather than hiding them behind tooltips.",
       "Do keep 44px minimum touch targets and the 2px champagne focus ring on every interactive element.",
-      "Do design new tokens so a parchment light theme can be added: define each colour role once in :root and redefine it per theme, never hard-code hsl(222 …) values in components."
+      "Do add any new colour as a role in both :root (parchment) and .dark (navy) in src/index.css, and check it in both themes before shipping."
     ],
     "donts": [
       "Don't use the gold gradient on more than one headline and one CTA per screen (the Solid Gold Rule).",
       "Don't lift, scale or glow cards in marketplace lists, tables or dashboards (the Still Ledger Rule).",
       "Don't add looping animations (luxury-glow, float) to working surfaces.",
       "Don't introduce new accent hues for decoration; extend semantic roles (success, warning) as named tokens first.",
-      "Don't hard-code navy values in components, as bg-heritage-dark does today; it blocks the planned light theme."
+      "Don't hard-code hues in components (hsl(222 …), text-white on non-photo surfaces); they break one of the two themes. The green/red/amber status utilities still scattered through the app (~280 uses) should migrate to named semantic tokens."
     ]
   }
 }
