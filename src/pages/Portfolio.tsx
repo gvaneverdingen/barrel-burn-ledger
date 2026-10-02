@@ -540,7 +540,7 @@ const Portfolio = () => {
                               
                               {isOwnershipForSale(ownership.casks.id) ? (
                                 <div className="flex items-center gap-3">
-                                  <Badge variant="secondary" className="bg-orange-500/10 text-orange-600 border-orange-500/20">
+                                  <Badge variant="secondary" className="bg-warning/10 text-warning border-warning/20">
                                     Listed for Sale
                                   </Badge>
                                   {getSaleIdForOwnership(ownership.casks.id) && (
@@ -551,7 +551,7 @@ const Portfolio = () => {
                                         e.stopPropagation();
                                         handleCancelSaleClick(getSaleIdForOwnership(ownership.casks.id)!);
                                       }}
-                                      className="border-red-500/20 text-red-600 hover:bg-red-500/10"
+                                      className="border-destructive/20 text-destructive hover:bg-destructive/10"
                                     >
                                       <X className="h-4 w-4 mr-2" />
                                       Cancel Listing
@@ -599,7 +599,7 @@ const Portfolio = () => {
                           style={{ animationDelay: `${index * 0.1}s` }}
                           onClick={() => navigate(`/cask/${sale.casks.id}`)}
                         >
-                          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                          <div className="absolute inset-0 bg-gradient-to-br from-success/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                           <CardHeader className="relative">
                             <div className="flex justify-between items-start">
                               <div className="space-y-2">
@@ -610,7 +610,7 @@ const Portfolio = () => {
                                   {sale.casks.distilleries.name} • Cask #{sale.casks.cask_number}
                                 </CardDescription>
                               </div>
-                              <Badge className="bg-green-500/10 text-green-600 border-green-500/20 px-3 py-1">
+                              <Badge className="bg-success/10 text-success border-success/20 px-3 py-1">
                                 Active Listing
                               </Badge>
                             </div>
@@ -659,7 +659,7 @@ const Portfolio = () => {
                               <Button
                                 variant="outline"
                                 onClick={() => handleCancelSaleClick(sale.id)}
-                                className="border-red-500/20 text-red-600 hover:bg-red-500/10"
+                                className="border-destructive/20 text-destructive hover:bg-destructive/10"
                               >
                                 <X className="h-4 w-4 mr-2" />
                                 Cancel Listing
@@ -722,7 +722,7 @@ const Portfolio = () => {
                                   variant={transaction.status === 'completed' ? 'default' : 'secondary'}
                                   className={`px-3 py-1 ${
                                     transaction.status === 'completed' 
-                                      ? 'bg-green-500/10 text-green-600 border-green-500/20' 
+                                      ? 'bg-success/10 text-success border-success/20' 
                                       : 'bg-muted text-muted-foreground'
                                   }`}
                                 >
@@ -760,7 +760,7 @@ const Portfolio = () => {
             <AlertDialogCancel>Keep Listed</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancelSale}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={cancellingSale}
             >
               {cancellingSale ? (

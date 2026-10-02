@@ -60,7 +60,7 @@ export const ReviewList = ({ reviewedId }: ReviewListProps) => {
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1">
-          <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+          <Star className="h-5 w-5 fill-primary text-primary" />
           <span className="text-lg font-bold">{avgRating}</span>
         </div>
         <span className="text-sm text-muted-foreground">
@@ -79,7 +79,7 @@ export const ReviewList = ({ reviewedId }: ReviewListProps) => {
                       key={star}
                       className={`h-4 w-4 ${
                         star <= review.rating
-                          ? 'fill-yellow-400 text-yellow-400'
+                          ? 'fill-primary text-primary'
                           : 'text-muted-foreground/20'
                       }`}
                     />

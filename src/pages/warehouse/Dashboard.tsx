@@ -66,7 +66,7 @@ const WarehouseDashboard = () => {
           </div>
         </div>
         {warehouse.verified ? (
-          <Badge variant="default" className="bg-green-500"><Shield className="h-4 w-4 mr-1" />Verified</Badge>
+          <Badge variant="default" className="bg-success text-success-foreground"><Shield className="h-4 w-4 mr-1" />Verified</Badge>
         ) : (
           <Badge variant="secondary"><Shield className="h-4 w-4 mr-1" />Pending Verification</Badge>
         )}
@@ -94,13 +94,13 @@ const WarehouseDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card className="luxury-card cursor-pointer hover:shadow-gold transition-all" onClick={() => navigate("/warehouse/casks/new")}>
+        <Card className="luxury-card cursor-pointer hover:border-primary/40 transition-colors" onClick={() => navigate("/warehouse/casks/new")}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><Plus className="h-5 w-5" />Add Cask</CardTitle>
             <CardDescription>List a cask held under bond</CardDescription>
           </CardHeader>
         </Card>
-        <Card className="luxury-card cursor-pointer hover:shadow-gold transition-all" onClick={() => navigate("/warehouse/verification")}>
+        <Card className="luxury-card cursor-pointer hover:border-primary/40 transition-colors" onClick={() => navigate("/warehouse/verification")}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><Shield className="h-5 w-5" />Verification</CardTitle>
             <CardDescription>Manage verification status</CardDescription>

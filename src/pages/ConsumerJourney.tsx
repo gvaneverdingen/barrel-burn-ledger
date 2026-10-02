@@ -225,18 +225,18 @@ const ConsumerJourney = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'approved': return 'text-green-600';
-      case 'pending': return 'text-yellow-600';
-      case 'rejected': return 'text-red-600';
+      case 'approved': return 'text-success';
+      case 'pending': return 'text-warning';
+      case 'rejected': return 'text-destructive';
       default: return 'text-muted-foreground';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'approved': return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'pending': return <AlertCircle className="h-4 w-4 text-yellow-600" />;
-      case 'rejected': return <XCircle className="h-4 w-4 text-red-600" />;
+      case 'approved': return <CheckCircle className="h-4 w-4 text-success" />;
+      case 'pending': return <AlertCircle className="h-4 w-4 text-warning" />;
+      case 'rejected': return <XCircle className="h-4 w-4 text-destructive" />;
       default: return <Upload className="h-4 w-4 text-muted-foreground" />;
     }
   };
@@ -327,9 +327,9 @@ const ConsumerJourney = () => {
                   <div className="space-y-2">
                     <Label className="text-sm font-medium">Email Address</Label>
                     <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-md">
-                      <Shield className="h-4 w-4 text-green-600" />
+                      <Shield className="h-4 w-4 text-success" />
                       <span className="text-sm font-medium">{profile?.email}</span>
-                      <Badge variant="secondary" className="bg-green-100 text-green-800">Verified</Badge>
+                      <Badge variant="secondary" className="bg-success/10 text-success">Verified</Badge>
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -458,7 +458,7 @@ const ConsumerJourney = () => {
                                 Primary
                               </Badge>
                             )}
-                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                            <Badge variant="outline" className="bg-success/10 text-success border-success/30">
                               Connected
                             </Badge>
                           </div>
@@ -587,39 +587,39 @@ const ConsumerJourney = () => {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                   <div className="text-center p-4 border border-border/50 rounded-lg">
-                    <Shield className={`h-8 w-8 mx-auto mb-2 ${getVerificationProgress() === 100 ? 'text-green-600' : 'text-yellow-600'}`} />
+                    <Shield className={`h-8 w-8 mx-auto mb-2 ${getVerificationProgress() === 100 ? 'text-success' : 'text-warning'}`} />
                     <h4 className="font-semibold mb-1">Identity Status</h4>
-                    <Badge variant="secondary" className={getVerificationProgress() === 100 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
+                    <Badge variant="secondary" className={getVerificationProgress() === 100 ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'}>
                       {getVerificationProgress() === 100 ? 'Verified' : 'In Progress'}
                     </Badge>
                   </div>
                   <div className="text-center p-4 border border-border/50 rounded-lg">
-                    <Wallet className={`h-8 w-8 mx-auto mb-2 ${wallets.length > 0 ? 'text-green-600' : 'text-gray-600'}`} />
+                    <Wallet className={`h-8 w-8 mx-auto mb-2 ${wallets.length > 0 ? 'text-success' : 'text-muted-foreground'}`} />
                     <h4 className="font-semibold mb-1">Wallets</h4>
-                    <Badge variant="secondary" className={wallets.length > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                    <Badge variant="secondary" className={wallets.length > 0 ? 'bg-success/10 text-success' : 'bg-muted text-foreground'}>
                       {wallets.length} Connected
                     </Badge>
                   </div>
                   <div className="text-center p-4 border border-border/50 rounded-lg">
-                    <CreditCard className={`h-8 w-8 mx-auto mb-2 ${bankAccounts.length > 0 ? 'text-blue-600' : 'text-gray-600'}`} />
+                    <CreditCard className={`h-8 w-8 mx-auto mb-2 ${bankAccounts.length > 0 ? 'text-info' : 'text-muted-foreground'}`} />
                     <h4 className="font-semibold mb-1">Payment Methods</h4>
-                    <Badge variant="secondary" className={bankAccounts.length > 0 ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}>
+                    <Badge variant="secondary" className={bankAccounts.length > 0 ? 'bg-info/10 text-info' : 'bg-muted text-foreground'}>
                       {bankAccounts.length} Connected
                     </Badge>
                   </div>
                   <div className="text-center p-4 border border-border/50 rounded-lg">
                     <Lock className="h-8 w-8 text-primary mx-auto mb-2" />
                     <h4 className="font-semibold mb-1">2FA Security</h4>
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    <Badge variant="outline" className="bg-success/10 text-success border-success/30">
                       Enabled
                     </Badge>
                   </div>
                 </div>
 
                 {getVerificationProgress() < 100 && (
-                  <Alert className="border-yellow-200 bg-yellow-50">
-                    <AlertCircle className="h-4 w-4 text-yellow-600" />
-                    <AlertDescription className="text-yellow-800">
+                  <Alert className="border-warning/30 bg-warning/10">
+                    <AlertCircle className="h-4 w-4 text-warning" />
+                    <AlertDescription className="text-warning">
                       Complete your identity verification to unlock full platform features and higher investment limits.
                     </AlertDescription>
                   </Alert>

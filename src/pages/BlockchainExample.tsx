@@ -42,7 +42,7 @@ export default function BlockchainExample() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               Cask Purchase Transaction
-              <Badge variant="secondary" className="bg-green-100 text-green-800">
+              <Badge variant="secondary" className="bg-success/10 text-success">
                 Blockchain Confirmed
               </Badge>
             </CardTitle>
@@ -62,7 +62,7 @@ export default function BlockchainExample() {
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Status</label>
-                <Badge className="bg-green-100 text-green-800">{exampleTransaction.status}</Badge>
+                <Badge className="bg-success/10 text-success">{exampleTransaction.status}</Badge>
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Type</label>
@@ -129,7 +129,7 @@ export default function BlockchainExample() {
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-info text-info-foreground rounded-full"></div>
                 <div>
                   <p className="font-medium">Transaction Created</p>
                   <p className="text-sm text-muted-foreground">
@@ -139,7 +139,7 @@ export default function BlockchainExample() {
               </div>
               
               <div className="flex items-center gap-4">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-warning text-warning-foreground rounded-full"></div>
                 <div>
                   <p className="font-medium">Payment Processed</p>
                   <p className="text-sm text-muted-foreground">Stripe payment completed</p>
@@ -147,7 +147,7 @@ export default function BlockchainExample() {
               </div>
               
               <div className="flex items-center gap-4">
-                <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-accent text-accent-foreground rounded-full"></div>
                 <div>
                   <p className="font-medium">Admin Approved</p>
                   <p className="text-sm text-muted-foreground">Transaction approved for blockchain registration</p>
@@ -155,7 +155,7 @@ export default function BlockchainExample() {
               </div>
               
               <div className="flex items-center gap-4">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-success text-success-foreground rounded-full"></div>
                 <div>
                   <p className="font-medium">Blockchain Registered</p>
                   <p className="text-sm text-muted-foreground">
@@ -195,12 +195,12 @@ export default function BlockchainExample() {
         </Card>
 
         {/* Note about current transactions */}
-        <Card className="border-orange-200 bg-orange-50">
+        <Card className="border-warning/30 bg-warning/10">
           <CardHeader>
-            <CardTitle className="text-orange-800">Current System Status</CardTitle>
+            <CardTitle className="text-warning">Current System Status</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-orange-700">
+            <p className="text-warning">
               The transactions in your current database are still in "pending" status and haven't been 
               registered on the blockchain yet. Blockchain registration happens after admin approval 
               through the approve-transaction function.

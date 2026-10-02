@@ -163,11 +163,11 @@ const Reports = () => {
       case 'approved':
       case 'valid':
       case 'compliant':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className="h-4 w-4 text-success" />;
       case 'pending':
-        return <Clock className="h-4 w-4 text-yellow-500" />;
+        return <Clock className="h-4 w-4 text-warning" />;
       default:
-        return <AlertTriangle className="h-4 w-4 text-red-500" />;
+        return <AlertTriangle className="h-4 w-4 text-destructive" />;
     }
   };
 
@@ -176,11 +176,11 @@ const Reports = () => {
       case 'approved':
       case 'valid':
       case 'compliant':
-        return 'bg-green-100 text-green-800';
+        return 'bg-success/10 text-success';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-warning/10 text-warning';
       default:
-        return 'bg-red-100 text-red-800';
+        return 'bg-destructive/10 text-destructive';
     }
   };
 
@@ -204,7 +204,7 @@ const Reports = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
-            <FileText className="h-8 w-8 text-blue-500" />
+            <FileText className="h-8 w-8 text-info" />
             Reports & Compliance
           </h1>
           <p className="text-muted-foreground">
@@ -232,7 +232,7 @@ const Reports = () => {
                 <p className="text-sm font-medium text-muted-foreground">Portfolio Value</p>
                 <p className="text-2xl font-bold">{formatPrice(report.totalValue)}</p>
               </div>
-              <DollarSign className="h-8 w-8 text-green-500" />
+              <DollarSign className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -244,7 +244,7 @@ const Reports = () => {
                 <p className="text-sm font-medium text-muted-foreground">Total Investment</p>
                 <p className="text-2xl font-bold">{formatPrice(report.totalInvestment)}</p>
               </div>
-              <BarChart3 className="h-8 w-8 text-blue-500" />
+              <BarChart3 className="h-8 w-8 text-info" />
             </div>
           </CardContent>
         </Card>
@@ -254,11 +254,11 @@ const Reports = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Unrealized Gains</p>
-                <p className={`text-2xl font-bold ${report.unrealizedGains >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className={`text-2xl font-bold ${report.unrealizedGains >= 0 ? 'text-success' : 'text-destructive'}`}>
                   {formatPrice(report.unrealizedGains)}
                 </p>
               </div>
-              <TrendingUp className="h-8 w-8 text-green-500" />
+              <TrendingUp className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -268,11 +268,11 @@ const Reports = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">ROI</p>
-                <p className={`text-2xl font-bold ${report.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className={`text-2xl font-bold ${report.roi >= 0 ? 'text-success' : 'text-destructive'}`}>
                   {report.roi.toFixed(1)}%
                 </p>
               </div>
-              <TrendingUp className="h-8 w-8 text-green-500" />
+              <TrendingUp className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -438,15 +438,15 @@ const Reports = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-4 border rounded">
-                  <p className="text-2xl font-bold text-green-600">{report.caskCount}</p>
+                  <p className="text-2xl font-bold text-success">{report.caskCount}</p>
                   <p className="text-sm text-muted-foreground">Casks on Chain</p>
                 </div>
                 <div className="text-center p-4 border rounded">
-                  <p className="text-2xl font-bold text-blue-600">{report.transactions.length}</p>
+                  <p className="text-2xl font-bold text-info">{report.transactions.length}</p>
                   <p className="text-sm text-muted-foreground">Transactions Recorded</p>
                 </div>
                 <div className="text-center p-4 border rounded">
-                  <p className="text-2xl font-bold text-purple-600">100%</p>
+                  <p className="text-2xl font-bold text-accent">100%</p>
                   <p className="text-sm text-muted-foreground">Transparency Score</p>
                 </div>
               </div>

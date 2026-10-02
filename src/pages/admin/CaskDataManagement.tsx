@@ -272,7 +272,7 @@ export default function CaskDataManagement() {
                           type="checkbox"
                           checked={selectedCasks.length === incompleteCasks.length}
                           onChange={toggleSelectAll}
-                          className="rounded border-gray-300"
+                          className="rounded border-border"
                         />
                       </TableHead>
                       <TableHead>Cask Number</TableHead>
@@ -297,7 +297,7 @@ export default function CaskDataManagement() {
                               type="checkbox"
                               checked={selectedCasks.includes(cask.id)}
                               onChange={() => toggleCaskSelection(cask.id)}
-                              className="rounded border-gray-300"
+                              className="rounded border-border"
                               disabled={isEditing}
                             />
                           </TableCell>
@@ -318,7 +318,7 @@ export default function CaskDataManagement() {
                                 placeholder="Price/L"
                               />
                             ) : (
-                              <span className={cask.price_per_liter === null ? 'text-red-500' : ''}>
+                              <span className={cask.price_per_liter === null ? 'text-destructive' : ''}>
                                 {cask.price_per_liter !== null ? formatPrice(cask.price_per_liter) : 'Missing'}
                               </span>
                             )}
@@ -337,7 +337,7 @@ export default function CaskDataManagement() {
                                 placeholder="Total"
                               />
                             ) : (
-                              <span className={cask.total_price === null ? 'text-red-500' : ''}>
+                              <span className={cask.total_price === null ? 'text-destructive' : ''}>
                                 {cask.total_price !== null ? formatPrice(cask.total_price) : 'Missing'}
                               </span>
                             )}
@@ -356,7 +356,7 @@ export default function CaskDataManagement() {
                                 placeholder="Volume"
                               />
                             ) : (
-                              <span className={cask.current_volume_liters === null ? 'text-red-500' : ''}>
+                              <span className={cask.current_volume_liters === null ? 'text-destructive' : ''}>
                                 {cask.current_volume_liters !== null ? cask.current_volume_liters : 'Missing'}
                               </span>
                             )}
@@ -376,7 +376,7 @@ export default function CaskDataManagement() {
                                 placeholder="ABV"
                               />
                             ) : (
-                              <span className={cask.alcohol_percentage === null ? 'text-red-500' : ''}>
+                              <span className={cask.alcohol_percentage === null ? 'text-destructive' : ''}>
                                 {cask.alcohol_percentage !== null ? `${cask.alcohol_percentage}%` : 'Missing'}
                               </span>
                             )}
@@ -385,7 +385,7 @@ export default function CaskDataManagement() {
                           {/* Status */}
                           <TableCell>
                             {cask.available_for_sale ? (
-                              <Badge variant="outline" className="text-yellow-600 border-yellow-600">
+                              <Badge variant="outline" className="text-warning border-warning">
                                 Listed
                               </Badge>
                             ) : (
@@ -442,7 +442,7 @@ export default function CaskDataManagement() {
       ) : (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <CheckCircle2 className="h-12 w-12 text-green-600 mb-4" />
+            <CheckCircle2 className="h-12 w-12 text-success mb-4" />
             <h3 className="text-xl font-semibold mb-2">All Clear!</h3>
             <p className="text-muted-foreground text-center">
               All casks have complete pricing information. No action needed.

@@ -75,13 +75,13 @@ const Transactions = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "Completed":
-        return <Badge className="bg-green-600/15 text-green-700 border-green-200 dark:bg-green-500/15 dark:text-green-400 dark:border-green-800">Completed</Badge>;
+        return <Badge className="bg-success/15 text-success border-success/30">Completed</Badge>;
       case "Pending":
         return <Badge variant="secondary">Pending</Badge>;
       case "Failed":
         return <Badge variant="destructive">Failed</Badge>;
       case "Processing":
-        return <Badge className="bg-blue-600/15 text-blue-700 border-blue-200 dark:bg-blue-500/15 dark:text-blue-400 dark:border-blue-800">Processing</Badge>;
+        return <Badge className="bg-info/15 text-info border-info/30">Processing</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -192,11 +192,11 @@ const Transactions = () => {
             <div className="divide-y divide-border">
               {allTransactions.map((tx) => (
                 <div key={tx.id} className="flex items-center gap-3 p-4 sm:px-6 hover:bg-muted/50 transition-colors">
-                  <div className={`shrink-0 p-2 rounded-full ${tx.type === 'Purchase' ? 'bg-red-100 dark:bg-red-900/30' : 'bg-green-100 dark:bg-green-900/30'}`}>
+                  <div className={`shrink-0 p-2 rounded-full ${tx.type === 'Purchase' ? 'bg-destructive/10' : 'bg-success/10'}`}>
                     {tx.type === 'Purchase' ? (
-                      <ArrowUpRight className="h-4 w-4 text-red-600 dark:text-red-400" />
+                      <ArrowUpRight className="h-4 w-4 text-destructive" />
                     ) : (
-                      <ArrowDownLeft className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <ArrowDownLeft className="h-4 w-4 text-success" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -208,7 +208,7 @@ const Transactions = () => {
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className={`text-sm font-semibold ${tx.type === 'Payout' ? 'text-green-600 dark:text-green-400' : ''}`}>
+                    <p className={`text-sm font-semibold ${tx.type === 'Payout' ? 'text-success' : ''}`}>
                       {tx.type === 'Payout' ? '+' : '-'}{formatPrice(tx.amount)}
                     </p>
                     <div className="mt-1">{getStatusBadge(tx.status)}</div>

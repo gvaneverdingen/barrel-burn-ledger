@@ -103,7 +103,7 @@ const Unsubscribe = () => {
 
           {status === 'success' && (
             <div className="py-4 space-y-3">
-              <CheckCircle2 className="h-12 w-12 mx-auto text-green-500" />
+              <CheckCircle2 className="h-12 w-12 mx-auto text-success" />
               <p className="font-semibold text-lg">You've been unsubscribed</p>
               <p className="text-muted-foreground text-sm">
                 You won't receive any more app emails from ARIGI.

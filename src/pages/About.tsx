@@ -321,7 +321,7 @@ const About = () => {
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <Card className="heritage-card border-primary/30 overflow-hidden">
           <CardContent className="p-8 sm:p-12 lg:p-16 text-center">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair mb-5 heritage-text-gradient">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair mb-5">
               See what that looks like in practice.
             </h2>
             <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">

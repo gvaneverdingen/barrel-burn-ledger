@@ -147,7 +147,7 @@ const TestDataCreator = () => {
                 {result && (
                   <Card className="mt-4">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-green-600">
+                      <CardTitle className="flex items-center gap-2 text-success">
                         <CheckCircle className="h-5 w-5" />
                         Test Data Created Successfully!
                       </CardTitle>

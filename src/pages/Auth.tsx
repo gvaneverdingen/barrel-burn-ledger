@@ -313,7 +313,7 @@ const Auth = () => {
                       <SelectContent>
                         <SelectItem value="distillery">
                           <div className="flex items-center">
-                            <Building2 className="h-4 w-4 mr-2 text-blue-600" />
+                            <Building2 className="h-4 w-4 mr-2 text-info" />
                             <div>
                               <div className="font-medium">Distillery</div>
                               <div className="text-xs text-muted-foreground">Sell casks & manage inventory</div>
@@ -322,7 +322,7 @@ const Auth = () => {
                         </SelectItem>
                         <SelectItem value="consumer">
                           <div className="flex items-center">
-                            <Users className="h-4 w-4 mr-2 text-green-600" />
+                            <Users className="h-4 w-4 mr-2 text-success" />
                             <div>
                               <div className="font-medium">Consumer</div>
                               <div className="text-xs text-muted-foreground">Browse & purchase casks</div>
@@ -331,7 +331,7 @@ const Auth = () => {
                         </SelectItem>
                         <SelectItem value="investor">
                           <div className="flex items-center">
-                            <Users className="h-4 w-4 mr-2 text-purple-600" />
+                            <Users className="h-4 w-4 mr-2 text-accent" />
                             <div>
                               <div className="font-medium">Investor</div>
                               <div className="text-xs text-muted-foreground">Advanced trading & analytics</div>
@@ -341,23 +341,23 @@ const Auth = () => {
                       </SelectContent>
                     </Select>
                     {selectedRole === 'distillery' && (
-                      <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="mt-2 p-3 bg-info/10 border border-info/30 rounded-lg">
                         <div className="flex items-start space-x-2">
-                          <Building2 className="h-4 w-4 text-blue-600 mt-0.5" />
+                          <Building2 className="h-4 w-4 text-info mt-0.5" />
                           <div className="text-sm">
-                            <p className="font-medium text-blue-900">Welcome, Distillery!</p>
-                            <p className="text-blue-700">You'll get access to cask management, sales analytics, and verification tools.</p>
+                            <p className="font-medium text-info">Welcome, Distillery!</p>
+                            <p className="text-info">You'll get access to cask management, sales analytics, and verification tools.</p>
                           </div>
                         </div>
                       </div>
                     )}
                     {selectedRole === 'consumer' && (
-                      <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="mt-2 p-3 bg-success/10 border border-success/30 rounded-lg">
                         <div className="flex items-start space-x-2">
-                          <Users className="h-4 w-4 text-green-600 mt-0.5" />
+                          <Users className="h-4 w-4 text-success mt-0.5" />
                           <div className="text-sm">
-                            <p className="font-medium text-green-900">Welcome, Consumer!</p>
-                            <p className="text-green-700">Browse and purchase premium whisky casks from verified distilleries.</p>
+                            <p className="font-medium text-success">Welcome, Consumer!</p>
+                            <p className="text-success">Browse and purchase premium whisky casks from verified distilleries.</p>
                           </div>
                         </div>
                       </div>
@@ -390,7 +390,7 @@ const Auth = () => {
                   <div className="space-y-2">
                     <Label htmlFor="companyName">
                       Company Name 
-                      {selectedRole === 'distillery' && <span className="text-red-500">*</span>}
+                      {selectedRole === 'distillery' && <span className="text-destructive">*</span>}
                       <span className="text-muted-foreground text-sm ml-1">
                         {selectedRole === 'distillery' ? '(Required)' : '(Optional for non-distilleries)'}
                       </span>

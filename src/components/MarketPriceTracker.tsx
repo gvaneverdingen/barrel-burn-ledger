@@ -213,10 +213,10 @@ export const MarketPriceTracker = () => {
           <Card className="heritage-card hover-scale">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="h-4 w-4 text-green-600" />
+                <TrendingUp className="h-4 w-4 text-success" />
                 <p className="text-xs text-muted-foreground">Avg ROI</p>
               </div>
-              <p className={`text-2xl font-bold ${marketSummary.avgROI >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <p className={`text-2xl font-bold ${marketSummary.avgROI >= 0 ? 'text-success' : 'text-destructive'}`}>
                 {marketSummary.avgROI.toFixed(1)}%
               </p>
               <p className="text-xs text-muted-foreground">Secondary market</p>

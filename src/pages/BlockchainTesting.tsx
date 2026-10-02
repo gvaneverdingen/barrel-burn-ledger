@@ -153,7 +153,7 @@ export default function BlockchainTesting() {
       {transactions.length === 0 ? (
         <Card>
           <CardContent className="p-8 text-center">
-            <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-500" />
+            <CheckCircle className="h-12 w-12 mx-auto mb-4 text-success" />
             <h3 className="text-lg font-semibold mb-2">No Pending Transactions</h3>
             <p className="text-muted-foreground">
               All completed transactions have been registered on the blockchain.
@@ -183,7 +183,7 @@ export default function BlockchainTesting() {
                       Cask #{tx.cask_number} • {formatPrice(tx.total_amount / 100)}
                     </CardDescription>
                   </div>
-                  <Badge className="bg-blue-100 text-blue-800">
+                  <Badge className="bg-info/10 text-info">
                     Ready for Blockchain
                   </Badge>
                 </div>
@@ -204,7 +204,7 @@ export default function BlockchainTesting() {
                   </div>
                   <div>
                     <label className="text-muted-foreground">Status</label>
-                    <Badge variant="outline" className="text-green-600">
+                    <Badge variant="outline" className="text-success">
                       {tx.status}
                     </Badge>
                   </div>
@@ -267,7 +267,7 @@ export default function BlockchainTesting() {
                 href="https://faucet.polygon.technology/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
+                className="text-info hover:underline"
               >
                 Polygon Faucet <ExternalLink className="inline h-3 w-3" />
               </a>

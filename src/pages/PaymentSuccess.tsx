@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { supabase } from '@/integrations/supabase/client';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import angelShareLogo from '@/assets/angel-share-logo.png';
+import { ArigiMark } from '@/components/ArigiMark';
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -141,8 +141,8 @@ const PaymentSuccess = () => {
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <img src={angelShareLogo} alt="ARIGI logo" className="h-10 w-10 object-contain" />
-            <h1 className="text-2xl font-bold text-foreground heritage-title font-playfair">ARIGI</h1>
+            <ArigiMark className="h-10 w-10" />
+            <h1 className="text-2xl font-semibold text-primary font-playfair">ARIGI</h1>
           </div>
           
           <div className="flex items-center space-x-4">
@@ -180,9 +180,9 @@ const PaymentSuccess = () => {
             <Card className="text-center">
               <CardHeader className="pb-4">
                 <div className="mx-auto mb-4">
-                  <AlertCircle className="h-16 w-16 text-orange-600 mx-auto" />
+                  <AlertCircle className="h-16 w-16 text-warning mx-auto" />
                 </div>
-                <CardTitle className="text-2xl text-orange-600">Verification Pending</CardTitle>
+                <CardTitle className="text-2xl text-warning">Verification Pending</CardTitle>
                 <CardDescription className="text-lg">{error}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -206,9 +206,9 @@ const PaymentSuccess = () => {
             <Card className="text-center">
               <CardHeader className="pb-4">
                 <div className="mx-auto mb-4">
-                  <CheckCircle className="h-16 w-16 text-green-600 mx-auto" />
+                  <CheckCircle className="h-16 w-16 text-success mx-auto" />
                 </div>
-                <CardTitle className="text-2xl text-green-600">Payment Successful!</CardTitle>
+                <CardTitle className="text-2xl text-success">Payment Successful!</CardTitle>
                 <CardDescription className="text-lg">
                   Your whisky cask investment has been processed successfully
                 </CardDescription>

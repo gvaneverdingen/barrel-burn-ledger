@@ -170,7 +170,7 @@ const Wishlist = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Heart className="h-8 w-8 text-red-500" />
+            <Heart className="h-8 w-8 text-destructive" />
             My Wishlist
           </h1>
           <p className="text-muted-foreground">
@@ -251,7 +251,7 @@ const Wishlist = () => {
                     size="sm"
                     variant="ghost"
                     onClick={() => removeFromWishlist(item.id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-destructive hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

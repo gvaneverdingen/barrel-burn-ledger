@@ -1014,10 +1014,10 @@ const CaskDetails = () => {
                           {cask.distillery?.name || 'Unknown Distillery'}
                         </Link>
                         {cask.distillery?.verified && (
-                         <Shield className="h-4 w-4 text-green-600" />
+                         <Shield className="h-4 w-4 text-success" />
                        )}
                        {cask.is_sale_listing && cask.seller && (
-                         <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 ml-2">
+                         <Badge variant="outline" className="bg-info/10 text-info border-info/30 ml-2">
                            Resale by {cask.seller.first_name} {cask.seller.last_name}
                          </Badge>
                        )}
@@ -1286,7 +1286,7 @@ const CaskDetails = () => {
                 {isOwnerSale && (
                   <Button 
                     variant="outline"
-                    className="w-full border-red-500/20 text-red-600 hover:bg-red-500/10" 
+                    className="w-full border-destructive/20 text-destructive hover:bg-destructive/10" 
                     onClick={() => setShowCancelDialog(true)}
                     size="lg"
                     disabled={cancellingSale}
@@ -1311,7 +1311,7 @@ const CaskDetails = () => {
                 {effectiveIsOwner && hasActiveSale && !isOwnerSale && (
                   <Button 
                     variant="outline"
-                    className="w-full border-red-500/20 text-red-600 hover:bg-red-500/10" 
+                    className="w-full border-destructive/20 text-destructive hover:bg-destructive/10" 
                     onClick={() => setShowCancelDialog(true)}
                     size="lg"
                     disabled={cancellingSale}
@@ -1360,7 +1360,7 @@ const CaskDetails = () => {
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold">{cask.distillery?.name || 'Unknown'}</h3>
                   {cask.distillery?.verified && (
-                    <Badge variant="outline" className="text-green-600 border-green-600">
+                    <Badge variant="outline" className="text-success border-success">
                       <Shield className="h-3 w-3 mr-1" />
                       Verified
                     </Badge>
@@ -1669,7 +1669,7 @@ const CaskDetails = () => {
             <AlertDialogCancel>Keep Listed</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancelSale}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={cancellingSale}
             >
               {cancellingSale ? (

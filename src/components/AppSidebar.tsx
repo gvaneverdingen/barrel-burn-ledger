@@ -277,7 +277,7 @@ export function AppSidebar({ isExpanded = true, onToggle }: AppSidebarProps) {
                 className={({ isActive }) =>
                   `flex items-center px-2 py-2 rounded-lg transition-all duration-200 font-inter ${
                     isActive
-                      ? 'bg-sidebar-primary/10 text-sidebar-primary font-medium border-l-2 border-sidebar-primary shadow-gold'
+                      ? 'bg-sidebar-primary/10 text-sidebar-primary font-medium'
                       : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
                   }`
                 }

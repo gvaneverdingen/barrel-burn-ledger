@@ -252,7 +252,7 @@ const DistilleryCasks = () => {
                 <div className="flex items-center justify-between pt-2 border-t">
                   <span className="text-sm text-muted-foreground">NFT:</span>
                   {cask.nft_token_id ? (
-                    <Badge variant="outline" className="text-green-600 border-green-600">
+                    <Badge variant="outline" className="text-success border-success">
                       <Coins className="h-3 w-3 mr-1" />
                       #{cask.nft_token_id}
                     </Badge>

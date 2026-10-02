@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-02T09:00:00Z",
+  "generatedAt": "2026-10-02T11:00:00Z",
   "title": "Design System: ARIGI",
   "extensions": {
     "colorMeta": {
@@ -87,7 +87,7 @@
       "sealing-red": {
         "role": "semantic",
         "displayName": "Sealing-wax Red",
-        "canonical": "hsl(8 65% 55%)"
+        "canonical": "hsl(8 68% 63%)"
       },
       "sidebar-navy": {
         "role": "neutral",
@@ -153,6 +153,21 @@
         "role": "neutral",
         "displayName": "Deckle Line (light theme)",
         "canonical": "hsl(36 20% 82%)"
+      },
+      "success": {
+        "role": "semantic",
+        "displayName": "Cellar Green",
+        "canonical": "hsl(150 45% 58%)"
+      },
+      "warning": {
+        "role": "semantic",
+        "displayName": "Copper Warning",
+        "canonical": "hsl(24 85% 64%)"
+      },
+      "info": {
+        "role": "semantic",
+        "displayName": "Slate Blue",
+        "canonical": "hsl(210 70% 70%)"
       }
     },
     "typographyMeta": {
@@ -247,7 +262,7 @@
       "name": "Hero Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Gradient + glow variant; once per screen, marketing hero only.",
+      "description": "Gradient + glow variant (heritage-button-hero); home-page hero only.",
       "html": "<button class=\"ds-btn-hero\">Explore the Marketplace</button>",
       "css": ".ds-btn-hero { height: 48px; padding: 0 32px; background: linear-gradient(90deg, hsl(38 60% 68%), hsl(32 55% 60%)); color: hsl(222 40% 10%); font-family: Inter, system-ui, sans-serif; font-size: 1rem; font-weight: 500; border: none; border-radius: 12px; box-shadow: 0 8px 32px -8px hsl(38 55% 60% / 0.35); cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); } .ds-btn-hero:hover { transform: translateY(-1px); box-shadow: 0 20px 40px -12px hsl(222 45% 8% / 0.35); } .ds-btn-hero:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(222 38% 11%), 0 0 0 4px hsl(38 60% 68%); }"
     },
@@ -287,9 +302,9 @@
       "name": "Sidebar Nav",
       "kind": "nav",
       "refersTo": "nav-item-active",
-      "description": "Sidebar group with uppercase label and an active champagne row.",
+      "description": "Sidebar group with uppercase label and an active row tinted in primary.",
       "html": "<nav class=\"ds-nav\"><div class=\"ds-nav-label\">Navigation</div><a class=\"ds-nav-item ds-active\">Home</a><a class=\"ds-nav-item\">Marketplace</a><a class=\"ds-nav-item\">Our Story</a></nav>",
-      "css": ".ds-nav { width: 240px; padding: 16px 8px; background: hsl(220 40% 10%); font-family: Inter, system-ui, sans-serif; } .ds-nav-label { padding: 0 8px 8px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: hsl(38 15% 68%); } .ds-nav-item { display: flex; align-items: center; height: 44px; padding: 0 12px; border-radius: 12px; color: hsl(38 25% 88%); font-size: 1rem; cursor: pointer; transition: background 0.2s; } .ds-nav-item:hover { background: hsl(220 35% 15%); } .ds-nav-item.ds-active { background: hsl(220 28% 22%); color: hsl(38 60% 68%); box-shadow: inset 2px 0 0 hsl(38 60% 68% / 0.6); }"
+      "css": ".ds-nav { width: 240px; padding: 16px 8px; background: hsl(220 40% 10%); font-family: Inter, system-ui, sans-serif; } .ds-nav-label { padding: 0 8px 8px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: hsl(38 15% 68%); } .ds-nav-item { display: flex; align-items: center; height: 44px; padding: 0 12px; border-radius: 12px; color: hsl(38 25% 88%); font-size: 1rem; cursor: pointer; transition: background 0.2s; } .ds-nav-item:hover { background: hsl(220 35% 15%); } .ds-nav-item.ds-active { background: hsl(38 60% 68% / 0.1); color: hsl(38 60% 68%); }"
     },
     {
       "name": "Stat Row",
@@ -298,6 +313,14 @@
       "description": "Signature: real platform figures in champagne Playfair, zeros included.",
       "html": "<div class=\"ds-stats\"><div><b>16</b><span>Casks listed</span></div><div><b>16</b><span>For sale now</span></div><div><b>4</b><span>Distilleries</span></div><div><b>0</b><span>Trades settled</span></div></div>",
       "css": ".ds-stats { display: grid; grid-template-columns: repeat(4, 1fr); max-width: 680px; border: 1px solid hsl(222 25% 22% / 0.6); border-radius: 12px; background: hsl(222 35% 14% / 0.5); } .ds-stats div { padding: 20px 16px; display: flex; flex-direction: column; gap: 4px; } .ds-stats div + div { border-left: 1px solid hsl(222 25% 22% / 0.6); } .ds-stats b { font-family: 'Playfair Display', Georgia, serif; font-size: 2rem; color: hsl(38 60% 68%); line-height: 1; } .ds-stats span { font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; color: hsl(38 15% 68%); }"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "badge-outline",
+      "description": "Role-tinted status pill: 15% fill, role text, 30% border.",
+      "html": "<span class=\"ds-status ds-ok\">Completed</span> <span class=\"ds-status ds-warn\">Pending review</span> <span class=\"ds-status ds-info\">Processing</span>",
+      "css": ".ds-status { display: inline-flex; padding: 2px 10px; border-radius: 9999px; font-family: Inter, system-ui, sans-serif; font-size: 0.75rem; font-weight: 600; border: 1px solid; } .ds-ok { color: hsl(150 45% 58%); background: hsl(150 45% 58% / 0.15); border-color: hsl(150 45% 58% / 0.3); } .ds-warn { color: hsl(24 85% 64%); background: hsl(24 85% 64% / 0.15); border-color: hsl(24 85% 64% / 0.3); } .ds-info { color: hsl(210 70% 70%); background: hsl(210 70% 70% / 0.15); border-color: hsl(210 70% 70% / 0.3); }"
     }
   ],
   "narrative": {
@@ -350,7 +373,7 @@
       "Don't lift, scale or glow cards in marketplace lists, tables or dashboards (the Still Ledger Rule).",
       "Don't add looping animations (luxury-glow, float) to working surfaces.",
       "Don't introduce new accent hues for decoration; extend semantic roles (success, warning) as named tokens first.",
-      "Don't hard-code hues in components (hsl(222 …), text-white on non-photo surfaces); they break one of the two themes. The green/red/amber status utilities still scattered through the app (~280 uses) should migrate to named semantic tokens."
+      "Don't use Tailwind palette colours (text-green-600, bg-amber-100, dark:… overrides) or literal hues in components; use a role. text-white and bg-black/… are allowed only over photography."
     ]
   }
 }

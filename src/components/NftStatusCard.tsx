@@ -41,7 +41,7 @@ const NftStatusCard = ({
         {isMinted ? (
           <>
             <div className="flex items-center gap-2">
-              <Badge variant="default" className="bg-green-600 hover:bg-green-700">
+              <Badge variant="default" className="bg-success text-success-foreground hover:bg-success/90">
                 <Coins className="h-3 w-3 mr-1" />
                 NFT Minted
               </Badge>

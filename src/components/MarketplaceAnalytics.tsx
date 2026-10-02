@@ -43,11 +43,11 @@ export const MarketplaceAnalytics = ({ data }: MarketAnalyticsProps) => {
           <div className="text-2xl font-bold">{formatCurrency(data.averagePrice)}</div>
           <div className="flex items-center space-x-1">
             {data.priceChange >= 0 ? (
-              <TrendingUp className="h-3 w-3 text-green-500" />
+              <TrendingUp className="h-3 w-3 text-success" />
             ) : (
-              <TrendingDown className="h-3 w-3 text-red-500" />
+              <TrendingDown className="h-3 w-3 text-destructive" />
             )}
-            <span className={`text-xs ${data.priceChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            <span className={`text-xs ${data.priceChange >= 0 ? 'text-success' : 'text-destructive'}`}>
               {data.priceChange >= 0 ? '+' : ''}{data.priceChange.toFixed(1)}%
             </span>
           </div>
@@ -93,7 +93,7 @@ export const MarketplaceAnalytics = ({ data }: MarketAnalyticsProps) => {
           <BarChart3 className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+          <Badge variant="outline" className="bg-success/10 text-success border-success/30">
             Active
           </Badge>
           <p className="text-xs text-muted-foreground mt-1">24/7 Trading</p>

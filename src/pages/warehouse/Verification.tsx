@@ -33,9 +33,9 @@ const WarehouseVerification = () => {
   }
 
   const status = warehouse.verified
-    ? { label: "Verified", icon: CheckCircle, color: "bg-green-500" }
+    ? { label: "Verified", icon: CheckCircle, color: "bg-success text-success-foreground" }
     : warehouse.bonded_warehouse_number
-    ? { label: "Pending Review", icon: Clock, color: "bg-amber-500" }
+    ? { label: "Pending Review", icon: Clock, color: "bg-warning text-warning-foreground" }
     : { label: "Incomplete", icon: AlertCircle, color: "bg-destructive" };
 
   const Icon = status.icon;

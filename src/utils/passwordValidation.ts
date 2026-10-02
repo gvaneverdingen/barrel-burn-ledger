@@ -83,11 +83,11 @@ export const getPasswordStrengthColor = (score: number): string => {
     case 1:
       return "text-destructive";
     case 2:
-      return "text-orange-500";
+      return "text-warning";
     case 3:
-      return "text-yellow-500";
+      return "text-warning";
     case 4:
-      return "text-green-500";
+      return "text-success";
     default:
       return "text-destructive";
   }

@@ -265,10 +265,10 @@ const DistilleryAnalytics = () => {
         <Card className="luxury-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending Payouts</CardTitle>
-            <Clock className="h-4 w-4 text-amber-500" />
+            <Clock className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-amber-500">{formatPrice(pendingAmount)}</div>
+            <div className="text-2xl font-bold text-warning">{formatPrice(pendingAmount)}</div>
             <p className="text-xs text-muted-foreground">
               {pendingPayouts.length} payouts awaiting transfer
             </p>
@@ -278,10 +278,10 @@ const DistilleryAnalytics = () => {
         <Card className="luxury-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Completed Transfers</CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-500" />
+            <CheckCircle className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-500">{formatPrice(completedAmount)}</div>
+            <div className="text-2xl font-bold text-success">{formatPrice(completedAmount)}</div>
             <p className="text-xs text-muted-foreground">
               {completedPayouts.length} transfers completed
             </p>
@@ -457,9 +457,9 @@ const DistilleryAnalytics = () => {
                 <div key={payout.id} className="flex items-center justify-between p-4 border border-border rounded-lg">
                   <div className="flex items-center gap-3">
                     {payout.status === 'completed' ? (
-                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <CheckCircle className="h-5 w-5 text-success" />
                     ) : (
-                      <Clock className="h-5 w-5 text-amber-500" />
+                      <Clock className="h-5 w-5 text-warning" />
                     )}
                     <div>
                       <p className="font-medium">Payout #{payout.id.slice(0, 8)}</p>
@@ -469,7 +469,7 @@ const DistilleryAnalytics = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className={`font-semibold ${payout.status === 'completed' ? 'text-green-500' : 'text-amber-500'}`}>
+                    <p className={`font-semibold ${payout.status === 'completed' ? 'text-success' : 'text-warning'}`}>
                       £{payout.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                     <p className="text-sm text-muted-foreground capitalize">

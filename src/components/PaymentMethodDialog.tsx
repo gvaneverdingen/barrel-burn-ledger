@@ -447,10 +447,10 @@ export const PaymentMethodDialog = ({
 
         {step === "pending" && approvalRequired && (
           <div className="space-y-4">
-            <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
-              <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5" />
+            <div className="flex items-start gap-3 p-4 bg-warning/10 rounded-lg border border-warning/20">
+              <AlertCircle className="h-5 w-5 text-warning mt-0.5" />
               <div>
-                <h4 className="font-medium text-amber-600">Token Approval Required</h4>
+                <h4 className="font-medium text-warning">Token Approval Required</h4>
                 <p className="text-sm text-muted-foreground mt-1">
                   Before purchasing, you need to approve the marketplace contract to spend{" "}
                   <strong>{approvalRequired.amountFormatted} {approvalRequired.tokenSymbol}</strong>.

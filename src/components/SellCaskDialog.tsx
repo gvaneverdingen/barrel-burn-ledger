@@ -177,13 +177,13 @@ export function SellCaskDialog({ open, onOpenChange, ownership, onSaleCreated }:
             </div>
           )}
           {isMinted && (
-            <div className="mb-4 p-3 rounded-lg bg-green-500/10 border border-green-500/30 flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-green-500" />
-              <span className="text-xs text-green-600 dark:text-green-400 font-medium">Blockchain provenance verified — ready to list</span>
+            <div className="mb-4 p-3 rounded-lg bg-success/10 border border-success/30 flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-success" />
+              <span className="text-xs text-success font-medium">Blockchain provenance verified — ready to list</span>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Info className="h-3.5 w-3.5 text-green-500/70 cursor-help" />
+                    <Info className="h-3.5 w-3.5 text-success/70 cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent side="top" className="max-w-[280px] text-xs leading-relaxed">
                     <p>This cask has been minted on the Polygon blockchain, creating an immutable record of its origin, age, and ownership history. All future transactions will be transparently logged on-chain.</p>

@@ -266,7 +266,7 @@ const ProfileCompletion = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="first_name">
-                First Name <span className="text-red-500">*</span>
+                First Name <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="first_name"
@@ -280,7 +280,7 @@ const ProfileCompletion = () => {
 
             <div className="space-y-2">
               <Label htmlFor="last_name">
-                Last Name <span className="text-red-500">*</span>
+                Last Name <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="last_name"
@@ -294,7 +294,7 @@ const ProfileCompletion = () => {
 
             <div className="space-y-2">
               <Label>
-                Date of Birth <span className="text-red-500">*</span>
+                Date of Birth <span className="text-destructive">*</span>
               </Label>
               <Popover open={dobOpen} onOpenChange={setDobOpen}>
                 <PopoverTrigger asChild>

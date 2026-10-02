@@ -22,6 +22,9 @@ colors:
   faded-ink: "hsl(222 14% 36%)"
   vellum: "hsl(38 22% 90%)"
   deckle-line: "hsl(36 20% 82%)"
+  success: "hsl(150 45% 58%)"
+  warning: "hsl(24 85% 64%)"
+  info: "hsl(210 70% 70%)"
 typography:
   display:
     fontFamily: "Playfair Display, Georgia, serif"
@@ -140,7 +143,12 @@ A two-temperature palette: cold, deep navies for every surface; warm parchment a
 - **Parchment** (`{colors.parchment}`): reserved as the ground of the planned light theme. Not used as a surface in the dark world.
 
 ### Semantic
-- **Sealing-wax Red** (`{colors.sealing-red}`): destructive actions and errors only (`hsl(6 65% 44%)` in the light theme).
+Status is expressed only through these roles (`text-success`, `bg-warning/10`, `border-info/30`, …), each defined in both themes. Tints use the role at 10–15% opacity with the role itself as text; solid fills pair the role with its `-foreground`. Values below are the navy theme; the light theme deepens each to pass 4.5:1 on parchment.
+- **Sealing-wax Red** (`hsl(8 68% 63%)`; light `hsl(6 65% 44%)`): destructive actions and errors.
+- **Cellar Green** (`{colors.success}`; light `hsl(152 55% 28%)`): completed, verified-on-chain, online, positive change.
+- **Copper Warning** (`{colors.warning}`; light `hsl(22 80% 38%)`): pending, needs attention. Deliberately pushed toward copper so it never reads as champagne ("verified").
+- **Slate Blue** (`{colors.info}`; light `hsl(212 60% 38%)`): processing, informational.
+- Star ratings use the primary role: a rating is a seal of approval, not a warning.
 
 ### Light theme (parchment)
 The same roles, remapped for paper. Every text pair meets WCAG AA (4.5:1 or better).
@@ -208,7 +216,8 @@ Gently rounded throughout. The base radius is 12px (`--radius: 0.75rem`): cards 
 ### Buttons
 Confident and quiet; the label carries the weight, not the effects.
 - **Shape:** 10px corners (12px for large hero buttons), 40px default height, 48px for large and mobile.
-- **Primary:** solid champagne with deep navy ink, 500 weight. The hero variant (`heritage-button`) adds a champagne-to-bronze gradient and glow; allow it once per screen at most.
+- **Primary:** solid champagne with deep navy ink, 500 weight (`heritage-button` or the default variant). Hover darkens the fill; no lift, no glow.
+- **Hero (`heritage-button-hero`):** the one ornamented CTA, with the gold gradient, champagne glow and a 1px lift on hover. Home-page hero only.
 - **Outline / secondary:** transparent with a champagne border at 40%, parchment text, champagne tint at 10% on hover.
 - **Ghost / link:** champagne text and an arrow icon that nudges right on hover.
 - **Focus:** a 2px champagne ring offset from the button. Never remove it.
@@ -232,8 +241,11 @@ Confident and quiet; the label carries the weight, not the effects.
 - **Helper text:** aged-label colour, one sentence explaining the field.
 
 ### Navigation
-- **Sidebar:** sidebar navy, uppercase tracked group labels, 44px rows with icon + label. The active row gets a slate-navy fill, champagne text and a soft champagne edge.
-- **Top bar:** logo + wordmark in champagne Playfair at left; theme toggle, currency selector and sign-in at right.
+- **Sidebar:** sidebar navy, uppercase tracked group labels, 44px rows with icon + label. The active row gets a 10% primary tint and primary text; no side stripe, no glow.
+- **Top bar:** the winged-cask mark plus the ARIGI wordmark in solid primary Playfair at left; theme toggle, currency selector and sign-in at right.
+
+### Logo mark
+`src/assets/arigi-mark.png` is an alpha mask (white on transparent) cut from the Angel Share artwork, without its lettering. It renders through `<ArigiMark />`, which fills it with the primary role, so it is champagne on navy and old gold on parchment. Never place the original black-square PNGs on a themed surface, and never animate the mark.
 - **Mobile:** bottom navigation bar, sticky blurred header, 44–48px targets.
 
 ### Stat Row (signature)
@@ -257,4 +269,4 @@ A vertical sequence of custody events (fill, regauge, warehouse transfer, sale, 
 - **Don't** lift, scale or glow cards in marketplace lists, tables or dashboards (the Still Ledger Rule).
 - **Don't** add looping animations (`luxury-glow`, `float`) to working surfaces.
 - **Don't** introduce new accent hues for decoration; extend semantic roles (success, warning) as named tokens first.
-- **Don't** hard-code hues in components (`hsl(222 …)`, `text-white` on non-photo surfaces); they break one of the two themes. The green/red/amber status utilities still scattered through the app (~280 uses) should migrate to named semantic tokens.
+- **Don't** use Tailwind palette colours (`text-green-600`, `bg-amber-100`, `dark:…` overrides) or literal hues in components; use a role. `text-white` and `bg-black/…` are allowed only over photography.

@@ -57,9 +57,9 @@ const StripeConnectCard = () => {
       return <Badge variant="secondary">Not Connected</Badge>;
     }
     if (!status.onboardingComplete) {
-      return <Badge variant="outline" className="border-amber-500 text-amber-600">Pending Setup</Badge>;
+      return <Badge variant="outline" className="border-warning text-warning">Pending Setup</Badge>;
     }
-    return <Badge className="bg-green-500">Active</Badge>;
+    return <Badge className="bg-success text-success-foreground">Active</Badge>;
   };
 
   if (isLoading) {
@@ -118,10 +118,10 @@ const StripeConnectCard = () => {
           </div>
         ) : !status.onboardingComplete ? (
           <div className="space-y-4">
-            <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
-              <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5" />
+            <div className="flex items-start gap-3 p-4 bg-warning/10 rounded-lg border border-warning/20">
+              <AlertCircle className="h-5 w-5 text-warning mt-0.5" />
               <div>
-                <h4 className="font-medium text-amber-600">Complete Your Setup</h4>
+                <h4 className="font-medium text-warning">Complete Your Setup</h4>
                 <p className="text-sm text-muted-foreground mt-1">
                   You've started connecting your Stripe account, but there are additional steps to complete before you can receive payouts.
                 </p>
@@ -130,17 +130,17 @@ const StripeConnectCard = () => {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2">
                 {status.chargesEnabled ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className="h-4 w-4 text-success" />
                 ) : (
-                  <AlertCircle className="h-4 w-4 text-amber-500" />
+                  <AlertCircle className="h-4 w-4 text-warning" />
                 )}
                 <span>Charges {status.chargesEnabled ? "Enabled" : "Pending"}</span>
               </div>
               <div className="flex items-center gap-2">
                 {status.payoutsEnabled ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className="h-4 w-4 text-success" />
                 ) : (
-                  <AlertCircle className="h-4 w-4 text-amber-500" />
+                  <AlertCircle className="h-4 w-4 text-warning" />
                 )}
                 <span>Payouts {status.payoutsEnabled ? "Enabled" : "Pending"}</span>
               </div>
@@ -160,10 +160,10 @@ const StripeConnectCard = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="flex items-start gap-3 p-4 bg-green-500/10 rounded-lg border border-green-500/20">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+            <div className="flex items-start gap-3 p-4 bg-success/10 rounded-lg border border-success/20">
+              <CheckCircle className="h-5 w-5 text-success mt-0.5" />
               <div>
-                <h4 className="font-medium text-green-600">Account Active</h4>
+                <h4 className="font-medium text-success">Account Active</h4>
                 <p className="text-sm text-muted-foreground mt-1">
                   Your Stripe Connect account is fully set up. You'll receive payouts automatically when your casks are sold.
                 </p>
@@ -171,11 +171,11 @@ const StripeConnectCard = () => {
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-success" />
                 <span>Charges Enabled</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-success" />
                 <span>Payouts Enabled</span>
               </div>
             </div>

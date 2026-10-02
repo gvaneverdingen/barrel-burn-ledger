@@ -11,7 +11,7 @@ import { NotificationsBell } from '@/components/NotificationsBell';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { ViewAsSwitcher } from '@/components/ViewAsSwitcher';
 import { SiteGuideAgent } from '@/components/SiteGuideAgent';
-import angelShareLogo from '@/assets/angel-share-logo.png';
+import { ArigiMark } from '@/components/ArigiMark';
 
 interface LayoutProps {
   children: ReactNode;
@@ -134,10 +134,8 @@ export const Layout = ({ children }: LayoutProps) => {
           <header className="mobile-sticky-header h-14 sm:h-16 border-b border-border/50 bg-card/80 backdrop-blur-md">
             <div className="mobile-container h-full flex items-center justify-between gap-2">
               <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
-                <div className="animate-float shrink-0">
-                  <img src={angelShareLogo} alt="ARIGI logo" className="h-7 w-7 sm:h-8 sm:w-8 object-contain" />
-                </div>
-                <span className="text-base sm:text-xl font-bold heritage-title font-playfair truncate">ARIGI</span>
+                <ArigiMark className="h-7 w-7 sm:h-8 sm:w-8" />
+                <span className="text-base sm:text-xl font-semibold text-primary font-playfair truncate">ARIGI</span>
               </div>
               
               <div className="flex items-center space-x-2 sm:space-x-4">

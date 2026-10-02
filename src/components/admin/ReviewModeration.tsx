@@ -58,7 +58,7 @@ export const ReviewModeration = () => {
   const renderStars = (rating: number) => (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map(i => (
-        <Star key={i} className={`h-3 w-3 ${i <= rating ? 'fill-yellow-500 text-yellow-500' : 'text-muted-foreground'}`} />
+        <Star key={i} className={`h-3 w-3 ${i <= rating ? 'fill-primary text-primary' : 'text-muted-foreground'}`} />
       ))}
     </div>
   );

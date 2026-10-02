@@ -107,7 +107,7 @@ const Help = () => {
                 Get instant help from our team
               </p>
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+                <div className="h-2 w-2 bg-success text-success-foreground rounded-full"></div>
                 <span className="text-sm">Online now</span>
               </div>
               <Button className="w-full">Start Chat</Button>

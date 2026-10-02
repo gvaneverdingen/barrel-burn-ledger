@@ -126,18 +126,18 @@ const Profile = () => {
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'distillery': return 'bg-amber-100 text-amber-800 border-amber-200';
-      case 'investor': return 'bg-green-100 text-green-800 border-green-200';
-      case 'consumer': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'distillery': return 'bg-warning/10 text-warning border-warning/30';
+      case 'investor': return 'bg-success/10 text-success border-success/30';
+      case 'consumer': return 'bg-info/10 text-info border-info/30';
       default: return 'bg-muted text-muted-foreground';
     }
   };
 
   const getVerificationColor = (status: string | null) => {
     switch (status) {
-      case 'verified': return 'bg-green-100 text-green-800 border-green-200';
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
+      case 'verified': return 'bg-success/10 text-success border-success/30';
+      case 'pending': return 'bg-warning/10 text-warning border-warning/30';
+      case 'rejected': return 'bg-destructive/10 text-destructive border-destructive/30';
       default: return 'bg-muted text-muted-foreground';
     }
   };

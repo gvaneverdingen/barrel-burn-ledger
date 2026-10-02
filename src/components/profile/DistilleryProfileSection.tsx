@@ -158,11 +158,11 @@ export const DistilleryProfileSection: React.FC<Props> = ({ userId, email }) => 
           </div>
           <div className="flex items-center gap-2">
             {distillery.verified ? (
-              <Badge className="bg-green-100 text-green-800 border-green-200">
+              <Badge className="bg-success/10 text-success border-success/30">
                 <Shield className="h-3 w-3 mr-1" /> Verified
               </Badge>
             ) : (
-              <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+              <Badge className="bg-warning/10 text-warning border-warning/30">
                 <Shield className="h-3 w-3 mr-1" /> Pending Verification
               </Badge>
             )}

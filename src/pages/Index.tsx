@@ -154,7 +154,7 @@ const Index = () => {
               <Button
                 size="lg"
                 onClick={() => navigate('/marketplace')}
-                className="heritage-button text-base px-8 h-12 group"
+                className="heritage-button-hero text-base px-8 h-12 group"
               >
                 Explore the Marketplace
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -328,7 +328,7 @@ const Index = () => {
               Provenance
             </Badge>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair mb-6 leading-tight">
-              Every cask, <span className="heritage-text-gradient">cryptographically proven.</span>
+              Every cask, <span className="text-primary">cryptographically proven.</span>
             </h2>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
               We mint each cask as a unique NFT before it reaches the marketplace. The result: an immutable

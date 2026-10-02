@@ -39,6 +39,14 @@
     --destructive: 6 65% 44%;
     --destructive-foreground: 38 40% 98%;
 
+    /* Status roles: components use these, never raw green/red/amber utilities */
+    --success: 152 55% 28%;
+    --success-foreground: 38 40% 98%;
+    --warning: 22 80% 38%;
+    --warning-foreground: 38 40% 98%;
+    --info: 212 60% 38%;
+    --info-foreground: 38 40% 98%;
+
     --border: 36 20% 82%;
     --input: 36 20% 82%;
     --ring: 34 62% 34%;
@@ -98,8 +106,15 @@
     --muted: 222 25% 18%;
     --muted-foreground: 38 15% 68%;
 
-    --destructive: 8 65% 55%;
-    --destructive-foreground: 38 35% 92%;
+    --destructive: 8 68% 63%;
+    --destructive-foreground: 222 40% 10%;
+
+    --success: 150 45% 58%;
+    --success-foreground: 222 40% 10%;
+    --warning: 24 85% 64%;
+    --warning-foreground: 222 40% 10%;
+    --info: 210 70% 70%;
+    --info-foreground: 222 40% 10%;
 
     --border: 222 25% 22%;
     --input: 222 25% 18%;
@@ -141,25 +156,37 @@
 
 /* Heritage Luxury Utility Classes */
 @layer components {
+  /* The Still Ledger Rule: cards stay put; only the border answers the pointer. */
   .heritage-card {
-    @apply bg-gradient-to-br from-card via-card to-muted/20 border border-border/60 backdrop-blur-sm rounded-xl;
+    @apply bg-card border border-border/60 rounded-xl;
     box-shadow: var(--shadow-elegant);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color 0.2s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   .heritage-card:hover {
-    box-shadow: var(--shadow-heritage);
-    transform: translateY(-2px);
+    border-color: hsl(var(--primary) / 0.4);
   }
 
+  /* The Solid Gold Rule: buttons are solid gold. */
   .heritage-button {
-    @apply bg-gradient-to-r from-primary to-accent text-primary-foreground font-medium rounded-lg font-inter;
-    box-shadow: var(--shadow-champagne);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    @apply bg-primary text-primary-foreground font-medium rounded-lg font-inter;
+    transition: background-color 0.2s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   .heritage-button:hover {
-    transform: translateY(-1px) scale(1.02);
+    background-color: hsl(var(--primary) / 0.9);
+  }
+
+  /* The one ornamented CTA a marketing hero may carry. */
+  .heritage-button-hero {
+    @apply text-primary-foreground font-medium rounded-lg font-inter;
+    background: var(--gradient-champagne);
+    box-shadow: var(--shadow-champagne);
+    transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .heritage-button-hero:hover {
+    transform: translateY(-1px);
     box-shadow: var(--shadow-luxury);
   }
 
@@ -183,7 +210,7 @@
   }
 
   .heritage-title {
-    @apply font-playfair font-semibold heritage-text-gradient;
+    @apply font-playfair font-semibold text-primary;
   }
 
   .heritage-body {

@@ -222,7 +222,7 @@ const DistilleryDashboard = () => {
             </Badge>
           )}
           {distillery.verified ? (
-            <Badge variant="default" className="bg-green-500">
+            <Badge variant="default" className="bg-success text-success-foreground">
               <Shield className="h-4 w-4 mr-1" />
               Verified
             </Badge>
@@ -285,7 +285,7 @@ const DistilleryDashboard = () => {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="luxury-card cursor-pointer hover:shadow-gold transition-all" onClick={() => navigate('/distillery/casks')}>
+        <Card className="luxury-card cursor-pointer hover:border-primary/40 transition-colors" onClick={() => navigate('/distillery/casks')}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Package className="h-5 w-5" />
@@ -297,7 +297,7 @@ const DistilleryDashboard = () => {
           </CardHeader>
         </Card>
 
-        <Card className="luxury-card cursor-pointer hover:shadow-gold transition-all" onClick={() => navigate('/distillery/analytics')}>
+        <Card className="luxury-card cursor-pointer hover:border-primary/40 transition-colors" onClick={() => navigate('/distillery/analytics')}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
@@ -309,7 +309,7 @@ const DistilleryDashboard = () => {
           </CardHeader>
         </Card>
 
-        <Card className="luxury-card cursor-pointer hover:shadow-gold transition-all" onClick={() => navigate('/distillery/verification')}>
+        <Card className="luxury-card cursor-pointer hover:border-primary/40 transition-colors" onClick={() => navigate('/distillery/verification')}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5" />
@@ -322,7 +322,7 @@ const DistilleryDashboard = () => {
         </Card>
 
         {!isAdmin && (
-          <Card className="luxury-card cursor-pointer hover:shadow-gold transition-all" onClick={() => navigate('/distillery/casks/new')}>
+          <Card className="luxury-card cursor-pointer hover:border-primary/40 transition-colors" onClick={() => navigate('/distillery/casks/new')}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Plus className="h-5 w-5" />

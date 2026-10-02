@@ -615,7 +615,7 @@ const Marketplace = () => {
                       {listing.cask_types?.name} ({listing.cask_types?.capacity_liters}L)
                     </div>
                     {listing.is_resale && (
-                      <div className="text-xs text-green-600 font-medium">
+                      <div className="text-xs text-success font-medium">
                         Sold by: {listing.seller_name}
                       </div>
                     )}

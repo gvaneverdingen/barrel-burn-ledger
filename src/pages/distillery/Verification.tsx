@@ -121,7 +121,7 @@ const DistilleryVerification = () => {
           <CardContent>
             {distillery.verified ? (
               <div className="text-center py-6">
-                <CheckCircle className="h-16 w-16 mx-auto mb-4 text-green-500" />
+                <CheckCircle className="h-16 w-16 mx-auto mb-4 text-success" />
                 <h3 className="text-xl font-semibold mb-2">Congratulations!</h3>
                 <p className="text-muted-foreground">
                   Your distillery has been verified. You can now list casks for sale on the marketplace.
@@ -130,7 +130,7 @@ const DistilleryVerification = () => {
             ) : (
               <div className="space-y-4">
                 <div className="text-center py-4">
-                  <Clock className="h-12 w-12 mx-auto mb-4 text-amber-500" />
+                  <Clock className="h-12 w-12 mx-auto mb-4 text-warning" />
                   <h3 className="text-lg font-semibold mb-2">Verification in Progress</h3>
                   <p className="text-muted-foreground">
                     Complete all requirements below to submit your verification application.
@@ -155,9 +155,9 @@ const DistilleryVerification = () => {
                 <div key={index} className="flex items-start gap-4">
                   <div className="mt-1">
                     {req.completed ? (
-                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <CheckCircle className="h-5 w-5 text-success" />
                     ) : (
-                      <AlertCircle className="h-5 w-5 text-amber-500" />
+                      <AlertCircle className="h-5 w-5 text-warning" />
                     )}
                   </div>
                   <div className="flex-1">

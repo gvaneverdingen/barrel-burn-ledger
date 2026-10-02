@@ -161,7 +161,7 @@ const DistilleryOnboarding = () => {
     return (
       <div className="container mx-auto p-6">
         <div className="max-w-2xl mx-auto text-center">
-          <CheckCircle className="h-16 w-16 mx-auto mb-4 text-green-500" />
+          <CheckCircle className="h-16 w-16 mx-auto mb-4 text-success" />
           <h1 className="text-2xl font-bold mb-2">Application Already Submitted</h1>
           <p className="text-muted-foreground mb-6">
             You have already submitted a distillery application for <strong>{existingDistillery.name}</strong>.

@@ -79,21 +79,21 @@ const Admin = () => {
       name: 'Guest User',
       description: 'Unauthenticated visitor',
       access: ['Home', 'Marketplace', 'Cask Details', 'Authentication'],
-      color: 'bg-gray-100 text-gray-800'
+      color: 'bg-muted text-foreground'
     },
     {
       role: 'consumer',
       name: 'Consumer/Investor',
       description: 'Authenticated user who can invest in casks',
       access: ['All Public Pages', 'Profile', 'Portfolio', 'Wishlist', 'Unified Marketplace', 'Transactions', 'Market Insights', 'Reports', 'Notifications'],
-      color: 'bg-green-100 text-green-800'
+      color: 'bg-success/10 text-success'
     },
     {
       role: 'distillery',
       name: 'Distillery',
       description: 'Verified distillery that can list casks',
       access: ['All Consumer Access', 'Unified Marketplace Access', 'My Distillery', 'Manage Casks', 'Sales Analytics', 'Verification'],
-      color: 'bg-blue-100 text-blue-800'
+      color: 'bg-info/10 text-info'
     }
   ];
 
@@ -253,7 +253,7 @@ const Admin = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-green-600">✅ Implemented Features</CardTitle>
+                      <CardTitle className="text-success">✅ Implemented Features</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
                       <div className="text-sm">
@@ -273,7 +273,7 @@ const Admin = () => {
                   
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-amber-600">🚧 Pending Features</CardTitle>
+                      <CardTitle className="text-warning">🚧 Pending Features</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
                       <div className="text-sm">
