@@ -251,6 +251,9 @@ Confident and quiet; the label carries the weight, not the effects.
 ### Stat Row (signature)
 A bordered panel split into equal cells, each holding a large champagne Playfair figure over an Inter caption (e.g. "16 Casks listed · 4 Distilleries · 0 Trades settled"). Show the real numbers, including zeros.
 
+### Explainers (tooltips)
+Every icon-only control and every trade action (buy, offer, accept, decline, sell, cancel listing, mint, price alert) carries a hover/focus explainer via `<Explain text="…">` (`src/components/Explain.tsx`): popover surface, 12px text, max 260px wide, 300ms delay. Copy is one or two plain sentences saying what happens and what doesn't ("Take your resale listing off the marketplace. You keep the cask."); never repeat the button label, never promise anything the code doesn't do. Self-explanatory buttons ("Sign In", "Browse Marketplace") get none. Icon-only controls also need an `aria-label`; the explainer is not a substitute. Touch screens have no hover, so nothing essential may live only in an explainer.
+
 ### Ledger List (signature)
 Lists of claims, problems or principles are ruled rows, not cards: hairline rule-line dividers top, bottom and between rows, a bare 20px primary icon, then a bold parchment lead-in followed by muted body text in the same paragraph. Rows sit in the same `max-w-3xl` column as surrounding prose. Never box each item in its own card or put icons in tinted tiles.
 

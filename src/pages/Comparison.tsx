@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { X, ArrowLeft } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { Explain } from '@/components/Explain';
 
 const Comparison = () => {
   const navigate = useNavigate();
@@ -90,14 +91,17 @@ const Comparison = () => {
             </div>
             {comparisonCasks.map((cask) => (
               <Card key={cask.id} className="p-4 relative">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-2 right-2 h-6 w-6"
-                  onClick={() => removeFromComparison(cask.id)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+                <Explain text="Remove this cask from the comparison.">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-2 right-2 h-6 w-6"
+                    aria-label="Remove from comparison"
+                    onClick={() => removeFromComparison(cask.id)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </Explain>
                 <h3 className="font-bold text-lg mb-1">{cask.spirit_name}</h3>
                 <p className="text-sm text-muted-foreground">{cask.cask_number}</p>
               </Card>

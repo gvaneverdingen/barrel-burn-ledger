@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
+import { Explain } from '@/components/Explain';
 
 const FUNCTION_URL = 'https://vnmmjmxhtbplfkdughxu.supabase.co/functions/v1/site-guide';
 
@@ -121,13 +122,15 @@ export const SiteGuideAgent = () => {
   return (
     <>
       {!open && (
-        <Button
-          onClick={() => setOpen(true)}
-          aria-label="Open the ARIGI guide"
-          className="fixed bottom-20 right-4 lg:bottom-6 z-40 h-12 w-12 rounded-full p-0 shadow-lg heritage-button"
-        >
-          <Sparkles className="h-5 w-5" />
-        </Button>
+        <Explain text="Ask the ARIGI guide about buying, provenance, fees or reselling a cask.">
+          <Button
+            onClick={() => setOpen(true)}
+            aria-label="Open the ARIGI guide"
+            className="fixed bottom-20 right-4 lg:bottom-6 z-40 h-12 w-12 rounded-full p-0 shadow-lg heritage-button"
+          >
+            <Sparkles className="h-5 w-5" />
+          </Button>
+        </Explain>
       )}
 
       {open && (

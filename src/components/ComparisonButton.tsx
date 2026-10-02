@@ -3,6 +3,7 @@ import { useComparison } from '@/contexts/ComparisonContext';
 import { Button } from '@/components/ui/button';
 import { ArrowLeftRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Explain } from '@/components/Explain';
 
 export const ComparisonButton = () => {
   const navigate = useNavigate();
@@ -14,17 +15,19 @@ export const ComparisonButton = () => {
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      <Button
-        size="lg"
-        onClick={() => navigate('/comparison')}
-        className="shadow-lg relative"
-      >
-        <ArrowLeftRight className="mr-2 h-5 w-5" />
-        Compare Casks
-        <Badge variant="secondary" className="ml-2">
-          {comparisonCasks.length}
-        </Badge>
-      </Button>
+      <Explain text="Open the side-by-side comparison of the casks you’ve added.">
+        <Button
+          size="lg"
+          onClick={() => navigate('/comparison')}
+          className="shadow-lg relative"
+        >
+          <ArrowLeftRight className="mr-2 h-5 w-5" />
+          Compare Casks
+          <Badge variant="secondary" className="ml-2">
+            {comparisonCasks.length}
+          </Badge>
+        </Button>
+      </Explain>
     </div>
   );
 };

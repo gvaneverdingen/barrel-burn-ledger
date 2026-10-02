@@ -8,6 +8,7 @@ import { Bell, BellOff, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { Explain } from '@/components/Explain';
 
 interface PriceAlertButtonProps {
   caskId: string;
@@ -84,12 +85,14 @@ export const PriceAlertButton = ({ caskId, currentPrice }: PriceAlertButtonProps
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          {existingAlert ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
-          {existingAlert ? 'Alert Set' : 'Price Alert'}
-        </Button>
-      </PopoverTrigger>
+      <Explain text="Get notified when this cask’s price rises above or drops below a price you choose.">
+        <PopoverTrigger asChild>
+          <Button variant="outline" size="sm" className="gap-2">
+            {existingAlert ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
+            {existingAlert ? 'Alert Set' : 'Price Alert'}
+          </Button>
+        </PopoverTrigger>
+      </Explain>
       <PopoverContent className="w-72 space-y-3">
         <h4 className="font-medium text-sm">Set Price Alert</h4>
         {currentPrice && (

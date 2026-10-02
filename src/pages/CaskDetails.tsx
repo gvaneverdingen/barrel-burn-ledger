@@ -39,6 +39,7 @@ import { addRecentlyViewed } from "@/components/RecentlyViewedCasks";
 import { PriceAlertButton } from "@/components/PriceAlertButton";
 import CaskProvenancePanel from "@/components/CaskProvenancePanel";
 import { Seo } from "@/components/Seo";
+import { Explain } from '@/components/Explain';
 
 interface CaskDetails {
   id: string;
@@ -1251,74 +1252,84 @@ const CaskDetails = () => {
                 </div>
 
                 {user && effectiveUserRole !== "distillery" && !isOwnerSale && !effectiveIsOwner && (
-                  <Button 
-                    className="w-full" 
-                    onClick={() => setPaymentDialogOpen(true)}
-                    size="lg"
-                    disabled={purchasing}
-                  >
-                    {purchasing ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Opening Payment...
-                      </>
-                    ) : (
-                      <>
-                        <ShoppingCart className="mr-2 h-4 w-4" />
-                        Buy at Asking Price
-                      </>
-                    )}
-                  </Button>
+                  <Explain text="Buy the whole cask at the listed price. You’ll see the price and all fees before you pay.">
+                    <Button 
+                      className="w-full" 
+                      onClick={() => setPaymentDialogOpen(true)}
+                      size="lg"
+                      disabled={purchasing}
+                    >
+                      {purchasing ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Opening Payment...
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingCart className="mr-2 h-4 w-4" />
+                          Buy at Asking Price
+                        </>
+                      )}
+                    </Button>
+                  </Explain>
                 )}
 
                 {user && sellerId && sellerId !== user.id && !effectiveIsOwner && (
-                  <Button 
-                    variant="outline"
-                    className="w-full" 
-                    onClick={() => setOfferDialogOpen(true)}
-                    size="lg"
-                  >
-                    <HandCoins className="mr-2 h-4 w-4" />
-                    Make an Offer / Enquire
-                  </Button>
+                  <Explain text="Propose your own price or send the seller a question. They can accept or decline.">
+                    <Button 
+                      variant="outline"
+                      className="w-full" 
+                      onClick={() => setOfferDialogOpen(true)}
+                      size="lg"
+                    >
+                      <HandCoins className="mr-2 h-4 w-4" />
+                      Make an Offer / Enquire
+                    </Button>
+                  </Explain>
                 )}
 
                 {isOwnerSale && (
-                  <Button 
-                    variant="outline"
-                    className="w-full border-destructive/20 text-destructive hover:bg-destructive/10" 
-                    onClick={() => setShowCancelDialog(true)}
-                    size="lg"
-                    disabled={cancellingSale}
-                  >
-                    <X className="mr-2 h-4 w-4" />
-                    Cancel Sale
-                  </Button>
+                  <Explain text="Take your resale listing off the marketplace. You keep the cask.">
+                    <Button 
+                      variant="outline"
+                      className="w-full border-destructive/20 text-destructive hover:bg-destructive/10" 
+                      onClick={() => setShowCancelDialog(true)}
+                      size="lg"
+                      disabled={cancellingSale}
+                    >
+                      <X className="mr-2 h-4 w-4" />
+                      Cancel Sale
+                    </Button>
+                  </Explain>
                 )}
 
                 {effectiveIsOwner && !hasActiveSale && !isOwnerSale && ownershipData && (
-                  <Button 
-                    className="w-full"
-                    onClick={() => setSellDialogOpen(true)}
-                    size="lg"
-                    variant="outline"
-                  >
-                    <DollarSign className="mr-2 h-4 w-4" />
-                    Sell This Cask
-                  </Button>
+                  <Explain text="List this cask for resale on the ARIGI marketplace at a price you set.">
+                    <Button 
+                      className="w-full"
+                      onClick={() => setSellDialogOpen(true)}
+                      size="lg"
+                      variant="outline"
+                    >
+                      <DollarSign className="mr-2 h-4 w-4" />
+                      Sell This Cask
+                    </Button>
+                  </Explain>
                 )}
 
                 {effectiveIsOwner && hasActiveSale && !isOwnerSale && (
-                  <Button 
-                    variant="outline"
-                    className="w-full border-destructive/20 text-destructive hover:bg-destructive/10" 
-                    onClick={() => setShowCancelDialog(true)}
-                    size="lg"
-                    disabled={cancellingSale}
-                  >
-                    <X className="mr-2 h-4 w-4" />
-                    Cancel Sale
-                  </Button>
+                  <Explain text="Take your resale listing off the marketplace. You keep the cask.">
+                    <Button 
+                      variant="outline"
+                      className="w-full border-destructive/20 text-destructive hover:bg-destructive/10" 
+                      onClick={() => setShowCancelDialog(true)}
+                      size="lg"
+                      disabled={cancellingSale}
+                    >
+                      <X className="mr-2 h-4 w-4" />
+                      Cancel Sale
+                    </Button>
+                  </Explain>
                 )}
                 
                 {!user && (
@@ -1454,13 +1465,15 @@ const CaskDetails = () => {
                               {formatPrice(acceptedOffer.offered_total_price)} for this cask
                             </p>
                           </div>
-                          <Button
-                            onClick={() => handleAcceptOffer(acceptedOffer.id)}
-                            className="flex items-center gap-2"
-                          >
-                            <ShoppingCart className="h-4 w-4" />
-                            Buy Now
-                          </Button>
+                          <Explain text="Pay the price you agreed with the seller. You’ll go to secure checkout.">
+                            <Button
+                              onClick={() => handleAcceptOffer(acceptedOffer.id)}
+                              className="flex items-center gap-2"
+                            >
+                              <ShoppingCart className="h-4 w-4" />
+                              Buy Now
+                            </Button>
+                          </Explain>
                         </div>
                       </div>
                     );
@@ -1526,19 +1539,23 @@ const CaskDetails = () => {
                             </div>
                           )}
                           <div className="flex gap-2">
-                            <Button 
-                              onClick={() => handleAcceptOffer(offer.id)}
-                              className="flex-1"
-                            >
-                              Accept Offer
-                            </Button>
-                            <Button 
-                              variant="outline"
-                              onClick={() => handleRejectOffer(offer.id)}
-                              className="flex-1"
-                            >
-                              Reject
-                            </Button>
+                            <Explain text="Agree to this price. The buyer is sent to secure checkout, and the sale completes once they’ve paid.">
+                              <Button 
+                                onClick={() => handleAcceptOffer(offer.id)}
+                                className="flex-1"
+                              >
+                                Accept Offer
+                              </Button>
+                            </Explain>
+                            <Explain text="Decline this offer. Your cask stays listed at its asking price.">
+                              <Button 
+                                variant="outline"
+                                onClick={() => handleRejectOffer(offer.id)}
+                                className="flex-1"
+                              >
+                                Reject
+                              </Button>
+                            </Explain>
                           </div>
                         </CardContent>
                       </Card>

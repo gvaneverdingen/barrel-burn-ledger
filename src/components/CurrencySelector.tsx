@@ -1,5 +1,6 @@
 import { Currency, useCurrency } from '@/contexts/CurrencyContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Explain } from '@/components/Explain';
 
 
 const currencies: { value: Currency; label: string; symbol: string }[] = [
@@ -15,9 +16,11 @@ export const CurrencySelector = () => {
   return (
     <div className="flex items-center">
       <Select value={currency} onValueChange={(value) => setCurrency(value as Currency)}>
-        <SelectTrigger className="w-[100px]">
-          <SelectValue />
-        </SelectTrigger>
+        <Explain text="Change the currency prices are shown in across ARIGI.">
+          <SelectTrigger className="w-[100px]" aria-label="Display currency">
+            <SelectValue />
+          </SelectTrigger>
+        </Explain>
         <SelectContent>
           {currencies.map((curr) => (
             <SelectItem key={curr.value} value={curr.value}>

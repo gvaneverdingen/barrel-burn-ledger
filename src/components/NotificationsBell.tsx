@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { Explain } from '@/components/Explain';
 
 export const NotificationsBell = () => {
   const { user } = useAuth();
@@ -55,21 +56,24 @@ export const NotificationsBell = () => {
   if (!user) return null;
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      className="relative"
-      onClick={() => navigate('/notifications')}
-    >
-      <Bell className="h-5 w-5" />
-      {unreadCount > 0 && (
-        <Badge 
-          className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-          variant="destructive"
-        >
-          {unreadCount > 9 ? '9+' : unreadCount}
-        </Badge>
-      )}
-    </Button>
+    <Explain text="Your notifications, such as offers on your casks and price alerts you’ve set.">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="relative"
+        onClick={() => navigate('/notifications')}
+        aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'}
+      >
+        <Bell className="h-5 w-5" />
+        {unreadCount > 0 && (
+          <Badge 
+            className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+            variant="destructive"
+          >
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </Badge>
+        )}
+      </Button>
+    </Explain>
   );
 };

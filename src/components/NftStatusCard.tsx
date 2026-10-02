@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Shield, Loader2, Coins } from "lucide-react";
+import { Explain } from '@/components/Explain';
 
 interface NftStatusCardProps {
   blockchainHash: string | null;
@@ -104,24 +105,26 @@ const NftStatusCard = ({
 
 
             {canMint && onMint && (
-              <Button
-                onClick={onMint}
-                disabled={isMinting}
-                size="sm"
-                className="w-full"
-              >
-                {isMinting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Minting NFT...
-                  </>
-                ) : (
-                  <>
-                    <Coins className="h-4 w-4 mr-2" />
-                    Mint as NFT
-                  </>
-                )}
-              </Button>
+              <Explain text="Record this cask on the Polygon blockchain. A cask must be minted before it can be sold.">
+                <Button
+                  onClick={onMint}
+                  disabled={isMinting}
+                  size="sm"
+                  className="w-full"
+                >
+                  {isMinting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Minting NFT...
+                    </>
+                  ) : (
+                    <>
+                      <Coins className="h-4 w-4 mr-2" />
+                      Mint as NFT
+                    </>
+                  )}
+                </Button>
+              </Explain>
             )}
           </>
         )}

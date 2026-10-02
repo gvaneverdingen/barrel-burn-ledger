@@ -38,6 +38,7 @@ import { MarketplaceAnalytics } from '@/components/MarketplaceAnalytics';
 import { MatchmakingSystem } from '@/components/MatchmakingSystem';
 import { MakeOfferDialog } from '@/components/MakeOfferDialog';
 import { CaskWorldMap } from '@/components/CaskWorldMap';
+import { Explain } from '@/components/Explain';
 
 interface Cask {
   id: string;
@@ -545,17 +546,20 @@ const Marketplace = () => {
                       </Badge>
                     )}
                   </div>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="absolute top-2 left-2 h-8 w-8 p-0 bg-background/60 backdrop-blur-sm hover:bg-background/80"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addToWishlist(listing.cask_id);
-                    }}
-                  >
-                    <Heart className="h-4 w-4" />
-                  </Button>
+                  <Explain text="Save this cask to your wishlist to keep track of it.">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      aria-label="Add to wishlist"
+                      className="absolute top-2 left-2 h-8 w-8 p-0 bg-background/60 backdrop-blur-sm hover:bg-background/80"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToWishlist(listing.cask_id);
+                      }}
+                    >
+                      <Heart className="h-4 w-4" />
+                    </Button>
+                  </Explain>
                 </div>
                 <CardHeader className="pb-3 p-4 sm:p-6 sm:pb-3">
                   <div className="flex items-start justify-between gap-2">
@@ -622,65 +626,72 @@ const Marketplace = () => {
                   </div>
 
                   <div className="flex gap-2 pt-2">
-                    <Button 
-                      size="sm" 
-                      className="flex-1"
-                      onClick={() => navigate(`/cask/${listing.cask_id}`)}
-                    >
-                      <Eye className="h-3 w-3 mr-1" />
-                      View
-                    </Button>
-                    {listing.seller_id && listing.seller_id !== user?.id && (
+                    <Explain text="Open the full cask page: specification, provenance, ownership history and price.">
                       <Button 
                         size="sm" 
-                        variant="outline"
                         className="flex-1"
+                        onClick={() => navigate(`/cask/${listing.cask_id}`)}
+                      >
+                        <Eye className="h-3 w-3 mr-1" />
+                        View
+                      </Button>
+                    </Explain>
+                    {listing.seller_id && listing.seller_id !== user?.id && (
+                      <Explain text="Propose your own price or send the seller a question. They can accept or decline.">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="flex-1"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!user) {
+                              toast.error('Please log in to make an offer');
+                              return;
+                            }
+                            setSelectedOfferListing(listing);
+                            setOfferDialogOpen(true);
+                          }}
+                        >
+                          <HandCoins className="h-3 w-3 mr-1" />
+                          Offer
+                        </Button>
+                      </Explain>
+                    )}
+                    <Explain text="Add this cask to your side-by-side comparison.">
+                      <Button 
+                        size="sm" 
+                        variant={isInComparison(listing.id) ? "secondary" : "outline"}
+                        aria-label={isInComparison(listing.id) ? "In comparison" : "Add to comparison"}
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (!user) {
-                            toast.error('Please log in to make an offer');
-                            return;
+                          if (!isInComparison(listing.id)) {
+                            addToComparison({
+                              id: listing.id,
+                              spirit_name: listing.spirit_name,
+                              cask_number: listing.cask_number,
+                              distillery: listing.distilleries ? {
+                                name: listing.distilleries.name,
+                                location: listing.distilleries.location || undefined
+                              } : undefined,
+                              distillation_date: listing.distillation_date,
+                              current_volume_liters: listing.current_volume_liters || undefined,
+                              alcohol_percentage: listing.alcohol_percentage || undefined,
+                              price_per_liter: listing.price_per_liter || undefined,
+                              total_price: listing.total_price || undefined,
+                              cask_type: listing.cask_types ? {
+                                name: listing.cask_types.name,
+                                capacity_liters: listing.cask_types.capacity_liters
+                              } : undefined,
+                              tasting_notes: listing.tasting_notes || undefined,
+                              warehouse_location: listing.warehouse_location || undefined,
+                              expected_maturation_years: listing.expected_maturation_years || undefined
+                            });
                           }
-                          setSelectedOfferListing(listing);
-                          setOfferDialogOpen(true);
                         }}
                       >
-                        <HandCoins className="h-3 w-3 mr-1" />
-                        Offer
+                        <ArrowLeftRight className="h-3 w-3" />
                       </Button>
-                    )}
-                    <Button 
-                      size="sm" 
-                      variant={isInComparison(listing.id) ? "secondary" : "outline"}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (!isInComparison(listing.id)) {
-                          addToComparison({
-                            id: listing.id,
-                            spirit_name: listing.spirit_name,
-                            cask_number: listing.cask_number,
-                            distillery: listing.distilleries ? {
-                              name: listing.distilleries.name,
-                              location: listing.distilleries.location || undefined
-                            } : undefined,
-                            distillation_date: listing.distillation_date,
-                            current_volume_liters: listing.current_volume_liters || undefined,
-                            alcohol_percentage: listing.alcohol_percentage || undefined,
-                            price_per_liter: listing.price_per_liter || undefined,
-                            total_price: listing.total_price || undefined,
-                            cask_type: listing.cask_types ? {
-                              name: listing.cask_types.name,
-                              capacity_liters: listing.cask_types.capacity_liters
-                            } : undefined,
-                            tasting_notes: listing.tasting_notes || undefined,
-                            warehouse_location: listing.warehouse_location || undefined,
-                            expected_maturation_years: listing.expected_maturation_years || undefined
-                          });
-                        }
-                      }}
-                    >
-                      <ArrowLeftRight className="h-3 w-3" />
-                    </Button>
+                    </Explain>
                   </div>
                   
                   <div className="text-xs text-muted-foreground">

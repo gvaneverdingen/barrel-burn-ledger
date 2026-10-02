@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Heart, Search, Filter, TrendingUp, Bell, Plus, Trash2, MapPin, Droplets, Gauge, Calendar } from 'lucide-react';
 import { SignInPrompt } from '@/components/SignInPrompt';
+import { Explain } from '@/components/Explain';
 
 interface WishlistItem {
   id: string;
@@ -178,10 +179,12 @@ const Wishlist = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={checkForMatches} variant="outline">
-            <Bell className="h-4 w-4 mr-2" />
-            Check Matches
-          </Button>
+          <Explain text="Check which wishlist casks are for sale at or below the maximum price you set.">
+            <Button onClick={checkForMatches} variant="outline">
+              <Bell className="h-4 w-4 mr-2" />
+              Check Matches
+            </Button>
+          </Explain>
           <Button onClick={() => window.location.href = '/marketplace'}>
             <Plus className="h-4 w-4 mr-2" />
             Browse Marketplace

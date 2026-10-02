@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Explain } from "@/components/Explain";
 
 // index.html applies the saved theme before first paint (navy unless the
 // visitor picked parchment), so the <html> class is the source of truth.
@@ -21,14 +22,23 @@ export const ThemeToggle = () => {
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={toggle}
-      className="h-8 w-8 sm:h-9 sm:w-9"
-      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+    <Explain
+      side="bottom"
+      text={
+        isDark
+          ? "Switch to the light parchment theme. Your choice is remembered on this device."
+          : "Switch back to the standard dark theme."
+      }
     >
-      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={toggle}
+        className="h-8 w-8 sm:h-9 sm:w-9"
+        aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+      >
+        {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      </Button>
+    </Explain>
   );
 };

@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
+import { Explain } from '@/components/Explain';
 
 interface ShareCaskButtonProps {
   caskName: string;
@@ -41,12 +42,14 @@ export const ShareCaskButton = ({ caskName, caskId }: ShareCaskButtonProps) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Share2 className="h-4 w-4" />
-          Share
-        </Button>
-      </DropdownMenuTrigger>
+      <Explain text="Copy a link to this cask, or share it through your device.">
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="gap-2">
+            <Share2 className="h-4 w-4" />
+            Share
+          </Button>
+        </DropdownMenuTrigger>
+      </Explain>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={copyLink}>
           <Copy className="h-4 w-4 mr-2" /> Copy Link

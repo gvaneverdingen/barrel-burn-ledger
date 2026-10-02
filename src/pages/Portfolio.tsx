@@ -28,6 +28,7 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { Explain } from '@/components/Explain';
 
 interface CaskOwnership {
   id: string;
@@ -541,32 +542,36 @@ const Portfolio = () => {
                                     Listed for Sale
                                   </Badge>
                                   {getSaleIdForOwnership(ownership.casks.id) && (
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleCancelSaleClick(getSaleIdForOwnership(ownership.casks.id)!);
-                                      }}
-                                      className="border-destructive/20 text-destructive hover:bg-destructive/10"
-                                    >
-                                      <X className="h-4 w-4 mr-2" />
-                                      Cancel Listing
-                                    </Button>
+                                    <Explain text="Take this cask off the marketplace. It stays in your portfolio.">
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleCancelSaleClick(getSaleIdForOwnership(ownership.casks.id)!);
+                                        }}
+                                        className="border-destructive/20 text-destructive hover:bg-destructive/10"
+                                      >
+                                        <X className="h-4 w-4 mr-2" />
+                                        Cancel Listing
+                                      </Button>
+                                    </Explain>
                                   )}
                                 </div>
                               ) : (
-                                <Button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleSellCask(ownership);
-                                  }}
-                                  className="luxury-button"
-                                  size="sm"
-                                >
-                                  <Store className="h-4 w-4 mr-2" />
-                                  Sell This Cask
-                                </Button>
+                                <Explain text="List this cask for resale on the ARIGI marketplace at a price you set.">
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleSellCask(ownership);
+                                    }}
+                                    className="luxury-button"
+                                    size="sm"
+                                  >
+                                    <Store className="h-4 w-4 mr-2" />
+                                    Sell This Cask
+                                  </Button>
+                                </Explain>
                               )}
                             </div>
                           </CardContent>
@@ -651,14 +656,16 @@ const Portfolio = () => {
                             )}
 
                             <div className="flex justify-end">
-                              <Button
-                                variant="outline"
-                                onClick={() => handleCancelSaleClick(sale.id)}
-                                className="border-destructive/20 text-destructive hover:bg-destructive/10"
-                              >
-                                <X className="h-4 w-4 mr-2" />
-                                Cancel Listing
-                              </Button>
+                              <Explain text="Take this cask off the marketplace. It stays in your portfolio.">
+                                <Button
+                                  variant="outline"
+                                  onClick={() => handleCancelSaleClick(sale.id)}
+                                  className="border-destructive/20 text-destructive hover:bg-destructive/10"
+                                >
+                                  <X className="h-4 w-4 mr-2" />
+                                  Cancel Listing
+                                </Button>
+                              </Explain>
                             </div>
                           </CardContent>
                         </Card>
