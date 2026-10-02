@@ -207,7 +207,7 @@ const DistilleryProfile = () => {
               {casks.map((cask) => (
                 <Card
                   key={cask.id}
-                  className="mobile-card hover:shadow-lg transition-all cursor-pointer overflow-hidden"
+                  className="mobile-card hover:border-primary/40 transition-colors cursor-pointer overflow-hidden"
                   onClick={() => navigate(`/cask/${cask.id}`)}
                 >
                   <div className="relative h-36 sm:h-44 overflow-hidden bg-muted">

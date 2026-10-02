@@ -294,7 +294,7 @@ const ConsumerJourney = () => {
             <h2 className="text-2xl font-bold ml-4 luxury-text-gradient">Secure Profile & Credentials</h2>
           </header>
           
-          <div className="container max-w-4xl mx-auto px-4 py-8 space-y-8 animate-fade-in">
+          <div className="container max-w-4xl mx-auto px-4 py-8 space-y-8">
             {/* Hero Section */}
             <div className="text-center space-y-4 py-8">
               <h1 className="text-4xl font-bold luxury-text-gradient">Your Secure Investment Profile</h1>

@@ -144,7 +144,7 @@ const About = () => {
       {/* ============== SECTION 1 ============== */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="max-w-3xl">
-          <h2 className="text-3xl sm:text-4xl font-bold font-playfair mb-6 sm:mb-8">
+          <h2 className="text-3xl sm:text-4xl font-semibold font-playfair mb-6 sm:mb-8">
             Where we came from
           </h2>
           <div className="space-y-5 text-base sm:text-lg text-muted-foreground leading-relaxed">
@@ -172,7 +172,7 @@ const About = () => {
       <section className="border-y border-border/40 bg-card/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
           <div className="max-w-3xl">
-            <h2 className="text-3xl sm:text-4xl font-bold font-playfair mb-6 sm:mb-8">
+            <h2 className="text-3xl sm:text-4xl font-semibold font-playfair mb-6 sm:mb-8">
               Then we looked at how casks were being sold
             </h2>
             <div className="space-y-5 text-base sm:text-lg text-muted-foreground leading-relaxed">
@@ -188,20 +188,14 @@ const About = () => {
             </div>
           </div>
 
-          <ul className="mt-10 grid gap-4 sm:gap-5 max-w-4xl">
+          <ul className="mt-10 max-w-3xl divide-y divide-border/60 border-y border-border/60">
             {problems.map((p) => (
-              <li key={p.lead}>
-                <Card className="heritage-card border-border/50">
-                  <CardContent className="p-5 sm:p-6 flex gap-4">
-                    <span className="shrink-0 h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
-                      <p.icon className="h-5 w-5 text-primary" />
-                    </span>
-                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                      <strong className="text-foreground font-semibold">{p.lead}</strong>{' '}
-                      {p.body}
-                    </p>
-                  </CardContent>
-                </Card>
+              <li key={p.lead} className="flex gap-4 py-5 sm:py-6">
+                <p.icon className="h-5 w-5 shrink-0 mt-0.5 text-primary" aria-hidden="true" />
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                  <strong className="text-foreground font-semibold">{p.lead}</strong>{' '}
+                  {p.body}
+                </p>
               </li>
             ))}
           </ul>
@@ -217,7 +211,7 @@ const About = () => {
       {/* ============== SECTION 3 ============== */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="max-w-3xl">
-          <h2 className="text-3xl sm:text-4xl font-bold font-playfair mb-6">
+          <h2 className="text-3xl sm:text-4xl font-semibold font-playfair mb-6">
             What we built instead
           </h2>
           <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
@@ -268,16 +262,14 @@ const About = () => {
       {/* ============== SECTION 4 ============== */}
       <section className="border-y border-border/40 bg-card/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-          <h2 className="text-3xl sm:text-4xl font-bold font-playfair mb-10 max-w-3xl">
+          <h2 className="text-3xl sm:text-4xl font-semibold font-playfair mb-10 max-w-3xl">
             What we hold ourselves to
           </h2>
           <ul className="grid gap-4 sm:gap-5 md:grid-cols-2 max-w-5xl">
             {principles.map((p) => (
               <li key={p.lead} className="flex gap-4">
-                <span className="shrink-0 h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <p.icon className="h-5 w-5 text-primary" />
-                </span>
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed pt-1.5">
+                <p.icon className="h-5 w-5 shrink-0 mt-0.5 text-primary" aria-hidden="true" />
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                   <strong className="text-foreground font-semibold">{p.lead}</strong> {p.body}
                 </p>
               </li>
@@ -293,7 +285,7 @@ const About = () => {
             <span className="h-11 w-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
               <HelpCircle className="h-6 w-6 text-primary" />
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold font-playfair">
+            <h2 className="text-3xl sm:text-4xl font-semibold font-playfair">
               Provenance & fees, explained
             </h2>
           </div>
@@ -321,7 +313,7 @@ const About = () => {
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <Card className="heritage-card border-primary/30 overflow-hidden">
           <CardContent className="p-8 sm:p-12 lg:p-16 text-center">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair mb-5">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold font-playfair mb-5">
               See what that looks like in practice.
             </h2>
             <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">

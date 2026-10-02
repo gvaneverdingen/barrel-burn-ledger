@@ -313,7 +313,7 @@ export function AppSidebar({ isExpanded = true, onToggle }: AppSidebarProps) {
                   className={({ isActive }) =>
                     `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
                       isActive
-                        ? 'bg-sidebar-primary/15 text-sidebar-primary font-medium border-l-2 border-sidebar-primary'
+                        ? 'bg-sidebar-primary/10 text-sidebar-primary font-medium'
                         : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
                     }`
                   }
@@ -350,7 +350,7 @@ export function AppSidebar({ isExpanded = true, onToggle }: AppSidebarProps) {
                   className={({ isActive }) =>
                     `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
                       isActive
-                        ? 'bg-sidebar-primary/15 text-sidebar-primary font-medium border-l-2 border-sidebar-primary'
+                        ? 'bg-sidebar-primary/10 text-sidebar-primary font-medium'
                         : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
                     }`
                   }
@@ -383,7 +383,7 @@ export function AppSidebar({ isExpanded = true, onToggle }: AppSidebarProps) {
                   className={({ isActive }) =>
                     `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
                       isActive
-                        ? 'bg-sidebar-primary/15 text-sidebar-primary font-medium border-l-2 border-sidebar-primary'
+                        ? 'bg-sidebar-primary/10 text-sidebar-primary font-medium'
                         : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
                     }`
                   }
@@ -416,7 +416,7 @@ export function AppSidebar({ isExpanded = true, onToggle }: AppSidebarProps) {
                   className={({ isActive }) =>
                     `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
                       isActive
-                        ? 'bg-sidebar-primary/15 text-sidebar-primary font-medium border-l-2 border-sidebar-primary'
+                        ? 'bg-sidebar-primary/10 text-sidebar-primary font-medium'
                         : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
                     }`
                   }
@@ -448,7 +448,7 @@ export function AppSidebar({ isExpanded = true, onToggle }: AppSidebarProps) {
                 className={({ isActive }) =>
                   `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
                     isActive
-                      ? 'bg-sidebar-primary/15 text-sidebar-primary font-medium border-l-2 border-sidebar-primary'
+                      ? 'bg-sidebar-primary/10 text-sidebar-primary font-medium'
                       : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
                   }`
                 }
@@ -489,7 +489,7 @@ export function AppSidebar({ isExpanded = true, onToggle }: AppSidebarProps) {
                     className={({ isActive }) =>
                       `flex items-center px-2 py-2 rounded-lg transition-all duration-200 ${
                         isActive
-                          ? 'bg-sidebar-primary/15 text-sidebar-primary font-medium border-l-2 border-sidebar-primary'
+                          ? 'bg-sidebar-primary/10 text-sidebar-primary font-medium'
                           : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
                       }`
                     }

@@ -394,7 +394,7 @@ const Marketplace = () => {
       </div>
 
       {!user && (
-        <Card className="border-primary/40 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent">
+        <Card className="border-primary/30 bg-primary/5">
           <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex items-center gap-3 flex-1">
               <div className="rounded-full bg-primary/20 p-2 hidden sm:block">
@@ -524,7 +524,7 @@ const Marketplace = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {filteredListings.map((listing) => (
-              <Card key={listing.id} className="mobile-card hover:shadow-lg transition-all cursor-pointer touch-highlight-none active:scale-[0.98] overflow-hidden">
+              <Card key={listing.id} className="mobile-card hover:border-primary/40 transition-colors cursor-pointer touch-highlight-none active:scale-[0.98] overflow-hidden">
                 <div className="relative h-36 sm:h-44 overflow-hidden bg-muted">
                   <img 
                     src={caskPlaceholder} 

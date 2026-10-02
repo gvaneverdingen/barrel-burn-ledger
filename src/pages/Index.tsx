@@ -138,7 +138,7 @@ const Index = () => {
 
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-40">
           <div className="max-w-2xl animate-fade-in">
-            <Badge variant="outline" className="mb-6 border-primary/40 text-primary bg-primary/5 backdrop-blur-sm">
+            <Badge variant="outline" className="mb-6 border-primary/40 text-primary bg-primary/5">
               <Sparkles className="h-3 w-3 mr-1.5" />
               Blockchain-verified provenance
             </Badge>
@@ -198,7 +198,7 @@ const Index = () => {
             <Badge variant="outline" className="mb-3 border-primary/30 text-primary">
               Featured
             </Badge>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold font-playfair">
               This week's finest casks
             </h2>
           </div>
@@ -223,7 +223,7 @@ const Index = () => {
               <Card
                 key={c.id}
                 onClick={() => navigate(`/cask/${c.id}`)}
-                className="heritage-card group cursor-pointer overflow-hidden animate-fade-in border-border/50 hover:border-primary/40 transition-all"
+                className="heritage-card group cursor-pointer overflow-hidden border-border/50 hover:border-primary/40 transition-all"
                 style={{ animationDelay: `${i * 0.1}s` }}
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-muted">
@@ -231,7 +231,7 @@ const Index = () => {
                     src={caskPlaceholder}
                     alt={c.spirit_name}
                     loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
                   {c.quality_grade && (
@@ -276,7 +276,7 @@ const Index = () => {
             <Badge variant="outline" className="mb-3 border-primary/30 text-primary">
               How it works
             </Badge>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair mb-4">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold font-playfair mb-4">
               From distillery to your portfolio
             </h2>
             <p className="text-muted-foreground text-lg">
@@ -305,7 +305,7 @@ const Index = () => {
                 body: 'Watch your cask mature, list it on the secondary market, or bottle it when the time is right.',
               },
             ].map((s, i) => (
-              <div key={s.step} className="relative animate-fade-in" style={{ animationDelay: `${i * 0.1}s` }}>
+              <div key={s.step} className="relative">
                 <div className="text-6xl font-playfair font-bold text-primary/15 mb-4 leading-none">
                   {s.step}
                 </div>
@@ -327,7 +327,7 @@ const Index = () => {
             <Badge variant="outline" className="mb-4 border-primary/30 text-primary">
               Provenance
             </Badge>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair mb-6 leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold font-playfair mb-6 leading-tight">
               Every cask, <span className="text-primary">cryptographically proven.</span>
             </h2>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
@@ -364,7 +364,7 @@ const Index = () => {
             ].map((f, i) => (
               <Card
                 key={f.label}
-                className="heritage-card animate-fade-in border-border/50"
+                className="heritage-card border-border/50"
                 style={{ animationDelay: `${i * 0.08}s` }}
               >
                 <CardContent className="p-6">
@@ -382,13 +382,13 @@ const Index = () => {
 
       {/* ============== DISTILLERY CTA ============== */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-24">
-        <Card className="heritage-card overflow-hidden border-primary/20 bg-gradient-to-br from-card via-card to-primary/5">
+        <Card className="heritage-card overflow-hidden border-primary/20">
           <CardContent className="p-8 sm:p-12 lg:p-16 grid lg:grid-cols-[1fr_auto] gap-8 items-center">
             <div>
               <div className="inline-flex p-2 rounded-lg bg-primary/10 border border-primary/20 mb-4">
                 <Building2 className="h-5 w-5 text-primary" />
               </div>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-playfair mb-3">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold font-playfair mb-3">
                 A distillery? Reach a global collector base.
               </h2>
               <p className="text-muted-foreground text-lg max-w-2xl">

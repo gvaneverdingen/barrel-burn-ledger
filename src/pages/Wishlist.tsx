@@ -236,7 +236,7 @@ const Wishlist = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredItems.map((item) => (
-            <Card key={item.id} className="hover:shadow-lg transition-shadow">
+            <Card key={item.id} className="hover:border-primary/40 transition-colors">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>

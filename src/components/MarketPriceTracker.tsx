@@ -239,7 +239,7 @@ export const MarketPriceTracker = () => {
       )}
 
       {analysis && !loading && (
-        <Card className="heritage-card animate-fade-in">
+        <Card className="heritage-card">
           <CardHeader>
             <div className="flex items-center gap-2">
               <AlertCircle className="h-5 w-5 text-primary" />

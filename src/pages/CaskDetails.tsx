@@ -810,7 +810,7 @@ const CaskDetails = () => {
 
   if (loading && !cask) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
+      <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-6">
             <p className="text-sm text-muted-foreground">Loading cask details...</p>
@@ -867,7 +867,7 @@ const CaskDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
+    <div className="min-h-screen bg-background">
         {cask && (() => {
           const volume = cask.current_volume_liters ?? cask.cask_type?.capacity_liters;
           const caskTypeName = cask.cask_type?.name ?? 'Whisky';

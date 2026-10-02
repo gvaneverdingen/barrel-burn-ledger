@@ -357,7 +357,7 @@ const Portfolio = () => {
         <h1 className="text-3xl font-bold luxury-text-gradient mb-6">Portfolio</h1>
       </div>
           
-          <div className="p-6 space-y-8 animate-fade-in">
+          <div className="p-6 space-y-8">
             {loading ? (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -398,7 +398,7 @@ const Portfolio = () => {
                 </div>
 
                 {/* Enhanced Tabs */}
-                <Tabs defaultValue="holdings" className="w-full animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                <Tabs defaultValue="holdings" className="w-full">
                   <TabsList className="grid w-full grid-cols-3 luxury-card">
                     <TabsTrigger value="holdings" className="text-base font-medium">
                       My Holdings
@@ -434,15 +434,13 @@ const Portfolio = () => {
                       ownerships.map((ownership, index) => (
                         <Card 
                           key={ownership.id} 
-                          className="luxury-card hover-scale animate-fade-in group overflow-hidden cursor-pointer" 
-                          style={{ animationDelay: `${index * 0.1}s` }}
+                          className="luxury-card group overflow-hidden cursor-pointer hover:border-primary/40 transition-colors" 
                           onClick={() => navigate(`/cask/${ownership.casks.id}`)}
                         >
-                          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                           <CardHeader className="relative">
                             <div className="flex justify-between items-start">
                               <div className="space-y-2">
-                                <CardTitle className="text-2xl luxury-text-gradient">
+                                <CardTitle className="text-2xl">
                                   {ownership.casks.spirit_name}
                                 </CardTitle>
                                 <CardDescription className="text-base">
@@ -498,7 +496,7 @@ const Portfolio = () => {
                               <div className="relative">
                                 <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
                                   <div 
-                                    className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full transition-all duration-1000 shadow-lg"
+                                    className="bg-primary h-3 rounded-full transition-[width] duration-500"
                                     style={{
                                       width: `${getMaturityProgress(
                                         ownership.casks.distillation_date,
@@ -507,7 +505,6 @@ const Portfolio = () => {
                                     }}
                                   />
                                 </div>
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-background/20 to-transparent animate-pulse" />
                               </div>
                             </div>
                             
@@ -517,7 +514,7 @@ const Portfolio = () => {
                             </div>
                             
                             {ownership.casks.tasting_notes && (
-                              <div className="p-4 rounded-lg bg-gradient-to-br from-secondary/10 to-primary/5 border border-secondary/20">
+                              <div className="p-4 rounded-lg bg-muted/40 border border-border/60">
                                 <p className="text-sm font-medium text-muted-foreground mb-2">Tasting Notes</p>
                                 <p className="text-sm leading-relaxed">{ownership.casks.tasting_notes}</p>
                               </div>
@@ -595,15 +592,13 @@ const Portfolio = () => {
                       activeSales.map((sale, index) => (
                         <Card 
                           key={sale.id} 
-                          className="luxury-card hover-scale animate-fade-in group overflow-hidden cursor-pointer" 
-                          style={{ animationDelay: `${index * 0.1}s` }}
+                          className="luxury-card group overflow-hidden cursor-pointer hover:border-primary/40 transition-colors" 
                           onClick={() => navigate(`/cask/${sale.casks.id}`)}
                         >
-                          <div className="absolute inset-0 bg-gradient-to-br from-success/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                           <CardHeader className="relative">
                             <div className="flex justify-between items-start">
                               <div className="space-y-2">
-                                <CardTitle className="text-2xl luxury-text-gradient">
+                                <CardTitle className="text-2xl">
                                   {sale.casks.spirit_name}
                                 </CardTitle>
                                 <CardDescription className="text-base">
@@ -649,7 +644,7 @@ const Portfolio = () => {
                             )}
 
                             {sale.notes && (
-                              <div className="p-4 rounded-lg bg-gradient-to-br from-secondary/10 to-primary/5 border border-secondary/20">
+                              <div className="p-4 rounded-lg bg-muted/40 border border-border/60">
                                 <p className="text-sm font-medium text-muted-foreground mb-2">Listing Notes</p>
                                 <p className="text-sm leading-relaxed">{sale.notes}</p>
                               </div>
@@ -694,7 +689,7 @@ const Portfolio = () => {
                           </Button>
                         </div>
                         {transactions.map((transaction, index) => (
-                        <Card key={transaction.id} className="luxury-card hover-scale animate-fade-in group" style={{ animationDelay: `${index * 0.1}s` }}>
+                        <Card key={transaction.id} className="luxury-card group">
                           <CardContent className="p-6">
                             <div className="flex justify-between items-start">
                               <div className="space-y-3 flex-1">

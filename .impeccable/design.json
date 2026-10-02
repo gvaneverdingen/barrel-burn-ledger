@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-02T11:00:00Z",
+  "generatedAt": "2026-10-02T13:00:00Z",
   "title": "Design System: ARIGI",
   "extensions": {
     "colorMeta": {
@@ -321,6 +321,14 @@
       "description": "Role-tinted status pill: 15% fill, role text, 30% border.",
       "html": "<span class=\"ds-status ds-ok\">Completed</span> <span class=\"ds-status ds-warn\">Pending review</span> <span class=\"ds-status ds-info\">Processing</span>",
       "css": ".ds-status { display: inline-flex; padding: 2px 10px; border-radius: 9999px; font-family: Inter, system-ui, sans-serif; font-size: 0.75rem; font-weight: 600; border: 1px solid; } .ds-ok { color: hsl(150 45% 58%); background: hsl(150 45% 58% / 0.15); border-color: hsl(150 45% 58% / 0.3); } .ds-warn { color: hsl(24 85% 64%); background: hsl(24 85% 64% / 0.15); border-color: hsl(24 85% 64% / 0.3); } .ds-info { color: hsl(210 70% 70%); background: hsl(210 70% 70% / 0.15); border-color: hsl(210 70% 70% / 0.3); }"
+    },
+    {
+      "name": "Ledger List",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Ruled rows with a bare primary icon and bold lead-in; replaces icon-tile cards.",
+      "html": "<ul class=\"ds-ledger\"><li><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\"/><path d=\"m9 12 2 2 4-4\"/></svg><p><b>Verified at source.</b> Every cask originates from the distillery that made it or an owner whose title we’ve checked.</p></li><li><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg><p><b>Priced in the open.</b> The asking price and the fees are visible before you buy.</p></li></ul>",
+      "css": ".ds-ledger { list-style: none; margin: 0; padding: 0; max-width: 48rem; border-top: 1px solid hsl(222 25% 22% / 0.6); border-bottom: 1px solid hsl(222 25% 22% / 0.6); font-family: Inter, system-ui, sans-serif; } .ds-ledger li { display: flex; gap: 16px; padding: 24px 0; } .ds-ledger li + li { border-top: 1px solid hsl(222 25% 22% / 0.6); } .ds-ledger svg { flex-shrink: 0; margin-top: 2px; color: hsl(38 60% 68%); } .ds-ledger p { margin: 0; font-size: 1rem; line-height: 1.625; color: hsl(38 15% 68%); } .ds-ledger b { color: hsl(38 35% 92%); font-weight: 600; }"
     }
   ],
   "narrative": {
@@ -371,7 +379,8 @@
     "donts": [
       "Don't use the gold gradient on more than one headline and one CTA per screen (the Solid Gold Rule).",
       "Don't lift, scale or glow cards in marketplace lists, tables or dashboards (the Still Ledger Rule).",
-      "Don't add looping animations (luxury-glow, float) to working surfaces.",
+      "Don't animate content in on working surfaces. A marketing page gets one entrance (the hero's fade-in); lists, cards and tabs are simply there. No staggered delays, no shimmer, no looping animation.",
+      "Don't use page-wide tinted gradients as backgrounds; grounds are the flat background role.",
       "Don't introduce new accent hues for decoration; extend semantic roles (success, warning) as named tokens first.",
       "Don't use Tailwind palette colours (text-green-600, bg-amber-100, dark:… overrides) or literal hues in components; use a role. text-white and bg-black/… are allowed only over photography."
     ]

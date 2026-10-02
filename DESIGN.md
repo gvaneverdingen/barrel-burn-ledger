@@ -251,6 +251,9 @@ Confident and quiet; the label carries the weight, not the effects.
 ### Stat Row (signature)
 A bordered panel split into equal cells, each holding a large champagne Playfair figure over an Inter caption (e.g. "16 Casks listed · 4 Distilleries · 0 Trades settled"). Show the real numbers, including zeros.
 
+### Ledger List (signature)
+Lists of claims, problems or principles are ruled rows, not cards: hairline rule-line dividers top, bottom and between rows, a bare 20px primary icon, then a bold parchment lead-in followed by muted body text in the same paragraph. Rows sit in the same `max-w-3xl` column as surrounding prose. Never box each item in its own card or put icons in tinted tiles.
+
 ### Provenance Timeline (signature)
 A vertical sequence of custody events (fill, regauge, warehouse transfer, sale, bottling) with document hashes and block-explorer links. This is where the North Star lives: dates, parties and identifiers set plainly in Inter, with champagne marking the verified steps.
 
@@ -267,6 +270,7 @@ A vertical sequence of custody events (fill, regauge, warehouse transfer, sale, 
 ### Don't:
 - **Don't** use the gold gradient on more than one headline and one CTA per screen (the Solid Gold Rule).
 - **Don't** lift, scale or glow cards in marketplace lists, tables or dashboards (the Still Ledger Rule).
-- **Don't** add looping animations (`luxury-glow`, `float`) to working surfaces.
+- **Don't** animate content in on working surfaces. A marketing page gets one entrance (the hero's `fade-in`); lists, cards and tabs are simply there. No staggered delays, no shimmer, no looping animation.
+- **Don't** use page-wide tinted gradients as backgrounds; grounds are the flat background role.
 - **Don't** introduce new accent hues for decoration; extend semantic roles (success, warning) as named tokens first.
 - **Don't** use Tailwind palette colours (`text-green-600`, `bg-amber-100`, `dark:…` overrides) or literal hues in components; use a role. `text-white` and `bg-black/…` are allowed only over photography.
