@@ -276,7 +276,7 @@ const DistilleryDocs = () => {
           <TabsContent value="title">
             <Card className="luxury-card"><CardContent className="p-6 text-sm space-y-2">
               <p>On primary sale, the distillery transfers beneficial ownership to the buyer and a Cask Delivery Order is lodged with the warehouse keeper. The warehouse holds the cask under the buyer's account but the distillery (or another approved person) remains the WOWGR-authorised owner of record where required.</p>
-              <p>Resales executed on ARIGI generate an updated CDO and an on-chain transfer event. Bottling instructions are signed by the current owner and routed to the warehouse for disgorging, reduction, labelling, duty payment and despatch.</p>
+              <p>Resales executed on ARIGI generate an updated CDO and an on-chain transfer event. Bottling is arranged by the distillery: the current owner signs a bottling instruction, and the distillery routes it to the warehouse for disgorging, reduction, labelling, duty payment and despatch.</p>
             </CardContent></Card>
           </TabsContent>
         </Tabs>
@@ -324,7 +324,8 @@ const DistilleryDocs = () => {
               <AccordionItem value="q2">
                 <AccordionTrigger>What happens to the NFT when a cask is bottled?</AccordionTrigger>
                 <AccordionContent>
-                  The owner submits a bottling instruction. Once disgorging is confirmed by the
+                  The owner submits a bottling instruction and the distillery arranges it with the
+                  warehouse. Once disgorging is confirmed by the
                   warehouse, the token is marked as redeemed on-chain. The metadata retains the
                   history but the token is no longer transferable.
                 </AccordionContent>
@@ -362,7 +363,7 @@ const DistilleryDocs = () => {
       <Card className="luxury-card">
         <CardHeader>
           <CardTitle>Need a human?</CardTitle>
-          <CardDescription>The producer relations team handles onboarding, CSV imports, custodial questions and bottling co-ordination.</CardDescription>
+          <CardDescription>Get in touch about onboarding, CSV imports or custody questions, and we’ll help you get set up.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button asChild><Link to="/help">Open Help Center <ArrowRight className="h-4 w-4 ml-1" /></Link></Button>

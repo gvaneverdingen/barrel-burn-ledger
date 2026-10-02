@@ -59,7 +59,7 @@ const faqs = [
   {
     question: 'What happens when a cask is bottled?',
     answer:
-      'When a cask reaches maturity you can choose to bottle it. ARIGI coordinates with the bonded warehouse and an approved bottler to disgorge, reduce to bottling strength, label, and where applicable pay duty and VAT. Bottling, labelling, duty and shipping are quoted before you confirm. Once bottled, the underlying NFT is marked as redeemed so the on-chain record reflects that the cask has left maturation.',
+      'When the whisky is ready, you can have it bottled. The distillery that filled the cask arranges it with the bonded warehouse: disgorging, reducing to bottling strength, labelling and, where it applies, paying duty and VAT. You get a quote for bottling, labelling, duty and shipping before you agree to anything. Once it’s bottled, the cask’s NFT is marked as redeemed, so the on-chain record shows it has left maturation.',
   },
 ];
 

@@ -71,8 +71,8 @@ const ConsumerDocs = () => {
               (an NFT) on the Polygon blockchain that records its history publicly.
             </p>
             <p className="text-muted-foreground">
-              You can later choose to sell the cask to another buyer, or instruct ARIGI to bottle it
-              for you (typically 250–320 bottles from a hogshead at bottling strength).
+              Later you can sell the cask to another buyer, or ask the distillery that filled it to bottle
+              it for you (typically 250–320 bottles from a hogshead at bottling strength).
             </p>
           </CardContent>
         </Card>
@@ -157,7 +157,7 @@ const ConsumerDocs = () => {
           </TabsContent>
           <TabsContent value="bottle">
             <Card className="luxury-card"><CardContent className="p-6 text-sm space-y-2">
-              <p>When the spirit is mature you can request bottling. ARIGI co-ordinates with the warehouse and an approved bottler to disgorge, reduce to bottling strength, label and despatch.</p>
+              <p>When the spirit is mature you can ask for it to be bottled. The distillery that filled the cask arranges it with the warehouse: disgorging, reducing to bottling strength, labelling and despatch.</p>
               <p>Typical yield from a refill hogshead at 12 years is around 250–320 bottles at 46% ABV. Bottling, labelling, UK Spirits Duty and VAT are quoted upfront before you confirm.</p>
             </CardContent></Card>
           </TabsContent>
@@ -232,7 +232,7 @@ const ConsumerDocs = () => {
       <Card className="luxury-card">
         <CardHeader>
           <CardTitle>Need a hand?</CardTitle>
-          <CardDescription>Our concierge team can walk you through buying, holding and bottling.</CardDescription>
+          <CardDescription>Questions about buying, holding or bottling? Ask the ARIGI guide, or get in touch through the Help Centre.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button asChild><Link to="/help">Open Help Center <ArrowRight className="h-4 w-4 ml-1" /></Link></Button>

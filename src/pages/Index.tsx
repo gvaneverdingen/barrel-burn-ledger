@@ -142,12 +142,18 @@ const Index = () => {
               <Sparkles className="h-3 w-3 mr-1.5" />
               Blockchain-verified provenance
             </Badge>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold font-playfair leading-[1.05] mb-6 heritage-text-gradient">
-              Own a piece of liquid history.
+            <h1 className="font-playfair mb-6 [text-wrap:balance]">
+              <span className="block text-4xl sm:text-5xl lg:text-7xl font-bold leading-[1.05] heritage-text-gradient">
+                A whole cask of whisky.
+              </span>
+              <span className="block mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight text-foreground">
+                With the paperwork to prove it.
+              </span>
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground mb-10 leading-relaxed max-w-xl">
-              ARIGI is the curated marketplace for whole-cask whisky ownership — every barrel verified on-chain,
-              sourced direct from distilleries, and tracked from still to glass.
+              Buy a maturing cask straight from the distillery that filled it, or from an owner whose title
+              we’ve checked. Every cask is recorded on the blockchain, so you can see who owns it without
+              taking our word for it.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -156,7 +162,7 @@ const Index = () => {
                 onClick={() => navigate('/marketplace')}
                 className="heritage-button-hero text-base px-8 h-12 group"
               >
-                Explore the Marketplace
+                Browse casks for sale
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
               {!user && (
@@ -166,7 +172,7 @@ const Index = () => {
                   onClick={() => navigate('/auth')}
                   className="text-base px-8 h-12 border-primary/40 hover:bg-primary/10"
                 >
-                  Create Account
+                  Create an account
                 </Button>
               )}
             </div>
@@ -199,14 +205,14 @@ const Index = () => {
               Featured
             </Badge>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold font-playfair">
-              This week's finest casks
+              The oldest casks for sale right now
             </h2>
           </div>
           <Link
             to="/marketplace"
             className="text-sm text-primary hover:text-primary/80 inline-flex items-center group"
           >
-            View all listings
+            See every cask for sale
             <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
@@ -214,7 +220,7 @@ const Index = () => {
         {featured.length === 0 ? (
           <Card className="heritage-card">
             <CardContent className="p-12 text-center text-muted-foreground">
-              New casks are being prepared. Check back shortly.
+              Nothing is listed right now. New casks appear here as soon as a distillery or owner lists one.
             </CardContent>
           </Card>
         ) : (
@@ -277,10 +283,10 @@ const Index = () => {
               How it works
             </Badge>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold font-playfair mb-4">
-              From distillery to your portfolio
+              How buying a cask works
             </h2>
             <p className="text-muted-foreground text-lg">
-              Three simple steps. Full transparency at every stage.
+              Three steps, and nothing hidden along the way.
             </p>
           </div>
 
@@ -289,20 +295,20 @@ const Index = () => {
               {
                 icon: Eye,
                 step: '01',
-                title: 'Browse verified casks',
-                body: 'Explore curated single-barrel listings from accredited distilleries. Filter by age, region, finish and price.',
+                title: 'Find your cask',
+                body: 'Every cask is listed by the distillery that filled it, or resold by an owner we’ve verified. Search by name or distillery, then narrow it down by cask type and price.',
               },
               {
                 icon: Shield,
                 step: '02',
-                title: 'Buy with confidence',
-                body: 'Every cask is minted as an NFT on Polygon. Pay by card or stablecoin — escrow protects both sides.',
+                title: 'Buy it outright',
+                body: 'Pay by card or USDC. You see the price and every fee before you commit, and the cask’s ownership record lives on the Polygon blockchain, not in our spreadsheet.',
               },
               {
                 icon: TrendingUp,
                 step: '03',
-                title: 'Track, trade or take delivery',
-                body: 'Watch your cask mature, list it on the secondary market, or bottle it when the time is right.',
+                title: 'Hold it, sell it or bottle it',
+                body: 'Your cask matures in a bonded warehouse. When you’re ready, resell it on the same marketplace, or ask the distillery to bottle it for you.',
               },
             ].map((s, i) => (
               <div key={s.step} className="relative">
@@ -328,19 +334,20 @@ const Index = () => {
               Provenance
             </Badge>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold font-playfair mb-6 leading-tight">
-              Every cask, <span className="text-primary">cryptographically proven.</span>
+              Ownership you can <span className="text-primary">check for yourself.</span>
             </h2>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              We mint each cask as a unique NFT before it reaches the marketplace. The result: an immutable
-              chain of custody from the moment new-make spirit enters the barrel to the day it's bottled.
+              Before a cask can be listed, we record it on the Polygon blockchain: the distillery, fill date,
+              cask type, strength and every change of owner. The record is public, so you can check it without
+              asking us, and we can’t quietly change it.
             </p>
 
             <ul className="space-y-4 mb-10">
               {[
-                'On-chain ownership records on Polygon',
-                'Verified distillery licensing & gauging history',
-                'Atomic escrow protects buyer & seller',
-                'Full audit trail accessible from any cask page',
+                'Ownership recorded on Polygon, readable by anyone',
+                'Distilleries checked before they can list a cask',
+                'Regauges and transfers logged against each cask',
+                'The full history, one click from every cask page',
               ].map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 shrink-0" />
@@ -350,17 +357,17 @@ const Index = () => {
             </ul>
 
             <Button onClick={() => navigate('/marketplace')} size="lg" className="heritage-button">
-              Start exploring
+              See the casks
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             {[
-              { icon: Shield, label: 'On-chain', sub: 'Polygon NFT' },
-              { icon: Gem, label: 'Curated', sub: 'Verified casks' },
-              { icon: Link2, label: 'Direct', sub: 'From distilleries' },
-              { icon: Crown, label: 'Whole cask', sub: 'Sole ownership' },
+              { icon: Shield, label: 'On-chain', sub: 'A public record we can’t edit' },
+              { icon: Gem, label: 'Checked', sub: 'Distilleries vetted before listing' },
+              { icon: Link2, label: 'Direct', sub: 'No brokers between you and the still' },
+              { icon: Crown, label: 'Whole cask', sub: 'One cask, one owner: you' },
             ].map((f, i) => (
               <Card
                 key={f.label}
@@ -389,11 +396,11 @@ const Index = () => {
                 <Building2 className="h-5 w-5 text-primary" />
               </div>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold font-playfair mb-3">
-                A distillery? Reach a global collector base.
+                Run a distillery? Sell your casks direct.
               </h2>
               <p className="text-muted-foreground text-lg max-w-2xl">
-                List your casks, manage inventory on-chain, and settle in fiat or stablecoin — with a fee
-                structure built for craft producers.
+                List casks at your own price, with no chain of brokers in between. Your inventory lives
+                on-chain, buyers pay by card or USDC, and ARIGI takes a 5% fee only when a cask sells.
               </p>
             </div>
             <Button

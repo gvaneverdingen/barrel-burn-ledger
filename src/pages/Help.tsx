@@ -21,7 +21,7 @@ const Help = () => {
     },
     {
       question: "What happens when my cask is bottled?",
-      answer: "When a cask reaches maturity you can choose to bottle it instead of selling it on. ARIGI coordinates with the bonded warehouse and an approved bottler to disgorge, reduce to bottling strength, label, and (where applicable) pay duty and VAT. Typical yield depends on cask type and angel's share — a refill hogshead at 12 years often yields around 250–320 bottles at 46% ABV. Bottling, labelling, duty, and shipping are billed separately and quoted before you confirm. Once bottled, the underlying NFT is marked as redeemed so the on-chain record reflects that the cask has left maturation."
+      answer: "When your cask is ready, you can bottle it instead of selling it on. The distillery that filled it arranges the bottling with the bonded warehouse: disgorging, reducing to bottling strength, labelling and, where it applies, paying duty and VAT. How many bottles you get depends on the cask and how much the angels have taken: a refill hogshead at 12 years often gives around 250–320 bottles at 46% ABV. Bottling, labelling, duty and shipping are charged separately, and you get a quote before you agree to anything. Once it’s bottled, the cask’s NFT is marked as redeemed, so the on-chain record shows it has left maturation."
     },
     {
       question: "What are the legal rules for Scotch Whisky?",
