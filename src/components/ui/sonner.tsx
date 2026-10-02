@@ -1,14 +1,30 @@
-import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
 import { Toaster as Sonner, toast } from "sonner"
 
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
+// Follow the site's own theme (the <html class="dark"> set in index.html and
+// by ThemeToggle), not the OS preference: navy is the default for everyone.
+const useSiteTheme = (): "dark" | "light" => {
+  const read = (): "dark" | "light" =>
+    document.documentElement.classList.contains("dark") ? "dark" : "light"
+  const [theme, setTheme] = useState(read)
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => setTheme(read()))
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] })
+    return () => observer.disconnect()
+  }, [])
+
+  return theme
+}
+
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  const theme = useSiteTheme()
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme={theme}
       className="toaster group"
       toastOptions={{
         classNames: {

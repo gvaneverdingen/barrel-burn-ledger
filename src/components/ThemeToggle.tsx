@@ -13,7 +13,7 @@ export const ThemeToggle = () => {
     const next = !isDark;
     document.documentElement.classList.toggle("dark", next);
     try {
-      localStorage.setItem("theme", next ? "dark" : "light");
+      localStorage.setItem("arigi-theme", next ? "dark" : "light");
     } catch {
       // Storage blocked: the choice still applies for this visit.
     }

@@ -3,8 +3,10 @@
   <head>
     <script>
       // Navy is ARIGI's default world; parchment only when the visitor chose it.
+      // "arigi-theme", not "theme": an old toggle bug wrote theme=light on every
+      // load, so that legacy key can't be trusted as a real choice.
       try {
-        if (localStorage.getItem("theme") === "light") document.documentElement.classList.remove("dark");
+        if (localStorage.getItem("arigi-theme") === "light") document.documentElement.classList.remove("dark");
       } catch (e) {}
     </script>
     <meta charset="UTF-8" />
