@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -51,6 +52,7 @@ const Index = () => {
     completedTx: 0,
   });
   const [featured, setFeatured] = useState<FeaturedCask[]>([]);
+  const [featuredLoading, setFeaturedLoading] = useState(true);
 
   // Stripe redirect handling
   useEffect(() => {
@@ -104,6 +106,8 @@ const Index = () => {
         }
       } catch (e) {
         console.warn('Failed to load home stats', e);
+      } finally {
+        if (!cancelled) setFeaturedLoading(false);
       }
     };
     load();
@@ -217,7 +221,20 @@ const Index = () => {
           </Link>
         </div>
 
-        {featured.length === 0 ? (
+        {featuredLoading ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" aria-busy="true" aria-label="Loading featured casks">
+            {[0, 1, 2].map((i) => (
+              <Card key={i} className="heritage-card overflow-hidden border-border/50">
+                <Skeleton className="aspect-[4/3] w-full rounded-none" />
+                <CardContent className="p-5 space-y-3">
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-6 w-1/3" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : featured.length === 0 ? (
           <Card className="heritage-card">
             <CardContent className="p-12 text-center text-muted-foreground">
               Nothing is listed right now. New casks appear here as soon as a distillery or owner lists one.
