@@ -879,7 +879,7 @@ const CaskDetails = () => {
                 {
                   '@context': 'https://schema.org',
                   '@type': 'Product',
-                  name: cask.spirit_name,
+                  name: caskDisplayName(cask.spirit_name, cask.distillation_date),
                   description: seoDescription,
                   ...(primaryImageUrl ? { image: primaryImageUrl } : {}),
                   ...(cask.distillery?.name ? { brand: { '@type': 'Brand', name: cask.distillery.name } } : {}),
@@ -919,7 +919,7 @@ const CaskDetails = () => {
              {cask && (
                <div className="flex items-center gap-2">
                  <PriceAlertButton caskId={cask.id} currentPrice={cask.total_price} />
-                 <ShareCaskButton caskName={cask.spirit_name} caskId={cask.id} />
+                 <ShareCaskButton caskName={caskDisplayName(cask.spirit_name, cask.distillation_date)} caskId={cask.id} />
                </div>
              )}
            </div>
@@ -992,7 +992,7 @@ const CaskDetails = () => {
                 <div className="flex justify-between items-start">
                    <div>
                      <h1 className="text-3xl font-bold leading-none tracking-tight text-primary">
-                       {cask.spirit_name}
+                       {caskDisplayName(cask.spirit_name, cask.distillation_date)}
                      </h1>
                      <CardDescription className="flex items-center space-x-2 mt-2">
                        <MapPin className="h-4 w-4" />
@@ -1694,7 +1694,7 @@ const CaskDetails = () => {
         <PaymentMethodDialog
           open={paymentDialogOpen}
           onOpenChange={setPaymentDialogOpen}
-          caskName={cask.spirit_name}
+          caskName={caskDisplayName(cask.spirit_name, cask.distillation_date)}
           totalPrice={cask.total_price || 0}
           saleId={activeSaleId}
           caskId={cask.id}
