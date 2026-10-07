@@ -128,7 +128,6 @@ const CaskDetails = () => {
   const effectiveUserRole = isAdmin && adminViewAs !== 'default' ? adminViewAs : userRole;
   
   useEffect(() => {
-    console.log('[CaskDetails] useEffect triggered', { id, userId: user?.id });
     if (!id) {
       console.warn('[CaskDetails] No cask ID found in route params');
       setLoading(false);
@@ -141,7 +140,6 @@ const CaskDetails = () => {
       if (cached) {
         const parsed = JSON.parse(cached);
         if (parsed && parsed.id === id) {
-          console.log("[CaskDetails] Using cached cask details from localStorage");
           setCask(parsed);
         }
       }
@@ -197,17 +195,14 @@ const CaskDetails = () => {
   }, [user?.id]);
 
   useEffect(() => {
-    console.log('[CaskDetails] Secondary effect for permissions/offers', {
-      hasCask: !!cask,
-      userId: user?.id,
-    });
     if (cask && user) {
       checkImageManagementPermissions();
       fetchOffers();
       checkOwnership();
       (supabase.rpc as any)('can_manage_cask', { _cask_id: cask.id }).then(({ data }: any) => setCanMoveCask(!!data));
     } else setCanMoveCask(false);
-  }, [cask, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cask?.id, user?.id, userRole]);
 
   const checkImageManagementPermissions = async () => {
     if (!cask || !user) return;
@@ -457,7 +452,6 @@ const CaskDetails = () => {
   }, [cask, user, id]);
 
   const fetchCaskDetails = async (caskId: string) => {
-    console.log('[CaskDetails] Fetching cask details for ID:', caskId);
     try {
       // Look for an active resale listing for this cask (linked via denormalized cask_id)
       const { data: saleData, error: saleError } = await supabase
@@ -516,7 +510,6 @@ const CaskDetails = () => {
       }
 
       if (saleData) {
-        console.log('[CaskDetails] Resale listing detected, building resale cask data');
         setActiveSaleId(saleData.id);
         if (user && saleData.seller_id === user.id) {
           setIsOwnerSale(true);
@@ -537,7 +530,6 @@ const CaskDetails = () => {
         return;
       }
 
-      console.log('[CaskDetails] Primary cask data loaded');
       setLoadState('ok');
       setCask({
         ...caskData,
@@ -548,7 +540,6 @@ const CaskDetails = () => {
       console.error("Error fetching cask details:", error);
       setLoadState('error');
     } finally {
-      console.log('[CaskDetails] Finished fetching cask details, setting loading=false');
       setLoading(false);
     }
   };
@@ -584,10 +575,8 @@ const CaskDetails = () => {
   };
 
   const handlePurchaseClick = async () => {
-    console.log('Purchase click - User:', user);
     
     if (!user) {
-      console.log('No user found, redirecting to auth');
       navigate('/auth');
       return;
     }
@@ -620,7 +609,6 @@ const CaskDetails = () => {
       // Check if this is a resale (peer-to-peer) or primary market purchase
       if (activeSaleId) {
         // This is a resale - use purchase-cask function
-        console.log('Processing resale purchase for sale:', activeSaleId);
         
         const { data, error } = await supabase.functions.invoke('purchase-cask', {
           body: {
@@ -628,7 +616,6 @@ const CaskDetails = () => {
           }
         });
 
-        console.log('Purchase-cask response:', { data, error });
 
         if (error) {
           console.error('Purchase-cask error:', error);
@@ -661,7 +648,6 @@ const CaskDetails = () => {
         }
 
         if (data?.url) {
-          console.log('Redirecting to Stripe checkout:', data.url);
 
           if (checkoutWindow) {
             checkoutWindow.location.href = data.url;
@@ -697,7 +683,6 @@ const CaskDetails = () => {
         }
       } else {
         // This is a primary market purchase - use create-payment function
-        console.log('Processing primary market purchase');
         
         // Mark that a payment flow has been initiated
         try {
@@ -716,7 +701,6 @@ const CaskDetails = () => {
           }
         });
  
-        console.log('Payment function response:', { data, error });
  
         if (error) {
           console.error('Payment function returned error:', error);
@@ -749,7 +733,6 @@ const CaskDetails = () => {
         }
  
         if (data?.url) {
-          console.log('Redirecting to Stripe checkout:', data.url);
 
           if (checkoutWindow) {
             checkoutWindow.location.href = data.url;
@@ -812,6 +795,7 @@ const CaskDetails = () => {
   if (loading && !cask) {
     return (
       <div className="min-h-screen bg-background">
+        <Seo title="Loading cask | ARIGI" description="Loading cask details on ARIGI." noIndex />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-6">
             <p className="text-sm text-muted-foreground">Loading cask details...</p>
