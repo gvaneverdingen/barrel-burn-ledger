@@ -396,22 +396,6 @@ const Marketplace = () => {
                     loading="lazy"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-2 right-2 flex flex-col gap-1">
-                    {listing.distilleries?.verified && (
-                      <Badge variant="secondary" className="text-xs px-2 py-0.5 h-auto whitespace-nowrap bg-background/80 backdrop-blur-sm">
-                        <Shield className="h-3 w-3 mr-1" />
-                        Verified distillery
-                      </Badge>
-                    )}
-                    <Badge variant="outline" className="text-xs px-2 py-0.5 h-auto whitespace-nowrap bg-background/80 backdrop-blur-sm">
-                      {isCaskOnChain(listing as any) ? 'On-chain' : 'On-chain registration pending'}
-                    </Badge>
-                    {listing.is_resale && (
-                      <Badge variant="outline" className="text-xs px-2 py-0.5 h-auto bg-background/80 backdrop-blur-sm">
-                        Resale
-                      </Badge>
-                    )}
-                  </div>
                   <Explain text="Save this cask to your wishlist to keep track of it.">
                     <Button
                       size="sm"
@@ -431,6 +415,20 @@ const Marketplace = () => {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
                       <CardTitle className="text-base sm:text-lg truncate">{caskDisplayName(listing.spirit_name, listing.distillation_date)}</CardTitle>
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {listing.distilleries?.verified && (
+                          <Badge variant="secondary" className="text-[11px] px-2 py-0 h-5 font-normal">
+                            <Shield className="h-3 w-3 mr-1" />
+                            Verified distillery
+                          </Badge>
+                        )}
+                        <Badge variant="outline" className="text-[11px] px-2 py-0 h-5 font-normal">
+                          {isCaskOnChain(listing as any) ? 'On-chain' : 'On-chain pending'}
+                        </Badge>
+                        {listing.is_resale && (
+                          <Badge variant="outline" className="text-[11px] px-2 py-0 h-5 font-normal">Resale</Badge>
+                        )}
+                      </div>
                       <CardDescription className="text-xs sm:text-sm truncate">
                         Cask #{listing.cask_number}
                       </CardDescription>
