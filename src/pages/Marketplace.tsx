@@ -417,16 +417,16 @@ const Marketplace = () => {
                       <CardTitle className="text-base sm:text-lg truncate">{caskDisplayName(listing.spirit_name, listing.distillation_date)}</CardTitle>
                       <div className="flex flex-wrap gap-1 mb-2">
                         {listing.distilleries?.verified && (
-                          <Badge variant="secondary" className="text-[11px] px-2 py-0 h-5 font-normal">
+                          <Badge variant="secondary" className="text-[11px] px-2 py-0.5 h-auto font-normal leading-tight">
                             <Shield className="h-3 w-3 mr-1" />
                             Verified distillery
                           </Badge>
                         )}
-                        <Badge variant="outline" className="text-[11px] px-2 py-0 h-5 font-normal">
+                        <Badge variant="outline" className="text-[11px] px-2 py-0.5 h-auto font-normal leading-tight">
                           {isCaskOnChain(listing as any) ? 'On-chain' : 'On-chain registration pending'}
                         </Badge>
                         {listing.is_resale && (
-                          <Badge variant="outline" className="text-[11px] px-2 py-0 h-5 font-normal">Resale</Badge>
+                          <Badge variant="outline" className="text-[11px] px-2 py-0.5 h-auto font-normal leading-tight">Resale</Badge>
                         )}
                       </div>
                       <CardDescription className="text-xs sm:text-sm truncate">
