@@ -423,7 +423,7 @@ const Marketplace = () => {
                           </Badge>
                         )}
                         <Badge variant="outline" className="text-[11px] px-2 py-0 h-5 font-normal">
-                          {isCaskOnChain(listing as any) ? 'On-chain' : 'On-chain pending'}
+                          {isCaskOnChain(listing as any) ? 'On-chain' : 'On-chain registration pending'}
                         </Badge>
                         {listing.is_resale && (
                           <Badge variant="outline" className="text-[11px] px-2 py-0 h-5 font-normal">Resale</Badge>
