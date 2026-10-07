@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { RecentlyViewedCasks } from '@/components/RecentlyViewedCasks';
-import caskPlaceholder from '@/assets/cask-placeholder.jpg';
+import { fetchMarketplaceListings } from '@/lib/marketplaceListings';
+import { caskDisplayName, defaultCaskImage, isCaskOnChain, isRealTxHash, polygonTxUrl } from '@/lib/caskDisplay';
 import { calculatePricePerLPA, calculateLPA, formatLPA } from '@/utils/lpaCalculations';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -155,147 +156,9 @@ const Marketplace = () => {
 
   const fetchAllListings = async () => {
     try {
-      // Fetch primary market casks
-      const { data: primaryCasks, error: primaryError } = await supabase
-        .from('casks')
-        .select(`
-          *,
-          distilleries (
-            name,
-            location,
-            verified,
-            profile_id
-          ),
-          cask_types (
-            name,
-            capacity_liters
-          )
-        `)
-        .eq('available_for_sale', true)
-        .order('created_at', { ascending: false });
-
-      if (primaryError) throw primaryError;
-
-      // Secondary market listings are restricted to authenticated users.
-      const { data: secondaryListings, error: secondaryError } = user ? await supabase
-        .from('cask_sales')
-        .select(`
-          id,
-          cask_id,
-          seller_id,
-          asking_price_per_liter,
-          total_asking_price,
-          volume_for_sale_liters,
-          status,
-          notes,
-          listing_date,
-          last_gauging_date,
-          created_at,
-          casks (
-            spirit_name,
-            cask_number,
-            distillation_date,
-            alcohol_percentage,
-            blockchain_hash,
-            warehouse_location,
-            tasting_notes,
-            region,
-            spirit_type,
-            distilleries (
-              name,
-              location,
-              verified
-            ),
-            cask_types (
-              name,
-              capacity_liters
-            )
-          ),
-          profiles!cask_sales_seller_id_fkey (
-            first_name,
-            last_name
-          )
-        `)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false }) : { data: [], error: null };
-
-      if (secondaryError) throw secondaryError;
-
-      // Transform primary casks to unified format - filter out incomplete listings
-      const primaryUnified: UnifiedListing[] = (primaryCasks || [])
-        .filter(cask => 
-          cask.price_per_liter != null && 
-          cask.total_price != null && 
-          cask.current_volume_liters != null && 
-          cask.alcohol_percentage != null
-        )
-        .map(cask => ({
-          id: cask.id,
-          cask_id: cask.id,
-          spirit_name: cask.spirit_name,
-          cask_number: cask.cask_number,
-          distillation_date: cask.distillation_date,
-          expected_maturation_years: cask.expected_maturation_years,
-          current_volume_liters: cask.current_volume_liters,
-          alcohol_percentage: cask.alcohol_percentage,
-          price_per_liter: cask.price_per_liter,
-          total_price: cask.total_price,
-          warehouse_location: cask.warehouse_location,
-          tasting_notes: cask.tasting_notes,
-          available_for_sale: cask.available_for_sale,
-          created_at: cask.created_at,
-          updated_at: cask.updated_at,
-          distillery_id: cask.distillery_id,
-          cask_type_id: cask.cask_type_id,
-          region: cask.region,
-          spirit_type: cask.spirit_type,
-          distilleries: cask.distilleries,
-          cask_types: cask.cask_types,
-          is_resale: false,
-          seller_id: cask.distilleries?.profile_id,
-          last_gauging_date: cask.last_gauging_date
-        }));
-
-      // Transform secondary listings to unified format - filter out incomplete ones
-      const secondaryUnified: UnifiedListing[] = (secondaryListings || [])
-        .filter(listing => {
-          // Only include if cask data exists and has essential fields
-          const cask = listing.casks;
-          return cask && cask.spirit_name && cask.cask_number;
-        })
-        .map(listing => {
-          const cask = listing.casks!;
-
-          return {
-            id: listing.id,
-            cask_id: listing.cask_id,
-            spirit_name: cask.spirit_name,
-            cask_number: cask.cask_number,
-            distillation_date: cask.distillation_date || '',
-            current_volume_liters: listing.volume_for_sale_liters,
-            alcohol_percentage: cask.alcohol_percentage || null,
-            price_per_liter: listing.asking_price_per_liter,
-            total_price: listing.total_asking_price,
-            warehouse_location: cask.warehouse_location,
-            tasting_notes: cask.tasting_notes,
-            region: (cask as any).region ?? null,
-            spirit_type: (cask as any).spirit_type ?? null,
-            created_at: listing.created_at,
-            updated_at: listing.created_at,
-            distilleries: cask.distilleries,
-            cask_types: cask.cask_types,
-            is_resale: true,
-            seller_id: listing.seller_id,
-            blockchain_hash: cask.blockchain_hash,
-            seller_name: listing.profiles 
-              ? `${listing.profiles.first_name} ${listing.profiles.last_name}` 
-              : 'Anonymous',
-            last_gauging_date: listing.last_gauging_date
-          };
-        });
-
+      const listings = await fetchMarketplaceListings(!!user);
       // Combine all listings
-      setAllListings([...primaryUnified, ...secondaryUnified]);
+      setAllListings(listings as UnifiedListing[]);
     } catch (error) {
       console.error('Error fetching listings:', error);
       toast.error('Failed to load marketplace listings');
@@ -528,8 +391,8 @@ const Marketplace = () => {
               <Card key={listing.id} className="mobile-card hover:border-primary/40 transition-colors cursor-pointer touch-highlight-none active:scale-[0.98] overflow-hidden">
                 <div className="relative h-36 sm:h-44 overflow-hidden bg-muted">
                   <img 
-                    src={caskPlaceholder} 
-                    alt={listing.spirit_name}
+                    src={(listing as any).image_url || defaultCaskImage(listing.cask_types?.name, listing.cask_id)} 
+                    alt={caskDisplayName(listing.spirit_name, listing.distillation_date)}
                     loading="lazy"
                     className="w-full h-full object-cover"
                   />
@@ -537,9 +400,12 @@ const Marketplace = () => {
                     {listing.distilleries?.verified && (
                       <Badge variant="secondary" className="text-xs px-2 py-0.5 h-auto whitespace-nowrap bg-background/80 backdrop-blur-sm">
                         <Shield className="h-3 w-3 mr-1" />
-                        Verified
+                        Verified distillery
                       </Badge>
                     )}
+                    <Badge variant="outline" className="text-xs px-2 py-0.5 h-auto whitespace-nowrap bg-background/80 backdrop-blur-sm">
+                      {isCaskOnChain(listing as any) ? 'On-chain' : 'On-chain registration pending'}
+                    </Badge>
                     {listing.is_resale && (
                       <Badge variant="outline" className="text-xs px-2 py-0.5 h-auto bg-background/80 backdrop-blur-sm">
                         Resale
@@ -564,7 +430,7 @@ const Marketplace = () => {
                 <CardHeader className="pb-3 p-4 sm:p-6 sm:pb-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
-                      <CardTitle className="text-base sm:text-lg truncate">{listing.spirit_name}</CardTitle>
+                      <CardTitle className="text-base sm:text-lg truncate">{caskDisplayName(listing.spirit_name, listing.distillation_date)}</CardTitle>
                       <CardDescription className="text-xs sm:text-sm truncate">
                         Cask #{listing.cask_number}
                       </CardDescription>
@@ -612,7 +478,7 @@ const Marketplace = () => {
                     </div>
                     <div className="flex items-center gap-1">
                       <MapPin className="h-3 w-3" />
-                      {listing.distilleries?.location}
+                      {listing.distilleries?.location || listing.region}
                     </div>
                     <div className="flex items-center gap-1">
                       <Droplets className="h-3 w-3" />
@@ -698,10 +564,16 @@ const Marketplace = () => {
                     Listed {new Date(listing.created_at).toLocaleDateString()}
                   </div>
 
-                  {listing.blockchain_hash && (
-                    <div className="text-xs text-muted-foreground font-mono p-2 bg-muted rounded truncate">
+                  {isCaskOnChain(listing as any) && isRealTxHash(listing.blockchain_hash) && (
+                    <a
+                      href={polygonTxUrl(listing.blockchain_hash)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="block text-xs text-muted-foreground font-mono p-2 bg-muted rounded truncate hover:text-primary"
+                    >
                       Blockchain: {listing.blockchain_hash}
-                    </div>
+                    </a>
                   )}
                 </CardContent>
               </Card>
