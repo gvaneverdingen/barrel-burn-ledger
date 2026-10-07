@@ -97,7 +97,7 @@ const NftStatusCard = ({
         ) : (
           <>
             <div className="flex items-center gap-2">
-              <Badge variant="secondary">Not Minted</Badge>
+              <Badge variant="secondary">On-chain registration pending</Badge>
             </div>
             <p className="text-sm text-muted-foreground">
               This cask has not been tokenized on the blockchain yet.

@@ -39,6 +39,7 @@ import { addRecentlyViewed } from "@/components/RecentlyViewedCasks";
 import { PriceAlertButton } from "@/components/PriceAlertButton";
 import CaskProvenancePanel from "@/components/CaskProvenancePanel";
 import { Seo } from "@/components/Seo";
+import { caskDisplayName, isCaskOnChain, publicSellerName } from "@/lib/caskDisplay";
 import { Explain } from '@/components/Explain';
 
 interface CaskDetails {
@@ -854,11 +855,11 @@ const CaskDetails = () => {
   return (
     <div className="min-h-screen bg-background">
         {cask && (() => {
-          const volume = cask.current_volume_liters ?? cask.cask_type?.capacity_liters;
+          const volume = cask.cask_type?.capacity_liters;
           const caskTypeName = cask.cask_type?.name ?? 'Whisky';
           const vintage = cask.distillation_date ? new Date(cask.distillation_date).getFullYear() : null;
           const age = vintage ? new Date().getFullYear() - vintage : null;
-          const seoTitle = `${cask.spirit_name} — ${volume ? `${Math.round(Number(volume))}L ` : ''}${caskTypeName} Cask for Sale | ARIGI`;
+          const seoTitle = `${caskDisplayName(cask.spirit_name, cask.distillation_date)} — ${volume ? `${Math.round(Number(volume))}L ` : ''}${caskTypeName} Cask for Sale | ARIGI`;
           const seoDescription = [
             cask.distillery?.name ? `${cask.distillery.name}${cask.distillery.location ? `, ${cask.distillery.location}` : ''}.` : null,
             vintage ? `Distilled ${vintage}${age ? ` (${age} years old)` : ''}.` : null,
@@ -878,7 +879,7 @@ const CaskDetails = () => {
                 {
                   '@context': 'https://schema.org',
                   '@type': 'Product',
-                  name: cask.spirit_name,
+                  name: caskDisplayName(cask.spirit_name, cask.distillation_date),
                   description: seoDescription,
                   ...(primaryImageUrl ? { image: primaryImageUrl } : {}),
                   ...(cask.distillery?.name ? { brand: { '@type': 'Brand', name: cask.distillery.name } } : {}),
@@ -918,7 +919,7 @@ const CaskDetails = () => {
              {cask && (
                <div className="flex items-center gap-2">
                  <PriceAlertButton caskId={cask.id} currentPrice={cask.total_price} />
-                 <ShareCaskButton caskName={cask.spirit_name} caskId={cask.id} />
+                 <ShareCaskButton caskName={caskDisplayName(cask.spirit_name, cask.distillation_date)} caskId={cask.id} />
                </div>
              )}
            </div>
@@ -991,7 +992,7 @@ const CaskDetails = () => {
                 <div className="flex justify-between items-start">
                    <div>
                      <h1 className="text-3xl font-bold leading-none tracking-tight text-primary">
-                       {cask.spirit_name}
+                       {caskDisplayName(cask.spirit_name, cask.distillation_date)}
                      </h1>
                      <CardDescription className="flex items-center space-x-2 mt-2">
                        <MapPin className="h-4 w-4" />
@@ -999,11 +1000,14 @@ const CaskDetails = () => {
                           {cask.distillery?.name || 'Unknown Distillery'}
                         </Link>
                         {cask.distillery?.verified && (
-                         <Shield className="h-4 w-4 text-success" />
+                         <Shield className="h-4 w-4 text-success" aria-label="Verified distillery" />
                        )}
+                       <Badge variant="outline" className="ml-2">
+                         {isCaskOnChain(cask) ? 'On-chain' : 'On-chain registration pending'}
+                       </Badge>
                        {cask.is_sale_listing && cask.seller && (
                          <Badge variant="outline" className="bg-info/10 text-info border-info/30 ml-2">
-                           Resale by {cask.seller.first_name} {cask.seller.last_name}
+                           Resale by {publicSellerName(cask.seller.first_name, cask.seller.last_name)}
                          </Badge>
                        )}
                      </CardDescription>
@@ -1135,8 +1139,8 @@ const CaskDetails = () => {
 
             {/* Blockchain / NFT Status */}
             <NftStatusCard
-              blockchainHash={cask.blockchain_hash}
-              nftTokenId={cask.nft_token_id}
+              blockchainHash={isCaskOnChain(cask) ? cask.blockchain_hash : null}
+              nftTokenId={isCaskOnChain(cask) ? cask.nft_token_id : null}
               nftContractAddress={cask.nft_contract_address}
               nftMintedAt={cask.nft_minted_at}
               isMinting={isMintingNft}
@@ -1357,7 +1361,7 @@ const CaskDetails = () => {
                   {cask.distillery?.verified && (
                     <Badge variant="outline" className="text-success border-success">
                       <Shield className="h-3 w-3 mr-1" />
-                      Verified
+                      Verified distillery
                     </Badge>
                   )}
                 </div>
@@ -1690,7 +1694,7 @@ const CaskDetails = () => {
         <PaymentMethodDialog
           open={paymentDialogOpen}
           onOpenChange={setPaymentDialogOpen}
-          caskName={cask.spirit_name}
+          caskName={caskDisplayName(cask.spirit_name, cask.distillation_date)}
           totalPrice={cask.total_price || 0}
           saleId={activeSaleId}
           caskId={cask.id}
