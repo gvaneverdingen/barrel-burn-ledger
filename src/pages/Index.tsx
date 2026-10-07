@@ -20,13 +20,15 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import heroCask from '@/assets/hero-cask-luxury.jpg';
-import caskPlaceholder from '@/assets/cask-placeholder.jpg';
+import { fetchMarketplaceListings } from '@/lib/marketplaceListings';
+import { caskAgeYears, caskDisplayName, defaultCaskImage } from '@/lib/caskDisplay';
 
 interface FeaturedCask {
   id: string;
   spirit_name: string;
-  age_years: number | null;
-  region: string | null;
+  distillation_date: string | null;
+  location: string | null;
+  image_url: string | null;
   total_price: number | null;
   quality_grade: string | null;
   cask_type_name?: string | null;
@@ -67,43 +69,42 @@ const Index = () => {
     let cancelled = false;
     const load = async () => {
       try {
-        const [casksCount, forSaleCount, distRes, txRes, featuredRes] = await Promise.all([
+        const [casksCount, distRes, txRes, listings] = await Promise.all([
           supabase.from('casks').select('id', { count: 'exact', head: true }),
-          supabase.from('casks').select('id', { count: 'exact', head: true }).eq('available_for_sale', true),
           supabase.from('distilleries').select('id', { count: 'exact', head: true }),
           supabase.from('transactions').select('id', { count: 'exact', head: true }).eq('status', 'completed'),
-          supabase
-            .from('casks_marketplace')
-            .select('id, spirit_name, age_years, region, quality_grade, cask_type_name')
-            .eq('available_for_sale', true)
-            .order('age_years', { ascending: false, nullsFirst: false })
-            .limit(3),
+          fetchMarketplaceListings(!!user),
         ]);
 
         if (cancelled) return;
 
         setStats({
           totalCasks: casksCount.count ?? 0,
-          forSale: forSaleCount.count ?? 0,
+          forSale: listings.length,
           distilleries: distRes.count ?? 0,
           completedTx: txRes.count ?? 0,
         });
 
-        // Pull pricing for featured casks from main casks table
-        const ids = (featuredRes.data ?? []).map((c) => c.id);
-        if (ids.length) {
-          const { data: priced } = await supabase
-            .from('casks')
-            .select('id, total_price')
-            .in('id', ids);
-          const priceMap = new Map(priced?.map((p) => [p.id, p.total_price]) ?? []);
-          setFeatured(
-            (featuredRes.data ?? []).map((c) => ({
-              ...c,
-              total_price: priceMap.get(c.id) ?? null,
-            }))
-          );
-        }
+        // Oldest cask per distillery, so the section never repeats one product
+        const byDistillery = new Map<string, any>();
+        [...listings]
+          .sort((x, y) => String(x.distillation_date).localeCompare(String(y.distillation_date)))
+          .forEach((l) => {
+            const key = l.distillery_id || l.distilleries?.name || l.cask_id;
+            if (!byDistillery.has(key)) byDistillery.set(key, l);
+          });
+        setFeatured(
+          Array.from(byDistillery.values()).slice(0, 3).map((l) => ({
+            id: l.cask_id,
+            spirit_name: l.spirit_name,
+            distillation_date: l.distillation_date,
+            location: l.distilleries?.location || l.region || null,
+            total_price: l.total_price ?? null,
+            quality_grade: l.quality_grade ?? null,
+            cask_type_name: l.cask_types?.name ?? null,
+            image_url: l.image_url ?? null,
+          }))
+        );
       } catch (e) {
         console.warn('Failed to load home stats', e);
       } finally {
@@ -114,7 +115,7 @@ const Index = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [user?.id]);
 
   if (loading) {
     return (
@@ -209,7 +210,7 @@ const Index = () => {
               Featured
             </Badge>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold font-playfair">
-              The oldest casks for sale right now
+              The oldest cask from each distillery
             </h2>
           </div>
           <Link
@@ -251,8 +252,8 @@ const Index = () => {
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                   <img
-                    src={caskPlaceholder}
-                    alt={c.spirit_name}
+                    src={c.image_url || defaultCaskImage(c.cask_type_name, c.id)}
+                    alt={caskDisplayName(c.spirit_name, c.distillation_date)}
                     loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   />
@@ -266,14 +267,14 @@ const Index = () => {
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h3 className="font-playfair font-semibold text-lg leading-tight line-clamp-1">
-                      {c.spirit_name}
+                      {caskDisplayName(c.spirit_name, c.distillation_date)}
                     </h3>
-                    {c.age_years && (
-                      <span className="text-sm text-primary font-medium shrink-0">{c.age_years}y</span>
-                    )}
+                    {caskAgeYears(c.distillation_date) ? (
+                      <span className="text-sm text-primary font-medium shrink-0">{caskAgeYears(c.distillation_date)}y</span>
+                    ) : null}
                   </div>
                   <p className="text-sm text-muted-foreground mb-4 line-clamp-1">
-                    {c.region ?? 'Unknown region'}
+                    {c.location ?? 'Unknown region'}
                     {c.cask_type_name ? ` · ${c.cask_type_name}` : ''}
                   </p>
                   <div className="flex items-end justify-between">
