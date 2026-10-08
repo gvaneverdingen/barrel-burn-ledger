@@ -46,7 +46,7 @@ export default function CaskProvenanceTimeline({ caskId }: { caskId: string }) {
             <Tooltip>
               <TooltipTrigger asChild><Info className="h-4 w-4 text-muted-foreground cursor-help" /></TooltipTrigger>
               <TooltipContent className="max-w-[280px] text-xs">
-                Every sale, resale and warehouse transfer of this cask. Owners are shown anonymously. Events marked "On-chain" have a permanent blockchain receipt you can check yourself on Polygonscan.
+                Every sale, resale and warehouse transfer of this cask. Owners are shown by first name and last initial only. Events marked "On-chain" have a permanent blockchain receipt you can check yourself on the Polygon block explorer.
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

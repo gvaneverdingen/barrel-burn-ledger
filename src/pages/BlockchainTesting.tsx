@@ -1,3 +1,4 @@
+import { explorerTxUrl } from "@/lib/chain";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -120,7 +121,7 @@ export default function BlockchainTesting() {
 
   const getPolygonScanUrl = (hash: string) => {
     // For testnet, use Mumbai testnet explorer
-    return `https://mumbai.polygonscan.com/tx/${hash}`;
+    return explorerTxUrl(hash);
   };
 
   if (loading) {

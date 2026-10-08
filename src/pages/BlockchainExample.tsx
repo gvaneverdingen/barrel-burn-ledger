@@ -1,3 +1,4 @@
+import { explorerTxUrl } from "@/lib/chain";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ export default function BlockchainExample() {
     buyer_email: "buyer@example.com"
   };
 
-  const polygonScanUrl = `https://polygonscan.com/tx/${exampleTransaction.blockchain_transaction_hash}`;
+  const polygonScanUrl = explorerTxUrl(exampleTransaction.blockchain_transaction_hash);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
