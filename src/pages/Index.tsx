@@ -81,7 +81,7 @@ const Index = () => {
         setStats({
           totalCasks: casksCount.count ?? 0,
           forSale: listings.length,
-          distilleries: distRes.count ?? 0,
+          distilleries: new Set(listings.map((l: any) => l.distillery_id).filter(Boolean)).size,
           completedTx: txRes.count ?? 0,
         });
 
@@ -136,6 +136,8 @@ const Index = () => {
             className="w-full h-full object-cover"
             width={1920}
             height={1080}
+            fetchPriority="high"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/30" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
@@ -187,7 +189,7 @@ const Index = () => {
               {[
                 { label: 'Casks listed', value: stats.totalCasks },
                 { label: 'For sale now', value: stats.forSale },
-                { label: 'Distilleries', value: stats.distilleries },
+                { label: 'Distilleries selling now', value: stats.distilleries },
                 { label: 'Trades settled', value: stats.completedTx },
               ].map((s) => (
                 <div key={s.label} className="bg-card/80 px-4 py-4 sm:py-5">

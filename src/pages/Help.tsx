@@ -10,6 +10,12 @@ import { useState } from "react";
 const Help = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
+  const openRequestForm = () => {
+    const el = document.getElementById('support-request');
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el?.querySelector('input')?.focus({ preventScroll: true });
+  };
+
   const faqItems = [
     {
       question: "How does ARIGI use blockchain, and why does it matter for transparency?",
@@ -104,13 +110,13 @@ const Help = () => {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-3">
-                Get instant help from our team
+                Live chat is not available yet. Send us a support request in the meantime.
               </p>
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-2 w-2 bg-success text-success-foreground rounded-full"></div>
-                <span className="text-sm">Online now</span>
+                <div className="h-2 w-2 bg-muted-foreground rounded-full"></div>
+                <span className="text-sm">Coming soon</span>
               </div>
-              <Button className="w-full">Start Chat</Button>
+              <Button className="w-full" onClick={openRequestForm}>Send a support request</Button>
             </CardContent>
           </Card>
 
@@ -125,7 +131,7 @@ const Help = () => {
               <p className="text-sm text-muted-foreground mb-3">
                 We'll respond within 24 hours
               </p>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" onClick={openRequestForm}>
                 Send Email
               </Button>
             </CardContent>
@@ -177,7 +183,7 @@ const Help = () => {
       </div>
 
       {/* Contact Form */}
-      <Card>
+      <Card id="support-request" className="scroll-mt-24">
         <CardHeader>
           <CardTitle>Submit a Support Request</CardTitle>
         </CardHeader>
