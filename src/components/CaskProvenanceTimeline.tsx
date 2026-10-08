@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { explorerTxUrl } from "@/lib/chain";
+import { TestnetBadge } from "@/components/TestnetBadge";
 import { Link2, ExternalLink, Info, Factory, ShieldCheck, ArrowRightLeft, Truck, Tag } from "lucide-react";
 
 interface ProvenanceEvent {
@@ -33,7 +35,7 @@ export default function CaskProvenanceTimeline({ caskId }: { caskId: string }) {
 
   if (!events) return <Card><CardContent className="p-6 space-y-3"><Skeleton className="h-6 w-48" /><Skeleton className="h-16 w-full" /></CardContent></Card>;
 
-  const owners = new Set(events.map((e) => e.owner_label).filter((o) => o?.startsWith("Owner"))).size;
+  const owners = events.filter((e) => e.event_type === "sale" || e.event_type === "resale").length;
 
   return (
     <Card>
@@ -44,7 +46,7 @@ export default function CaskProvenanceTimeline({ caskId }: { caskId: string }) {
             <Tooltip>
               <TooltipTrigger asChild><Info className="h-4 w-4 text-muted-foreground cursor-help" /></TooltipTrigger>
               <TooltipContent className="max-w-[280px] text-xs">
-                Every sale, resale and warehouse transfer of this cask. Owners are shown anonymously. Events marked "On-chain" have a permanent blockchain receipt you can check yourself on Polygonscan.
+                Every sale, resale and warehouse transfer of this cask. Owners are shown by first name and last initial only. Events marked "On-chain" have a permanent blockchain receipt you can check yourself on the Polygon block explorer.
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -68,7 +70,7 @@ export default function CaskProvenanceTimeline({ caskId }: { caskId: string }) {
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-medium text-sm">{e.title}</span>
                     {e.on_chain ? (
-                      <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">On-chain</Badge>
+                      <><Badge className="bg-primary/10 text-primary border-primary/20 text-xs">On-chain</Badge><TestnetBadge /></>
                     ) : e.event_type !== "origin" ? (
                       <Badge variant="outline" className="text-xs">Platform record</Badge>
                     ) : null}
@@ -76,7 +78,7 @@ export default function CaskProvenanceTimeline({ caskId }: { caskId: string }) {
                   </div>
                   <p className="text-xs text-muted-foreground">{new Date(e.event_at).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}{e.detail ? ` · ${e.detail}` : ""}</p>
                   {e.tx_hash && e.on_chain && (
-                    <a href={`https://polygonscan.com/tx/${e.tx_hash}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
+                    <a href={explorerTxUrl(e.tx_hash)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
                       View receipt {e.tx_hash.slice(0, 10)}… <ExternalLink className="h-3 w-3" />
                     </a>
                   )}

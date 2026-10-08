@@ -1,3 +1,4 @@
+import { explorerTxUrl } from "@/lib/chain";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ export default function BlockchainExample() {
     buyer_email: "buyer@example.com"
   };
 
-  const polygonScanUrl = `https://polygonscan.com/tx/${exampleTransaction.blockchain_transaction_hash}`;
+  const polygonScanUrl = explorerTxUrl(exampleTransaction.blockchain_transaction_hash);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -186,7 +187,7 @@ export default function BlockchainExample() {
   sellerId: "99e289e8-cf01-4277-bbe2-b99b088a4166",
   caskId: "86efe4be-85e1-4f80-b9f5-8ab0d5c2900e",
   metadata: {
-    platform: "Angel Share Barrel Trading",
+    platform: "ARIGI",
     version: "1.0"
   }
 }, null, 2)}

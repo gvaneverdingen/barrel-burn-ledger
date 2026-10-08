@@ -1,0 +1,2 @@
+- Blockchain explorer links come only from src/lib/chain.ts (VITE_POLYGON_NETWORK, default amoy) — so links switch network from one setting.
+- Cask operations (regauges, transfers, warehouse moves) use can_operate_cask (admin/distillery/warehouse); can_manage_cask also includes owners and is for read-side checks — buyers must not alter provenance.

@@ -1,3 +1,5 @@
+import { EXPLORER_BASE, NETWORK_LABEL, explorerTokenUrl } from "@/lib/chain";
+import { TestnetBadge } from "@/components/TestnetBadge";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,11 +26,11 @@ const NftStatusCard = ({
   canMint = false,
 }: NftStatusCardProps) => {
   const isMinted = !!blockchainHash && nftTokenId !== null;
-  const networkName = nftContractAddress?.startsWith("0x") ? "Polygon" : "Unknown";
+  const networkName = nftContractAddress?.startsWith("0x") ? NETWORK_LABEL : "Unknown";
   const hasBlockchainRecord = !!blockchainHash;
   
-  // Polygon mainnet explorer
-  const explorerBase = "https://polygonscan.com";
+  // Explorer follows the configured network
+  const explorerBase = EXPLORER_BASE;
 
   return (
     <Card className="border-primary/20">
@@ -47,12 +49,13 @@ const NftStatusCard = ({
                 NFT Minted
               </Badge>
               <Badge variant="outline">{networkName}</Badge>
+              <TestnetBadge />
             </div>
 
             {nftTokenId !== null && (
               <div className="text-sm">
                 <span className="text-muted-foreground">Token ID:</span>{" "}
-                <span className="font-mono font-medium">#{nftTokenId}</span>
+                {nftContractAddress ? (<a href={explorerTokenUrl(nftContractAddress, nftTokenId)} target="_blank" rel="noopener noreferrer" className="font-mono font-medium text-primary hover:underline">ARIGI #{nftTokenId}<ExternalLink className="inline h-3 w-3 ml-1" /></a>) : (<span className="font-mono font-medium">ARIGI #{nftTokenId}</span>)}
               </div>
             )}
 

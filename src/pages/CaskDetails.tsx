@@ -165,7 +165,7 @@ const CaskDetails = () => {
   // Track recently viewed
   useEffect(() => {
     if (cask) {
-      addRecentlyViewed({ id: cask.id, name: cask.spirit_name, price: cask.total_price ?? 0 });
+      addRecentlyViewed({ id: cask.id });
     }
   }, [cask?.id]);
 
@@ -196,12 +196,17 @@ const CaskDetails = () => {
   }, [user?.id]);
 
   useEffect(() => {
+    // Reset management rights on every cask/user/role change so a previous role's rights never linger
+    setCanManageImages(false);
+    setCanMoveCask(false);
     if (cask && user) {
-      checkImageManagementPermissions();
+      if (userRole !== 'consumer') {
+        checkImageManagementPermissions();
+        (supabase.rpc as any)('can_operate_cask', { _cask_id: cask.id }).then(({ data }: any) => setCanMoveCask(!!data));
+      }
       fetchOffers();
       checkOwnership();
-      (supabase.rpc as any)('can_manage_cask', { _cask_id: cask.id }).then(({ data }: any) => setCanMoveCask(!!data));
-    } else setCanMoveCask(false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cask?.id, user?.id, userRole]);
 

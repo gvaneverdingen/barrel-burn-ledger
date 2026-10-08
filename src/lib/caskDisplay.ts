@@ -17,7 +17,7 @@ export const isRealTxHash = (hash?: string | null): hash is string => {
 export const isCaskOnChain = (c: { nft_token_id?: number | null; blockchain_hash?: string | null }) =>
   c.nft_token_id != null && isRealTxHash(c.blockchain_hash);
 
-export const polygonTxUrl = (hash: string) => `https://polygonscan.com/tx/${hash}`;
+export { explorerTxUrl as polygonTxUrl } from "@/lib/chain";
 
 export const caskAgeYears = (distillationDate?: string | null): number | null => {
   if (!distillationDate) return null;

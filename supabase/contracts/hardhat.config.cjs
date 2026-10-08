@@ -71,7 +71,7 @@ module.exports = {
 {
   "name": "angel-share-contracts",
   "version": "1.0.0",
-  "description": "Smart contracts for Angel Share cask NFT marketplace",
+  "description": "Smart contracts for the ARIGI cask NFT marketplace",
   "scripts": {
     "compile": "hardhat compile",
     "deploy:amoy": "hardhat run deploy.cjs --network polygonAmoy",

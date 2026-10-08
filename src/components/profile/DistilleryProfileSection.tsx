@@ -1,3 +1,4 @@
+import { explorerTxUrl, explorerAddressUrl } from "@/lib/chain";
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -236,7 +237,7 @@ export const DistilleryProfileSection: React.FC<Props> = ({ userId, email }) => 
               ) : (
                 <div className="text-sm bg-muted/50 px-3 py-2 rounded-md font-mono break-all">
                   {distillery.wallet_address ? (
-                    <a href={`https://polygonscan.com/address/${distillery.wallet_address}`} target="_blank" rel="noreferrer" className="text-primary hover:underline">{distillery.wallet_address}</a>
+                    <a href={explorerAddressUrl(distillery.wallet_address)} target="_blank" rel="noreferrer" className="text-primary hover:underline">{distillery.wallet_address}</a>
                   ) : 'Not set: certificates go to the ARIGI platform wallet'}
                 </div>
               )}

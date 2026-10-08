@@ -15,6 +15,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { SignInPrompt } from "@/components/SignInPrompt";
 import ResalePaymentRequests from "@/components/ResalePaymentRequests";
 import { toast } from "sonner";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Info, Loader2, Store, CheckCircle, ShieldAlert, Wallet } from "lucide-react";
 
 interface Owned {
@@ -145,12 +146,19 @@ function ConfirmSale({ item, onDone }: { item: Owned; onDone: () => void }) {
   const [buyer, setBuyer] = useState("");
   const [price, setPrice] = useState(String(item.listing!.total_asking_price));
   const [busy, setBusy] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const confirm = async () => {
     const e = z.string().trim().email().safeParse(buyer);
     if (!e.success) return toast.error("Enter the buyer's ARIGI account email");
     if (!(Number(price) > 0)) return toast.error("Enter the final price");
-    if (!window.confirm(`Confirm the sale for ${formatPrice(Number(price))}? The cask will move to the buyer's account and this can't be undone.`)) return;
+    setConfirmOpen(true);
+  };
+
+  const doConfirm = async () => {
+    const e = z.string().trim().email().safeParse(buyer);
+    if (!e.success) return;
+    setConfirmOpen(false);
     setBusy(true);
     const { error } = await (supabase.rpc as any)("confirm_resale_sold", { _sale_id: item.listing!.id, _buyer_email: e.data, _final_price: Number(price) });
     setBusy(false);
@@ -174,6 +182,18 @@ function ConfirmSale({ item, onDone }: { item: Owned; onDone: () => void }) {
         Listed at <span className="font-semibold text-foreground">{formatPrice(item.listing!.total_asking_price)}</span> · buyers contact you at {item.listing!.contact_email || "—"}
         {item.listing!.contact_phone ? ` / ${item.listing!.contact_phone}` : ""}
       </p>
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm the sale for {formatPrice(Number(price))}?</AlertDialogTitle>
+            <AlertDialogDescription>The cask will move to the buyer's account and this can't be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Go back</AlertDialogCancel>
+            <AlertDialogAction onClick={doConfirm}>Confirm sale</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <CryptoRequest item={item} onDone={onDone} />
       <div className="rounded-md border border-border p-3 space-y-3">
         <p className="text-sm font-medium flex items-center gap-1">
