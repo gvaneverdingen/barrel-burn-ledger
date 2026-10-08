@@ -165,7 +165,7 @@ const CaskDetails = () => {
   // Track recently viewed
   useEffect(() => {
     if (cask) {
-      addRecentlyViewed({ id: cask.id, name: cask.spirit_name, price: cask.total_price ?? 0 });
+      addRecentlyViewed({ id: cask.id });
     }
   }, [cask?.id]);
 
