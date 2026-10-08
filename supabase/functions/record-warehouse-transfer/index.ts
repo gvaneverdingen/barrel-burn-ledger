@@ -53,8 +53,8 @@ Deno.serve(async (req) => {
     if (!parsed.success) return json({ error: parsed.error.flatten().fieldErrors }, 400);
     const { caskId, toWarehouseId, transferDate, reason } = parsed.data;
 
-    const { data: allowed } = await userClient.rpc("can_manage_cask", { _cask_id: caskId });
-    if (!allowed) return json({ error: "Only the cask's owner, distillery, warehouse or an admin can move it" }, 403);
+    const { data: allowed } = await userClient.rpc("can_operate_cask", { _cask_id: caskId });
+    if (!allowed) return json({ error: "Only the cask's distillery, warehouse or an admin can move it" }, 403);
 
     const admin = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const { data: cask } = await admin.from("casks").select("id, cask_number, nft_token_id").eq("id", caskId).maybeSingle();

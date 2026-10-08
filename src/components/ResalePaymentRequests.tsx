@@ -1,3 +1,4 @@
+import { explorerTxUrl, explorerAddressUrl } from "@/lib/chain";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -82,7 +83,7 @@ function PayRow({ r, onDone }: { r: Req; onDone: () => void }) {
       )}
       {!hasInjectedWallet() && !busy && <p className="text-xs text-muted-foreground">No browser wallet found. Install MetaMask or use the QR option.</p>}
       {tx && (
-        <a className="text-xs text-primary inline-flex items-center gap-1 hover:underline" href={`https://polygonscan.com/tx/${tx}`} target="_blank" rel="noreferrer">
+        <a className="text-xs text-primary inline-flex items-center gap-1 hover:underline" href={explorerTxUrl(tx)} target="_blank" rel="noreferrer">
           View your payment on Polygonscan <ExternalLink className="h-3 w-3" />
         </a>
       )}

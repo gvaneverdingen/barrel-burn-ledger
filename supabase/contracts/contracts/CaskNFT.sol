@@ -111,7 +111,7 @@ contract CaskNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         uint256 price
     );
 
-    constructor() ERC721("Angel Share Cask", "ASCASK") Ownable(msg.sender) {}
+    constructor() ERC721("ARIGI Cask", "ARIGI") Ownable(msg.sender) {}
 
     /**
      * @dev Mint a new cask NFT
